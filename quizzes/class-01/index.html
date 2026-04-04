@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Quiz: Class 01 — The AI/ML Landscape</title>
+<title>Quiz 01 — The AI/ML Landscape</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
 /* ── Theme: Warm Emerald ── */
@@ -261,8 +261,8 @@ body {
   text-align: center;
   color: var(--slate-500);
   margin-top: 0.75rem;
-  margin-bottom: 2.5rem;
-  padding-bottom: 1.5rem;
+  margin-bottom: 3rem;
+  padding-bottom: 2rem;
   border-bottom: 1px solid var(--slate-200);
 }
 
@@ -373,10 +373,10 @@ body {
 
   <!-- ── START SCREEN ── -->
   <div id="startScreen" class="start-screen">
-    <h1>Quiz: Class 01</h1>
+    <h1>Quiz 01</h1>
     <p class="subtitle">The AI/ML Landscape &mdash; 25 Questions</p>
     <input type="text" id="userName" placeholder="Your Full Name" required>
-    <input type="text" id="userEmail" placeholder="GitHub Username (e.g. johndoe)" required>
+    <input type="text" id="userGithub" placeholder="GitHub Username — optional">
     <p class="info">5 sections &bull; ~10 minutes &bull; Results shown after submission</p>
     <button class="btn btn-primary" onclick="startQuiz()">Start Quiz</button>
   </div>
@@ -399,15 +399,16 @@ body {
   </div>
 
   <!-- ── RESULTS SCREEN ── -->
-  <div id="resultsScreen" class="hidden"></div>
+  <div id="resultsScreen" class="results-screen hidden"></div>
 
 </div>
 
 <script>
 // ══════════════════════════════════════════════════════════════
-//  CONFIGURATION — paste your Apps Script Web App URL here
+//  CONFIGURATION
 // ══════════════════════════════════════════════════════════════
 const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxJIg5CYXWJKY-Uuoi9H0Nvnl4wlWwAAAQ4aYQd1FX7iIBmMqj6f9ksXEj-LTtJK8hlRg/exec";
+const QUIZ_NAME = "The AI/ML Landscape";
 
 // ══════════════════════════════════════════════════════════════
 //  QUIZ DATA
@@ -694,16 +695,16 @@ const questions = [
 let currentQ = 0;
 let answers = new Array(questions.length).fill(null);
 let userName = "";
-let userEmail = "";
+let userGithub = "";
 
 // ══════════════════════════════════════════════════════════════
 //  START
 // ══════════════════════════════════════════════════════════════
 function startQuiz() {
   userName = document.getElementById("userName").value.trim();
-  userEmail = document.getElementById("userEmail").value.trim();
-  if (!userName || !userEmail) {
-    alert("Please enter your name and email.");
+  userGithub = document.getElementById("userGithub").value.trim();
+  if (!userName) {
+    alert("Please enter your name.");
     return;
   }
   document.getElementById("startScreen").classList.add("hidden");
@@ -714,11 +715,11 @@ function startQuiz() {
 
 let quizActive = false;
 
-// Keyboard: Enter on start screen inputs → start quiz
+// Keyboard: Enter on start screen inputs
 document.getElementById("userName").addEventListener("keydown", function(e) {
-  if (e.key === "Enter") { e.preventDefault(); document.getElementById("userEmail").focus(); }
+  if (e.key === "Enter") { e.preventDefault(); document.getElementById("userGithub").focus(); }
 });
-document.getElementById("userEmail").addEventListener("keydown", function(e) {
+document.getElementById("userGithub").addEventListener("keydown", function(e) {
   if (e.key === "Enter") { e.preventDefault(); startQuiz(); }
 });
 
@@ -864,11 +865,10 @@ function sendResults(results, score) {
     mode: "no-cors",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
+      quizName: QUIZ_NAME,
       name: userName,
-      email: userEmail,
-      results: results,
-      score: score,
-      total: questions.length
+      github: userGithub,
+      results: results
     })
   }).catch(err => console.error("Failed to save results:", err));
 }
@@ -891,7 +891,7 @@ function showResults(results, score) {
       <span class="label">${pct}%</span>
     </div>
     <h1>${message}</h1>
-    <p class="results-subtitle">${userName} &bull; ${userEmail}</p>
+    <p class="results-subtitle">${userName}${userGithub ? " &bull; @" + userGithub : ""}</p>
     <div class="review-list">
   `;
 

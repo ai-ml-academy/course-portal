@@ -3,12 +3,13 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AI/ML Academy — Course Portal</title>
+<title>AI/ML Academy</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
 :root {
   --pri-700: #218764;
   --pri-600: #28A37A;
+  --pri-100: #D9F7EC;
   --pri-50: #EDFBF5;
   --slate-50: #F7F8FA;
   --slate-100: #EDEEF2;
@@ -26,37 +27,30 @@ body {
   padding: 2rem;
   color: var(--slate-900);
 }
-.container {
-  max-width: 800px;
-  margin: 0 auto;
-}
-header {
-  text-align: center;
-  margin-bottom: 3rem;
-}
-header h1 {
-  font-size: 2rem;
-  font-weight: 800;
-  color: var(--pri-700);
-  margin-bottom: 0.5rem;
-}
-header p {
-  color: var(--slate-500);
-  font-size: 1.05rem;
-}
-.section-title {
-  font-size: 1.1rem;
-  font-weight: 700;
-  color: var(--slate-700);
-  margin-bottom: 1rem;
-  padding-bottom: 0.5rem;
-  border-bottom: 2px solid var(--slate-200);
-}
-.card-grid {
-  display: grid;
-  gap: 1rem;
+.container { max-width: 800px; margin: 0 auto; }
+header { text-align: center; margin-bottom: 3rem; }
+header h1 { font-size: 2rem; font-weight: 800; color: var(--pri-700); margin-bottom: 0.5rem; }
+header p { color: var(--slate-500); font-size: 1.05rem; }
+nav {
+  display: flex;
+  justify-content: center;
+  gap: 0.5rem;
   margin-bottom: 2.5rem;
 }
+nav a {
+  padding: 0.6rem 1.5rem;
+  border-radius: 8px;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 0.95rem;
+  transition: all 0.15s ease;
+  border: 2px solid var(--slate-200);
+  color: var(--slate-700);
+  background: white;
+}
+nav a:hover { border-color: var(--pri-600); color: var(--pri-700); }
+nav a.active { background: var(--pri-700); color: white; border-color: var(--pri-700); }
+.card-grid { display: grid; gap: 0.75rem; }
 .card {
   display: flex;
   align-items: center;
@@ -64,59 +58,36 @@ header p {
   background: white;
   border: 1px solid var(--slate-200);
   border-radius: 10px;
-  padding: 1.25rem 1.5rem;
+  padding: 1.1rem 1.3rem;
   text-decoration: none;
   color: var(--slate-900);
   transition: all 0.15s ease;
 }
-.card:hover {
-  border-color: var(--pri-600);
-  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-  transform: translateY(-1px);
+.card:hover { border-color: var(--pri-600); box-shadow: 0 4px 12px rgba(0,0,0,0.06); transform: translateY(-1px); }
+.card .num {
+  width: 36px; height: 36px; border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.85rem; font-weight: 700; flex-shrink: 0;
 }
-.card .icon {
-  width: 44px;
-  height: 44px;
-  border-radius: 10px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.3rem;
-  flex-shrink: 0;
+.card .num.quiz { background: #FEF3C7; color: #92400E; }
+.card .num.slide { background: #DBEAFE; color: #1E40AF; }
+.card .info h3 { font-size: 0.95rem; font-weight: 600; }
+.card .info p { font-size: 0.8rem; color: var(--slate-500); margin-top: 0.1rem; }
+.card .tag {
+  margin-left: auto; font-size: 0.7rem; font-weight: 600;
+  padding: 0.2rem 0.5rem; border-radius: 20px;
+  background: var(--pri-50); color: var(--pri-700);
 }
-.card .icon.quiz { background: #FEF3C7; }
-.card .icon.slide { background: #DBEAFE; }
-.card .info h3 {
-  font-size: 1rem;
-  font-weight: 600;
-  margin-bottom: 0.15rem;
-}
-.card .info p {
-  font-size: 0.85rem;
-  color: var(--slate-500);
-}
-.badge {
-  margin-left: auto;
-  font-size: 0.75rem;
-  font-weight: 600;
-  padding: 0.2rem 0.6rem;
-  border-radius: 20px;
-  background: var(--pri-50);
-  color: var(--pri-700);
-}
-.empty {
-  color: var(--slate-500);
-  font-size: 0.9rem;
-  font-style: italic;
-  padding: 1rem 0;
-}
+.section { display: none; }
+.section.active { display: block; }
+.empty { color: var(--slate-500); font-size: 0.9rem; font-style: italic; padding: 1.5rem 0; text-align: center; }
 footer {
-  text-align: center;
-  color: var(--slate-500);
-  font-size: 0.8rem;
-  margin-top: 3rem;
-  padding-top: 1.5rem;
-  border-top: 1px solid var(--slate-200);
+  text-align: center; color: var(--slate-500); font-size: 0.8rem;
+  margin-top: 3rem; padding-top: 1.5rem; border-top: 1px solid var(--slate-200);
+}
+@media (max-width: 600px) {
+  body { padding: 1rem; }
+  .card { padding: 0.9rem 1rem; }
 }
 </style>
 </head>
@@ -124,37 +95,53 @@ footer {
 <div class="container">
   <header>
     <h1>AI/ML Academy</h1>
-    <p>Gen AI Engineer Course &mdash; Quizzes &amp; Slides</p>
+    <p>Gen AI Engineer Course</p>
   </header>
 
-  <div class="section-title">Quizzes</div>
-  <div class="card-grid">
-    <a class="card" href="quizzes/class-01/">
-      <div class="icon quiz">Q</div>
-      <div class="info">
-        <h3>Class 01 — The AI/ML Landscape</h3>
-        <p>25 questions &bull; AI/ML fundamentals, LLMs, industry applications</p>
-      </div>
-      <span class="badge">25 Qs</span>
-    </a>
-    <!-- Future quizzes go here -->
+  <nav>
+    <a href="#" class="active" onclick="showSection('quizzes', this)">Quizzes</a>
+    <a href="#" onclick="showSection('slides', this)">Slides</a>
+  </nav>
+
+  <!-- ── QUIZZES ── -->
+  <div id="quizzes" class="section active">
+    <div class="card-grid">
+      <a class="card" href="quizzes/class-01/">
+        <div class="num quiz">1</div>
+        <div class="info">
+          <h3>The AI/ML Landscape</h3>
+          <p>AI/ML fundamentals, LLMs, transformers, industry applications</p>
+        </div>
+        <span class="tag">25 Qs</span>
+      </a>
+      <!-- Add more quizzes here -->
+    </div>
   </div>
 
-  <div class="section-title">Slides</div>
-  <div class="card-grid">
-    <p class="empty">Coming soon...</p>
-    <!-- Future slides go here, e.g.:
-    <a class="card" href="slides/class-01/">
-      <div class="icon slide">S</div>
-      <div class="info">
-        <h3>Class 01 — The AI/ML Landscape</h3>
-        <p>AI history, ML types, neural networks, transformers, LLMs</p>
-      </div>
-    </a>
-    -->
+  <!-- ── SLIDES ── -->
+  <div id="slides" class="section">
+    <div class="card-grid">
+      <a class="card" href="slides/class-01/">
+        <div class="num slide">1</div>
+        <div class="info">
+          <h3>The AI/ML Landscape</h3>
+          <p>AI history, ML types, neural networks, transformers, LLM pipeline</p>
+        </div>
+      </a>
+      <!-- Add more slides here -->
+    </div>
   </div>
 
   <footer>AI/ML Academy &copy; 2026</footer>
 </div>
+
+<script>
+function showSection(id, el) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('nav a').forEach(a => a.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  el.classList.add('active');
+}
+</script>
 </body>
 </html>
