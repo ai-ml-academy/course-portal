@@ -1,0 +1,920 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quiz: Class 01 — The AI/ML Landscape</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+/* ── Theme: Warm Emerald ── */
+:root {
+  --pri-900: #134E3A;
+  --pri-800: #1A6B4F;
+  --pri-700: #218764;
+  --pri-600: #28A37A;
+  --pri-500: #34C090;
+  --pri-400: #5CD4A8;
+  --pri-300: #8AE4C2;
+  --pri-200: #B5EEDB;
+  --pri-100: #D9F7EC;
+  --pri-50:  #EDFBF5;
+  --slate-50:  #F7F8FA;
+  --slate-100: #EDEEF2;
+  --slate-200: #D5D7DE;
+  --slate-500: #6B7280;
+  --slate-700: #374151;
+  --slate-900: #111827;
+  --success: #059669;
+  --success-bg: #ECFDF5;
+  --error: #DC2626;
+  --error-bg: #FEF2F2;
+  --accent: #F59E0B;
+  --font-body: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+  --shadow-md: 0 4px 12px rgba(0,0,0,.10);
+  --shadow-lg: 0 8px 30px rgba(0,0,0,.14);
+  --ease: cubic-bezier(.4, 0, .2, 1);
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: var(--font-body);
+  background: var(--slate-50);
+  min-height: 100vh;
+  color: var(--slate-900);
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 2rem;
+}
+
+.quiz-container {
+  width: 100%;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+/* ── Start Screen ── */
+.start-screen {
+  background: white;
+  border-radius: var(--radius-lg);
+  padding: 3rem;
+  box-shadow: var(--shadow-md);
+  border: 1px solid var(--slate-200);
+  text-align: center;
+}
+.start-screen h1 {
+  font-size: 1.8rem;
+  font-weight: 800;
+  color: var(--pri-800);
+  margin-bottom: 0.5rem;
+}
+.start-screen .subtitle {
+  color: var(--slate-500);
+  font-size: 1rem;
+  margin-bottom: 2rem;
+}
+.start-screen input {
+  display: block;
+  width: 100%;
+  max-width: 400px;
+  margin: 0.75rem auto;
+  padding: 0.85rem 1rem;
+  border: 2px solid var(--slate-200);
+  border-radius: var(--radius-md);
+  font-family: var(--font-body);
+  font-size: 1rem;
+  transition: border-color 0.2s var(--ease);
+}
+.start-screen input:focus {
+  outline: none;
+  border-color: var(--pri-500);
+}
+.start-screen .info {
+  color: var(--slate-500);
+  font-size: 0.85rem;
+  margin-top: 0.5rem;
+  margin-bottom: 1.5rem;
+}
+
+/* ── Buttons ── */
+.btn {
+  display: inline-block;
+  padding: 0.85rem 2.5rem;
+  border: none;
+  border-radius: var(--radius-md);
+  font-family: var(--font-body);
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s var(--ease);
+}
+.btn-primary {
+  background: var(--pri-700);
+  color: white;
+}
+.btn-primary:hover { background: var(--pri-600); transform: translateY(-1px); }
+.btn-primary:disabled { background: var(--slate-200); color: var(--slate-500); cursor: not-allowed; transform: none; }
+.btn-secondary {
+  background: var(--slate-100);
+  color: var(--slate-700);
+}
+.btn-secondary:hover { background: var(--slate-200); }
+
+/* ── Progress Bar ── */
+.progress-bar {
+  background: var(--slate-200);
+  border-radius: 20px;
+  height: 8px;
+  margin-bottom: 1.5rem;
+  overflow: hidden;
+}
+.progress-fill {
+  height: 100%;
+  background: var(--pri-500);
+  border-radius: 20px;
+  transition: width 0.4s var(--ease);
+}
+.progress-text {
+  color: var(--slate-500);
+  font-size: 0.85rem;
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+  display: flex;
+  justify-content: space-between;
+}
+
+/* ── Question Card ── */
+.question-card {
+  background: white;
+  border-radius: var(--radius-lg);
+  padding: 2.5rem;
+  box-shadow: var(--shadow-md);
+  border: 1px solid var(--slate-200);
+  animation: slideIn 0.3s var(--ease);
+}
+@keyframes slideIn {
+  from { opacity: 0; transform: translateY(15px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.section-badge {
+  display: inline-block;
+  background: var(--pri-50);
+  color: var(--pri-700);
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 0.3rem 0.8rem;
+  border-radius: 20px;
+  margin-bottom: 1rem;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+.question-card h2 {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--slate-900);
+  line-height: 1.5;
+  margin-bottom: 1.5rem;
+}
+
+/* ── Options ── */
+.options { display: flex; flex-direction: column; gap: 0.75rem; }
+.option {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.85rem;
+  padding: 1rem 1.2rem;
+  border: 2px solid var(--slate-200);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: all 0.15s var(--ease);
+  line-height: 1.5;
+}
+.option:hover { border-color: var(--pri-300); background: var(--pri-50); }
+.option.selected { border-color: var(--pri-500); background: var(--pri-50); }
+.option .letter {
+  flex-shrink: 0;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: var(--slate-100);
+  color: var(--slate-700);
+  font-weight: 600;
+  font-size: 0.85rem;
+  margin-top: 1px;
+}
+.option.selected .letter {
+  background: var(--pri-600);
+  color: white;
+}
+.option .text {
+  font-size: 1rem;
+  color: var(--slate-700);
+}
+
+/* ── Navigation ── */
+.nav-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 1.5rem;
+}
+
+/* ── Results Screen ── */
+.results-screen {
+  background: white;
+  border-radius: var(--radius-lg);
+  padding: 3rem;
+  box-shadow: var(--shadow-md);
+  border: 1px solid var(--slate-200);
+  animation: slideIn 0.3s var(--ease);
+}
+.score-circle {
+  width: 160px;
+  height: 160px;
+  border-radius: 50%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 1.5rem;
+  font-weight: 800;
+}
+.score-circle .number { font-size: 2.8rem; line-height: 1; }
+.score-circle .label { font-size: 0.85rem; font-weight: 500; margin-top: 0.25rem; }
+.score-high { background: var(--success-bg); color: var(--success); border: 3px solid var(--success); }
+.score-mid { background: #FFF8E7; color: #B8860B; border: 3px solid #C49545; }
+.score-low { background: var(--error-bg); color: var(--error); border: 3px solid var(--error); }
+
+.results-screen h1 {
+  text-align: center;
+  font-size: 1.5rem;
+  color: var(--pri-800);
+  margin-bottom: 0.5rem;
+}
+.results-screen .results-subtitle {
+  text-align: center;
+  color: var(--slate-500);
+  margin-top: 0.75rem;
+  margin-bottom: 2.5rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid var(--slate-200);
+}
+
+/* ── Review List ── */
+.review-list { display: flex; flex-direction: column; gap: 1rem; }
+.review-item {
+  padding: 1.2rem;
+  border-radius: var(--radius-md);
+  border-left: 4px solid;
+}
+.review-item.correct {
+  background: var(--success-bg);
+  border-color: var(--success);
+}
+.review-item.incorrect {
+  background: var(--error-bg);
+  border-color: var(--error);
+}
+.review-item .q-title {
+  font-weight: 600;
+  font-size: 0.95rem;
+  margin-bottom: 0.5rem;
+  color: var(--slate-900);
+}
+.review-item .status-badge {
+  display: inline-block;
+  font-size: 0.8rem;
+  font-weight: 700;
+  padding: 0.2rem 0.7rem;
+  border-radius: 20px;
+  margin-bottom: 0.5rem;
+}
+.review-item .status-badge.correct { background: var(--success); color: white; }
+.review-item .status-badge.incorrect { background: var(--error); color: white; }
+.review-item .your-answer { font-size: 0.9rem; color: var(--slate-700); margin-bottom: 0.25rem; }
+.review-item .correct-answer { font-size: 0.9rem; color: var(--success); font-weight: 500; margin-top: 0.25rem; }
+.review-item .explanation {
+  font-size: 0.85rem;
+  color: var(--slate-500);
+  margin-top: 0.5rem;
+  padding-top: 0.5rem;
+  border-top: 1px solid rgba(0,0,0,0.08);
+}
+
+/* ── Question Number Nav ── */
+.q-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 1rem;
+  justify-content: center;
+}
+.q-nav-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 2px solid var(--slate-200);
+  background: white;
+  color: var(--slate-500);
+  font-family: var(--font-body);
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s var(--ease);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.q-nav-btn:hover { border-color: var(--pri-400); color: var(--pri-700); }
+.q-nav-btn.active { background: var(--pri-700); color: white; border-color: var(--pri-700); font-weight: 700; }
+.q-nav-btn.answered { background: var(--pri-100); border-color: var(--pri-400); color: var(--pri-800); }
+.q-nav-btn.answered.active { background: var(--pri-700); color: white; border-color: var(--pri-700); }
+
+.hidden { display: none; }
+
+/* ── Submitting state ── */
+.submitting-msg {
+  text-align: center;
+  color: var(--slate-500);
+  font-size: 0.9rem;
+  margin-top: 1rem;
+}
+
+/* ── Responsive ── */
+@media (max-width: 600px) {
+  body { padding: 0.75rem; }
+  .question-card, .start-screen, .results-screen { padding: 1.25rem; }
+  .question-card h2 { font-size: 1rem; }
+  .option { padding: 0.75rem 1rem; gap: 0.6rem; }
+  .option .text { font-size: 0.9rem; }
+  .option .letter { width: 24px; height: 24px; font-size: 0.75rem; }
+  .q-nav { gap: 4px; }
+  .q-nav-btn { width: 28px; height: 28px; font-size: 0.7rem; }
+  .nav-row { margin-top: 1rem; }
+  .btn { padding: 0.75rem 1.5rem; font-size: 0.9rem; }
+  .start-screen h1 { font-size: 1.4rem; }
+  .start-screen input { padding: 0.7rem 0.85rem; font-size: 0.9rem; }
+  .review-item { padding: 1rem; }
+  .review-item .q-title { font-size: 0.9rem; }
+  .score-circle { width: 130px; height: 130px; }
+  .score-circle .number { font-size: 2.2rem; }
+}
+</style>
+</head>
+<body>
+
+<div class="quiz-container">
+
+  <!-- ── START SCREEN ── -->
+  <div id="startScreen" class="start-screen">
+    <h1>Quiz: Class 01</h1>
+    <p class="subtitle">The AI/ML Landscape &mdash; 25 Questions</p>
+    <input type="text" id="userName" placeholder="Your Full Name" required>
+    <input type="text" id="userEmail" placeholder="GitHub Username (e.g. johndoe)" required>
+    <p class="info">5 sections &bull; ~10 minutes &bull; Results shown after submission</p>
+    <button class="btn btn-primary" onclick="startQuiz()">Start Quiz</button>
+  </div>
+
+  <!-- ── QUIZ SCREEN ── -->
+  <div id="quizScreen" class="hidden">
+    <div class="q-nav" id="qNav"></div>
+    <div class="progress-text">
+      <span id="progressLabel">Question 1 of 25</span>
+      <span id="sectionLabel">Section 1: AI/ML Fundamentals</span>
+    </div>
+    <div class="progress-bar">
+      <div class="progress-fill" id="progressFill" style="width: 4%"></div>
+    </div>
+    <div class="question-card" id="questionCard"></div>
+    <div class="nav-row">
+      <button class="btn btn-secondary" id="prevBtn" onclick="prevQuestion()">Back</button>
+      <button class="btn btn-primary" id="nextBtn" onclick="nextQuestion()">Next</button>
+    </div>
+  </div>
+
+  <!-- ── RESULTS SCREEN ── -->
+  <div id="resultsScreen" class="hidden"></div>
+
+</div>
+
+<script>
+// ══════════════════════════════════════════════════════════════
+//  CONFIGURATION — paste your Apps Script Web App URL here
+// ══════════════════════════════════════════════════════════════
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxJIg5CYXWJKY-Uuoi9H0Nvnl4wlWwAAAQ4aYQd1FX7iIBmMqj6f9ksXEj-LTtJK8hlRg/exec";
+
+// ══════════════════════════════════════════════════════════════
+//  QUIZ DATA
+// ══════════════════════════════════════════════════════════════
+const sections = [
+  { title: "Section 1: AI/ML Fundamentals", range: [0, 5] },
+  { title: "Section 2: Neural Networks & Transformers", range: [5, 10] },
+  { title: "Section 3: How LLMs Work", range: [10, 15] },
+  { title: "Section 4: Using LLMs in Practice", range: [15, 20] },
+  { title: "Section 5: Industry & Applications", range: [20, 25] }
+];
+
+const questions = [
+  // ── Section 1: AI/ML Fundamentals ──
+  {
+    q: "How do AI, Machine Learning, Neural Networks, and Deep Learning relate to each other?",
+    opts: [
+      "They are four different names for the same technology",
+      "They are nested layers \u2014 AI is the broadest, and Deep Learning is the most specific subset",
+      "Deep Learning is broader than Machine Learning",
+      "Neural Networks and Machine Learning are separate, non-overlapping fields"
+    ],
+    ans: 1,
+    explanation: "These concepts form concentric circles: AI contains ML, ML contains Neural Networks, and Neural Networks contain Deep Learning (neural networks with many layers). They are nested, not synonyms."
+  },
+  {
+    q: "A company wants to predict how much a house will sell for based on its size, location, and age. Which ML task type best describes this?",
+    opts: ["Classification", "Clustering", "Regression", "Anomaly detection"],
+    ans: 2,
+    explanation: "Regression predicts a continuous number (like a price). Classification would predict a category (like 'will sell' vs 'won't sell'), and clustering groups data without labels."
+  },
+  {
+    q: "What is the key difference between supervised and unsupervised learning?",
+    opts: [
+      "Supervised learning uses GPUs; unsupervised learning uses CPUs",
+      "Supervised learning requires labeled data with correct answers; unsupervised learning discovers patterns without labels",
+      "Supervised learning is only for images; unsupervised learning is only for text",
+      "Unsupervised learning is always more accurate than supervised learning"
+    ],
+    ans: 1,
+    explanation: "In supervised learning, the model learns from examples that include the correct answer (labels). In unsupervised learning (e.g., clustering, dimensionality reduction), the model finds structure in data on its own without being told what the 'right answer' is."
+  },
+  {
+    q: "In the supervised learning training loop, what does the loss function measure?",
+    opts: [
+      "How fast the model runs during inference",
+      "How much data the model has seen so far",
+      "How wrong the model's prediction is compared to the true answer",
+      "How many parameters the model has"
+    ],
+    ans: 2,
+    explanation: "The loss function produces a number measuring the gap between the model's prediction and the correct label. Lower loss means the model's predictions are more accurate. The optimizer then uses this signal to update the model's weights."
+  },
+  {
+    q: "Which type of model would you typically choose for analyzing tabular data in a spreadsheet?",
+    opts: [
+      "Convolutional Neural Network (CNN)",
+      "Transformer",
+      "Generative Adversarial Network (GAN)",
+      "Classical ML model (e.g., Linear Regression, Random Forest, XGBoost)"
+    ],
+    ans: 3,
+    explanation: "Classical ML models \u2014 including linear/logistic regression, tree-based methods (Random Forest, XGBoost), and SVMs \u2014 are the standard choice for structured/tabular data. CNNs are designed for images, Transformers for language/sequences, and GANs for data generation."
+  },
+  // ── Section 2: Neural Networks & Transformers ──
+  {
+    q: "What was the fundamental limitation of RNNs that Transformers solved?",
+    opts: [
+      "RNNs could only work with images, not text",
+      "RNNs processed tokens one at a time sequentially, preventing parallelization and causing them to forget early tokens",
+      "RNNs required too little training data to be useful",
+      "RNNs could only produce binary outputs"
+    ],
+    ans: 1,
+    explanation: "RNNs process sequences step by step, which makes them slow to train (no parallelization) and causes vanishing/exploding gradients over long sequences. Transformers use self-attention to process all tokens simultaneously, solving both problems and enabling the massive scale of modern LLMs."
+  },
+  {
+    q: "The Transformer paper 'Attention Is All You Need' introduced self-attention. Why was this a breakthrough?",
+    opts: [
+      "It allowed models to process only the most recent 10 tokens",
+      "It let every token attend to every other token simultaneously, regardless of distance",
+      "It eliminated the need for training data entirely",
+      "It reduced the number of parameters needed by 90%"
+    ],
+    ans: 1,
+    explanation: "Self-attention lets each token directly interact with every other token in the sequence regardless of how far apart they are. This removes the sequential bottleneck of RNNs, allows massive parallelization across GPUs, and enables models to scale to hundreds of billions of parameters."
+  },
+  {
+    q: "After pretraining, an LLM can predict the next word but isn't a useful assistant. Which stage transforms it into a model that follows instructions?",
+    opts: ["Pretraining", "Instruction Fine-tuning", "RLHF / Alignment", "Task-specific Fine-tuning"],
+    ans: 1,
+    explanation: "Instruction fine-tuning trains the model on prompt/response pairs so it learns to follow instructions rather than just complete text. RLHF further refines this by aligning outputs with human preferences, and task-specific fine-tuning (e.g., LoRA) adapts it to a particular domain. But the fundamental shift from 'text completer' to 'instruction follower' happens at instruction fine-tuning."
+  },
+  {
+    q: "What is the purpose of the RLHF (Reinforcement Learning from Human Feedback) stage?",
+    opts: [
+      "To teach the model basic grammar and vocabulary",
+      "To reduce the model's parameter count",
+      "To align the model with human preferences so it produces helpful, harmless, honest outputs",
+      "To convert the model from text-only to multimodal"
+    ],
+    ans: 2,
+    explanation: "During RLHF, human raters rank model outputs from best to worst, a reward model learns these preferences, and then the LLM is optimized via RL (PPO or DPO) to produce outputs humans prefer. This is what transforms a raw text predictor into a useful, safe assistant."
+  },
+  {
+    q: "When we say GPT-4 has 1.8 trillion 'parameters,' what are those parameters?",
+    opts: [
+      "The number of questions it can answer",
+      "The number of documents in its training data",
+      "The numerical weights inside the neural network learned during training",
+      "The number of programming languages it supports"
+    ],
+    ans: 2,
+    explanation: "Parameters are the millions/billions/trillions of numbers (weights and biases) inside the neural network. During training, these numbers are adjusted so the model learns patterns from data. More parameters generally means the model can learn more complex patterns \u2014 but also requires more compute and memory."
+  },
+  // ── Section 3: How LLMs Work ──
+  {
+    q: "What does 'token' mean in the context of LLMs?",
+    opts: [
+      "A security credential for API requests",
+      "A subword unit \u2014 the basic piece of text the model reads and generates",
+      "A complete sentence the model processes at once",
+      "A unit of GPU memory used during training"
+    ],
+    ans: 1,
+    explanation: "LLMs don't process raw characters or whole words \u2014 they use a tokenizer to break text into subword units called tokens. A typical vocabulary has 30K\u2013100K tokens. Common words may be a single token, while rare words get split into multiple tokens. This is why pricing and context limits are measured in tokens, not words."
+  },
+  {
+    q: "How does an LLM generate a paragraph of text?",
+    opts: [
+      "It retrieves pre-written paragraphs from training data",
+      "It generates all words simultaneously in one step",
+      "It predicts one token at a time, appends it to the context, and repeats (autoregression)",
+      "It translates the prompt into a different language and back"
+    ],
+    ans: 2,
+    explanation: "LLMs use autoregression: they take the input, predict the most likely next token from their vocabulary (which may contain 50,000+ subwords), append that token to the context, and repeat the process until a stopping condition is met."
+  },
+  {
+    q: "What does the 'temperature' parameter control when using an LLM?",
+    opts: [
+      "The speed at which the model generates tokens",
+      "How many parameters the model uses per prediction",
+      "The randomness of the output \u2014 lower = more deterministic, higher = more creative",
+      "The maximum number of tokens the model can process"
+    ],
+    ans: 2,
+    explanation: "Temperature controls the probability distribution over the vocabulary. At temperature 0, the model always picks the highest-probability token (deterministic). At temperature 1, it samples more broadly (creative). Above 1, outputs become increasingly random and chaotic."
+  },
+  {
+    q: "An LLM with a 200K context window receives a 150K-token prompt. A user wants to add a 100K-token document. What happens?",
+    opts: [
+      "The model automatically compresses both inputs to fit",
+      "The combined input exceeds the context window \u2014 you'd need to split or summarize",
+      "The model processes both sequentially like an RNN",
+      "Context window only affects output length, not input"
+    ],
+    ans: 1,
+    explanation: "The context window is the maximum number of tokens the model can 'see' at once \u2014 both input and output must fit within it. At 150K + 100K = 250K tokens, the combined input exceeds a 200K window. You would need to chunk, summarize, or use a model with a larger context window."
+  },
+  {
+    q: "What is a 'hallucination' in the context of LLMs?",
+    opts: [
+      "When the model times out",
+      "When the model generates confident-sounding text that is factually wrong or made up",
+      "When the model refuses to answer",
+      "When the model generates text in the wrong language"
+    ],
+    ans: 1,
+    explanation: "LLMs predict the most likely next token based on patterns \u2014 they don't 'know' facts or verify truth. This means they can generate plausible-sounding but entirely false information with high confidence. Hallucination is one of the biggest challenges in deploying LLMs, which is why techniques like RAG (grounding answers in real documents) are so important."
+  },
+  // ── Section 4: Using LLMs in Practice ──
+  {
+    q: "What is the difference between 'fine-tuning' and 'prompting' when adapting an LLM?",
+    opts: [
+      "Fine-tuning changes the model's weights; prompting provides instructions at inference time without modifying the model",
+      "Prompting is more expensive than fine-tuning",
+      "Fine-tuning only works with open-source models; prompting only with closed-source",
+      "No practical difference \u2014 both produce identical results"
+    ],
+    ans: 0,
+    explanation: "Prompting (including few-shot examples and system instructions) guides the model at inference time \u2014 the model's weights stay the same. Fine-tuning actually updates the model's parameters on new data, permanently changing its behavior. Prompting is faster and cheaper to iterate on; fine-tuning is used when you need consistent domain-specific behavior that prompting alone can't achieve."
+  },
+  {
+    q: "What is RAG (Retrieval-Augmented Generation) and why is it used?",
+    opts: [
+      "A technique to make models generate longer outputs",
+      "A method that retrieves external documents and feeds them into the prompt so the LLM can answer with up-to-date or private information",
+      "A training technique that replaces RLHF",
+      "A way to compress LLM parameters"
+    ],
+    ans: 1,
+    explanation: "LLMs only know what was in their training data (which has a cutoff date) and cannot access private company data. RAG solves this by first searching a knowledge base (using embeddings and vector databases) for relevant documents, then including those documents in the prompt so the LLM can generate accurate, grounded answers. It's one of the most important patterns in Gen AI engineering."
+  },
+  {
+    q: "What does 'inference' mean in the context of deploying ML models?",
+    opts: [
+      "Training a model on new data",
+      "Using a trained model to make predictions on new, unseen inputs",
+      "Evaluating which architecture to use",
+      "Collecting and cleaning data"
+    ],
+    ans: 1,
+    explanation: "Inference is the 'using' phase \u2014 after a model is trained, you feed it new inputs and it produces outputs (predictions, text, classifications). When you chat with ChatGPT, every response is an inference. Training is expensive and done once (or periodically); inference happens every time someone uses the model."
+  },
+  {
+    q: "K-Means, DBSCAN, and PCA are all unsupervised techniques. What separates K-Means/DBSCAN from PCA?",
+    opts: [
+      "K-Means and DBSCAN require labeled data; PCA does not",
+      "K-Means and DBSCAN are clustering methods; PCA is dimensionality reduction that compresses features while preserving variance",
+      "PCA is supervised; the others are unsupervised",
+      "K-Means and DBSCAN only work on images; PCA only on text"
+    ],
+    ans: 1,
+    explanation: "Clustering (K-Means, DBSCAN) groups data points into meaningful segments, while dimensionality reduction (PCA, t-SNE/UMAP) reduces the number of features \u2014 for example, compressing 50 dimensions down to 2 for visualization. All three are unsupervised and require no labels."
+  },
+  {
+    q: "A spam filter classifies emails as 'spam' or 'not spam.' What type of ML task is this?",
+    opts: ["Regression", "Binary classification", "Clustering", "Dimensionality reduction"],
+    ans: 1,
+    explanation: "Binary classification predicts one of two categories. A spam filter takes an email (input) and predicts one of two labels: spam or not spam. This is supervised learning because the model is trained on labeled examples of both categories."
+  },
+  // ── Section 5: Industry & Applications ──
+  {
+    q: "What distinguishes a Gen AI Engineer from an ML Researcher?",
+    opts: [
+      "A Gen AI Engineer invents new architectures; an ML Researcher builds applications",
+      "A Gen AI Engineer builds applications using existing AI models; an ML Researcher designs new architectures",
+      "They are the same role with different titles",
+      "A Gen AI Engineer only uses open-source; an ML Researcher only uses closed-source"
+    ],
+    ans: 1,
+    explanation: "A Gen AI Engineer focuses on building AI-powered applications \u2014 RAG pipelines, chatbots, agents, prompt engineering, and deployment. An ML Researcher (typically PhD-level, at labs like OpenAI or DeepMind) designs new model architectures, trains foundation models from scratch, and publishes research papers."
+  },
+  {
+    q: "A healthcare startup needs an AI chatbot for sensitive patient data with strict privacy regulations. Which approach is most appropriate?",
+    opts: [
+      "Use GPT-4o since it has the highest benchmark scores",
+      "Use an open-source model on their own infrastructure so data never leaves their servers",
+      "Avoid AI entirely \u2014 privacy and AI are incompatible",
+      "Use whichever model is cheapest regardless of data processing"
+    ],
+    ans: 1,
+    explanation: "When data privacy and regulatory compliance are critical, open-source models (like Llama or DeepSeek) deployed on private infrastructure give full control over where data flows. Closed-source APIs send data to third-party servers, which may not meet healthcare privacy requirements."
+  },
+  {
+    q: "What is the main advantage of open-source LLMs (Llama, Mistral, DeepSeek) over closed-source (GPT-4, Claude)?",
+    opts: [
+      "Open-source models are always more accurate",
+      "Full control \u2014 run on your own servers, modify, fine-tune, keep data private",
+      "Open-source models don't require computing resources",
+      "Open-source models never hallucinate"
+    ],
+    ans: 1,
+    explanation: "Open-source models provide transparency and control: you can inspect the weights, deploy on your own infrastructure (keeping data private), fine-tune for your domain, and avoid vendor lock-in. The trade-off is you need to manage infrastructure and the models may trail the latest closed-source models in benchmarks."
+  },
+  {
+    q: "Why is GPU hardware so important for AI/ML workloads?",
+    opts: [
+      "GPUs have more storage space than CPUs",
+      "GPUs perform thousands of math operations in parallel \u2014 exactly what neural networks need",
+      "GPUs are cheaper than CPUs",
+      "GPUs are the only hardware that can run Python"
+    ],
+    ans: 1,
+    explanation: "Neural networks involve massive matrix multiplications \u2014 multiplying huge grids of numbers together. GPUs were originally designed for rendering graphics (also matrix math) and have thousands of small cores that can do these operations in parallel. A computation that takes hours on a CPU can take minutes on a GPU. This is why companies like NVIDIA are so central to the AI industry."
+  },
+  {
+    q: "A company needs a chatbot deployed in 2 weeks for general customer queries. Best choice: GPT-4o API, Llama 3 self-hosted, or train from scratch?",
+    opts: [
+      "Train from scratch for maximum customization",
+      "Llama 3 on their own servers for full data control",
+      "GPT-4o via API with prompt engineering \u2014 fastest time-to-market",
+      "Wait for a better model to be released"
+    ],
+    ans: 2,
+    explanation: "With a 2-week deadline and general-purpose queries, using a closed-source API with prompt engineering is the fastest path to production \u2014 no infrastructure setup, no training, and state-of-the-art quality out of the box. Open-source self-hosting adds deployment complexity, and training from scratch takes months and millions of dollars. You can always migrate to open-source later if data privacy or cost becomes a concern."
+  }
+];
+
+// ══════════════════════════════════════════════════════════════
+//  STATE
+// ══════════════════════════════════════════════════════════════
+let currentQ = 0;
+let answers = new Array(questions.length).fill(null);
+let userName = "";
+let userEmail = "";
+
+// ══════════════════════════════════════════════════════════════
+//  START
+// ══════════════════════════════════════════════════════════════
+function startQuiz() {
+  userName = document.getElementById("userName").value.trim();
+  userEmail = document.getElementById("userEmail").value.trim();
+  if (!userName || !userEmail) {
+    alert("Please enter your name and email.");
+    return;
+  }
+  document.getElementById("startScreen").classList.add("hidden");
+  document.getElementById("quizScreen").classList.remove("hidden");
+  quizActive = true;
+  renderQuestion();
+}
+
+let quizActive = false;
+
+// Keyboard: Enter on start screen inputs → start quiz
+document.getElementById("userName").addEventListener("keydown", function(e) {
+  if (e.key === "Enter") { e.preventDefault(); document.getElementById("userEmail").focus(); }
+});
+document.getElementById("userEmail").addEventListener("keydown", function(e) {
+  if (e.key === "Enter") { e.preventDefault(); startQuiz(); }
+});
+
+// Keyboard: Enter during quiz → next question / submit
+document.addEventListener("keydown", function(e) {
+  if (!quizActive) return;
+  if (e.key === "Enter" && answers[currentQ] !== null) {
+    e.preventDefault();
+    if (currentQ === questions.length - 1) {
+      submitQuiz();
+    } else {
+      nextQuestion();
+    }
+  }
+});
+
+// ══════════════════════════════════════════════════════════════
+//  RENDER
+// ══════════════════════════════════════════════════════════════
+function getSection(idx) {
+  for (const s of sections) {
+    if (idx >= s.range[0] && idx < s.range[1]) return s.title;
+  }
+  return "";
+}
+
+function renderQuestion() {
+  const q = questions[currentQ];
+  const letters = ["A", "B", "C", "D"];
+  const card = document.getElementById("questionCard");
+
+  let html = `<div class="section-badge">${getSection(currentQ)}</div>`;
+  html += `<h2>Q${currentQ + 1}. ${q.q}</h2>`;
+  html += `<div class="options">`;
+  q.opts.forEach((opt, i) => {
+    const sel = answers[currentQ] === i ? " selected" : "";
+    html += `<div class="option${sel}" onclick="selectOption(${i})">
+      <span class="letter">${letters[i]}</span>
+      <span class="text">${opt}</span>
+    </div>`;
+  });
+  html += `</div>`;
+  card.innerHTML = html;
+
+  // Question number nav
+  const nav = document.getElementById("qNav");
+  let navHtml = "";
+  for (let n = 0; n < questions.length; n++) {
+    let cls = "q-nav-btn";
+    if (n === currentQ) cls += " active";
+    else if (answers[n] !== null) cls += " answered";
+    navHtml += `<button class="${cls}" onclick="jumpTo(${n})">${n + 1}</button>`;
+  }
+  nav.innerHTML = navHtml;
+
+  // Progress
+  document.getElementById("progressLabel").textContent = `Question ${currentQ + 1} of ${questions.length}`;
+  document.getElementById("sectionLabel").textContent = getSection(currentQ);
+  document.getElementById("progressFill").style.width = ((currentQ + 1) / questions.length * 100) + "%";
+
+  // Nav buttons
+  document.getElementById("prevBtn").style.visibility = currentQ === 0 ? "hidden" : "visible";
+  const nextBtn = document.getElementById("nextBtn");
+  if (currentQ === questions.length - 1) {
+    nextBtn.textContent = "Submit Quiz";
+    nextBtn.onclick = submitQuiz;
+  } else {
+    nextBtn.textContent = "Next";
+    nextBtn.onclick = nextQuestion;
+  }
+}
+
+function selectOption(idx) {
+  answers[currentQ] = idx;
+  renderQuestion();
+}
+
+function jumpTo(idx) {
+  currentQ = idx;
+  renderQuestion();
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+function nextQuestion() {
+  if (answers[currentQ] === null) {
+    alert("Please select an answer before continuing.");
+    return;
+  }
+  if (currentQ < questions.length - 1) {
+    currentQ++;
+    renderQuestion();
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+}
+
+function prevQuestion() {
+  if (currentQ > 0) {
+    currentQ--;
+    renderQuestion();
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+}
+
+// ══════════════════════════════════════════════════════════════
+//  SUBMIT
+// ══════════════════════════════════════════════════════════════
+function submitQuiz() {
+  if (answers[currentQ] === null) {
+    alert("Please select an answer before submitting.");
+    return;
+  }
+  // Check all answered
+  const unanswered = answers.findIndex(a => a === null);
+  if (unanswered !== -1) {
+    alert(`Please answer Question ${unanswered + 1} before submitting.`);
+    currentQ = unanswered;
+    renderQuestion();
+    return;
+  }
+
+  if (!confirm("Submit your quiz? You won't be able to change answers.")) return;
+
+  quizActive = false;
+
+  // Grade
+  const results = questions.map((q, i) => answers[i] === q.ans);
+  const score = results.filter(Boolean).length;
+
+  // Send to Google Sheets
+  sendResults(results, score);
+
+  // Show results
+  showResults(results, score);
+}
+
+function sendResults(results, score) {
+  if (SCRIPT_URL === "YOUR_APPS_SCRIPT_WEB_APP_URL_HERE") {
+    console.warn("No Apps Script URL configured — results not saved to sheet.");
+    return;
+  }
+  fetch(SCRIPT_URL, {
+    method: "POST",
+    mode: "no-cors",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      name: userName,
+      email: userEmail,
+      results: results,
+      score: score,
+      total: questions.length
+    })
+  }).catch(err => console.error("Failed to save results:", err));
+}
+
+// ══════════════════════════════════════════════════════════════
+//  RESULTS
+// ══════════════════════════════════════════════════════════════
+function showResults(results, score) {
+  document.getElementById("quizScreen").classList.add("hidden");
+  const container = document.getElementById("resultsScreen");
+  container.classList.remove("hidden");
+
+  const pct = Math.round((score / questions.length) * 100);
+  const tier = pct >= 80 ? "high" : pct >= 50 ? "mid" : "low";
+  const message = pct >= 80 ? "Excellent work!" : pct >= 50 ? "Good effort \u2014 review the topics you missed." : "Keep studying \u2014 review the explanations below.";
+
+  let html = `
+    <div class="score-circle score-${tier}">
+      <span class="number">${score}/${questions.length}</span>
+      <span class="label">${pct}%</span>
+    </div>
+    <h1>${message}</h1>
+    <p class="results-subtitle">${userName} &bull; ${userEmail}</p>
+    <div class="review-list">
+  `;
+
+  const letters = ["A", "B", "C", "D"];
+  questions.forEach((q, i) => {
+    const correct = results[i];
+    const cls = correct ? "correct" : "incorrect";
+    const status = correct ? "\u2713 Correct" : "\u2717 Incorrect";
+    html += `<div class="review-item ${cls}">`;
+    html += `<div class="q-title">Q${i + 1}. ${q.q}</div>`;
+    html += `<div class="status-badge ${cls}">${status}</div>`;
+    html += `<div class="your-answer"><strong>Your answer:</strong> ${letters[answers[i]]} \u2014 ${q.opts[answers[i]]}</div>`;
+    if (!correct) {
+      html += `<div class="correct-answer"><strong>Correct answer:</strong> ${letters[q.ans]} \u2014 ${q.opts[q.ans]}</div>`;
+    }
+    html += `<div class="explanation"><strong>Explanation:</strong> ${q.explanation}</div>`;
+    html += `</div>`;
+  });
+
+  html += `</div>`;
+  container.innerHTML = html;
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+</script>
+</body>
+</html>
