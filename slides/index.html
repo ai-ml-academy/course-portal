@@ -53,6 +53,12 @@ header p { color: var(--slate-500); font-size: 0.95rem; }
 }
 .card .info h3 { font-size: 0.95rem; font-weight: 600; }
 .card .info p { font-size: 0.8rem; color: var(--slate-500); margin-top: 0.1rem; }
+.section-title {
+  font-size: 1rem; font-weight: 700; color: var(--slate-700);
+  margin-top: 2rem; margin-bottom: 0.75rem; padding-bottom: 0.4rem;
+  border-bottom: 2px solid var(--slate-200);
+}
+.section-title:first-of-type { margin-top: 0; }
 footer {
   text-align: center; color: var(--slate-500); font-size: 0.8rem;
   margin-top: 3rem; padding-top: 1.5rem; border-top: 1px solid var(--slate-200);
@@ -67,6 +73,39 @@ footer {
     <p>Lecture slide decks for each class</p>
   </header>
 
+  <div class="section-title">Python Fundamentals</div>
+  <div class="card-grid">
+    <a class="card" href="python-01/">
+      <div class="num">1</div>
+      <div class="info">
+        <h3>Python Fundamentals — Class 1</h3>
+        <p>Variables, data types, control flow, functions</p>
+      </div>
+    </a>
+    <a class="card" href="python-02/">
+      <div class="num">2</div>
+      <div class="info">
+        <h3>Python Fundamentals — Class 2</h3>
+        <p>Data structures, file I/O, error handling, OOP basics</p>
+      </div>
+    </a>
+    <a class="card" href="python-03/">
+      <div class="num">3</div>
+      <div class="info">
+        <h3>NumPy &amp; Pandas</h3>
+        <p>Arrays, DataFrames, data manipulation, analysis workflows</p>
+      </div>
+    </a>
+    <a class="card" href="python-advanced/">
+      <div class="num">4</div>
+      <div class="info">
+        <h3>Python — Advanced Topics</h3>
+        <p>Decorators, generators, context managers, advanced OOP</p>
+      </div>
+    </a>
+  </div>
+
+  <div class="section-title">Gen AI Engineer</div>
   <div class="card-grid">
     <a class="card" href="class-01/">
       <div class="num">1</div>
@@ -75,7 +114,17 @@ footer {
         <p>AI history, ML types, neural networks, transformers, LLM pipeline</p>
       </div>
     </a>
-    <!-- Add more slides here -->
+  </div>
+
+  <div class="section-title">Tools</div>
+  <div class="card-grid">
+    <a class="card" href="git/">
+      <div class="num">G</div>
+      <div class="info">
+        <h3>Git — From Zero to Confident</h3>
+        <p>Version control, branches, merging, collaboration workflows</p>
+      </div>
+    </a>
   </div>
 
   <footer>AI/ML Academy &copy; 2026</footer>

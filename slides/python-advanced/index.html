@@ -1,0 +1,1340 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Python — Advanced Topics</title>
+<style>
+  :root {
+    --blue: #3B82F6;
+    --blue-dark: #1E40AF;
+    --green: #10B981;
+    --green-light: #D1FAE5;
+    --gray-light: #F3F4F6;
+    --gray-mid: #6B7280;
+    --gray-border: #D1D5DB;
+    --amber: #F59E0B;
+    --amber-light: #FEF3C7;
+    --red: #EF4444;
+    --red-light: #FEE2E2;
+    --purple: #8B5CF6;
+    --purple-light: #EDE9FE;
+    --blue-light: #DBEAFE;
+    --text-dark: #1F2937;
+    --teal: #14B8A6;
+    --teal-light: #CCFBF1;
+    --pink: #EC4899;
+    --pink-light: #FCE7F3;
+    --orange: #F97316;
+    --orange-light: #FFF7ED;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    color: var(--text-dark);
+    background: #F9FAFB;
+    line-height: 1.5;
+  }
+
+  .slide {
+    min-height: 100vh;
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 60px 50px;
+    background: white;
+    border-bottom: 3px solid var(--gray-border);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  .slide-number {
+    font-size: 0.7em;
+    color: var(--gray-mid);
+    margin-bottom: 8px;
+    font-weight: 600;
+  }
+
+  h1 {
+    font-size: 2.8em;
+    color: var(--blue-dark);
+    font-weight: 800;
+  }
+  h2 {
+    font-size: 2em;
+    color: var(--blue-dark);
+    font-weight: 700;
+    margin-bottom: 12px;
+  }
+  .subtitle {
+    font-size: 1.2em;
+    color: var(--gray-mid);
+    margin-top: 8px;
+  }
+  .bottom-text {
+    margin-top: 24px;
+    font-size: 1em;
+    color: var(--blue-dark);
+    font-weight: 600;
+    font-style: italic;
+  }
+  .footer-text {
+    margin-top: 16px;
+    font-size: 0.85em;
+    color: var(--gray-mid);
+  }
+
+  code {
+    background: var(--gray-light);
+    border-radius: 4px;
+    padding: 0.1em 0.4em;
+    font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+    font-size: 0.9em;
+    border: 1px solid var(--gray-border);
+  }
+
+  .bullet-list {
+    list-style: none;
+    padding: 0;
+    margin: 12px 0 0 0;
+  }
+  .bullet-list li {
+    font-size: 0.9em;
+    padding: 3px 0;
+  }
+
+  /* ========== Pseudo code block ========== */
+  .pseudo-block {
+    background: var(--gray-light);
+    border-radius: 12px;
+    padding: 16px 20px;
+    border: 1px solid var(--gray-border);
+    font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+    font-size: 0.9em;
+    line-height: 1.7;
+    margin: 12px 0;
+    max-width: 600px;
+  }
+  .pseudo-block .kw { color: var(--blue); font-weight: 700; }
+  .pseudo-block .fn { color: var(--amber); font-weight: 700; }
+  .pseudo-block .str { color: var(--green); }
+  .pseudo-block .comment { color: var(--gray-mid); }
+  .pseudo-block .num { color: var(--purple); }
+  .pseudo-block .err { color: var(--red); font-weight: 700; }
+
+  /* ========== Two Panel ========== */
+  .two-panel {
+    display: flex;
+    gap: 24px;
+    margin-top: 16px;
+  }
+  .panel {
+    flex: 1;
+    border-radius: 16px;
+    padding: 20px;
+  }
+  .panel h3 {
+    font-size: 1.05em;
+    margin-bottom: 12px;
+    color: var(--text-dark);
+  }
+  .panel-bad {
+    background: #FEF2F2;
+    border: 2px dashed var(--red);
+  }
+  .panel-good {
+    background: #F0FDF4;
+    border: 2px solid var(--green);
+  }
+
+  /* ========== Compare panels ========== */
+  .compare-panels {
+    display: flex;
+    gap: 20px;
+    margin: 16px 0;
+    align-items: stretch;
+  }
+  .compare-arrow {
+    display: flex;
+    align-items: center;
+    font-size: 2em;
+    color: var(--blue);
+    flex-shrink: 0;
+  }
+  .compare-box {
+    flex: 1;
+    border-radius: 14px;
+    padding: 16px 20px;
+  }
+  .compare-before {
+    background: var(--gray-light);
+    border: 2px solid var(--gray-border);
+  }
+  .compare-after {
+    background: #F0FDF4;
+    border: 2px solid var(--green);
+  }
+  .compare-box h4 {
+    font-size: 0.9em;
+    margin: 0 0 10px 0;
+  }
+
+  /* ========== Method grid ========== */
+  .method-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin: 16px 0;
+  }
+  .method-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: var(--gray-light);
+    border-radius: 10px;
+    padding: 10px 14px;
+    border: 1px solid var(--gray-border);
+  }
+  .method-name {
+    font-family: monospace;
+    font-weight: 700;
+    font-size: 0.9em;
+    white-space: nowrap;
+    color: var(--blue-dark);
+  }
+  .method-desc {
+    font-size: 0.8em;
+    color: var(--gray-mid);
+  }
+
+  /* ========== Vocab table ========== */
+  .vocab-table {
+    width: 100%;
+    margin: 16px 0;
+    border-collapse: collapse;
+    font-size: 0.9em;
+  }
+  .vocab-table th {
+    background: var(--blue-dark);
+    color: white;
+    padding: 8px 12px;
+    text-align: left;
+  }
+  .vocab-table td {
+    padding: 8px 12px;
+    border-bottom: 1px solid var(--gray-border);
+  }
+  .vocab-table tr:nth-child(even) { background: var(--gray-light); }
+
+  /* ========== Flow diagram ========== */
+  .flow-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 16px 0;
+    gap: 0;
+  }
+  .flow-node {
+    border-radius: 12px;
+    padding: 10px 24px;
+    font-weight: 700;
+    font-size: 0.95em;
+    text-align: center;
+    border: 2px solid;
+    min-width: 200px;
+  }
+  .flow-arrow {
+    font-size: 1.4em;
+    color: var(--gray-mid);
+    margin: 4px 0;
+  }
+  .flow-row {
+    display: flex;
+    gap: 20px;
+    align-items: center;
+  }
+  .flow-label {
+    font-size: 0.75em;
+    color: var(--gray-mid);
+    font-weight: 600;
+  }
+
+  /* ========== Log level bar ========== */
+  .log-levels {
+    display: flex;
+    gap: 0;
+    margin: 16px 0;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 2px solid var(--gray-border);
+  }
+  .log-level {
+    flex: 1;
+    padding: 14px 8px;
+    text-align: center;
+    font-weight: 700;
+    font-size: 0.85em;
+    border-right: 2px solid rgba(255,255,255,0.3);
+  }
+  .log-level:last-child { border-right: none; }
+  .log-level .level-name { font-size: 0.95em; }
+  .log-level .level-desc { font-weight: 400; font-size: 0.7em; margin-top: 4px; opacity: 0.85; }
+
+  /* ========== Regex pattern box ========== */
+  .pattern-grid {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    gap: 8px 16px;
+    margin: 16px 0;
+    align-items: center;
+  }
+  .pattern-code {
+    font-family: monospace;
+    font-weight: 700;
+    font-size: 0.95em;
+    color: var(--blue-dark);
+    background: var(--blue-light);
+    padding: 4px 10px;
+    border-radius: 6px;
+  }
+  .pattern-desc {
+    font-size: 0.85em;
+  }
+  .pattern-example {
+    font-family: monospace;
+    font-size: 0.8em;
+    color: var(--gray-mid);
+  }
+
+  /* ========== Annotated code ========== */
+  .annotated-code {
+    max-width: 750px;
+    margin: 12px auto;
+  }
+  .code-block-annotated {
+    background: var(--gray-light);
+    border-radius: 12px;
+    padding: 16px 20px;
+    border: 1px solid var(--gray-border);
+  }
+  .code-line {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 4px 0;
+  }
+  .code-text {
+    font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+    font-size: 0.9em;
+    white-space: pre;
+    flex: 1;
+  }
+  .annotation {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--amber-light);
+    border: 1px solid var(--amber);
+    border-radius: 6px;
+    padding: 3px 10px;
+    font-size: 0.75em;
+    white-space: nowrap;
+  }
+  .ann-num {
+    background: var(--amber);
+    color: white;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.8em;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+
+  /* ========== Memory visual ========== */
+  .memory-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 8px 0;
+  }
+  .mem-var {
+    font-family: monospace;
+    font-weight: 700;
+    font-size: 0.95em;
+    min-width: 50px;
+    text-align: right;
+    color: var(--blue-dark);
+  }
+  .mem-arrow {
+    color: var(--gray-mid);
+    font-size: 1.2em;
+  }
+  .mem-box {
+    border-radius: 8px;
+    padding: 6px 14px;
+    font-family: monospace;
+    font-size: 0.9em;
+    border: 2px solid;
+  }
+
+  /* ========== Conveyor / generator visual ========== */
+  .gen-visual {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    margin: 16px 0;
+  }
+  .gen-item {
+    width: 48px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 0.95em;
+    border-radius: 10px;
+    border: 2px solid;
+  }
+  .gen-ready { background: var(--blue-light); border-color: var(--blue); color: var(--blue-dark); }
+  .gen-yielded { background: var(--green-light); border-color: var(--green); color: #065F46; }
+  .gen-waiting { background: var(--gray-light); border-color: var(--gray-border); color: var(--gray-mid); }
+  .gen-arrow { font-size: 1em; color: var(--gray-mid); }
+
+  /* ========== Wrapper / decorator visual ========== */
+  .wrapper-visual {
+    display: flex;
+    justify-content: center;
+    margin: 16px 0;
+  }
+  .wrapper-outer {
+    border: 3px solid var(--amber);
+    border-radius: 20px;
+    padding: 20px 30px;
+    background: var(--amber-light);
+    text-align: center;
+  }
+  .wrapper-inner {
+    border: 3px solid var(--blue);
+    border-radius: 14px;
+    padding: 14px 24px;
+    background: var(--blue-light);
+    font-family: monospace;
+    font-weight: 700;
+    font-size: 1em;
+    color: var(--blue-dark);
+  }
+  .wrapper-label {
+    font-size: 0.8em;
+    font-weight: 600;
+    margin: 6px 0 0 0;
+  }
+
+  /* ========== Recap cards ========== */
+  .recap-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 12px;
+    margin: 16px 0;
+  }
+  .recap-card {
+    border-radius: 12px;
+    padding: 14px;
+    text-align: center;
+    border: 2px solid;
+  }
+  .recap-card .icon { font-size: 1.6em; }
+  .recap-card h4 { font-size: 0.9em; margin: 4px 0; }
+  .recap-card p { font-size: 0.75em; color: var(--gray-mid); margin: 0; }
+</style>
+</head>
+<body>
+
+<!-- ==================== SLIDE 1: Title ==================== -->
+<div class="slide" style="text-align:center;">
+  <div>
+    <div class="slide-number">1 / 18</div>
+    <h1>Python — Advanced Topics</h1>
+    <p class="subtitle">Beyond the Basics</p>
+    <p style="margin-top:24px; font-size:1em; color:var(--gray-mid);">
+      Strings · Regex · Error Handling · Logging · Mutability · Collections · Generators · Decorators · Context Managers · Dataclasses
+    </p>
+  </div>
+</div>
+
+<!-- ==================== SLIDE 2: String Mastery ==================== -->
+<div class="slide">
+  <div class="slide-number">2 / 18</div>
+  <h2>String Mastery</h2>
+  <p style="font-size:1em; margin-bottom:8px;">
+    You already know strings hold text. But in real projects — cleaning data, parsing file paths, formatting
+    reports — you need to <strong>slice, split, reshape, and format</strong> strings fluently. These four methods
+    handle 90% of all text work.
+  </p>
+  <div class="method-grid">
+    <div class="method-item">
+      <div class="method-name">.split(sep)</div>
+      <div class="method-desc">Chop into a list of parts</div>
+    </div>
+    <div class="method-item">
+      <div class="method-name">.join(list)</div>
+      <div class="method-desc">Glue a list back into a string</div>
+    </div>
+    <div class="method-item">
+      <div class="method-name">.strip()</div>
+      <div class="method-desc">Remove leading/trailing whitespace</div>
+    </div>
+    <div class="method-item">
+      <div class="method-name">.replace(old, new)</div>
+      <div class="method-desc">Swap all occurrences</div>
+    </div>
+    <div class="method-item">
+      <div class="method-name">.lower() / .upper()</div>
+      <div class="method-desc">Change case</div>
+    </div>
+    <div class="method-item">
+      <div class="method-name">.startswith()</div>
+      <div class="method-desc">Check how a string begins</div>
+    </div>
+  </div>
+  <div class="pseudo-block" style="max-width:580px; margin:8px auto;">
+    <span class="comment"># Real-world example: clean a messy CSV row</span><br>
+    raw = <span class="str">"  Alice , 92 , A , pass  "</span><br>
+    fields = [f.strip() <span class="kw">for</span> f <span class="kw">in</span> raw.split(<span class="str">","</span>)]<br>
+    <span class="comment"># → ["Alice", "92", "A", "pass"]</span><br><br>
+    <span class="comment"># Clean a column name for Python</span><br>
+    col = <span class="str">"Annual Income ($)"</span><br>
+    clean = col.strip().lower().replace(<span class="str">" "</span>, <span class="str">"_"</span>)<br>
+    <span class="comment"># → "annual_income_($)"</span>
+  </div>
+  <p class="footer-text">Strings are <strong>immutable</strong> — every method returns a new string. The original never changes. That's why you can safely chain: <code>.strip().lower().replace()</code></p>
+</div>
+
+<!-- ==================== SLIDE 3: String Formatting ==================== -->
+<div class="slide">
+  <div class="slide-number">3 / 18</div>
+  <h2>String Formatting — f-strings</h2>
+  <p style="font-size:1em; margin-bottom:8px;">
+    f-strings go far beyond basic <code>f"Hello {name}"</code>. You can control <strong>precision</strong>,
+    <strong>alignment</strong>, and <strong>padding</strong> — essential for clean output in reports, logs, and tables.
+  </p>
+  <table class="vocab-table" style="max-width:580px;">
+    <tr><th>Syntax</th><th>What it does</th><th>Example</th><th>Output</th></tr>
+    <tr><td><code>{x:.2f}</code></td><td>2 decimal places</td><td><code>f"{3.14159:.2f}"</code></td><td><code>3.14</code></td></tr>
+    <tr><td><code>{x:.1%}</code></td><td>As percentage</td><td><code>f"{0.915:.1%}"</code></td><td><code>91.5%</code></td></tr>
+    <tr><td><code>{x:>10}</code></td><td>Right-align, width 10</td><td><code>f"{'hi':>10}"</code></td><td><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;hi</code></td></tr>
+    <tr><td><code>{x:<10}</code></td><td>Left-align, width 10</td><td><code>f"{'hi':<10}"</code></td><td><code>hi&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code></td></tr>
+    <tr><td><code>{x:,}</code></td><td>Thousands separator</td><td><code>f"{1000000:,}"</code></td><td><code>1,000,000</code></td></tr>
+    <tr><td><code>{x:06d}</code></td><td>Zero-padded integer</td><td><code>f"{42:06d}"</code></td><td><code>000042</code></td></tr>
+  </table>
+  <div class="pseudo-block" style="max-width:580px; margin:8px auto;">
+    <span class="comment"># Formatted table output</span><br>
+    models = [(<span class="str">"rf"</span>, <span class="num">0.91</span>), (<span class="str">"xgb"</span>, <span class="num">0.94</span>), (<span class="str">"lr"</span>, <span class="num">0.85</span>)]<br><br>
+    <span class="kw">for</span> name, score <span class="kw">in</span> models:<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;<span class="fn">print</span>(f<span class="str">"  {name:&lt;10s} {score:.1%}"</span>)<br><br>
+    <span class="comment">#   rf         91.0%</span><br>
+    <span class="comment">#   xgb        94.0%</span><br>
+    <span class="comment">#   lr         85.0%</span>
+  </div>
+  <p class="bottom-text">"f-strings can also contain expressions: <code>f\"Sum: {sum(nums)}\"</code> — any valid Python expression works inside the braces."</p>
+</div>
+
+<!-- ==================== SLIDE 4: Regular Expressions ==================== -->
+<div class="slide">
+  <div class="slide-number">4 / 18</div>
+  <h2>Regular Expressions</h2>
+  <p style="font-size:1em; margin-bottom:8px;">
+    String methods like <code>.split()</code> and <code>.replace()</code> work for simple text. But when you need
+    to find <strong>patterns</strong> — "any email address", "all 4-digit numbers", "text between quotes" —
+    you need <strong>regex</strong>. Think of it as a <strong>search language</strong> for text.
+  </p>
+  <p style="font-size:0.9em; color:var(--gray-mid); margin-bottom:12px;">
+    Python's <code>re</code> module gives you pattern matching superpowers. Here are the building blocks:
+  </p>
+  <div class="pattern-grid">
+    <div class="pattern-code">\d</div><div class="pattern-desc">Any digit (0–9)</div><div class="pattern-example">"item42" → "4", "2"</div>
+    <div class="pattern-code">\w</div><div class="pattern-desc">Any word character (letter, digit, _)</div><div class="pattern-example">"hi_2" → "h","i","_","2"</div>
+    <div class="pattern-code">\s</div><div class="pattern-desc">Any whitespace (space, tab, newline)</div><div class="pattern-example">"a b" → " "</div>
+    <div class="pattern-code">.</div><div class="pattern-desc">Any character (except newline)</div><div class="pattern-example">"abc" → "a","b","c"</div>
+    <div class="pattern-code">+</div><div class="pattern-desc">One or more of the previous</div><div class="pattern-example">\d+ matches "42", "7"</div>
+    <div class="pattern-code">*</div><div class="pattern-desc">Zero or more of the previous</div><div class="pattern-example">\d* matches "", "42"</div>
+    <div class="pattern-code">?</div><div class="pattern-desc">Zero or one (optional)</div><div class="pattern-example">colou?r → "color", "colour"</div>
+    <div class="pattern-code">[abc]</div><div class="pattern-desc">Any one of these characters</div><div class="pattern-example">[aeiou] matches vowels</div>
+    <div class="pattern-code">^...$</div><div class="pattern-desc">Start and end of string</div><div class="pattern-example">^\d+$ = "only digits"</div>
+  </div>
+  <p class="bottom-text">"Regex is write-once, read-never — always add a comment explaining what your pattern does."</p>
+</div>
+
+<!-- ==================== SLIDE 5: Regex — The re Module ==================== -->
+<div class="slide">
+  <div class="slide-number">5 / 18</div>
+  <h2>Regex — The <code>re</code> Module</h2>
+  <p style="font-size:1em; margin-bottom:8px;">
+    You know the pattern syntax — now here's how to use it in Python. The <code>re</code> module gives you
+    four main tools, each for a different job.
+  </p>
+  <div class="method-grid">
+    <div class="method-item">
+      <div class="method-name">re.search()</div>
+      <div class="method-desc">Find first match anywhere</div>
+    </div>
+    <div class="method-item">
+      <div class="method-name">re.match()</div>
+      <div class="method-desc">Match at the start only</div>
+    </div>
+    <div class="method-item">
+      <div class="method-name">re.findall()</div>
+      <div class="method-desc">Find all matches → list</div>
+    </div>
+    <div class="method-item">
+      <div class="method-name">re.sub()</div>
+      <div class="method-desc">Find & replace with pattern</div>
+    </div>
+  </div>
+  <div class="pseudo-block" style="max-width:600px; margin:8px auto;">
+    <span class="kw">import</span> re<br><br>
+    text = <span class="str">"Order #1234 shipped on 2024-03-15"</span><br><br>
+    <span class="comment"># Find all numbers</span><br>
+    re.<span class="fn">findall</span>(r<span class="str">"\d+"</span>, text)<br>
+    <span class="comment"># → ["1234", "2024", "03", "15"]</span><br><br>
+    <span class="comment"># Extract the date</span><br>
+    m = re.<span class="fn">search</span>(r<span class="str">"\d{4}-\d{2}-\d{2}"</span>, text)<br>
+    m.group()&nbsp;&nbsp;<span class="comment"># → "2024-03-15"</span><br><br>
+    <span class="comment"># Replace digits with X</span><br>
+    re.<span class="fn">sub</span>(r<span class="str">"\d"</span>, <span class="str">"X"</span>, text)<br>
+    <span class="comment"># → "Order #XXXX shipped on XXXX-XX-XX"</span>
+  </div>
+  <ul class="bullet-list">
+    <li>• Always use <strong>raw strings</strong> for patterns: <code>r"\d+"</code> — prevents Python from interpreting backslashes</li>
+    <li>• <code>re.search()</code> returns a Match object (or <code>None</code>). Call <code>.group()</code> to get the text</li>
+    <li>• Use <strong>parentheses</strong> for capture groups: <code>r"(\d{4})-(\d{2})-(\d{2})"</code> extracts year, month, day separately</li>
+  </ul>
+</div>
+
+<!-- ==================== SLIDE 6: Error Handling ==================== -->
+<div class="slide">
+  <div class="slide-number">6 / 18</div>
+  <h2>Error Handling</h2>
+  <p style="font-size:1em; margin-bottom:8px;">
+    In real code, things go wrong — files don't exist, APIs time out, users enter garbage. Instead of
+    your program crashing, <code>try/except</code> lets you <strong>catch errors and decide what to do</strong>.
+  </p>
+  <div class="flow-container">
+    <div class="flow-node" style="background:var(--blue-light); border-color:var(--blue); color:var(--blue-dark);">
+      <code>try:</code> run risky code
+    </div>
+    <div class="flow-arrow">↓</div>
+    <div class="flow-row">
+      <div style="text-align:center;">
+        <div class="flow-label">✅ No error</div>
+        <div class="flow-arrow">↓</div>
+        <div class="flow-node" style="background:var(--green-light); border-color:var(--green); color:#065F46; min-width:140px;">
+          <code>else:</code> success
+        </div>
+      </div>
+      <div style="text-align:center;">
+        <div class="flow-label">❌ Error raised</div>
+        <div class="flow-arrow">↓</div>
+        <div class="flow-node" style="background:var(--red-light); border-color:var(--red); color:var(--red); min-width:140px;">
+          <code>except:</code> handle it
+        </div>
+      </div>
+    </div>
+    <div class="flow-arrow">↓</div>
+    <div class="flow-node" style="background:var(--amber-light); border-color:var(--amber); color:#92400E;">
+      <code>finally:</code> always runs (cleanup)
+    </div>
+  </div>
+  <div class="pseudo-block" style="max-width:540px; margin:8px auto;">
+    <span class="kw">try</span>:<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;value = <span class="fn">int</span>(<span class="str">"not_a_number"</span>)<br>
+    <span class="kw">except</span> <span class="err">ValueError</span> <span class="kw">as</span> e:<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;<span class="fn">print</span>(f<span class="str">"Bad input: {e}"</span>)<br>
+    <span class="kw">else</span>:<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;<span class="fn">print</span>(f<span class="str">"Got: {value}"</span>)<br>
+    <span class="kw">finally</span>:<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;<span class="fn">print</span>(<span class="str">"Done."</span>)
+  </div>
+  <p class="footer-text">
+    <code>else</code> runs only if no error occurred. <code>finally</code> runs no matter what — use it for cleanup (closing files, connections).
+  </p>
+</div>
+
+<!-- ==================== SLIDE 7: Error Handling — Custom Exceptions ==================== -->
+<div class="slide">
+  <div class="slide-number">7 / 18</div>
+  <h2>Error Handling — Raising & Custom Exceptions</h2>
+  <p style="font-size:1em; margin-bottom:8px;">
+    You can also <strong>raise your own errors</strong> when something is wrong. And for bigger projects,
+    you can define <strong>custom exception classes</strong> so callers know exactly what failed.
+  </p>
+  <div class="two-panel">
+    <div class="panel" style="background:var(--blue-light); border:2px solid var(--blue);">
+      <h3>Raising errors</h3>
+      <div class="pseudo-block" style="background:rgba(255,255,255,0.7); max-width:100%;">
+        <span class="kw">def</span> <span class="fn">set_age</span>(age):<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">if</span> age < <span class="num">0</span>:<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">raise</span> <span class="err">ValueError</span>(<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="str">"Age can't be negative"</span><br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;)<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">return</span> age
+      </div>
+    </div>
+    <div class="panel" style="background:var(--amber-light); border:2px solid var(--amber);">
+      <h3>Custom exceptions</h3>
+      <div class="pseudo-block" style="background:rgba(255,255,255,0.7); max-width:100%; font-size:0.85em;">
+        <span class="comment"># 1. Define it</span><br>
+        <span class="kw">class</span> <span class="fn">InvalidScoreError</span>(<span class="err">Exception</span>):<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">pass</span><br><br>
+        <span class="comment"># 2. Raise it</span><br>
+        <span class="kw">def</span> <span class="fn">set_score</span>(score):<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">if</span> score > <span class="num">100</span>:<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">raise</span> <span class="fn">InvalidScoreError</span>(<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;f<span class="str">"Score {score} > 100"</span>)<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">return</span> score<br><br>
+        <span class="comment"># 3. Catch it</span><br>
+        <span class="kw">try</span>:<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;<span class="fn">set_score</span>(<span class="num">150</span>)<br>
+        <span class="kw">except</span> <span class="fn">InvalidScoreError</span> <span class="kw">as</span> e:<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;<span class="fn">print</span>(f<span class="str">"Caught: {e}"</span>)
+      </div>
+    </div>
+  </div>
+  <table class="vocab-table" style="max-width:520px; margin:16px auto 0 auto;">
+    <tr><th>Exception</th><th>When it happens</th></tr>
+    <tr><td><code>ValueError</code></td><td>Right type, wrong value ("abc" as int)</td></tr>
+    <tr><td><code>TypeError</code></td><td>Wrong type entirely (adding str + int)</td></tr>
+    <tr><td><code>KeyError</code></td><td>Dict key doesn't exist</td></tr>
+    <tr><td><code>IndexError</code></td><td>List index out of range</td></tr>
+    <tr><td><code>FileNotFoundError</code></td><td>File path doesn't exist</td></tr>
+  </table>
+  <p class="bottom-text">"Catch specific exceptions, not bare <code>except:</code> — otherwise you'll silently swallow bugs."</p>
+</div>
+
+<!-- ==================== SLIDE 8: Logging ==================== -->
+<div class="slide">
+  <div class="slide-number">8 / 18</div>
+  <h2>Logging</h2>
+  <p style="font-size:1em; margin-bottom:8px;">
+    When debugging, <code>print()</code> is tempting. But in any real project it becomes a mess —
+    you can't filter messages, control output, or turn them off in production. Python's built-in
+    <code>logging</code> module solves all of this.
+  </p>
+  <div class="two-panel">
+    <div class="panel panel-bad">
+      <h3>❌ print() problems</h3>
+      <div class="pseudo-block" style="background:rgba(255,255,255,0.7); max-width:100%; font-size:0.85em;">
+        <span class="fn">print</span>(<span class="str">"starting..."</span>)<br>
+        <span class="fn">print</span>(<span class="str">"value:"</span>, x)<br>
+        <span class="fn">print</span>(<span class="str">"ERROR! bad input"</span>)<br>
+        <span class="fn">print</span>(<span class="str">"done"</span>)
+      </div>
+      <ul class="bullet-list" style="margin-top:8px;">
+        <li>• No severity levels</li>
+        <li>• No timestamps</li>
+        <li>• Can't turn off without deleting</li>
+        <li>• All goes to stdout</li>
+      </ul>
+    </div>
+    <div class="panel panel-good">
+      <h3>✅ logging solution</h3>
+      <div class="pseudo-block" style="background:rgba(255,255,255,0.7); max-width:100%; font-size:0.85em;">
+        <span class="kw">import</span> logging<br><br>
+        logging.<span class="fn">info</span>(<span class="str">"Starting..."</span>)<br>
+        logging.<span class="fn">debug</span>(f<span class="str">"value: {x}"</span>)<br>
+        logging.<span class="fn">error</span>(<span class="str">"Bad input"</span>)<br>
+        logging.<span class="fn">info</span>(<span class="str">"Done"</span>)
+      </div>
+      <ul class="bullet-list" style="margin-top:8px;">
+        <li>• Each message has a level</li>
+        <li>• Auto timestamps & context</li>
+        <li>• Filter by severity</li>
+        <li>• Route to files, services, etc.</li>
+      </ul>
+    </div>
+  </div>
+  <p style="font-size:0.95em; font-weight:600; color:var(--blue-dark); margin: 16px 0 8px 0;">
+    Log Levels (low → high severity)
+  </p>
+  <div class="log-levels">
+    <div class="log-level" style="background:var(--gray-light); color:var(--gray-mid);">
+      <div class="level-name">DEBUG</div>
+      <div class="level-desc">Detailed diagnostic</div>
+    </div>
+    <div class="log-level" style="background:var(--blue-light); color:var(--blue-dark);">
+      <div class="level-name">INFO</div>
+      <div class="level-desc">Things working fine</div>
+    </div>
+    <div class="log-level" style="background:var(--amber-light); color:#92400E;">
+      <div class="level-name">WARNING</div>
+      <div class="level-desc">Something unexpected</div>
+    </div>
+    <div class="log-level" style="background:var(--orange-light); color:var(--orange);">
+      <div class="level-name">ERROR</div>
+      <div class="level-desc">Something failed</div>
+    </div>
+    <div class="log-level" style="background:var(--red-light); color:var(--red);">
+      <div class="level-name">CRITICAL</div>
+      <div class="level-desc">App can't continue</div>
+    </div>
+  </div>
+  <div class="pseudo-block" style="max-width:620px; margin:12px auto;">
+    <span class="comment"># Log to console</span><br>
+    logging.<span class="fn">basicConfig</span>(<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;level=logging.INFO,<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;format=<span class="str">"%(asctime)s [%(levelname)s] %(message)s"</span><br>
+    )<br>
+    <span class="comment"># → 2024-03-15 10:30:00 [INFO] Starting...</span><br><br>
+    <span class="comment"># Log to a file (add filename parameter)</span><br>
+    logging.<span class="fn">basicConfig</span>(<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;filename=<span class="str">"app.log"</span>,<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;level=logging.DEBUG,<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;format=<span class="str">"%(asctime)s [%(levelname)s] %(message)s"</span><br>
+    )<br>
+    <span class="comment"># All messages now saved to app.log</span>
+  </div>
+  <p class="footer-text">Rule of thumb: use <code>print()</code> for user-facing output, <code>logging</code> for everything else. Add <code>filename=</code> to save logs to a file instead of the console.</p>
+</div>
+
+<!-- ==================== SLIDE 9: Mutability & Copying ==================== -->
+<div class="slide">
+  <div class="slide-number">9 / 18</div>
+  <h2>Mutability & The Aliasing Trap</h2>
+  <p style="font-size:1em; margin-bottom:8px;">
+    This is the <strong>#1 source of silent bugs</strong> in Python. When you write <code>b = a</code> for a list
+    or dict, you're <em>not</em> making a copy — you're creating a <strong>second name</strong> for the same object.
+    Change one, and the other changes too.
+  </p>
+  <div class="two-panel">
+    <div class="panel panel-bad" style="padding:16px;">
+      <h3>❌ The trap</h3>
+      <div class="pseudo-block" style="background:rgba(255,255,255,0.7); max-width:100%; font-size:0.85em;">
+        a = [<span class="num">1</span>, <span class="num">2</span>, <span class="num">3</span>]<br>
+        b = a&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment"># alias, NOT a copy!</span><br><br>
+        b.append(<span class="num">99</span>)<br>
+        <span class="fn">print</span>(a)&nbsp;&nbsp;&nbsp;<span class="comment"># → [1, 2, 3, 99] 😱</span>
+      </div>
+      <div style="margin-top:10px;">
+        <div class="memory-row">
+          <div class="mem-var">a</div>
+          <div class="mem-arrow">→</div>
+          <div class="mem-box" style="background:var(--red-light); border-color:var(--red);" rowspan="2">[1, 2, 3, 99]</div>
+        </div>
+        <div class="memory-row">
+          <div class="mem-var">b</div>
+          <div class="mem-arrow">↗</div>
+        </div>
+        <p style="font-size:0.75em; color:var(--red); text-align:center; margin-top:4px;">Both point to the SAME object</p>
+      </div>
+    </div>
+    <div class="panel panel-good" style="padding:16px;">
+      <h3>✅ The fix</h3>
+      <div class="pseudo-block" style="background:rgba(255,255,255,0.7); max-width:100%; font-size:0.85em;">
+        a = [<span class="num">1</span>, <span class="num">2</span>, <span class="num">3</span>]<br>
+        b = a.copy()&nbsp;<span class="comment"># new object!</span><br><br>
+        b.append(<span class="num">99</span>)<br>
+        <span class="fn">print</span>(a)&nbsp;&nbsp;&nbsp;<span class="comment"># → [1, 2, 3] ✅</span>
+      </div>
+      <div style="margin-top:10px;">
+        <div class="memory-row">
+          <div class="mem-var">a</div>
+          <div class="mem-arrow">→</div>
+          <div class="mem-box" style="background:var(--green-light); border-color:var(--green);">[1, 2, 3]</div>
+        </div>
+        <div class="memory-row">
+          <div class="mem-var">b</div>
+          <div class="mem-arrow">→</div>
+          <div class="mem-box" style="background:var(--blue-light); border-color:var(--blue);">[1, 2, 3, 99]</div>
+        </div>
+        <p style="font-size:0.75em; color:var(--green); text-align:center; margin-top:4px;">Each has its OWN object</p>
+      </div>
+    </div>
+  </div>
+  <p class="bottom-text">"<code>=</code> shares. <code>.copy()</code> duplicates. Know which one you're doing."</p>
+</div>
+
+<!-- ==================== SLIDE 10: Shallow vs Deep Copy ==================== -->
+<div class="slide">
+  <div class="slide-number">10 / 18</div>
+  <h2>Shallow vs Deep Copy</h2>
+  <p style="font-size:1em; margin-bottom:8px;">
+    <code>.copy()</code> works for flat data. But when you have <strong>nested structures</strong> — lists inside dicts,
+    dicts inside dicts — a shallow copy only copies the outer container. The inner objects are still shared.
+    Use <code>deepcopy()</code> for true independence.
+  </p>
+  <div class="compare-panels">
+    <div class="compare-box compare-before">
+      <h4 style="color:var(--gray-mid);">Shallow copy — inner list shared</h4>
+      <div class="pseudo-block" style="background:rgba(255,255,255,0.7); max-width:100%; font-size:0.85em;">
+        config = {<span class="str">"layers"</span>: [<span class="num">64</span>, <span class="num">32</span>]}<br>
+        exp = config.copy()<br><br>
+        exp[<span class="str">"layers"</span>].append(<span class="num">16</span>)<br>
+        <span class="fn">print</span>(config[<span class="str">"layers"</span>])<br>
+        <span class="comment"># → [64, 32, 16] ← corrupted!</span>
+      </div>
+    </div>
+    <div class="compare-arrow">→</div>
+    <div class="compare-box compare-after">
+      <h4 style="color:#065F46;">Deep copy — fully independent</h4>
+      <div class="pseudo-block" style="background:rgba(255,255,255,0.7); max-width:100%; font-size:0.85em;">
+        <span class="kw">from</span> copy <span class="kw">import</span> deepcopy<br><br>
+        config = {<span class="str">"layers"</span>: [<span class="num">64</span>, <span class="num">32</span>]}<br>
+        exp = <span class="fn">deepcopy</span>(config)<br><br>
+        exp[<span class="str">"layers"</span>].append(<span class="num">16</span>)<br>
+        <span class="fn">print</span>(config[<span class="str">"layers"</span>])<br>
+        <span class="comment"># → [64, 32] ✅ safe</span>
+      </div>
+    </div>
+  </div>
+  <table class="vocab-table" style="max-width:520px; margin:16px auto 0 auto;">
+    <tr><th>Operation</th><th>What it does</th><th>Use when</th></tr>
+    <tr><td><code>b = a</code></td><td>Alias (same object)</td><td>You <em>want</em> both names to share</td></tr>
+    <tr><td><code>b = a.copy()</code></td><td>Shallow (new container, shared contents)</td><td>Flat data (no nesting)</td></tr>
+    <tr><td><code>b = deepcopy(a)</code></td><td>Deep (everything copied)</td><td>Nested data (lists in dicts, etc.)</td></tr>
+  </table>
+  <p class="footer-text">
+    ⚠️ Also beware the <strong>mutable default argument</strong> trap: <code>def f(x=[])</code> shares the same list across all calls. Use <code>def f(x=None)</code> instead.
+  </p>
+</div>
+
+<!-- ==================== SLIDE 11: Collections Module ==================== -->
+<div class="slide">
+  <div class="slide-number">11 / 18</div>
+  <h2>Collections Module</h2>
+  <p style="font-size:1em; margin-bottom:8px;">
+    Python's built-in <code>dict</code> and <code>list</code> handle most things. But certain patterns — grouping,
+    counting, sliding windows — come up so often that the <code>collections</code> module provides
+    <strong>specialized tools</strong> that eliminate boilerplate and prevent bugs.
+  </p>
+  <div class="two-panel" style="gap:16px;">
+    <div class="panel" style="background:var(--blue-light); border:2px solid var(--blue); padding:16px;">
+      <h3 style="font-size:0.95em;"><code>defaultdict</code> — auto-create missing keys</h3>
+      <div class="pseudo-block" style="background:rgba(255,255,255,0.7); max-width:100%; font-size:0.85em;">
+        <span class="kw">from</span> collections <span class="kw">import</span> defaultdict<br><br>
+        groups = <span class="fn">defaultdict</span>(list)<br>
+        <span class="kw">for</span> name, dept <span class="kw">in</span> employees:<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;groups[dept].append(name)<br>
+        <span class="comment"># No KeyError, no if-checks</span>
+      </div>
+      <p style="font-size:0.8em; color:var(--gray-mid); margin-top:6px;">
+        Like a filing cabinet that auto-creates a new folder the first time you use it.
+      </p>
+    </div>
+    <div class="panel" style="background:var(--green-light); border:2px solid var(--green); padding:16px;">
+      <h3 style="font-size:0.95em;"><code>Counter</code> — frequency counting in one line</h3>
+      <div class="pseudo-block" style="background:rgba(255,255,255,0.7); max-width:100%; font-size:0.85em;">
+        <span class="kw">from</span> collections <span class="kw">import</span> Counter<br><br>
+        labels = [<span class="str">"cat"</span>, <span class="str">"dog"</span>, <span class="str">"cat"</span>, <span class="str">"bird"</span>]<br>
+        counts = <span class="fn">Counter</span>(labels)<br>
+        counts.most_common(<span class="num">2</span>)<br>
+        <span class="comment"># → [("cat", 2), ("dog", 1)]</span>
+      </div>
+      <p style="font-size:0.8em; color:var(--gray-mid); margin-top:6px;">
+        Returns 0 for missing items (no KeyError), supports arithmetic between Counters.
+      </p>
+    </div>
+  </div>
+  <p class="bottom-text">"<code>defaultdict</code> for grouping. <code>Counter</code> for counting. Reach for these before writing manual loops."</p>
+</div>
+
+<!-- ==================== SLIDE 12: Iterators & Generators ==================== -->
+<div class="slide">
+  <div class="slide-number">12 / 18</div>
+  <h2>Iterators & Generators</h2>
+  <p style="font-size:1em; margin-bottom:8px;">
+    A list stores <strong>everything in memory at once</strong>. A generator produces items <strong>one at a time, on demand</strong>
+    — like a conveyor belt that only makes the next item when you ask for it. This is called
+    <strong>lazy evaluation</strong>, and it's how you process data that's too large to fit in memory.
+  </p>
+  <p style="font-size:0.9em; color:var(--gray-mid); margin-bottom:10px;">
+    The <code>yield</code> keyword pauses the function and hands back a value. Next call, it resumes where it left off.
+  </p>
+  <div class="gen-visual">
+    <div style="font-size:0.8em; color:var(--gray-mid); margin-right:8px;">function →</div>
+    <div class="gen-item gen-yielded">1</div>
+    <div class="gen-arrow">→</div>
+    <div class="gen-item gen-yielded">2</div>
+    <div class="gen-arrow">→</div>
+    <div class="gen-item gen-yielded">3</div>
+    <div class="gen-arrow">→</div>
+    <div class="gen-item gen-waiting">?</div>
+    <div class="gen-arrow">→</div>
+    <div class="gen-item gen-waiting">?</div>
+    <div style="font-size:0.8em; color:var(--gray-mid); margin-left:8px;">…produced on demand</div>
+  </div>
+  <div class="two-panel" style="gap:16px;">
+    <div class="panel" style="background:var(--gray-light); border:2px solid var(--gray-border); padding:16px;">
+      <h3 style="font-size:0.9em;">List: everything upfront</h3>
+      <div class="pseudo-block" style="background:rgba(255,255,255,0.7); max-width:100%; font-size:0.85em;">
+        <span class="kw">def</span> <span class="fn">get_squares</span>(n):<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;result = []<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">for</span> i <span class="kw">in</span> <span class="fn">range</span>(n):<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;result.append(i ** <span class="num">2</span>)<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">return</span> result<br>
+        <span class="comment"># Stores ALL n items in memory</span>
+      </div>
+    </div>
+    <div class="panel" style="background:var(--green-light); border:2px solid var(--green); padding:16px;">
+      <h3 style="font-size:0.9em;">Generator: one at a time</h3>
+      <div class="pseudo-block" style="background:rgba(255,255,255,0.7); max-width:100%; font-size:0.85em;">
+        <span class="kw">def</span> <span class="fn">gen_squares</span>(n):<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">for</span> i <span class="kw">in</span> <span class="fn">range</span>(n):<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">yield</span> i ** <span class="num">2</span><br><br>
+        <span class="comment"># Only 1 item in memory at a time</span><br>
+        <span class="comment"># Use like: for x in gen_squares(n)</span>
+      </div>
+    </div>
+  </div>
+  <ul class="bullet-list">
+    <li>• <strong>Generator expression:</strong> <code>(x**2 for x in range(n))</code> — like list comp but with <code>()</code></li>
+    <li>• ⚠️ Generators are <strong>one-shot</strong> — once exhausted, they're empty. Loop again = nothing happens</li>
+    <li>• <code>itertools</code> module has power tools: <code>chain()</code>, <code>islice()</code>, <code>compress()</code> for composing lazy pipelines</li>
+  </ul>
+</div>
+
+<!-- ==================== SLIDE 14: Generators — itertools ==================== -->
+<div class="slide">
+  <div class="slide-number">13 / 18</div>
+  <h2>Generators — <code>itertools</code></h2>
+  <p style="font-size:1em; margin-bottom:8px;">
+    The <code>itertools</code> module gives you building blocks for chaining generators into
+    <strong>lazy data pipelines</strong> — process millions of rows without loading everything into memory.
+  </p>
+  <div class="method-grid">
+    <div class="method-item">
+      <div class="method-name">chain(a, b)</div>
+      <div class="method-desc">Glue iterables end-to-end</div>
+    </div>
+    <div class="method-item">
+      <div class="method-name">islice(it, n)</div>
+      <div class="method-desc">Take first n items</div>
+    </div>
+    <div class="method-item">
+      <div class="method-name">compress(data, mask)</div>
+      <div class="method-desc">Filter by boolean mask</div>
+    </div>
+    <div class="method-item">
+      <div class="method-name">groupby(it, key)</div>
+      <div class="method-desc">Group consecutive items</div>
+    </div>
+  </div>
+  <div class="pseudo-block" style="max-width:640px; margin:8px auto;">
+    <span class="kw">from</span> itertools <span class="kw">import</span> chain, islice<br><br>
+    <span class="comment"># chain: glue two lists end-to-end without copying</span><br>
+    a = [<span class="num">1</span>, <span class="num">2</span>, <span class="num">3</span>]<br>
+    b = [<span class="num">4</span>, <span class="num">5</span>, <span class="num">6</span>]<br>
+    combined = chain(a, b)&nbsp;&nbsp;<span class="comment"># no new list created!</span><br><br>
+    <span class="comment"># islice: take first n items from any iterable</span><br>
+    first_4 = <span class="fn">list</span>(<span class="fn">islice</span>(combined, <span class="num">4</span>))<br>
+    <span class="comment"># → [1, 2, 3, 4]  (only produced 4 items, stopped)</span>
+  </div>
+  <p style="font-size:0.95em; font-weight:600; color:var(--blue-dark); margin:12px 0 6px 0;">
+    Lazy pipeline: nothing runs until you iterate
+  </p>
+  <div class="pseudo-block" style="max-width:640px; margin:0 auto;">
+    <span class="comment"># Each step is a generator — no work happens yet</span><br>
+    nums = <span class="fn">range</span>(<span class="num">1_000_000</span>)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment"># lazy</span><br>
+    squared = (x ** <span class="num">2</span> <span class="kw">for</span> x <span class="kw">in</span> nums)&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment"># lazy</span><br>
+    evens = (x <span class="kw">for</span> x <span class="kw">in</span> squared <span class="kw">if</span> x % <span class="num">2</span> == <span class="num">0</span>)<span class="comment"> # lazy</span><br><br>
+    <span class="comment"># Only NOW does work happen — and only for 5 items</span><br>
+    result = <span class="fn">list</span>(<span class="fn">islice</span>(evens, <span class="num">5</span>))<br>
+    <span class="comment"># → [0, 4, 16, 36, 64]</span><br>
+    <span class="comment"># The other 999,995 items? Never computed.</span>
+  </div>
+  <p class="bottom-text">"Each stage only produces an item when the next stage asks for it. 1 million items defined, but only 5 ever computed."</p>
+</div>
+
+<!-- ==================== SLIDE 15: Closures & Decorators ==================== -->
+<div class="slide">
+  <div class="slide-number">14 / 18</div>
+  <h2>Closures</h2>
+  <p style="font-size:1em; margin-bottom:8px;">
+    Normally, when a function finishes, its local variables disappear. But what if a function
+    <strong>returns another function</strong>? The inner function can <strong>remember</strong> variables from the outer
+    function — even after the outer one is done. That's a <strong>closure</strong>: a function with a <strong>backpack</strong>
+    of remembered data.
+  </p>
+
+  <p style="font-size:0.95em; font-weight:600; color:var(--blue-dark); margin-bottom:6px;">
+    Step by step:
+  </p>
+  <div class="annotated-code">
+    <div class="code-block-annotated">
+      <div class="code-line">
+        <span class="code-text"><span style="color:var(--blue);">def</span> <span style="color:var(--amber);">make_greeter</span>(greeting):</span>
+        <span class="annotation"><span class="ann-num">1</span> Outer function takes a value</span>
+      </div>
+      <div class="code-line">
+        <span class="code-text">    <span style="color:var(--blue);">def</span> greet(name):</span>
+        <span class="annotation"><span class="ann-num">2</span> Inner function is defined inside</span>
+      </div>
+      <div class="code-line">
+        <span class="code-text">        <span style="color:var(--blue);">return</span> f"{greeting}, {name}!"</span>
+        <span class="annotation"><span class="ann-num">3</span> Uses greeting from outer scope</span>
+      </div>
+      <div class="code-line">
+        <span class="code-text">    <span style="color:var(--blue);">return</span> greet</span>
+        <span class="annotation"><span class="ann-num">4</span> Returns the inner function</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="pseudo-block" style="max-width:520px; margin:12px auto;">
+    <span class="comment"># make_greeter is done, but greeting lives on</span><br>
+    say_hello = <span class="fn">make_greeter</span>(<span class="str">"Hello"</span>)<br>
+    say_hey = <span class="fn">make_greeter</span>(<span class="str">"Hey"</span>)<br><br>
+    <span class="fn">say_hello</span>(<span class="str">"Ali"</span>)&nbsp;&nbsp;&nbsp;<span class="comment"># → "Hello, Ali!"</span><br>
+    <span class="fn">say_hey</span>(<span class="str">"Sara"</span>)&nbsp;&nbsp;&nbsp;<span class="comment"># → "Hey, Sara!"</span>
+  </div>
+  <div style="display:flex; gap:20px; justify-content:center; margin:16px 0;">
+    <div style="text-align:center;">
+      <div style="background:var(--blue-light); border:2px solid var(--blue); border-radius:12px; padding:10px 20px;">
+        <div style="font-family:monospace; font-weight:700; color:var(--blue-dark);">say_hello(name)</div>
+        <div style="font-size:0.75em; color:var(--gray-mid); margin-top:4px;">🎒 greeting = "Hello"</div>
+      </div>
+    </div>
+    <div style="text-align:center;">
+      <div style="background:var(--green-light); border:2px solid var(--green); border-radius:12px; padding:10px 20px;">
+        <div style="font-family:monospace; font-weight:700; color:#065F46;">say_hey(name)</div>
+        <div style="font-size:0.75em; color:var(--gray-mid); margin-top:4px;">🎒 greeting = "Hey"</div>
+      </div>
+    </div>
+  </div>
+  <ul class="bullet-list">
+    <li>• The inner function "closes over" the variable <code>greeting</code> — that's why it's called a <strong>closure</strong></li>
+    <li>• Each call to <code>make_greeter</code> creates a <strong>brand new function</strong> with its own captured value</li>
+    <li>• The outer function is done, but the data lives on inside the returned function's backpack</li>
+    <li>• This is the foundation of <strong>decorators</strong> — which we'll see next</li>
+  </ul>
+</div>
+
+<!-- ==================== SLIDE 16: Decorators ==================== -->
+<div class="slide">
+  <div class="slide-number">15 / 18</div>
+  <h2>Decorators</h2>
+  <p style="font-size:1em; margin-bottom:8px;">
+    A <strong>decorator</strong> is a function that <strong>wraps another function</strong> to add behavior — without
+    changing the original function's code. Think of it as <strong>gift wrapping</strong>: the gift (your function)
+    stays the same, but the wrapper adds something on top (logging, timing, validation, etc.).
+  </p>
+  <div class="wrapper-visual">
+    <div class="wrapper-outer">
+      <div class="wrapper-label" style="color:#92400E;">@timer (decorator)</div>
+      <div style="margin:10px 0;">
+        <div class="wrapper-inner">my_function()</div>
+      </div>
+      <div class="wrapper-label" style="color:#92400E;">adds timing logic around it</div>
+    </div>
+  </div>
+  <div class="pseudo-block" style="max-width:560px; margin:8px auto;">
+    <span class="kw">import</span> time, functools<br><br>
+    <span class="kw">def</span> <span class="fn">timer</span>(func):<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;@functools.wraps(func)<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">def</span> <span class="fn">wrapper</span>(*args, **kwargs):<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;start = time.time()<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;result = func(*args, **kwargs)<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="fn">print</span>(f<span class="str">"{func.__name__}: {time.time()-start:.2f}s"</span>)<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">return</span> result<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">return</span> wrapper<br><br>
+    @timer<br>
+    <span class="kw">def</span> <span class="fn">train_model</span>(data):<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;...&nbsp;&nbsp;<span class="comment"># @timer wraps this automatically</span>
+  </div>
+  <ul class="bullet-list">
+    <li>• <code>@timer</code> above a function is shorthand for <code>train_model = timer(train_model)</code></li>
+    <li>• Always use <code>@functools.wraps(func)</code> inside your decorator to preserve the original function's name and docstring</li>
+    <li>• Common built-in decorators: <code>@property</code>, <code>@staticmethod</code>, <code>@classmethod</code>, <code>@dataclass</code></li>
+  </ul>
+</div>
+
+<!-- ==================== SLIDE 17: Context Managers ==================== -->
+<div class="slide">
+  <div class="slide-number">16 / 18</div>
+  <h2>Context Managers</h2>
+  <p style="font-size:1em; margin-bottom:8px;">
+    You've used <code>with open()</code> for files. The <code>with</code> statement works because files implement a
+    <strong>context manager protocol</strong> — a setup/cleanup pattern that <strong>guarantees</strong> resources are released,
+    even if an error occurs. You can write your own for any resource that needs cleanup.
+  </p>
+  <div class="flow-container" style="margin:12px 0;">
+    <div class="flow-node" style="background:var(--green-light); border-color:var(--green); color:#065F46;">
+      <code>__enter__()</code> — setup (acquire resource)
+    </div>
+    <div class="flow-arrow">↓</div>
+    <div class="flow-node" style="background:var(--blue-light); border-color:var(--blue); color:var(--blue-dark);">
+      Your code runs inside the <code>with</code> block
+    </div>
+    <div class="flow-arrow">↓</div>
+    <div class="flow-node" style="background:var(--amber-light); border-color:var(--amber); color:#92400E;">
+      <code>__exit__()</code> — cleanup (always runs, even on error)
+    </div>
+  </div>
+  <div class="two-panel" style="gap:16px;">
+    <div class="panel" style="background:var(--blue-light); border:2px solid var(--blue); padding:16px;">
+      <h3 style="font-size:0.9em;">Class-based</h3>
+      <div class="pseudo-block" style="background:rgba(255,255,255,0.7); max-width:100%; font-size:0.82em;">
+        <span class="kw">class</span> <span class="fn">Timer</span>:<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">def</span> <span class="fn">__enter__</span>(self):<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;self.start = time.time()<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">return</span> self<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">def</span> <span class="fn">__exit__</span>(self, *args):<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="fn">print</span>(f<span class="str">"{time.time()-self.start:.2f}s"</span>)
+      </div>
+      <div class="pseudo-block" style="background:rgba(255,255,255,0.7); max-width:100%; font-size:0.82em; margin-top:8px;">
+        <span class="comment"># Using it:</span><br>
+        <span class="kw">with</span> <span class="fn">Timer</span>():<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;train_model(data)<br>
+        <span class="comment"># → 2.34s</span>
+      </div>
+    </div>
+    <div class="panel" style="background:var(--green-light); border:2px solid var(--green); padding:16px;">
+      <h3 style="font-size:0.9em;">With <code>contextlib</code> (simpler)</h3>
+      <div class="pseudo-block" style="background:rgba(255,255,255,0.7); max-width:100%; font-size:0.82em;">
+        <span class="kw">from</span> contextlib <span class="kw">import</span> contextmanager<br><br>
+        @contextmanager<br>
+        <span class="kw">def</span> <span class="fn">timer</span>():<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;start = time.time()<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">yield</span>&nbsp;&nbsp;<span class="comment"># your code runs here</span><br>
+        &nbsp;&nbsp;&nbsp;&nbsp;<span class="fn">print</span>(f<span class="str">"{time.time()-start:.2f}s"</span>)
+      </div>
+      <div class="pseudo-block" style="background:rgba(255,255,255,0.7); max-width:100%; font-size:0.82em; margin-top:8px;">
+        <span class="comment"># Using it:</span><br>
+        <span class="kw">with</span> <span class="fn">timer</span>():<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;train_model(data)<br>
+        <span class="comment"># → 2.34s</span>
+      </div>
+    </div>
+  </div>
+  <p class="footer-text">Both do the same thing — class-based is more explicit, <code>contextlib</code> is less code. Files, DB connections, locks, temp directories — anything that needs guaranteed cleanup is a candidate.</p>
+</div>
+
+<!-- ==================== SLIDE 18: Dataclasses ==================== -->
+<div class="slide">
+  <div class="slide-number">17 / 18</div>
+  <h2>Dataclasses</h2>
+  <p style="font-size:1em; margin-bottom:8px;">
+    Writing <code>__init__</code>, <code>__repr__</code>, and <code>__eq__</code> by hand for every class is tedious.
+    The <code>@dataclass</code> decorator <strong>auto-generates</strong> all of that from your field declarations.
+    It's modern Python's answer to boilerplate classes — use it for configs, records, and DTOs.
+  </p>
+  <div class="compare-panels">
+    <div class="compare-box compare-before">
+      <h4 style="color:var(--gray-mid);">❌ Without dataclass (verbose)</h4>
+      <div class="pseudo-block" style="background:rgba(255,255,255,0.7); max-width:100%; font-size:0.82em;">
+        <span class="kw">class</span> <span class="fn">Model</span>:<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">def</span> <span class="fn">__init__</span>(self, name, acc, lr):<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;self.name = name<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;self.acc = acc<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;self.lr = lr<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">def</span> <span class="fn">__repr__</span>(self):<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">return</span> f<span class="str">"Model({self.name})"</span><br>
+        &nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">def</span> <span class="fn">__eq__</span>(self, other):<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;...
+      </div>
+    </div>
+    <div class="compare-arrow">→</div>
+    <div class="compare-box compare-after">
+      <h4 style="color:#065F46;">✅ With dataclass (clean)</h4>
+      <div class="pseudo-block" style="background:rgba(255,255,255,0.7); max-width:100%; font-size:0.82em;">
+        <span class="kw">from</span> dataclasses <span class="kw">import</span> dataclass<br><br>
+        @dataclass<br>
+        <span class="kw">class</span> <span class="fn">Model</span>:<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;name: str<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;acc: float<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;lr: float = <span class="num">0.01</span><br><br>
+        <span class="comment"># __init__, __repr__, __eq__</span><br>
+        <span class="comment"># all auto-generated!</span>
+      </div>
+    </div>
+  </div>
+  <div class="pseudo-block" style="max-width:580px; margin:12px auto;">
+    <span class="comment"># Useful features</span><br>
+    @dataclass(frozen=<span class="kw">True</span>)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment"># immutable (can't change fields)</span><br>
+    @dataclass(order=<span class="kw">True</span>)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment"># enables sorting with &lt; &gt; etc.</span><br><br>
+    <span class="comment"># For mutable defaults, use field():</span><br>
+    <span class="kw">from</span> dataclasses <span class="kw">import</span> field<br>
+    tags: list = field(default_factory=list)&nbsp;<span class="comment"># safe!</span>
+  </div>
+  <ul class="bullet-list">
+    <li>• <code>frozen=True</code> makes instances immutable — good for configs that shouldn't change after creation</li>
+    <li>• <code>__post_init__()</code> lets you run custom logic after auto-generated <code>__init__</code> (validation, computed fields)</li>
+    <li>• ⚠️ Never use <code>tags: list = []</code> as a default — all instances would share the same list. Use <code>field(default_factory=list)</code></li>
+  </ul>
+</div>
+
+<!-- ==================== SLIDE 19: Recap ==================== -->
+<div class="slide">
+  <div class="slide-number">18 / 18</div>
+  <h2>Recap</h2>
+  <p style="font-size:0.95em; color:var(--gray-mid); margin-bottom:12px;">
+    Everything you learned, in one view.
+  </p>
+  <div class="recap-grid">
+    <div class="recap-card" style="background:var(--blue-light); border-color:var(--blue);">
+      <div class="icon">📝</div>
+      <h4>String Mastery</h4>
+      <p>split, join, strip, replace, f-string formatting</p>
+    </div>
+    <div class="recap-card" style="background:var(--purple-light); border-color:var(--purple);">
+      <div class="icon">🔍</div>
+      <h4>Regular Expressions</h4>
+      <p>Pattern matching with re module</p>
+    </div>
+    <div class="recap-card" style="background:var(--red-light); border-color:var(--red);">
+      <div class="icon">🛡️</div>
+      <h4>Error Handling</h4>
+      <p>try/except/finally, raise, custom exceptions</p>
+    </div>
+    <div class="recap-card" style="background:var(--amber-light); border-color:var(--amber);">
+      <div class="icon">📋</div>
+      <h4>Logging</h4>
+      <p>Log levels, basicConfig, goodbye print()</p>
+    </div>
+    <div class="recap-card" style="background:var(--orange-light); border-color:var(--orange);">
+      <div class="icon">🧬</div>
+      <h4>Mutability & Copy</h4>
+      <p>Aliasing, shallow copy, deepcopy</p>
+    </div>
+    <div class="recap-card" style="background:var(--teal-light); border-color:var(--teal);">
+      <div class="icon">📦</div>
+      <h4>Collections</h4>
+      <p>defaultdict, Counter</p>
+    </div>
+    <div class="recap-card" style="background:var(--green-light); border-color:var(--green);">
+      <div class="icon">⚡</div>
+      <h4>Generators</h4>
+      <p>yield, lazy evaluation, itertools</p>
+    </div>
+    <div class="recap-card" style="background:var(--pink-light); border-color:var(--pink);">
+      <div class="icon">🎁</div>
+      <h4>Closures & Decorators</h4>
+      <p>Wrapping functions, @syntax</p>
+    </div>
+    <div class="recap-card" style="background:var(--blue-light); border-color:var(--blue);">
+      <div class="icon">🔒</div>
+      <h4>Context Managers</h4>
+      <p>with protocol, guaranteed cleanup</p>
+    </div>
+  </div>
+  <div class="recap-grid" style="grid-template-columns: 1fr;">
+    <div class="recap-card" style="background:var(--purple-light); border-color:var(--purple);">
+      <div class="icon">🏗️</div>
+      <h4>Dataclasses</h4>
+      <p>@dataclass — auto-generate __init__, __repr__, __eq__ from field declarations</p>
+    </div>
+  </div>
+  <div style="margin-top:20px; text-align:center;">
+    <p style="font-size:1.3em; color:var(--blue-dark); font-weight:700;">
+      You now have the full Python toolkit. Go build something.
+    </p>
+  </div>
+</div>
+
+</body>
+</html>

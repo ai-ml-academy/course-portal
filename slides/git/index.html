@@ -1,0 +1,1031 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Git — From Zero to Confident</title>
+<script src="https://cdn.jsdelivr.net/npm/@gitgraph/js@1.4.0/lib/gitgraph.umd.min.js"></script>
+<style>
+  :root {
+    --blue: #3B82F6; --blue-dark: #1E40AF; --green: #10B981; --green-dark: #065F46; --green-light: #D1FAE5;
+    --gray-light: #F3F4F6; --gray-mid: #6B7280; --gray-border: #D1D5DB;
+    --amber: #F59E0B; --amber-light: #FEF3C7; --red: #EF4444; --red-light: #FEE2E2;
+    --purple: #8B5CF6; --purple-light: #EDE9FE; --blue-light: #DBEAFE;
+    --text-dark: #1F2937; --teal: #14B8A6; --teal-light: #CCFBF1;
+    --pink: #EC4899; --pink-light: #FCE7F3; --orange: #F97316; --orange-light: #FFF7ED;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', system-ui, sans-serif; color: var(--text-dark); background: #F9FAFB; line-height: 1.6; font-size: 17px; }
+
+  .slide { min-height: 100vh; max-width: 980px; margin: 0 auto; padding: 50px 50px; background: white; border-bottom: 3px solid var(--gray-border); display: flex; flex-direction: column; justify-content: center; }
+  .slide-number { font-size: 0.78em; color: var(--gray-mid); margin-bottom: 8px; font-weight: 600; }
+  h1 { font-size: 3.2em; color: var(--blue-dark); font-weight: 800; }
+  h2 { font-size: 2.2em; color: var(--blue-dark); font-weight: 700; margin-bottom: 14px; }
+  .subtitle { font-size: 1.3em; color: var(--gray-mid); margin-top: 10px; }
+  .bottom-text { margin-top: 24px; font-size: 1.05em; color: var(--blue-dark); font-weight: 600; font-style: italic; }
+  .footer-text { margin-top: 18px; font-size: 0.92em; color: var(--gray-mid); }
+  code { background: var(--gray-light); border-radius: 4px; padding: 0.15em 0.5em; font-family: 'SF Mono','Fira Code','Consolas',monospace; font-size: 0.92em; border: 1px solid var(--gray-border); }
+  .bullet-list { list-style: none; padding: 0; margin: 14px 0 0 0; }
+  .bullet-list li { font-size: 1em; padding: 5px 0; line-height: 1.55; }
+
+  .terminal { background: #283040; color: #E2E8F0; border-radius: 14px; padding: 20px 24px; font-family: 'SF Mono','Fira Code','Consolas',monospace; font-size: 0.95em; line-height: 1.85; margin: 14px 0; }
+  .terminal .prompt { color: var(--green); } .terminal .cmd { color: white; font-weight: 600; }
+  .terminal .out { color: #94A3B8; } .terminal .highlight { color: var(--amber); }
+  .terminal .added { color: #4ADE80; } .terminal .removed { color: #F87171; }
+
+  .two-panel { display: flex; gap: 24px; margin-top: 16px; }
+  .panel { flex: 1; border-radius: 16px; padding: 22px; }
+  .panel h3 { font-size: 1.1em; margin-bottom: 12px; }
+  .panel-bad { background: #FEF2F2; border: 2px dashed var(--red); }
+  .panel-good { background: #F0FDF4; border: 2px solid var(--green); }
+
+  .vocab-table { width: 100%; margin: 16px 0; border-collapse: collapse; font-size: 0.95em; }
+  .vocab-table th { background: var(--blue-dark); color: white; padding: 10px 14px; text-align: left; }
+  .vocab-table td { padding: 10px 14px; border-bottom: 1px solid var(--gray-border); }
+  .vocab-table tr:nth-child(even) { background: var(--gray-light); }
+
+  .method-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin: 16px 0; }
+  .method-item { background: var(--gray-light); border-radius: 12px; padding: 14px 18px; border: 1px solid var(--gray-border); font-size: 0.95em; }
+
+  .conflict-block { background: #283040; color: #E2E8F0; border-radius: 14px; padding: 20px 24px; font-family: monospace; font-size: 0.95em; line-height: 2; margin: 14px 0; }
+  .conflict-marker { color: var(--amber); font-weight: 700; } .conflict-yours { color: #4ADE80; } .conflict-theirs { color: #F87171; }
+
+  .gitignore-block { background: #283040; color: #E2E8F0; border-radius: 14px; padding: 20px 24px; font-family: monospace; font-size: 0.95em; line-height: 2; margin: 14px 0; }
+  .gitignore-block .gi-comment { color: #64748B; } .gitignore-block .gi-pattern { color: #FCD34D; }
+
+  .step-list { list-style: none; padding: 0; margin: 14px 0; counter-reset: step; }
+  .step-list li { padding: 10px 0 10px 48px; position: relative; font-size: 1em; border-left: 2px solid var(--gray-border); margin-left: 16px; }
+  .step-list li::before { counter-increment: step; content: counter(step); position: absolute; left: -16px; top: 8px; width: 30px; height: 30px; border-radius: 50%; background: var(--blue); color: white; font-weight: 700; font-size: 0.9em; display: flex; align-items: center; justify-content: center; }
+  .step-list li:last-child { border-left: 2px solid transparent; }
+
+  .recap-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin: 16px 0; }
+  .recap-card { border-radius: 14px; padding: 16px 18px; text-align: left; border: 2px solid; }
+  .recap-card h4 { font-size: 1em; margin: 0 0 6px 0; text-align: center; }
+  .recap-card .cmds { font-family: monospace; font-size: 0.88em; line-height: 2; }
+
+  /* ========== GITGRAPH CONTAINERS ========== */
+  #graph-branches, #graph-merge, #graph-collab { overflow-x: auto; padding: 10px 0; }
+  #graph-merge-demo, #graph-rebase-demo { overflow-x: auto; }
+
+  /* ========== GIT ARCHITECTURE — SEQUENCE DIAGRAM ========== */
+  .seq-diagram { position: relative; margin: 10px 0; }
+  .seq-boxes { display: flex; justify-content: space-between; position: relative; z-index: 2; }
+  .seq-box {
+    width: 22%; text-align: center; padding: 14px 8px; border-radius: 12px;
+    border: 2px solid; box-shadow: 0 3px 10px rgba(0,0,0,0.06);
+  }
+  .seq-box .icon { font-size: 1.4em; }
+  .seq-box .name { font-weight: 700; font-size: 0.92em; margin-top: 3px; }
+  .seq-box .desc { font-size: 0.72em; }
+
+  /* Vertical lifelines — positioned absolutely, run full height of arrow area */
+  .seq-lifelines { position: absolute; top: 0; left: 0; right: 0; bottom: 0; display: flex; justify-content: space-between; z-index: 0; }
+  .seq-lifeline { width: 22%; display: flex; justify-content: center; }
+  .seq-lifeline::after { content: ''; display: block; width: 1.5px; height: 100%; background: rgba(0,0,0,0.08); }
+
+  /* Animated dashed arrow lines */
+  @keyframes marchRight { to { background-position: 24px 0; } }
+  @keyframes marchLeft { to { background-position: -24px 0; } }
+  .seq-arrow-line {
+    position: absolute; top: 24px; height: 3px; border-radius: 2px; z-index: 1;
+    background-size: 24px 3px;
+    animation: marchRight 0.5s linear infinite;
+  }
+  .seq-arrow-line.left { animation: marchLeft 0.5s linear infinite; }
+
+  /* Arrow area */
+  .seq-arrows { position: relative; padding: 10px 0; }
+  .seq-row { position: relative; height: 44px; display: flex; align-items: center; }
+  .seq-label {
+    position: absolute; top: 2px; font-family: monospace; font-weight: 700;
+    font-size: 0.88em; white-space: nowrap; z-index: 2;
+  }
+  .seq-line {
+    position: absolute; top: 24px; height: 4px; border-radius: 2px; z-index: 1;
+  }
+  /* Right-pointing arrowhead */
+  .seq-line::after {
+    content: ''; position: absolute; right: -1px; top: -5px;
+    width: 0; height: 0; border-top: 7px solid transparent; border-bottom: 7px solid transparent;
+  }
+  /* Left-pointing arrowhead */
+  .seq-line.left::after { right: auto; left: -1px; }
+  /* Dashed style */
+  .seq-line.dashed { height: 0; top: 26px; border-top: 2px dashed; }
+  .seq-line.dashed::after { display: none; }
+
+</style>
+</head>
+<body>
+
+<!-- ==================== SLIDE 1 ==================== -->
+<div class="slide" style="text-align:center;">
+  <div>
+    <div class="slide-number">1 / 25</div>
+    <h1>Git</h1>
+    <p class="subtitle">A Complete Guide to Version Control</p>
+    <p style="margin-top:28px; font-size:1.1em; color:var(--gray-mid);">
+      Version Control · Commits · Branches · Merging · Remotes · Collaboration · GitHub
+    </p>
+  </div>
+</div>
+
+<!-- ==================== SLIDE 2: Why ==================== -->
+<div class="slide">
+  <div class="slide-number">2 / 25</div>
+  <h2>Why Version Control?</h2>
+  <p style="font-size:1.1em; margin-bottom:14px;">
+    Every project without version control eventually turns into chaos. Version control tracks
+    <strong>every change</strong>, <strong>who made it</strong>, and <strong>when</strong>.
+  </p>
+  <div class="two-panel" style="gap:24px;">
+    <div style="flex:1; border-radius:16px; padding:24px; background:#F8F8F8; border:2px solid #94A3B8;">
+      <h3 style="font-size:1.15em; margin-bottom:14px; color:var(--gray-mid);">❌ Without version control</h3>
+      <div style="font-family:monospace; font-size:0.95em; line-height:2; padding:16px 20px; background:white; border-radius:12px; border:1px solid #E5E7EB;">
+        📄 report.py<br>
+        📄 report_v2.py<br>
+        📄 report_v2_final.py<br>
+        📄 report_v2_final_FIXED.py<br>
+        📄 report_USE_THIS_ONE.py
+      </div>
+      <ul class="bullet-list" style="margin-top:12px; font-size:0.95em;">
+        <li>• Can't undo mistakes</li>
+        <li>• Who changed what?</li>
+        <li>• When did it break?</li>
+      </ul>
+    </div>
+    <div style="flex:1; border-radius:16px; padding:24px; background:#F0F7FF; border:2px solid var(--blue);">
+      <h3 style="font-size:1.15em; margin-bottom:14px; color:var(--blue-dark);">✅ With Git</h3>
+      <div style="padding:16px 20px; background:white; border-radius:12px; border:1px solid var(--blue-light);">
+        <div style="display:flex; align-items:center; gap:12px; padding:6px 0; font-size:0.95em;">
+          <span style="font-size:1.3em;">📄</span> <span style="font-weight:600;">report.py</span> <span style="color:var(--gray-mid); font-size:0.85em;">— one file, full history</span>
+        </div>
+        <div style="display:flex; align-items:center; gap:12px; padding:6px 0; font-size:0.95em;">
+          <span style="font-size:1.3em;">📋</span> <span>47 commits · 3 branches</span>
+        </div>
+        <div style="display:flex; align-items:center; gap:12px; padding:6px 0; font-size:0.95em;">
+          <span style="font-size:1.3em;">👥</span> <span>3 contributors tracked</span>
+        </div>
+        <div style="display:flex; align-items:center; gap:12px; padding:6px 0; font-size:0.95em;">
+          <span style="font-size:1.3em;">⏪</span> <span>Revert to any point in time</span>
+        </div>
+      </div>
+      <ul class="bullet-list" style="margin-top:12px; font-size:0.95em;">
+        <li>• Every change tracked forever</li>
+        <li>• Safe collaboration</li>
+        <li>• Experiment freely</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== SLIDE 3: Git vs GitHub ==================== -->
+<div class="slide">
+  <div class="slide-number">3 / 25</div>
+  <h2>What is Git? What is GitHub?</h2>
+  <p style="font-size:1.1em; margin-bottom:14px;">These are <strong>not the same thing</strong>.</p>
+  <div class="two-panel" style="gap:20px;">
+    <div style="flex:1; border-radius:16px; padding:22px; background:#F8F8F8; border:2px solid #94A3B8;">
+      <h3 style="text-align:center; font-size:1.2em; color:var(--text-dark);">🔧 Git</h3>
+      <ul class="bullet-list" style="margin:8px 0 0 0;"><li>• A <strong>tool</strong> on your computer</li><li>• Tracks changes to files</li><li>• Works <strong>completely offline</strong></li><li>• Free and open source</li></ul>
+    </div>
+    <div style="flex:1; border-radius:16px; padding:22px; background:#F0F7FF; border:2px solid var(--blue);">
+      <h3 style="text-align:center; font-size:1.2em; color:var(--blue-dark);">🌐 GitHub</h3>
+      <ul class="bullet-list" style="margin:8px 0 0 0;"><li>• A <strong>website</strong> hosting Git repos</li><li>• Adds PRs, issues, reviews</li><li>• Needs <strong>internet</strong></li><li>• Alternatives: GitLab, Bitbucket</li></ul>
+    </div>
+  </div>
+  <p class="bottom-text">"Git is the engine. GitHub is the garage where you park and share."</p>
+</div>
+
+<!-- ==================== SLIDE 4: Install ==================== -->
+<div class="slide">
+  <div class="slide-number">4 / 25</div>
+  <h2>Installing & Setup</h2>
+  <p style="font-size:1.1em; margin-bottom:10px;">Install once, configure once. Every commit carries this identity.</p>
+  <div class="terminal" style="max-width:620px; margin:12px auto;">
+    <span class="prompt">$</span> <span class="cmd">git config --global user.name "Your Name"</span><br>
+    <span class="prompt">$</span> <span class="cmd">git config --global user.email "you@example.com"</span><br><br>
+    <span class="prompt">$</span> <span class="cmd">git config --list</span><br>
+    <span class="out">user.name=Your Name</span><br>
+    <span class="out">user.email=you@example.com</span>
+  </div>
+  <ul class="bullet-list">
+    <li>• <strong>Windows:</strong> Download from git-scm.com (includes Git Bash)</li>
+    <li>• <strong>Mac:</strong> Run <code>git --version</code> in Terminal</li>
+    <li>• <strong>Linux:</strong> <code>sudo apt install git</code></li>
+  </ul>
+</div>
+
+<!-- ==================== SLIDE 5: Architecture ==================== -->
+<div class="slide">
+  <div class="slide-number">5 / 25</div>
+  <h2>Git Architecture</h2>
+  <p style="font-size:1.1em; margin-bottom:12px;">
+    <strong>The most important diagram in Git.</strong> Four zones. Every command moves data between them.
+  </p>
+  <!-- Sequence diagram: boxes at top, lifelines down, arrows between lifelines -->
+  <div class="seq-diagram">
+    <!-- Boxes -->
+    <div class="seq-boxes">
+      <div class="seq-box" style="background:#ECFDF5; border-color:#6EE7B7;">
+        <div class="icon">📂</div>
+        <div class="name" style="color:#047857;">Working Directory</div>
+      </div>
+      <div class="seq-box" style="background:#FDF2F0; border-color:#E67F6C;">
+        <div class="icon">📋</div>
+        <div class="name" style="color:#C2503A;">Staging Area</div>
+      </div>
+      <div class="seq-box" style="background:#EFF6FF; border-color:#93C5FD;">
+        <div class="icon">🗄️</div>
+        <div class="name" style="color:#1D4ED8;">Local Repository</div>
+      </div>
+      <div class="seq-box" style="background:#F5F3FF; border-color:#C4B5FD;">
+        <div class="icon">☁️</div>
+        <div class="name" style="color:#6D28D9;">Remote Repository</div>
+      </div>
+    </div>
+
+    <!-- Arrow area with lifelines behind -->
+    <div class="seq-arrows">
+      <!-- Lifelines (absolute, behind arrows) -->
+      <div class="seq-lifelines">
+        <div class="seq-lifeline"></div>
+        <div class="seq-lifeline"></div>
+        <div class="seq-lifeline"></div>
+        <div class="seq-lifeline"></div>
+      </div>
+
+      <!--
+        Lifeline centers with space-between on 4 items of 22% width:
+        The remaining 12% (100 - 4*22) is split into 3 gaps of 4% each.
+        Box 1: 0%–22%,    center = 11%
+        Box 2: 26%–48%,   center = 37%
+        Box 3: 52%–74%,   center = 63%
+        Box 4: 78%–100%,  center = 89%
+        Spans: 1→2 = 26%, 2→3 = 26%, 3→4 = 26%, 1→4 = 78%
+               1→3 = 52%, 1→2 = 26%
+      -->
+
+      <!-- git add: 11% → 37% (animated dashed, moves right) -->
+      <div class="seq-row">
+        <div class="seq-label" style="left:11%; width:26%; text-align:center; color:#047857;">git add</div>
+        <div class="seq-arrow-line" style="left:11%; width:26%; background:repeating-linear-gradient(90deg, #34D399 0, #34D399 12px, transparent 12px, transparent 24px);">
+          <div style="position:absolute; right:-1px; top:-4px; width:0; height:0; border-top:5.5px solid transparent; border-bottom:5.5px solid transparent; border-left:9px solid #34D399;"></div>
+        </div>
+      </div>
+
+      <!-- git commit: 37% → 63% (animated dashed, moves right) -->
+      <div class="seq-row">
+        <div class="seq-label" style="left:37%; width:26%; text-align:center; color:#C2503A;">git commit</div>
+        <div class="seq-arrow-line" style="left:37%; width:26%; background:repeating-linear-gradient(90deg, #E67F6C 0, #E67F6C 12px, transparent 12px, transparent 24px);">
+          <div style="position:absolute; right:-1px; top:-4px; width:0; height:0; border-top:5.5px solid transparent; border-bottom:5.5px solid transparent; border-left:9px solid #E67F6C;"></div>
+        </div>
+      </div>
+
+      <!-- git push: 63% → 89% (animated dashed, moves right) -->
+      <div class="seq-row">
+        <div class="seq-label" style="left:63%; width:26%; text-align:center; color:#1D4ED8;">git push</div>
+        <div class="seq-arrow-line" style="left:63%; width:26%; background:repeating-linear-gradient(90deg, #60A5FA 0, #60A5FA 12px, transparent 12px, transparent 24px);">
+          <div style="position:absolute; right:-1px; top:-4px; width:0; height:0; border-top:5.5px solid transparent; border-bottom:5.5px solid transparent; border-left:9px solid #60A5FA;"></div>
+        </div>
+      </div>
+
+      <!-- git fetch: 89% → 63% (animated dashed, moves left) -->
+      <div class="seq-row">
+        <div class="seq-label" style="left:63%; width:26%; text-align:center; color:#6D28D9;">git fetch</div>
+        <div class="seq-arrow-line left" style="left:63%; width:26%; background:repeating-linear-gradient(90deg, #A78BFA 0, #A78BFA 12px, transparent 12px, transparent 24px);">
+          <div style="position:absolute; left:-1px; top:-4px; width:0; height:0; border-top:5.5px solid transparent; border-bottom:5.5px solid transparent; border-right:9px solid #A78BFA;"></div>
+        </div>
+      </div>
+
+      <!-- git pull/clone: 89% → 11% (animated dashed, moves left) -->
+      <div class="seq-row">
+        <div class="seq-label" style="left:11%; width:78%; text-align:center; color:#6D28D9;">git pull / clone</div>
+        <div class="seq-arrow-line left" style="left:11%; width:78%; background:repeating-linear-gradient(90deg, #A78BFA 0, #A78BFA 12px, transparent 12px, transparent 24px);">
+          <div style="position:absolute; left:-1px; top:-4px; width:0; height:0; border-top:5.5px solid transparent; border-bottom:5.5px solid transparent; border-right:9px solid #A78BFA;"></div>
+        </div>
+      </div>
+
+      <!-- git diff: 11% ↔ 37% (solid line, double arrow) -->
+      <div class="seq-row">
+        <div class="seq-label" style="left:11%; width:26%; text-align:center; color:var(--gray-mid); font-size:0.82em;">git diff</div>
+        <div style="position:absolute; top:22px; left:11%; width:26%; display:flex; align-items:center;">
+          <div style="width:0; height:0; border-top:6px solid transparent; border-bottom:6px solid transparent; border-right:8px solid rgba(0,0,0,0.18); flex-shrink:0;"></div>
+          <div style="flex:1; height:2px; background:rgba(0,0,0,0.18); border-radius:2px;"></div>
+          <div style="width:0; height:0; border-top:6px solid transparent; border-bottom:6px solid transparent; border-left:8px solid rgba(0,0,0,0.18); flex-shrink:0;"></div>
+        </div>
+      </div>
+
+      <!-- git diff HEAD: 11% ↔ 63% (solid line, double arrow) -->
+      <div class="seq-row">
+        <div class="seq-label" style="left:11%; width:52%; text-align:center; color:var(--gray-mid); font-size:0.82em;">git diff HEAD</div>
+        <div style="position:absolute; top:22px; left:11%; width:52%; display:flex; align-items:center;">
+          <div style="width:0; height:0; border-top:6px solid transparent; border-bottom:6px solid transparent; border-right:8px solid rgba(0,0,0,0.18); flex-shrink:0;"></div>
+          <div style="flex:1; height:2px; background:rgba(0,0,0,0.18); border-radius:2px;"></div>
+          <div style="width:0; height:0; border-top:6px solid transparent; border-bottom:6px solid transparent; border-left:8px solid rgba(0,0,0,0.18); flex-shrink:0;"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Zone descriptions -->
+  <div style="display:flex; justify-content:space-between; gap:12px; margin-top:10px; font-size:0.78em; color:var(--text-dark); line-height:1.4;">
+    <div style="width:22%; padding:8px; background:rgba(4,120,87,0.04); border-radius:8px;">
+      <strong style="color:#047857;">Your local machine.</strong> The actual folder where your project files live. You edit files here normally. Git sees these changes as "untracked" or "modified" until you explicitly stage them.
+    </div>
+    <div style="width:22%; padding:8px; background:rgba(230,127,108,0.04); border-radius:8px;">
+      <strong style="color:#C2503A;">Your local machine (inside .git/).</strong> A holding area where you select exactly which changes to include in the next commit. Think of it as a shopping cart — you add items before checkout.
+    </div>
+    <div style="width:22%; padding:8px; background:rgba(29,78,216,0.04); border-radius:8px;">
+      <strong style="color:#1D4ED8;">Your local machine (the .git/ hidden folder).</strong> Contains every committed snapshot, the full project history, branches, and config. This folder IS your repository — delete it and all history is gone.
+    </div>
+    <div style="width:22%; padding:8px; background:rgba(109,40,217,0.04); border-radius:8px;">
+      <strong style="color:#6D28D9;">On the internet (GitHub, GitLab, etc.).</strong> A copy of your repository hosted online. This is how teams share code — everyone pushes to and pulls from the same remote to stay in sync.
+    </div>
+  </div>
+</div>
+
+<!-- ==================== SLIDE 6: First Repo ==================== -->
+<div class="slide">
+  <div class="slide-number">6 / 25</div>
+  <h2>Your First Repo</h2>
+  <p style="font-size:1.1em; margin-bottom:10px;">Two ways to start.</p>
+  <div class="two-panel" style="gap:20px;">
+    <div class="panel" style="background:var(--blue-light); border:2px solid var(--blue); padding:20px;">
+      <h3>New project: <code>git init</code></h3>
+      <div class="terminal" style="max-width:100%; font-size:0.9em;">
+        <span class="prompt">$</span> <span class="cmd">mkdir my-project && cd my-project</span><br>
+        <span class="prompt">$</span> <span class="cmd">git init</span><br>
+        <span class="out">Initialized empty Git repository</span><br><br>
+        <span class="out"># Connect to GitHub later:</span><br>
+        <span class="prompt">$</span> <span class="cmd">git remote add origin URL</span><br>
+        <span class="prompt">$</span> <span class="cmd">git push -u origin main</span>
+      </div>
+    </div>
+    <div class="panel" style="background:var(--green-light); border:2px solid var(--green); padding:20px;">
+      <h3>Existing: <code>git clone</code></h3>
+      <div class="terminal" style="max-width:100%; font-size:0.9em;">
+        <span class="prompt">$</span> <span class="cmd">git clone https://github.com/</span><br>
+        <span class="cmd">&nbsp;&nbsp;user/repo.git</span><br>
+        <span class="out">Cloning into 'repo'... done.</span><br><br>
+        <span class="prompt">$</span> <span class="cmd">cd repo</span><br><br>
+        <span class="out"># Remote "origin" auto-configured</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== SLIDE 7: Basic Cycle ==================== -->
+<div class="slide">
+  <div class="slide-number">7 / 25</div>
+  <h2>The Daily Cycle</h2>
+  <p style="font-size:1.1em; margin-bottom:10px;">
+    These four commands are your everyday workflow. You'll run them dozens of times a day.
+  </p>
+  <div class="terminal" style="max-width:660px; margin:10px auto;">
+    <span class="out"># 1. What changed?</span><br>
+    <span class="prompt">$</span> <span class="cmd">git status</span><br>
+    <span class="removed">modified:   analysis.py</span><br>
+    <span class="highlight">Untracked:  utils.py</span><br><br>
+    <span class="out"># 2. Stage files</span><br>
+    <span class="prompt">$</span> <span class="cmd">git add analysis.py utils.py</span><br><br>
+    <span class="out"># 3. Commit</span><br>
+    <span class="prompt">$</span> <span class="cmd">git commit -m "add utility functions for data cleaning"</span><br><br>
+    <span class="out"># 4. Push to remote</span><br>
+    <span class="prompt">$</span> <span class="cmd">git push origin main</span>
+  </div>
+  <ul class="bullet-list">
+    <li>• <code>git status</code> — Red = not staged. Green = staged. Clean = committed</li>
+    <li>• <code>git add .</code> stages everything — use with care</li>
+    <li>• Each commit is a <strong>snapshot</strong> — you can always go back to it</li>
+  </ul>
+</div>
+
+<!-- ==================== SLIDE 8: Commit Messages ==================== -->
+<div class="slide">
+  <div class="slide-number">8 / 25</div>
+  <h2>Commit Messages</h2>
+  <p style="font-size:1.1em; margin-bottom:10px;">Your commit messages are how future-you and your teammates understand what happened and why.</p>
+  <div class="two-panel" style="gap:20px;">
+    <div style="flex:1; border-radius:16px; padding:20px; background:#F8F8F8; border:2px solid #D1D5DB;">
+      <h3 style="color:var(--gray-mid); margin-bottom:10px;">❌ Bad</h3>
+      <div style="background:white; border-radius:10px; padding:14px 18px; border:1px solid #E5E7EB;">
+        <div style="font-family:monospace; font-size:1em; line-height:2.4; color:var(--gray-mid);">"fixed stuff"<br>"update"<br>"WIP"<br>"asdfgh"</div>
+      </div>
+    </div>
+    <div style="flex:1; border-radius:16px; padding:20px; background:#F0F7FF; border:2px solid var(--blue);">
+      <h3 style="color:var(--blue-dark); margin-bottom:10px;">✅ Good</h3>
+      <div style="background:white; border-radius:10px; padding:14px 18px; border:1px solid var(--blue-light);">
+        <div style="font-family:monospace; font-size:1em; line-height:2.4; color:var(--blue-dark);">"fix: handle missing values"<br>"add: CSV export for reports"<br>"refactor: simplify score logic"<br>"docs: update setup instructions"</div>
+      </div>
+    </div>
+  </div>
+  <ul class="bullet-list">
+    <li>• Start with a <strong>type</strong>: <code>fix:</code> <code>add:</code> <code>update:</code> <code>remove:</code> <code>refactor:</code> <code>docs:</code></li>
+    <li>• Keep the first line under <strong>~50 characters</strong> — this is the summary everyone reads</li>
+    <li>• Describe <strong>what changed and why</strong>, not how — the diff shows the code</li>
+    <li>• Each commit should be <strong>one logical change</strong> — don't bundle unrelated changes together</li>
+  </ul>
+</div>
+
+<!-- ==================== SLIDE 9: Log & Diff ==================== -->
+<div class="slide">
+  <div class="slide-number">9 / 25</div>
+  <h2>Viewing History: log & diff</h2>
+  <p style="font-size:1.1em; margin-bottom:10px;"><code>log</code> = what happened. <code>diff</code> = what changed.</p>
+  <div class="terminal" style="max-width:660px; margin:10px auto;">
+    <span class="prompt">$</span> <span class="cmd">git log --oneline</span><br>
+    <span class="highlight">a1b2c3d</span> <span class="out">add utility functions for data cleaning</span><br>
+    <span class="highlight">e4f5g6h</span> <span class="out">fix: handle missing values in age column</span><br>
+    <span class="highlight">i7j8k9l</span> <span class="out">initial project setup</span>
+  </div>
+  <div class="terminal" style="max-width:660px; margin:10px auto;">
+    <span class="prompt">$</span> <span class="cmd">git diff</span><br>
+    <span class="out">--- a/analysis.py</span><br>
+    <span class="out">+++ b/analysis.py</span><br>
+    <span class="removed">- score = total / count</span><br>
+    <span class="added">+ score = total / count if count > 0 else 0</span>
+  </div>
+  <div class="two-panel" style="gap:16px; margin-top:10px;">
+    <div style="flex:1;">
+      <p style="font-weight:700; font-size:0.95em; color:var(--blue-dark); margin-bottom:6px;">Useful <code>git log</code> options</p>
+      <ul class="bullet-list" style="margin:0; font-size:0.92em;">
+        <li>• <code>git log --oneline</code> — compact, one line per commit</li>
+        <li>• <code>git log --graph</code> — shows branch structure visually</li>
+        <li>• <code>git log -5</code> — only the last 5 commits</li>
+        <li>• <code>git log --author="name"</code> — filter by author</li>
+        <li>• <code>git log file.py</code> — history for one file</li>
+      </ul>
+    </div>
+    <div style="flex:1;">
+      <p style="font-weight:700; font-size:0.95em; color:var(--blue-dark); margin-bottom:6px;">Useful <code>git diff</code> options</p>
+      <ul class="bullet-list" style="margin:0; font-size:0.92em;">
+        <li>• <code>git diff</code> — unstaged changes vs last commit</li>
+        <li>• <code>git diff --staged</code> — what you're about to commit</li>
+        <li>• <code>git diff main..feature</code> — between two branches</li>
+        <li>• <code>git diff HEAD~3</code> — changes from 3 commits ago</li>
+        <li>• <span style="color:#4ADE80;">Green (+)</span> = added. <span style="color:#F87171;">Red (−)</span> = removed</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== SLIDE 10: Branches ==================== -->
+<div class="slide">
+  <div class="slide-number">10 / 25</div>
+  <h2>Branches: What & Why</h2>
+  <p style="font-size:1.1em; margin-bottom:8px;">
+    A branch is a <strong>parallel version</strong> of your project. You create one to work on a feature
+    without touching stable code. When done, merge it back.
+  </p>
+  <div id="graph-branches" style="display:flex; justify-content:center; margin:10px 0;"></div>
+  <p style="font-size:0.88em; color:var(--gray-mid); text-align:center; margin-bottom:8px;">Each dot = one commit. Colored lines = branches. Where lines rejoin = a merge.</p>
+  <table class="vocab-table" style="max-width:650px; margin:10px auto;">
+    <tr><th>Branch</th><th>Purpose</th><th>Lifetime</th></tr>
+    <tr>
+      <td><code style="background:var(--green-light); border-color:var(--green); color:var(--green-dark);">main</code></td>
+      <td>Stable, production-ready code</td>
+      <td>Permanent</td>
+    </tr>
+    <tr>
+      <td><code style="background:var(--blue-light); border-color:var(--blue); color:var(--blue-dark);">feature-*</code></td>
+      <td>New feature development</td>
+      <td>Temporary — delete after merge</td>
+    </tr>
+    <tr>
+      <td><code style="background:var(--pink-light); border-color:var(--pink); color:#9D174D;">fix-*</code></td>
+      <td>Bug fixes</td>
+      <td>Temporary — delete after merge</td>
+    </tr>
+  </table>
+  <ul class="bullet-list">
+    <li>• Branches are lightweight <strong>pointers to commits</strong> — creating one is instant</li>
+    <li>• <strong>HEAD</strong> = "you are here" — points to whichever branch you're on</li>
+    <li>• Rule: <strong>one branch per task</strong>. Never work directly on <code>main</code></li>
+  </ul>
+</div>
+
+<!-- ==================== SLIDE 11: Working with Branches ==================== -->
+<div class="slide">
+  <div class="slide-number">11 / 25</div>
+  <h2>Working with Branches</h2>
+  <p style="font-size:1.1em; margin-bottom:10px;">Creating and switching is instant.</p>
+  <div class="terminal" style="max-width:640px; margin:10px auto;">
+    <span class="out"># See all branches (* = you are here)</span><br>
+    <span class="prompt">$</span> <span class="cmd">git branch</span><br>
+    <span class="added">* main</span><br>
+    <span class="out">  feature-login</span><br><br>
+    <span class="out"># Create + switch</span><br>
+    <span class="prompt">$</span> <span class="cmd">git switch -c feature-cleanup</span><br>
+    <span class="out">Switched to new branch 'feature-cleanup'</span><br><br>
+    <span class="out"># Switch back</span><br>
+    <span class="prompt">$</span> <span class="cmd">git switch main</span><br><br>
+    <span class="out"># Delete a merged branch</span><br>
+    <span class="prompt">$</span> <span class="cmd">git branch -d feature-cleanup</span><br><br>
+    <span class="out"># All branches (local + remote)</span><br>
+    <span class="prompt">$</span> <span class="cmd">git branch -a</span>
+  </div>
+  <div style="background:#F0F7FF; border:2px solid var(--blue); border-radius:12px; padding:12px 18px; margin-top:10px;">
+    <p style="font-size:0.92em; color:var(--blue-dark); margin:0;">
+      <strong>Note:</strong> <code>git switch</code> is the modern command (Git 2.23+). Older tutorials use <code>git checkout -b name</code> to create+switch and <code>git checkout name</code> to switch. Both work — <code>switch</code> is clearer because <code>checkout</code> does many unrelated things.
+    </p>
+  </div>
+</div>
+
+<!-- ==================== SLIDE 12: Merging ==================== -->
+<div class="slide">
+  <div class="slide-number">12 / 25</div>
+  <h2>Merging</h2>
+  <p style="font-size:1.1em; margin-bottom:10px;">
+    Merging brings changes from one branch into another. Switch to the target (usually <code>main</code>),
+    then merge the feature in.
+  </p>
+  <div class="terminal" style="max-width:600px; margin:10px auto;">
+    <span class="out"># Step 1: Go to the target branch</span><br>
+    <span class="prompt">$</span> <span class="cmd">git switch main</span><br><br>
+    <span class="out"># Step 2: Merge the feature in</span><br>
+    <span class="prompt">$</span> <span class="cmd">git merge feature-cleanup</span><br>
+    <span class="out">Merge made by the 'ort' strategy.</span><br>
+    <span class="out"> 3 files changed, 22 insertions(+)</span><br><br>
+    <span class="out"># Step 3: Clean up locally</span><br>
+    <span class="prompt">$</span> <span class="cmd">git branch -d feature-cleanup</span><br><br>
+    <span class="out"># Step 4: Delete the remote branch too</span><br>
+    <span class="prompt">$</span> <span class="cmd">git push origin --delete feature-cleanup</span>
+  </div>
+  <div id="graph-merge" style="display:flex; justify-content:center; margin:10px 0;"></div>
+  <p class="footer-text">A <strong>merge commit</strong> ties both histories together — it has two parents. Don't forget to push and delete the remote branch.</p>
+</div>
+
+<!-- ==================== SLIDE 13: Conflicts ==================== -->
+<div class="slide">
+  <div class="slide-number">13 / 25</div>
+  <h2>Merge Conflicts</h2>
+  <p style="font-size:1.1em; margin-bottom:10px;">When two branches change the <strong>same line</strong>, Git asks you to decide.</p>
+  <div class="conflict-block" style="max-width:560px; margin:0 auto;">
+    <span class="conflict-marker">&lt;&lt;&lt;&lt;&lt;&lt;&lt; HEAD (your branch)</span><br>
+    <span class="conflict-yours">score = total / count if count > 0 else 0</span><br>
+    <span class="conflict-marker">=======</span><br>
+    <span class="conflict-theirs">score = total / max(count, 1)</span><br>
+    <span class="conflict-marker">&gt;&gt;&gt;&gt;&gt;&gt;&gt; feature-branch (incoming)</span>
+  </div>
+  <p style="font-size:1em; font-weight:600; color:var(--blue-dark); margin:14px 0 8px 0;">How to resolve:</p>
+  <ol class="step-list">
+    <li>Open the file and find the <code>&lt;&lt;&lt;&lt;</code> / <code>====</code> / <code>&gt;&gt;&gt;&gt;</code> markers</li>
+    <li>Decide: keep yours, keep theirs, or write a combination</li>
+    <li>Delete all the conflict markers — leave only the final code</li>
+    <li><code>git add file.py</code> — mark as resolved</li>
+    <li><code>git commit</code> — completes the merge (Git auto-generates a merge message)</li>
+    <li><code>git push</code> — share the resolved merge with the team</li>
+  </ol>
+</div>
+
+<!-- ==================== SLIDE 14: Merge vs Rebase ==================== -->
+<div class="slide">
+  <div class="slide-number">14 / 25</div>
+  <h2>Merge vs Rebase</h2>
+  <p style="font-size:1.05em; margin-bottom:10px;">
+    Both combine branches. The difference is <strong>how the history looks after</strong>.
+  </p>
+  <div class="two-panel" style="gap:20px;">
+    <div class="panel" style="background:var(--blue-light); border:2px solid var(--blue); padding:20px;">
+      <h3 style="text-align:center; font-size:1.1em;"><code>git merge feature</code></h3>
+      <div id="graph-merge-demo" style="display:flex; justify-content:center; margin:6px 0;"></div>
+      <p style="font-size:0.9em; line-height:1.6; margin-top:6px;">
+        Takes all commits from <code>feature</code> and joins them into <code>main</code> with a <strong>merge commit</strong>.
+        Both branches' history is visible. The branch "happened" and you can see where it split and rejoined.
+      </p>
+      <div style="font-size:0.92em; line-height:1.8; margin-top:8px;">
+        ✅ Full history preserved<br>
+        ✅ Safe — never rewrites commits<br>
+        ⚠️ Creates extra merge commits
+      </div>
+    </div>
+    <div class="panel" style="background:var(--green-light); border:2px solid var(--green); padding:20px;">
+      <h3 style="text-align:center; font-size:1.1em;"><code>git rebase main</code></h3>
+      <div id="graph-rebase-demo" style="display:flex; justify-content:center; margin:6px 0;"></div>
+      <p style="font-size:0.9em; line-height:1.6; margin-top:6px;">
+        Takes your feature commits, <strong>detaches</strong> them, and <strong>replays them one by one</strong> on top of the latest <code>main</code>.
+        It looks like you wrote them after main's latest commit — no branching visible.
+      </p>
+      <div style="font-size:0.92em; line-height:1.8; margin-top:8px;">
+        ✅ Clean, linear history<br>
+        ✅ No merge commits<br>
+        ⚠️ Rewrites commit hashes
+      </div>
+    </div>
+  </div>
+  <p class="bottom-text">⚠️ Golden rule: <strong>never rebase commits that have already been pushed and shared</strong> — it rewrites history that others depend on.</p>
+</div>
+
+<!-- ==================== SLIDE 15: Key Terms ==================== -->
+<div class="slide">
+  <div class="slide-number">15 / 25</div>
+  <h2>Key Terms</h2>
+  <p style="font-size:1.1em; margin-bottom:10px;">These come up constantly.</p>
+  <table class="vocab-table">
+    <tr><th>Term</th><th>What it is</th><th>Example</th></tr>
+    <tr><td><strong>remote</strong></td><td>Any repo not on your machine</td><td>A repo on GitHub</td></tr>
+    <tr><td><strong>origin</strong></td><td>Default name for the remote you cloned/pushed to</td><td><code>github.com/you/repo</code></td></tr>
+    <tr><td><strong>upstream</strong></td><td>A remote you track for updates — often the original repo in a fork, but can be any remote branch</td><td><code>github.com/original/repo</code></td></tr>
+    <tr><td><strong>HEAD</strong></td><td>"You are here" — points to current branch/commit</td><td>On <code>main</code> → HEAD → main</td></tr>
+    <tr><td><strong>main</strong></td><td>Default stable branch (formerly <code>master</code>)</td><td>Production-ready code</td></tr>
+  </table>
+  <div class="terminal" style="max-width:700px; margin:12px auto;">
+    <span class="prompt">$</span> <span class="cmd">git remote -v</span> <span class="out"># -v = --verbose (same thing)</span><br>
+    <span class="out">origin&nbsp;&nbsp;&nbsp;https://github.com/you/repo.git</span><br>
+    <span class="out">upstream&nbsp;https://github.com/original/repo.git</span>
+  </div>
+  <div style="background:#F0F7FF; border:2px solid var(--blue); border-radius:12px; padding:14px 18px; margin-top:10px;">
+    <p style="font-size:0.95em; color:var(--blue-dark); margin:0 0 6px 0;">
+      <strong>Upstream tracking with <code>-u</code></strong> — links your local branch to a remote branch so you don't have to type the full command every time.
+    </p>
+    <div class="terminal" style="font-size:0.85em; margin:6px 0;">
+      <span class="out"># First push: set up tracking</span><br>
+      <span class="prompt">$</span> <span class="cmd">git push -u origin feature-branch</span><br><br>
+      <span class="out"># Now these just work (no need to specify remote/branch):</span><br>
+      <span class="prompt">$</span> <span class="cmd">git push</span><br>
+      <span class="prompt">$</span> <span class="cmd">git pull</span><br><br>
+      <span class="out"># Change tracking to a different remote/branch:</span><br>
+      <span class="prompt">$</span> <span class="cmd">git branch -u origin/other-branch</span><br><br>
+      <span class="out"># See what each branch tracks:</span><br>
+      <span class="prompt">$</span> <span class="cmd">git branch -vv</span>
+    </div>
+    <p style="font-size:0.85em; color:var(--gray-mid); margin:6px 0 0 0;">
+      This is per-branch — each branch can track a different remote branch. You can always override with the full command: <code>git push origin some-other-branch</code>.
+    </p>
+  </div>
+</div>
+
+<!-- ==================== SLIDE 16: Fetch Merge Pull ==================== -->
+<div class="slide">
+  <div class="slide-number">16 / 25</div>
+  <h2>Getting Remote Changes: Fetch, Merge & Pull</h2>
+  <p style="font-size:1.1em; margin-bottom:10px;">A <strong>safe way</strong> (two steps) and a <strong>shortcut</strong> (one step).</p>
+  <div class="two-panel" style="gap:20px;">
+    <div class="panel" style="background:var(--blue-light); border:2px solid var(--blue); padding:20px;">
+      <h3>Safe: fetch → review → merge</h3>
+      <div class="terminal" style="max-width:100%; font-size:0.9em;">
+        <span class="prompt">$</span> <span class="cmd">git fetch origin</span><br>
+        <span class="out"># Downloaded, code untouched</span><br><br>
+        <span class="prompt">$</span> <span class="cmd">git log origin/main --oneline</span><br>
+        <span class="out"># See what's new</span><br><br>
+        <span class="prompt">$</span> <span class="cmd">git merge origin/main</span><br>
+        <span class="out"># Now apply it</span>
+      </div>
+    </div>
+    <div class="panel" style="background:var(--purple-light); border:2px solid var(--purple); padding:20px;">
+      <h3>Shortcut: pull</h3>
+      <div class="terminal" style="max-width:100%; font-size:0.9em;">
+        <span class="prompt">$</span> <span class="cmd">git pull origin main</span><br>
+        <span class="out"># fetch + merge in one</span>
+      </div>
+      <div style="background:white; border-radius:12px; padding:16px 20px; margin-top:14px; border:2px solid var(--purple); text-align:center;">
+        <div style="font-family:monospace; font-size:1.1em; letter-spacing:0.5px;">
+          <span style="color:var(--purple); font-weight:800;">git pull</span>
+          <span style="color:var(--gray-mid); font-weight:400; padding:0 8px;">=</span>
+          <span style="color:var(--pink); font-weight:700;">git fetch</span>
+          <span style="color:var(--gray-mid); font-weight:400; padding:0 6px;">+</span>
+          <span style="color:var(--blue); font-weight:700;">git merge</span>
+        </div>
+        <p style="font-size:0.85em; color:var(--gray-mid); margin-top:6px;">Convenient, but no chance to review before merging.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== SLIDE 17: Collaborative ==================== -->
+<div class="slide">
+  <div class="slide-number">17 / 25</div>
+  <h2>Collaborative Workflow</h2>
+  <p style="font-size:1.1em; margin-bottom:8px;">
+    In a team, everyone works on <strong>their own branch</strong>. Nobody pushes directly to main.
+    Changes go through <strong>Pull Requests</strong> — reviewed before merging.
+  </p>
+  <div id="graph-collab" style="display:flex; justify-content:center; margin:8px 0;"></div>
+  <table class="vocab-table" style="width:100%; margin-top:10px; table-layout:fixed;">
+    <colgroup><col style="width:130px;"><col style="width:85px;"><col></colgroup>
+    <tr><th>Step</th><th>Who</th><th>What happens</th></tr>
+    <tr><td><strong>1. Branch</strong></td><td>Dev A</td><td>Creates <code>dev-A/feature</code> from <code>main</code></td></tr>
+    <tr><td><strong>2. Work</strong></td><td>Dev A</td><td>Makes commits on the branch</td></tr>
+    <tr><td><strong>3. Branch</strong></td><td>Dev B</td><td>Creates <code>dev-B/feature</code> from Dev A's branch to build on their work</td></tr>
+    <tr><td><strong>4. Push + PR</strong></td><td>Both</td><td>Each pushes their branch and opens a Pull Request</td></tr>
+    <tr><td><strong>5. Review</strong></td><td>Both</td><td>Teammates review each other's PRs</td></tr>
+    <tr><td><strong>6. Merge</strong></td><td>Both</td><td>Approved PRs get merged into main</td></tr>
+  </table>
+  <p class="bottom-text">"Branch per feature + Pull Request + code review = how every professional team uses Git."</p>
+</div>
+
+<!-- ==================== SLIDE 18: Open Source ==================== -->
+<div class="slide">
+  <div class="slide-number">18 / 25</div>
+  <h2>Open Source Collaboration Workflow</h2>
+  <p style="font-size:1.1em; margin-bottom:10px;">Contributing to a project you <strong>don't own</strong>.</p>
+  <ol class="step-list">
+    <li><strong>Fork</strong> on GitHub → creates <code>github.com/you/repo</code></li>
+    <li><strong>Clone</strong> your fork: <code>git clone https://github.com/you/repo.git</code></li>
+    <li><strong>Add upstream</strong>: <code>git remote add upstream https://github.com/original/repo.git</code></li>
+    <li><strong>Branch</strong>: <code>git switch -c my-feature</code></li>
+    <li><strong>Work</strong>: edit → <code>git add</code> → <code>git commit</code></li>
+    <li><strong>Push</strong> to your fork: <code>git push origin my-feature</code></li>
+    <li>Open a <strong>Pull Request</strong> from your fork to the original</li>
+  </ol>
+  <div style="background:#F0F7FF; border:2px solid var(--blue); border-radius:14px; padding:14px 22px; margin-top:14px;">
+    <p style="font-size:1em; font-weight:700; color:var(--blue-dark); margin:0;">Keeping your fork in sync:</p>
+    <div class="terminal" style="font-size:0.88em; margin:8px 0 0 0;">
+      <span class="prompt">$</span> <span class="cmd">git fetch upstream</span><br>
+      <span class="prompt">$</span> <span class="cmd">git merge upstream/main</span><br>
+      <span class="prompt">$</span> <span class="cmd">git push origin main</span>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== SLIDE 19: Issues ==================== -->
+<div class="slide">
+  <div class="slide-number">19 / 25</div>
+  <h2>GitHub Issues</h2>
+  <p style="font-size:1.1em; margin-bottom:10px;">
+    GitHub Issues is a built-in task tracker tied directly to your code. Teams use it to report bugs,
+    plan features, assign work, and track progress — all in one place.
+  </p>
+  <div class="two-panel" style="gap:20px;">
+    <div style="flex:1; border-radius:16px; padding:20px; background:#F0F7FF; border:2px solid var(--blue);">
+      <h3 style="color:var(--blue-dark); margin-bottom:10px;">What you can do with Issues</h3>
+      <div style="display:flex; flex-direction:column; gap:7px;">
+        <div style="background:white; border-radius:10px; padding:9px 14px; border:1px solid var(--blue-light); font-size:0.92em;">🐛 <strong>Report bugs</strong><br><span style="color:var(--gray-mid);">Describe the problem, steps to reproduce, expected vs actual</span></div>
+        <div style="background:white; border-radius:10px; padding:9px 14px; border:1px solid var(--blue-light); font-size:0.92em;">✨ <strong>Request features</strong><br><span style="color:var(--gray-mid);">Propose new functionality with a clear use case</span></div>
+        <div style="background:white; border-radius:10px; padding:9px 14px; border:1px solid var(--blue-light); font-size:0.92em;">📋 <strong>Track tasks</strong><br><span style="color:var(--gray-mid);">Break work into issues, assign to team members</span></div>
+        <div style="background:white; border-radius:10px; padding:9px 14px; border:1px solid var(--blue-light); font-size:0.92em;">🏷️ <strong>Labels & Milestones</strong><br><span style="color:var(--gray-mid);">Categorize with <code>bug</code>, <code>enhancement</code>; group into sprints</span></div>
+      </div>
+    </div>
+    <div style="flex:1; border-radius:16px; padding:20px; background:#F8F8F8; border:2px solid #94A3B8;">
+      <h3 style="color:var(--text-dark); margin-bottom:10px;">Linking Issues to Code</h3>
+      <div style="display:flex; flex-direction:column; gap:7px;">
+        <div style="background:white; border-radius:10px; padding:9px 14px; border:1px solid #E5E7EB; font-size:0.92em;"><strong>In a commit message</strong><br><span style="color:var(--gray-mid); font-family:monospace; font-size:0.9em;">"fix: handle null ages, fixes #12"</span></div>
+        <div style="background:white; border-radius:10px; padding:9px 14px; border:1px solid #E5E7EB; font-size:0.92em;"><strong>In a PR description</strong><br><span style="color:var(--gray-mid); font-family:monospace; font-size:0.9em;">"Closes #12"</span></div>
+        <div style="background:white; border-radius:10px; padding:9px 14px; border:1px solid #E5E7EB; font-size:0.92em;"><strong>Auto-close keywords</strong><br><span style="color:var(--gray-mid);"><code>fixes</code>, <code>closes</code>, <code>resolves</code> + <code>#number</code></span></div>
+        <div style="background:white; border-radius:10px; padding:9px 14px; border:1px solid #E5E7EB; font-size:0.92em;"><strong>When the PR merges</strong><br><span style="color:var(--gray-mid);">Referenced issue auto-closes ✅</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== SLIDE 20: .gitignore ==================== -->
+<div class="slide">
+  <div class="slide-number">20 / 25</div>
+  <h2>.gitignore</h2>
+  <p style="font-size:1.1em; margin-bottom:10px;">Track code, not secrets or junk.</p>
+  <div style="display:flex; gap:28px; align-items:flex-start;">
+    <div>
+      <div class="gitignore-block" style="min-width:260px;">
+        <span class="gi-comment"># Secrets</span><br><span class="gi-pattern">.env</span><br><span class="gi-pattern">credentials.json</span><br><br>
+        <span class="gi-comment"># Python</span><br><span class="gi-pattern">__pycache__/</span><br><span class="gi-pattern">venv/</span><br><br>
+        <span class="gi-comment"># Jupyter</span><br><span class="gi-pattern">.ipynb_checkpoints/</span><br><br>
+        <span class="gi-comment"># Data</span><br><span class="gi-pattern">data/*.csv</span>
+      </div>
+    </div>
+    <div style="flex:1;">
+      <table class="vocab-table" style="font-size:0.92em;">
+        <tr><th>Pattern</th><th>Ignores</th></tr>
+        <tr><td><code>*.csv</code></td><td>All CSV files everywhere</td></tr>
+        <tr><td><code>data/*.csv</code></td><td>CSVs in <code>data/</code> folder only</td></tr>
+        <tr><td><code>__pycache__/</code></td><td>Entire folder and contents</td></tr>
+        <tr><td><code>*.log</code></td><td>All log files</td></tr>
+        <tr><td><code>*.pkl</code></td><td>Pickle files (saved models)</td></tr>
+        <tr><td><code>.DS_Store</code></td><td>macOS system file</td></tr>
+        <tr><td><code>Thumbs.db</code></td><td>Windows thumbnail cache</td></tr>
+        <tr><td><code>*.ipynb_checkpoints/</code></td><td>Jupyter auto-saves</td></tr>
+        <tr><td><code>!important.csv</code></td><td>Exception: DO track this file</td></tr>
+      </table>
+    </div>
+  </div>
+  <p class="footer-text">⚠️ Already committed? <code>git rm --cached file</code> to stop tracking.</p>
+</div>
+
+<!-- ==================== SLIDE 21: Undoing ==================== -->
+<div class="slide">
+  <div class="slide-number">21 / 25</div>
+  <h2>Undoing Mistakes</h2>
+  <p style="font-size:1.1em; margin-bottom:10px;">Which safety net to use when.</p>
+  <table class="vocab-table">
+    <tr><th>Situation</th><th>Command</th><th>What happens</th></tr>
+    <tr><td>Save work temporarily</td><td><code>git stash</code></td><td>Tucks away. <code>git stash pop</code> brings back</td></tr>
+    <tr><td>Undo a pushed commit (safe)</td><td><code>git revert &lt;hash&gt;</code></td><td>New commit that reverses the old one</td></tr>
+    <tr><td>Un-commit (not pushed yet)</td><td><code>git reset --soft HEAD~1</code></td><td>Moves back to staging. Files unchanged</td></tr>
+    <tr><td>Unstage a file (keep changes)</td><td><code>git restore --staged file</code></td><td>Removes from staging, file stays modified</td></tr>
+    <tr><td>Discard changes in a file</td><td><code>git restore file</code></td><td>Reverts file to last commit. ⚠️ Permanent</td></tr>
+    <tr><td>Untrack a committed file</td><td><code>git rm --cached file</code></td><td>Stops tracking but keeps file on disk</td></tr>
+  </table>
+  <p class="bottom-text">"When in doubt, <code>git revert</code> — always safe."</p>
+</div>
+
+<!-- ==================== SLIDE 22: Best Practices ==================== -->
+<div class="slide">
+  <div class="slide-number">22 / 25</div>
+  <h2>Git Best Practices</h2>
+  <p style="font-size:1.1em; margin-bottom:12px;">Rules that prevent 95% of Git disasters.</p>
+  <div class="two-panel" style="gap:20px;">
+    <div style="flex:1; border-radius:16px; padding:20px; background:#F0F7FF; border:2px solid var(--blue);">
+      <h3 style="font-size:1.1em; color:var(--blue-dark); margin-bottom:10px;">✅ Always Do</h3>
+      <div style="display:flex; flex-direction:column; gap:8px;">
+        <div style="background:white; border-radius:10px; padding:10px 14px; border:1px solid var(--blue-light); font-size:0.92em;"><strong>Commit often, keep commits small</strong><br><span style="color:var(--gray-mid);">Each commit = one logical change. Easier to review and revert.</span></div>
+        <div style="background:white; border-radius:10px; padding:10px 14px; border:1px solid var(--blue-light); font-size:0.92em;"><strong>One branch per feature/fix</strong><br><span style="color:var(--gray-mid);">Isolate your work. Never code directly on <code>main</code>.</span></div>
+        <div style="background:white; border-radius:10px; padding:10px 14px; border:1px solid var(--blue-light); font-size:0.92em;"><strong>Pull before you push</strong><br><span style="color:var(--gray-mid);">Get latest changes first to avoid conflicts.</span></div>
+        <div style="background:white; border-radius:10px; padding:10px 14px; border:1px solid var(--blue-light); font-size:0.92em;"><strong>Write meaningful commit messages</strong><br><span style="color:var(--gray-mid);">Your future self will thank you at 2 AM.</span></div>
+        <div style="background:white; border-radius:10px; padding:10px 14px; border:1px solid var(--blue-light); font-size:0.92em;"><strong>Review diff before committing</strong><br><span style="color:var(--gray-mid);"><code>git diff --staged</code> catches accidental changes.</span></div>
+      </div>
+    </div>
+    <div style="flex:1; border-radius:16px; padding:20px; background:#F8F8F8; border:2px solid #94A3B8;">
+      <h3 style="font-size:1.1em; color:var(--text-dark); margin-bottom:10px;">❌ Never Do</h3>
+      <div style="display:flex; flex-direction:column; gap:8px;">
+        <div style="background:white; border-radius:10px; padding:10px 14px; border:1px solid #E5E7EB; font-size:0.92em;"><strong>Never commit secrets</strong><br><span style="color:var(--gray-mid);">API keys, passwords, <code>.env</code> — once pushed, in history forever.</span></div>
+        <div style="background:white; border-radius:10px; padding:10px 14px; border:1px solid #E5E7EB; font-size:0.92em;"><strong>Never commit large data files</strong><br><span style="color:var(--gray-mid);">CSVs, models, images — use <code>.gitignore</code>.</span></div>
+        <div style="background:white; border-radius:10px; padding:10px 14px; border:1px solid #E5E7EB; font-size:0.92em;"><strong>Never force push to main</strong><br><span style="color:var(--gray-mid);"><code>--force</code> overwrites everyone else's work.</span></div>
+        <div style="background:white; border-radius:10px; padding:10px 14px; border:1px solid #E5E7EB; font-size:0.92em;"><strong>Never rebase shared branches</strong><br><span style="color:var(--gray-mid);">Rewrites history others depend on.</span></div>
+        <div style="background:white; border-radius:10px; padding:10px 14px; border:1px solid #E5E7EB; font-size:0.92em;"><strong>Never <code>git add .</code> blindly</strong><br><span style="color:var(--gray-mid);">Always check <code>git status</code> first.</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== SLIDE 23: Oh No Scenarios ==================== -->
+<div class="slide">
+  <div class="slide-number">23 / 25</div>
+  <h2>"Oh No" — Real Emergencies & How to Fix Them</h2>
+  <p style="font-size:1.1em; margin-bottom:12px;">These will happen to you. Here's exactly what to do.</p>
+
+  <!-- Scenario 1 -->
+  <div style="background:#F8F8F8; border:2px solid #94A3B8; border-radius:14px; padding:16px 20px; margin-bottom:12px;">
+    <p style="font-weight:700; font-size:1em; color:var(--text-dark); margin:0 0 6px 0;">🚨 "I committed and pushed a secret (API key, password)"</p>
+    <p style="font-size:0.92em; margin:0 0 8px 0;">The key is in Git history even if you delete the file. Anyone with repo access can see it.</p>
+    <div class="terminal" style="font-size:0.85em; margin:6px 0;">
+      <span class="out"># 1. Immediately revoke/rotate the exposed key</span><br>
+      <span class="out"># 2. Stop tracking the file + add to .gitignore</span><br>
+      <span class="prompt">$</span> <span class="cmd">git rm --cached .env</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="out"># untrack, keep file locally</span><br>
+      <span class="prompt">$</span> <span class="cmd">echo ".env" >> .gitignore</span><br>
+      <span class="prompt">$</span> <span class="cmd">git add .gitignore && git commit -m "remove secrets, update gitignore"</span><br>
+      <span class="prompt">$</span> <span class="cmd">git push</span><br>
+      <span class="out"># 3. For full history removal: use git filter-repo or BFG Repo Cleaner</span>
+    </div>
+  </div>
+
+  <!-- Scenario 2 -->
+  <div style="background:#F0F7FF; border:2px solid var(--blue); border-radius:14px; padding:16px 20px; margin-bottom:12px;">
+    <p style="font-weight:700; font-size:1em; color:var(--blue-dark); margin:0 0 6px 0;">⚠️ "I committed to the wrong branch (pushed to main by accident)"</p>
+    <div class="terminal" style="font-size:0.85em; margin:6px 0;">
+      <span class="out"># Undo the last commit on main, keep the changes</span><br>
+      <span class="prompt">$</span> <span class="cmd">git reset --soft HEAD~1</span><br>
+      <span class="prompt">$</span> <span class="cmd">git stash</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="out"># save the changes</span><br>
+      <span class="prompt">$</span> <span class="cmd">git switch -c correct-branch</span>&nbsp;&nbsp;<span class="out"># move to right branch</span><br>
+      <span class="prompt">$</span> <span class="cmd">git stash pop</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="out"># restore changes</span><br>
+      <span class="prompt">$</span> <span class="cmd">git add . && git commit -m "my changes"</span>
+    </div>
+  </div>
+
+  <!-- Scenario 3 -->
+  <div style="background:#F8FAFB; border:2px solid var(--teal); border-radius:14px; padding:16px 20px;">
+    <p style="font-weight:700; font-size:1em; color:#0F766E; margin:0 0 6px 0;">💡 "I pushed a bad commit and the team already pulled it"</p>
+    <p style="font-size:0.92em; margin:0 0 8px 0;">Don't rewrite history — use <code>revert</code> to undo it safely with a new commit.</p>
+    <div class="terminal" style="font-size:0.85em; margin:6px 0;">
+      <span class="prompt">$</span> <span class="cmd">git log --oneline</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="out"># find the bad commit hash</span><br>
+      <span class="prompt">$</span> <span class="cmd">git revert a1b2c3d</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="out"># creates a NEW commit that undoes it</span><br>
+      <span class="prompt">$</span> <span class="cmd">git push</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="out"># safe for everyone</span>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== SLIDE 24: Practice ==================== -->
+<div class="slide">
+  <div class="slide-number">24 / 25</div>
+  <h2>Practice: Full Workflow</h2>
+  <p style="font-size:1.1em; margin-bottom:10px;">Type every command on your machine.</p>
+  <div class="terminal" style="max-width:680px; margin:10px auto; font-size:0.92em;">
+    <span class="out"># 1. Create & init</span><br>
+    <span class="prompt">$</span> <span class="cmd">mkdir git-practice && cd git-practice</span><br>
+    <span class="prompt">$</span> <span class="cmd">git init</span><br><br>
+    <span class="out"># 2. First commit</span><br>
+    <span class="prompt">$</span> <span class="cmd">echo "# My Project" > README.md</span><br>
+    <span class="prompt">$</span> <span class="cmd">git add README.md</span><br>
+    <span class="prompt">$</span> <span class="cmd">git commit -m "initial commit: add README"</span><br><br>
+    <span class="out"># 3. Branch, work, commit</span><br>
+    <span class="prompt">$</span> <span class="cmd">git switch -c feature-hello</span><br>
+    <span class="prompt">$</span> <span class="cmd">echo "print('hello')" > hello.py</span><br>
+    <span class="prompt">$</span> <span class="cmd">git add hello.py</span><br>
+    <span class="prompt">$</span> <span class="cmd">git commit -m "add: hello world script"</span><br><br>
+    <span class="out"># 4. Merge & clean up</span><br>
+    <span class="prompt">$</span> <span class="cmd">git switch main</span><br>
+    <span class="prompt">$</span> <span class="cmd">git merge feature-hello</span><br>
+    <span class="prompt">$</span> <span class="cmd">git branch -d feature-hello</span><br><br>
+    <span class="out"># 5. Push to GitHub</span><br>
+    <span class="prompt">$</span> <span class="cmd">git remote add origin https://github.com/you/repo.git</span><br>
+    <span class="prompt">$</span> <span class="cmd">git push -u origin main</span>
+  </div>
+</div>
+
+<!-- ==================== SLIDE 25: Cheat Sheet ==================== -->
+<div class="slide">
+  <div class="slide-number">25 / 25</div>
+  <h2>Cheat Sheet</h2>
+  <div class="recap-grid">
+    <div class="recap-card" style="background:#F8F8F8; border-color:#9CA3AF;"><h4>📦 Setup</h4><div class="cmds">git init<br>git clone URL<br>git config --global ...</div></div>
+    <div class="recap-card" style="background:#F8F8F8; border-color:#9CA3AF;"><h4>📋 Daily</h4><div class="cmds">git status<br>git add file<br>git commit -m "msg"<br>git push origin main</div></div>
+    <div class="recap-card" style="background:#F8F8F8; border-color:#9CA3AF;"><h4>🌳 Branching</h4><div class="cmds">git branch<br>git switch -c name<br>git merge branch<br>git rebase main</div></div>
+    <div class="recap-card" style="background:#F8F8F8; border-color:#9CA3AF;"><h4>☁️ Remotes</h4><div class="cmds">git remote -v<br>git fetch origin<br>git merge origin/main<br>git pull origin main</div></div>
+    <div class="recap-card" style="background:#F8F8F8; border-color:#9CA3AF;"><h4>⏪ Undo</h4><div class="cmds">git stash / pop<br>git revert &lt;hash&gt;<br>git reset --soft HEAD~1</div></div>
+    <div class="recap-card" style="background:#F8F8F8; border-color:#9CA3AF;"><h4>🔍 Inspect</h4><div class="cmds">git log --oneline<br>git diff<br>git diff --staged<br>git branch -a</div></div>
+  </div>
+  <div style="margin-top:24px; text-align:center;">
+    <p style="font-size:1.35em; color:var(--blue-dark); font-weight:700;">You now know Git. Go build, break things, and recover like a pro.</p>
+  </div>
+</div>
+
+<script>
+// Shared horizontal template
+const hOpts = (colors) => ({
+  template: GitgraphJS.templateExtend(GitgraphJS.TemplateName.Metro, {
+    colors: colors,
+    branch: { lineWidth: 8, spacing: 40, mergeStyle: "bezier", label: { display: true, borderRadius: 8, font: "normal 11pt Segoe UI, system-ui, sans-serif" } },
+    commit: { spacing: 60, dot: { size: 10, strokeWidth: 0 }, message: { display: false, displayAuthor: false, displayHash: false } },
+  }),
+  orientation: GitgraphJS.Orientation.Horizontal,
+  mode: GitgraphJS.Mode.Compact,
+});
+
+// Small horizontal template (for side-by-side panels)
+const hSmall = (colors) => ({
+  template: GitgraphJS.templateExtend(GitgraphJS.TemplateName.Metro, {
+    colors: colors,
+    branch: { lineWidth: 6, spacing: 32, mergeStyle: "bezier", label: { display: false } },
+    commit: { spacing: 40, dot: { size: 8, strokeWidth: 0 }, message: { display: false } },
+  }),
+  orientation: GitgraphJS.Orientation.Horizontal,
+  mode: GitgraphJS.Mode.Compact,
+});
+
+// ====== SLIDE 10: Branches ======
+(function() {
+  const g = GitgraphJS.createGitgraph(document.getElementById("graph-branches"), hOpts(["#10B981", "#EC4899", "#3B82F6"]));
+  const main = g.branch("main");
+  main.commit("").commit("");
+  const bugfix = g.branch("fix-bug");
+  bugfix.commit("").commit("");
+  main.merge(bugfix);
+  const feature = g.branch("feature-login");
+  feature.commit("").commit("").commit("");
+  main.merge(feature);
+  main.commit("");
+})();
+
+// ====== SLIDE 12: Merge ======
+(function() {
+  const g = GitgraphJS.createGitgraph(document.getElementById("graph-merge"), hOpts(["#10B981", "#3B82F6"]));
+  const main = g.branch("main");
+  main.commit("").commit("");
+  const feature = g.branch("feature-cleanup");
+  feature.commit("").commit("");
+  main.merge(feature);
+  main.commit("");
+})();
+
+// ====== SLIDE 14: Merge Demo ======
+(function() {
+  const g = GitgraphJS.createGitgraph(document.getElementById("graph-merge-demo"), hSmall(["#10B981", "#3B82F6"]));
+  const main = g.branch("main");
+  main.commit("").commit("");
+  const feat = g.branch("feature");
+  feat.commit("").commit("");
+  main.merge(feat);
+})();
+
+// ====== SLIDE 14: Rebase Demo ======
+(function() {
+  const g = GitgraphJS.createGitgraph(document.getElementById("graph-rebase-demo"), hSmall(["#10B981"]));
+  const main = g.branch("main");
+  main.commit("").commit("").commit("").commit("");
+})();
+
+// ====== SLIDE 17: Collaborative ======
+(function() {
+  const collabOpts = {
+    template: GitgraphJS.templateExtend(GitgraphJS.TemplateName.Metro, {
+      colors: ["#10B981", "#EC4899", "#3B82F6"],
+      branch: { lineWidth: 8, spacing: 56, mergeStyle: "bezier", label: { display: true, borderRadius: 8, font: "normal 11pt Segoe UI, system-ui, sans-serif" } },
+      commit: { spacing: 60, dot: { size: 10, strokeWidth: 0 }, message: { display: false, displayAuthor: false, displayHash: false } },
+    }),
+    orientation: GitgraphJS.Orientation.Horizontal,
+    mode: GitgraphJS.Mode.Compact,
+  };
+  const g = GitgraphJS.createGitgraph(document.getElementById("graph-collab"), collabOpts);
+  const main = g.branch("main");
+  main.commit("").commit("");
+  const devA = g.branch("dev-A/feature");
+  devA.commit("").commit("");
+  const devB = devA.branch("dev-B/feature");
+  devB.commit("").commit("").commit("");
+  main.merge(devA);
+  main.merge(devB);
+  main.tag("v1.0");
+})();
+</script>
+
+</body>
+</html>

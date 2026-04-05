@@ -1,0 +1,1650 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Python Fundamentals — Class 1</title>
+<style>
+  :root {
+    --blue: #3B82F6;
+    --blue-dark: #1E40AF;
+    --green: #10B981;
+    --green-light: #D1FAE5;
+    --gray-light: #F3F4F6;
+    --gray-mid: #6B7280;
+    --gray-border: #D1D5DB;
+    --amber: #F59E0B;
+    --amber-light: #FEF3C7;
+    --red: #EF4444;
+    --red-light: #FEE2E2;
+    --purple: #8B5CF6;
+    --purple-light: #EDE9FE;
+    --blue-light: #DBEAFE;
+    --text-dark: #1F2937;
+    --teal: #14B8A6;
+    --teal-light: #CCFBF1;
+    --pink: #EC4899;
+    --pink-light: #FCE7F3;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    color: var(--text-dark);
+    background: #F9FAFB;
+    line-height: 1.5;
+  }
+
+  .slide {
+    min-height: 100vh;
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 60px 50px;
+    background: white;
+    border-bottom: 3px solid var(--gray-border);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  .slide-number {
+    font-size: 0.7em;
+    color: var(--gray-mid);
+    margin-bottom: 8px;
+    font-weight: 600;
+  }
+
+  h1 {
+    font-size: 2.8em;
+    color: var(--blue-dark);
+    font-weight: 800;
+  }
+  h2 {
+    font-size: 2em;
+    color: var(--blue-dark);
+    font-weight: 700;
+    margin-bottom: 12px;
+  }
+  .subtitle {
+    font-size: 1.2em;
+    color: var(--gray-mid);
+    margin-top: 8px;
+  }
+  .bottom-text {
+    margin-top: 24px;
+    font-size: 1em;
+    color: var(--blue-dark);
+    font-weight: 600;
+    font-style: italic;
+  }
+  .footer-text {
+    margin-top: 16px;
+    font-size: 0.85em;
+    color: var(--gray-mid);
+  }
+
+  code {
+    background: var(--gray-light);
+    border-radius: 4px;
+    padding: 0.1em 0.4em;
+    font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+    font-size: 0.9em;
+    border: 1px solid var(--gray-border);
+  }
+
+  .bullet-list {
+    list-style: none;
+    padding: 0;
+    margin: 12px 0 0 0;
+  }
+  .bullet-list li {
+    font-size: 0.9em;
+    padding: 3px 0;
+  }
+
+  /* ========== Type cards ========== */
+  .type-cards {
+    display: flex;
+    gap: 14px;
+    margin: 16px 0;
+    flex-wrap: wrap;
+  }
+  .type-card {
+    flex: 1;
+    min-width: 140px;
+    border-radius: 14px;
+    padding: 16px 14px;
+    text-align: center;
+    border: 2px solid;
+  }
+  .type-card .icon { font-size: 1.8em; }
+  .type-card h4 { font-size: 1.1em; margin: 6px 0 2px 0; font-family: monospace; }
+  .type-card .desc { font-size: 0.8em; color: var(--gray-mid); margin: 2px 0; }
+  .type-card .example {
+    font-family: monospace;
+    font-size: 0.85em;
+    background: rgba(255,255,255,0.7);
+    border-radius: 6px;
+    padding: 3px 8px;
+    margin-top: 6px;
+    display: inline-block;
+  }
+  .tc-int { background: var(--blue-light); border-color: var(--blue); }
+  .tc-float { background: var(--green-light); border-color: var(--green); }
+  .tc-str { background: var(--amber-light); border-color: var(--amber); }
+  .tc-bool { background: var(--purple-light); border-color: var(--purple); }
+  .tc-none { background: var(--gray-light); border-color: var(--gray-mid); }
+
+  /* ========== Operator box ========== */
+  .op-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+    margin: 16px 0;
+  }
+  .op-box {
+    border-radius: 12px;
+    padding: 14px 16px;
+    border: 2px solid;
+  }
+  .op-box h4 {
+    font-size: 0.9em;
+    margin: 0 0 8px 0;
+  }
+  .op-box .ops {
+    font-family: monospace;
+    font-size: 0.95em;
+    line-height: 1.8;
+  }
+  .op-arith { background: var(--blue-light); border-color: var(--blue); }
+  .op-arith h4 { color: var(--blue-dark); }
+  .op-comp { background: var(--green-light); border-color: var(--green); }
+  .op-comp h4 { color: #065F46; }
+  .op-logic { background: var(--amber-light); border-color: var(--amber); }
+  .op-logic h4 { color: #92400E; }
+  .op-assign { background: var(--purple-light); border-color: var(--purple); }
+  .op-assign h4 { color: #5B21B6; }
+  .op-member { background: var(--teal-light); border-color: var(--teal); }
+  .op-member h4 { color: #0F766E; }
+  .op-identity { background: var(--pink-light); border-color: var(--pink); }
+  .op-identity h4 { color: #9D174D; }
+
+  .op-tag {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 6px;
+    margin: 2px 3px;
+    font-family: monospace;
+    font-size: 0.9em;
+    font-weight: 600;
+    background: rgba(255,255,255,0.6);
+  }
+
+  /* ========== Two Panel ========== */
+  .two-panel {
+    display: flex;
+    gap: 24px;
+    margin-top: 16px;
+  }
+  .panel {
+    flex: 1;
+    border-radius: 16px;
+    padding: 20px;
+  }
+  .panel h3 {
+    font-size: 1.05em;
+    margin-bottom: 12px;
+    color: var(--text-dark);
+  }
+  .panel-bad {
+    background: #FEF2F2;
+    border: 2px dashed var(--red);
+  }
+  .panel-good {
+    background: #F0FDF4;
+    border: 2px solid var(--green);
+  }
+  .panel-neutral {
+    background: var(--gray-light);
+    border: 2px solid var(--gray-border);
+  }
+
+  /* ========== Index visual ========== */
+  .index-visual {
+    display: flex;
+    gap: 0;
+    margin: 16px 0;
+    justify-content: center;
+  }
+  .index-cell {
+    width: 70px;
+    text-align: center;
+    border: 2px solid var(--blue);
+    border-right: none;
+    background: var(--blue-light);
+  }
+  .index-cell:last-child { border-right: 2px solid var(--blue); border-radius: 0 10px 10px 0; }
+  .index-cell:first-child { border-radius: 10px 0 0 10px; }
+  .index-val {
+    padding: 10px 0;
+    font-weight: 700;
+    font-size: 1.05em;
+    color: var(--blue-dark);
+  }
+  .index-num {
+    background: var(--blue-dark);
+    color: white;
+    font-size: 0.75em;
+    padding: 3px 0;
+    font-family: monospace;
+  }
+
+  /* ========== Method box ========== */
+  .method-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin: 16px 0;
+  }
+  .method-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: var(--gray-light);
+    border-radius: 10px;
+    padding: 10px 14px;
+    border: 1px solid var(--gray-border);
+  }
+  .method-name {
+    font-family: monospace;
+    font-weight: 700;
+    font-size: 0.9em;
+    white-space: nowrap;
+    color: var(--blue-dark);
+  }
+  .method-desc {
+    font-size: 0.8em;
+    color: var(--gray-mid);
+  }
+
+  /* ========== Pseudo code block ========== */
+  .pseudo-block {
+    background: var(--gray-light);
+    border-radius: 12px;
+    padding: 16px 20px;
+    border: 1px solid var(--gray-border);
+    font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+    font-size: 0.9em;
+    line-height: 1.7;
+    margin: 12px 0;
+    max-width: 600px;
+  }
+  .pseudo-block .kw { color: var(--blue); font-weight: 700; }
+  .pseudo-block .fn { color: var(--amber); font-weight: 700; }
+  .pseudo-block .str { color: var(--green); }
+  .pseudo-block .comment { color: var(--gray-mid); }
+  .pseudo-block .num { color: var(--purple); }
+
+  /* ========== Annotated code ========== */
+  .annotated-code {
+    max-width: 750px;
+    margin: 12px auto;
+  }
+  .code-block-annotated {
+    background: var(--gray-light);
+    border-radius: 12px;
+    padding: 16px 20px;
+    border: 1px solid var(--gray-border);
+  }
+  .code-line {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 4px 0;
+  }
+  .code-text {
+    font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+    font-size: 0.9em;
+    white-space: pre;
+    flex: 1;
+  }
+  .annotation {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--amber-light);
+    border: 1px solid var(--amber);
+    border-radius: 6px;
+    padding: 3px 10px;
+    font-size: 0.75em;
+    white-space: nowrap;
+  }
+  .ann-num {
+    background: var(--amber);
+    color: white;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.8em;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+
+  /* ========== Flow diagram ========== */
+  .flow-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 16px 0;
+    gap: 0;
+  }
+  .flow-node {
+    border-radius: 12px;
+    padding: 10px 24px;
+    font-weight: 700;
+    font-size: 0.95em;
+    text-align: center;
+    border: 2px solid;
+  }
+  .flow-diamond {
+    padding: 10px 20px;
+    font-weight: 700;
+    font-size: 0.9em;
+    text-align: center;
+    border: 2px solid var(--amber);
+    background: var(--amber-light);
+    transform: rotate(0deg);
+    border-radius: 8px;
+    position: relative;
+  }
+  .flow-arrow {
+    font-size: 1.4em;
+    color: var(--gray-mid);
+    margin: 4px 0;
+  }
+  .flow-row {
+    display: flex;
+    gap: 20px;
+    align-items: center;
+  }
+  .flow-label {
+    font-size: 0.75em;
+    color: var(--gray-mid);
+    font-weight: 600;
+  }
+
+  /* ========== Conveyor belt visual ========== */
+  .conveyor {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    margin: 16px auto;
+    justify-content: center;
+  }
+  .conveyor-item {
+    width: 52px;
+    height: 52px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 1em;
+    border: 2px solid;
+    border-radius: 10px;
+    margin: 0 3px;
+  }
+  .conv-normal { background: var(--blue-light); border-color: var(--blue); color: var(--blue-dark); }
+  .conv-skip { background: var(--amber-light); border-color: var(--amber); color: #92400E; opacity: 0.5; text-decoration: line-through; }
+  .conv-stop { background: var(--red-light); border-color: var(--red); color: var(--red); }
+  .conv-arrow {
+    font-size: 1.2em;
+    color: var(--gray-mid);
+    margin: 0 4px;
+  }
+
+  /* ========== Vocab table ========== */
+  .vocab-table {
+    width: 100%;
+    margin: 16px 0;
+    border-collapse: collapse;
+    font-size: 0.9em;
+  }
+  .vocab-table th {
+    background: var(--blue-dark);
+    color: white;
+    padding: 8px 12px;
+    text-align: left;
+  }
+  .vocab-table td {
+    padding: 8px 12px;
+    border-bottom: 1px solid var(--gray-border);
+  }
+  .vocab-table tr:nth-child(even) { background: var(--gray-light); }
+
+  /* ========== Decision table ========== */
+  .decision-table {
+    width: 100%;
+    margin: 16px 0;
+    border-collapse: collapse;
+    font-size: 0.85em;
+  }
+  .decision-table th {
+    background: var(--blue-dark);
+    color: white;
+    padding: 8px 12px;
+    text-align: center;
+  }
+  .decision-table th:first-child { text-align: left; }
+  .decision-table td {
+    padding: 8px 12px;
+    border-bottom: 1px solid var(--gray-border);
+    text-align: center;
+  }
+  .decision-table td:first-child {
+    text-align: left;
+    font-weight: 700;
+    font-family: monospace;
+  }
+  .decision-table tr:nth-child(even) { background: var(--gray-light); }
+  .check { color: var(--green); font-weight: 700; }
+  .cross { color: var(--red); font-weight: 700; }
+
+  /* ========== Transition slide ========== */
+  .transition-slide {
+    text-align: center;
+  }
+  .transition-slide h2 { font-size: 2.2em; }
+  .transition-slide .big-icon { font-size: 3em; margin: 16px 0; }
+
+  /* ========== Comparison panel ========== */
+  .compare-panels {
+    display: flex;
+    gap: 20px;
+    margin: 16px 0;
+    align-items: stretch;
+  }
+  .compare-arrow {
+    display: flex;
+    align-items: center;
+    font-size: 2em;
+    color: var(--blue);
+    flex-shrink: 0;
+  }
+  .compare-box {
+    flex: 1;
+    border-radius: 14px;
+    padding: 16px 20px;
+  }
+  .compare-before {
+    background: var(--gray-light);
+    border: 2px solid var(--gray-border);
+  }
+  .compare-after {
+    background: #F0FDF4;
+    border: 2px solid var(--green);
+  }
+  .compare-box h4 {
+    font-size: 0.9em;
+    margin: 0 0 10px 0;
+  }
+
+  /* ========== Anatomy box ========== */
+  .anatomy-box {
+    border: 3px solid var(--blue-dark);
+    border-radius: 16px;
+    max-width: 580px;
+    margin: 16px auto;
+    overflow: hidden;
+  }
+  .anatomy-header {
+    background: var(--blue-dark);
+    color: white;
+    text-align: center;
+    padding: 10px;
+    font-size: 1.1em;
+    font-weight: 700;
+  }
+  .anatomy-section {
+    padding: 12px 20px;
+    border-bottom: 2px dashed var(--gray-border);
+  }
+  .anatomy-section:last-child { border-bottom: none; }
+  .anatomy-section h4 {
+    margin: 0 0 4px 0;
+    font-size: 0.95em;
+  }
+  .anatomy-section p {
+    margin: 2px 0;
+    font-size: 0.85em;
+    color: var(--gray-mid);
+  }
+  .anatomy-kw { background: #EFF6FF; }
+  .anatomy-kw h4 { color: var(--blue); }
+  .anatomy-param { background: #F0FDF4; }
+  .anatomy-param h4 { color: var(--green); }
+  .anatomy-body { background: #FFFBEB; }
+  .anatomy-body h4 { color: var(--amber); }
+  .anatomy-ret { background: var(--purple-light); }
+  .anatomy-ret h4 { color: var(--purple); }
+
+  /* ========== Venn diagram ========== */
+  .venn-container {
+    display: flex;
+    justify-content: center;
+    margin: 16px 0;
+    position: relative;
+    height: 180px;
+  }
+  .venn-circle {
+    width: 200px;
+    height: 170px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.8em;
+    font-weight: 600;
+    position: absolute;
+    top: 5px;
+  }
+  .venn-a {
+    background: rgba(59, 130, 246, 0.2);
+    border: 2px solid var(--blue);
+    left: calc(50% - 170px);
+  }
+  .venn-b {
+    background: rgba(16, 185, 129, 0.2);
+    border: 2px solid var(--green);
+    left: calc(50% - 30px);
+  }
+  .venn-label {
+    position: absolute;
+    font-size: 0.75em;
+    font-weight: 700;
+    top: 0;
+  }
+  .venn-label-a { left: calc(50% - 155px); color: var(--blue-dark); }
+  .venn-label-b { left: calc(50% + 45px); color: #065F46; }
+  .venn-ops {
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+    margin-top: 8px;
+  }
+  .venn-op {
+    text-align: center;
+    font-size: 0.8em;
+  }
+  .venn-op code {
+    font-size: 0.95em;
+    font-weight: 700;
+  }
+
+  /* ========== File I/O visual ========== */
+  .io-flow {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    margin: 20px 0;
+  }
+  .io-box {
+    border-radius: 14px;
+    padding: 16px 20px;
+    text-align: center;
+    border: 2px solid;
+    min-width: 130px;
+  }
+  .io-file { background: var(--blue-light); border-color: var(--blue); }
+  .io-python { background: var(--green-light); border-color: var(--green); }
+  .io-arrow {
+    font-size: 1.8em;
+    color: var(--gray-mid);
+  }
+  .io-box .icon { font-size: 1.8em; }
+  .io-box p { font-size: 0.85em; margin: 4px 0 0 0; font-weight: 600; }
+
+  /* ========== Recap cards ========== */
+  .recap-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 12px;
+    margin: 16px 0;
+  }
+  .recap-card {
+    border-radius: 12px;
+    padding: 14px;
+    text-align: center;
+    border: 2px solid;
+  }
+  .recap-card .icon { font-size: 1.6em; }
+  .recap-card h4 { font-size: 0.9em; margin: 4px 0; }
+  .recap-card p { font-size: 0.75em; color: var(--gray-mid); margin: 0; }
+
+  /* ========== Dict visual ========== */
+  .dict-visual {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin: 16px auto;
+    max-width: 420px;
+  }
+  .dict-row {
+    display: flex;
+    align-items: center;
+    gap: 0;
+  }
+  .dict-key {
+    background: var(--amber-light);
+    border: 2px solid var(--amber);
+    border-radius: 8px 0 0 8px;
+    padding: 8px 14px;
+    font-family: monospace;
+    font-weight: 700;
+    font-size: 0.9em;
+    width: 130px;
+    text-align: right;
+    color: #92400E;
+  }
+  .dict-arrow-cell {
+    background: var(--gray-light);
+    border-top: 2px solid var(--gray-border);
+    border-bottom: 2px solid var(--gray-border);
+    padding: 8px 8px;
+    font-size: 1em;
+    color: var(--gray-mid);
+  }
+  .dict-val {
+    background: var(--blue-light);
+    border: 2px solid var(--blue);
+    border-radius: 0 8px 8px 0;
+    padding: 8px 14px;
+    font-family: monospace;
+    font-size: 0.9em;
+    flex: 1;
+    color: var(--blue-dark);
+  }
+
+  /* ========== Tuple visual ========== */
+  .tuple-visual {
+    display: flex;
+    gap: 0;
+    margin: 16px 0;
+    justify-content: center;
+  }
+  .tuple-cell {
+    width: 80px;
+    text-align: center;
+    border: 2px solid var(--purple);
+    background: var(--purple-light);
+    border-right: none;
+    position: relative;
+  }
+  .tuple-cell:last-child { border-right: 2px solid var(--purple); border-radius: 0 10px 10px 0; }
+  .tuple-cell:first-child { border-radius: 10px 0 0 10px; }
+  .tuple-val {
+    padding: 10px 0;
+    font-weight: 700;
+    font-size: 0.95em;
+    color: #5B21B6;
+  }
+  .tuple-lock {
+    position: absolute;
+    top: -10px;
+    right: -6px;
+    font-size: 0.7em;
+  }
+</style>
+</head>
+<body>
+
+<!-- ==================== SLIDE 1: Title ==================== -->
+<div class="slide" style="text-align:center;">
+  <div>
+    <div class="slide-number">1 / 19</div>
+    <h1>Python Fundamentals</h1>
+    <p class="subtitle">Class 1 — Your First Steps</p>
+    <p style="margin-top:24px; font-size:1em; color:var(--gray-mid);">
+      Types · Operators · Data Structures · Control Flow · Functions · Files
+    </p>
+  </div>
+</div>
+
+<!-- ==================== SLIDE 2: Built-in Data Types ==================== -->
+<div class="slide">
+  <div class="slide-number">2 / 19</div>
+  <h2>Built-in Data Types</h2>
+  <p style="font-size:1em; margin-bottom:8px;">
+    Every value in Python has a <strong>type</strong>. Think of it as a label that tells Python what kind of thing it's working with — a number, some text, a yes/no answer, or nothing at all.
+  </p>
+  <div class="type-cards">
+    <div class="type-card tc-int">
+      <div class="icon">🔢</div>
+      <h4>int</h4>
+      <div class="desc">Whole numbers</div>
+      <div class="example">42, -7, 0</div>
+    </div>
+    <div class="type-card tc-float">
+      <div class="icon">📐</div>
+      <h4>float</h4>
+      <div class="desc">Decimal numbers</div>
+      <div class="example">3.14, -0.5, 1.0</div>
+    </div>
+    <div class="type-card tc-str">
+      <div class="icon">📝</div>
+      <h4>str</h4>
+      <div class="desc">Text (strings)</div>
+      <div class="example">"hello", 'age'</div>
+    </div>
+    <div class="type-card tc-bool">
+      <div class="icon">✅</div>
+      <h4>bool</h4>
+      <div class="desc">True or False</div>
+      <div class="example">True, False</div>
+    </div>
+    <div class="type-card tc-none">
+      <div class="icon">🚫</div>
+      <h4>None</h4>
+      <div class="desc">"Nothing" / empty</div>
+      <div class="example">None</div>
+    </div>
+  </div>
+  <div class="pseudo-block" style="max-width:500px; margin: 12px auto;">
+    <span class="comment"># Check a value's type with type()</span><br>
+    <span class="fn">type</span>(<span class="num">42</span>)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment"># → &lt;class 'int'&gt;</span><br>
+    <span class="fn">type</span>(<span class="str">"hello"</span>)&nbsp;&nbsp;<span class="comment"># → &lt;class 'str'&gt;</span><br>
+    <span class="fn">type</span>(<span class="num">3.14</span>)&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment"># → &lt;class 'float'&gt;</span><br>
+    <span class="fn">type</span>(<span class="kw">True</span>)&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment"># → &lt;class 'bool'&gt;</span>
+  </div>
+  <p class="footer-text">Python figures out the type automatically — you don't need to declare it like in some other languages.</p>
+</div>
+
+<!-- ==================== SLIDE 3: Operators ==================== -->
+<div class="slide">
+  <div class="slide-number">3 / 19</div>
+  <h2>Operators</h2>
+  <p style="font-size:1em; margin-bottom:8px;">
+    Operators are the <strong>verbs</strong> of Python — they <em>do things</em> to values.
+  </p>
+  <div class="op-grid">
+    <div class="op-box op-arith">
+      <h4>🧮 Arithmetic</h4>
+      <div class="ops">
+        <span class="op-tag">+</span> <span class="op-tag">-</span>
+        <span class="op-tag">*</span> <span class="op-tag">/</span>
+        <span class="op-tag">//</span> <span class="op-tag">%</span>
+        <span class="op-tag">**</span>
+      </div>
+      <div style="font-size:0.75em; color:var(--gray-mid); margin-top:6px;">
+        add · subtract · multiply · divide<br>floor div · modulo · power
+      </div>
+    </div>
+    <div class="op-box op-comp">
+      <h4>⚖️ Comparison</h4>
+      <div class="ops">
+        <span class="op-tag">==</span> <span class="op-tag">!=</span>
+        <span class="op-tag">&gt;</span> <span class="op-tag">&lt;</span>
+        <span class="op-tag">&gt;=</span> <span class="op-tag">&lt;=</span>
+      </div>
+      <div style="font-size:0.75em; color:var(--gray-mid); margin-top:6px;">
+        Returns <code>True</code> or <code>False</code>
+      </div>
+    </div>
+    <div class="op-box op-logic">
+      <h4>🧠 Logical</h4>
+      <div class="ops">
+        <span class="op-tag">and</span> <span class="op-tag">or</span>
+        <span class="op-tag">not</span>
+      </div>
+      <div style="font-size:0.75em; color:var(--gray-mid); margin-top:6px;">
+        Combine conditions together
+      </div>
+    </div>
+    <div class="op-box op-assign">
+      <h4>📥 Assignment</h4>
+      <div class="ops">
+        <span class="op-tag">=</span> <span class="op-tag">+=</span>
+        <span class="op-tag">-=</span> <span class="op-tag">*=</span>
+        <span class="op-tag">/=</span>
+      </div>
+      <div style="font-size:0.75em; color:var(--gray-mid); margin-top:6px;">
+        Store or update a value
+      </div>
+    </div>
+    <div class="op-box op-member">
+      <h4>🔎 Membership</h4>
+      <div class="ops">
+        <span class="op-tag">in</span> <span class="op-tag">not in</span>
+      </div>
+      <div style="font-size:0.75em; color:var(--gray-mid); margin-top:6px;">
+        "Is this item in the collection?"
+      </div>
+    </div>
+    <div class="op-box op-identity">
+      <h4>🪪 Identity</h4>
+      <div class="ops">
+        <span class="op-tag">is</span> <span class="op-tag">is not</span>
+      </div>
+      <div style="font-size:0.75em; color:var(--gray-mid); margin-top:6px;">
+        "Is this the same object?" (not just equal)
+      </div>
+    </div>
+  </div>
+  <p class="bottom-text">"<code>==</code> checks if two values are equal. <code>is</code> checks if they're the exact same object in memory."</p>
+</div>
+
+<!-- ==================== SLIDE 4: Lists — What & Why ==================== -->
+<div class="slide">
+  <div class="slide-number">4 / 19</div>
+  <h2>Lists</h2>
+  <p style="font-size:1em; margin-bottom:8px;">
+    A <strong>list</strong> is like a <strong>playlist on your phone</strong> — items have an order, and you can add, remove, or rearrange them anytime.
+  </p>
+  <div class="index-visual">
+    <div class="index-cell">
+      <div class="index-val">"age"</div>
+      <div class="index-num">0</div>
+    </div>
+    <div class="index-cell">
+      <div class="index-val">"income"</div>
+      <div class="index-num">1</div>
+    </div>
+    <div class="index-cell">
+      <div class="index-val">"score"</div>
+      <div class="index-num">2</div>
+    </div>
+    <div class="index-cell">
+      <div class="index-val">"city"</div>
+      <div class="index-num">3</div>
+    </div>
+    <div class="index-cell">
+      <div class="index-val">"zip"</div>
+      <div class="index-num">4</div>
+    </div>
+  </div>
+  <p style="text-align:center; font-size:0.8em; color:var(--gray-mid); margin-bottom:12px;">
+    ↑ Every item has a numbered position (index), starting at <strong>0</strong>
+  </p>
+  <div class="pseudo-block" style="max-width:520px; margin:8px auto;">
+    <span class="comment"># Create a list</span><br>
+    features = [<span class="str">"age"</span>, <span class="str">"income"</span>, <span class="str">"score"</span>]<br><br>
+    <span class="comment"># Access by index</span><br>
+    features[<span class="num">0</span>]&nbsp;&nbsp;&nbsp;<span class="comment"># → "age"</span><br>
+    features[<span class="num">-1</span>]&nbsp;&nbsp;<span class="comment"># → "score" (last item)</span><br><br>
+    <span class="comment"># Slicing: get a range</span><br>
+    features[<span class="num">0</span>:<span class="num">2</span>]&nbsp;<span class="comment"># → ["age", "income"]</span>
+  </div>
+  <ul class="bullet-list">
+    <li>• <strong>Ordered</strong> — items stay in the order you put them</li>
+    <li>• <strong>Mutable</strong> — you can change, add, or remove items after creation</li>
+    <li>• <strong>Any type</strong> — a list can hold ints, strings, even other lists</li>
+  </ul>
+</div>
+
+<!-- ==================== SLIDE 5: Lists — Useful Methods ==================== -->
+<div class="slide">
+  <div class="slide-number">5 / 19</div>
+  <h2>Lists — Useful Methods</h2>
+  <p style="font-size:0.95em; margin-bottom:8px;">
+    These are the tools you'll use every day to work with lists.
+  </p>
+  <div class="method-grid">
+    <div class="method-item">
+      <div class="method-name">.append(x)</div>
+      <div class="method-desc">Add item to the end</div>
+    </div>
+    <div class="method-item">
+      <div class="method-name">.insert(i, x)</div>
+      <div class="method-desc">Add item at position i</div>
+    </div>
+    <div class="method-item">
+      <div class="method-name">.pop(i)</div>
+      <div class="method-desc">Remove & return item at i</div>
+    </div>
+    <div class="method-item">
+      <div class="method-name">.remove(x)</div>
+      <div class="method-desc">Remove first occurrence of x</div>
+    </div>
+    <div class="method-item">
+      <div class="method-name">.sort()</div>
+      <div class="method-desc">Sort in place (changes the list)</div>
+    </div>
+    <div class="method-item">
+      <div class="method-name">sorted(list)</div>
+      <div class="method-desc">Returns a new sorted list</div>
+    </div>
+    <div class="method-item">
+      <div class="method-name">.reverse()</div>
+      <div class="method-desc">Reverse the order in place</div>
+    </div>
+    <div class="method-item">
+      <div class="method-name">len(list)</div>
+      <div class="method-desc">How many items?</div>
+    </div>
+    <div class="method-item">
+      <div class="method-name">.index(x)</div>
+      <div class="method-desc">Find position of x</div>
+    </div>
+    <div class="method-item">
+      <div class="method-name">.count(x)</div>
+      <div class="method-desc">How many times does x appear?</div>
+    </div>
+    <div class="method-item">
+      <div class="method-name">.extend(list2)</div>
+      <div class="method-desc">Add all items from another list</div>
+    </div>
+    <div class="method-item">
+      <div class="method-name">list[a:b]</div>
+      <div class="method-desc">Slice: get items from a to b-1</div>
+    </div>
+  </div>
+  <p class="bottom-text">
+    ⚠️ <code>.sort()</code> changes the original list and returns <code>None</code>.
+    <code>sorted()</code> returns a <em>new</em> list and leaves the original alone.
+  </p>
+</div>
+
+<!-- ==================== SLIDE 6: Tuples ==================== -->
+<div class="slide">
+  <div class="slide-number">6 / 19</div>
+  <h2>Tuples</h2>
+  <p style="font-size:1em; margin-bottom:8px;">
+    A <strong>tuple</strong> is like a <strong>sealed envelope</strong> — once you put items in, they can't be changed. This is a feature: it signals <em>"this data is fixed."</em>
+  </p>
+  <div class="tuple-visual">
+    <div class="tuple-cell">
+      <div class="tuple-val">28.6</div>
+      <div class="tuple-lock">🔒</div>
+    </div>
+    <div class="tuple-cell">
+      <div class="tuple-val">77.2</div>
+      <div class="tuple-lock">🔒</div>
+    </div>
+    <div class="tuple-cell">
+      <div class="tuple-val">"NYC"</div>
+      <div class="tuple-lock">🔒</div>
+    </div>
+  </div>
+  <p style="text-align:center; font-size:0.8em; color:var(--gray-mid); margin-bottom:12px;">
+    ↑ Created once, never modified — great for coordinates, config values, fixed records
+  </p>
+  <div class="two-panel">
+    <div class="panel" style="background:var(--purple-light); border:2px solid var(--purple);">
+      <h3>Creating & Accessing</h3>
+      <div class="pseudo-block" style="background:rgba(255,255,255,0.7); max-width:100%;">
+        coords = (<span class="num">28.6</span>, <span class="num">77.2</span>, <span class="str">"NYC"</span>)<br>
+        coords[<span class="num">0</span>]&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment"># → 28.6</span><br><br>
+        <span class="comment"># Unpacking</span><br>
+        lat, lon, city = coords
+      </div>
+    </div>
+    <div class="panel" style="background:var(--gray-light); border:2px solid var(--gray-border);">
+      <h3>Key Facts</h3>
+      <ul class="bullet-list">
+        <li>• <strong>Immutable</strong> — can't add, remove, or change items</li>
+        <li>• <strong>Ordered</strong> — items have positions</li>
+        <li>• <strong>Faster</strong> than lists (less overhead)</li>
+        <li>• Can be used as <strong>dict keys</strong> (lists can't)</li>
+        <li>• Methods: <code>.count(x)</code>, <code>.index(x)</code></li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== SLIDE 7: Sets ==================== -->
+<div class="slide">
+  <div class="slide-number">7 / 19</div>
+  <h2>Sets</h2>
+  <p style="font-size:1em; margin-bottom:8px;">
+    A <strong>set</strong> is like a <strong>bag of unique marbles</strong> — no duplicates allowed, no particular order. Perfect for removing duplicates or checking "is this item in here?" really fast.
+  </p>
+  <div class="venn-container">
+    <div class="venn-label venn-label-a">Set A</div>
+    <div class="venn-label venn-label-b">Set B</div>
+    <div class="venn-circle venn-a">
+      <span style="margin-right:40px;">🔴 🟡</span>
+    </div>
+    <div class="venn-circle venn-b">
+      <span style="margin-left:40px;">🟢 🔵</span>
+    </div>
+    <div style="position:absolute; top:50%; transform:translateY(-50%); font-size:0.9em; font-weight:700; color:var(--text-dark);">🟣</div>
+  </div>
+  <div class="venn-ops">
+    <div class="venn-op"><code>A & B</code><br>Intersection<br>(items in both)</div>
+    <div class="venn-op"><code>A | B</code><br>Union<br>(all items)</div>
+    <div class="venn-op"><code>A - B</code><br>Difference<br>(only in A)</div>
+  </div>
+  <div class="method-grid" style="margin-top:16px;">
+    <div class="method-item">
+      <div class="method-name">.add(x)</div>
+      <div class="method-desc">Add an item</div>
+    </div>
+    <div class="method-item">
+      <div class="method-name">.remove(x)</div>
+      <div class="method-desc">Remove an item (error if missing)</div>
+    </div>
+    <div class="method-item">
+      <div class="method-name">.discard(x)</div>
+      <div class="method-desc">Remove if present (no error)</div>
+    </div>
+    <div class="method-item">
+      <div class="method-name">len(set)</div>
+      <div class="method-desc">How many unique items?</div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== SLIDE 8: Dictionaries — What & Why ==================== -->
+<div class="slide">
+  <div class="slide-number">8 / 19</div>
+  <h2>Dictionaries</h2>
+  <p style="font-size:1em; margin-bottom:8px;">
+    A <strong>dictionary</strong> stores <strong>key-value pairs</strong> — like a contacts app where each <strong>name</strong> (key) is linked to a <strong>phone number</strong> (value). You look things up by key, not by position.
+  </p>
+  <div class="dict-visual">
+    <div class="dict-row">
+      <div class="dict-key">"name"</div>
+      <div class="dict-arrow-cell">→</div>
+      <div class="dict-val">"Alice"</div>
+    </div>
+    <div class="dict-row">
+      <div class="dict-key">"age"</div>
+      <div class="dict-arrow-cell">→</div>
+      <div class="dict-val">28</div>
+    </div>
+    <div class="dict-row">
+      <div class="dict-key">"score"</div>
+      <div class="dict-arrow-cell">→</div>
+      <div class="dict-val">92.5</div>
+    </div>
+    <div class="dict-row">
+      <div class="dict-key">"passed"</div>
+      <div class="dict-arrow-cell">→</div>
+      <div class="dict-val">True</div>
+    </div>
+  </div>
+  <div class="pseudo-block" style="max-width:520px; margin: 8px auto;">
+    <span class="comment"># Create a dictionary</span><br>
+    student = {<span class="str">"name"</span>: <span class="str">"Alice"</span>, <span class="str">"age"</span>: <span class="num">28</span>}<br><br>
+    <span class="comment"># Access by key</span><br>
+    student[<span class="str">"name"</span>]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment"># → "Alice"</span><br>
+    student.get(<span class="str">"gpa"</span>, <span class="num">0</span>)&nbsp;<span class="comment"># → 0 (safe, no error)</span><br><br>
+    <span class="comment"># Add or update</span><br>
+    student[<span class="str">"grade"</span>] = <span class="str">"A"</span>&nbsp;<span class="comment"># adds new key</span>
+  </div>
+  <p class="bottom-text">"Use <code>.get(key, default)</code> to avoid crashes when a key might not exist."</p>
+</div>
+
+<!-- ==================== SLIDE 9: Dictionaries — Useful Methods ==================== -->
+<div class="slide">
+  <div class="slide-number">9 / 19</div>
+  <h2>Dictionaries — Useful Methods</h2>
+  <div class="method-grid">
+    <div class="method-item">
+      <div class="method-name">.keys()</div>
+      <div class="method-desc">All the keys</div>
+    </div>
+    <div class="method-item">
+      <div class="method-name">.values()</div>
+      <div class="method-desc">All the values</div>
+    </div>
+    <div class="method-item">
+      <div class="method-name">.items()</div>
+      <div class="method-desc">All (key, value) pairs</div>
+    </div>
+    <div class="method-item">
+      <div class="method-name">.get(k, default)</div>
+      <div class="method-desc">Safe lookup with fallback</div>
+    </div>
+    <div class="method-item">
+      <div class="method-name">.update(dict2)</div>
+      <div class="method-desc">Merge another dict in</div>
+    </div>
+    <div class="method-item">
+      <div class="method-name">.pop(k)</div>
+      <div class="method-desc">Remove key & return its value</div>
+    </div>
+    <div class="method-item">
+      <div class="method-name">del d[k]</div>
+      <div class="method-desc">Delete a key-value pair</div>
+    </div>
+    <div class="method-item">
+      <div class="method-name">len(dict)</div>
+      <div class="method-desc">How many key-value pairs?</div>
+    </div>
+  </div>
+  <div class="pseudo-block" style="max-width:520px; margin:12px auto;">
+    <span class="comment"># Looping through a dict</span><br>
+    <span class="kw">for</span> key, val <span class="kw">in</span> student.items():<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;<span class="fn">print</span>(f<span class="str">"{key}: {val}"</span>)<br><br>
+    <span class="comment"># Nested dict</span><br>
+    data = {<span class="str">"alice"</span>: {<span class="str">"age"</span>: <span class="num">28</span>, <span class="str">"score"</span>: <span class="num">92</span>}}<br>
+    data[<span class="str">"alice"</span>][<span class="str">"score"</span>]&nbsp;<span class="comment"># → 92</span>
+  </div>
+  <p class="bottom-text">
+    "Dictionaries are Python's most versatile structure — configs, records, JSON data, and feature lookups all use dicts."
+  </p>
+</div>
+
+<!-- ==================== SLIDE 10: Conditionals ==================== -->
+<div class="slide">
+  <div class="slide-number">10 / 19</div>
+  <h2>Conditionals</h2>
+  <p style="font-size:1em; margin-bottom:8px;">
+    Conditionals are how your code <strong>makes decisions</strong> — like a traffic light choosing between go, slow down, and stop.
+  </p>
+  <div class="flow-container">
+    <div class="flow-diamond">Is score &ge; 90?</div>
+    <div class="flow-row" style="margin-top:10px;">
+      <div style="text-align:center;">
+        <div class="flow-label">✅ Yes</div>
+        <div class="flow-arrow">↓</div>
+        <div class="flow-node" style="background:var(--green-light); border-color:var(--green); color:#065F46;">grade = "A"</div>
+      </div>
+      <div style="text-align:center;">
+        <div class="flow-label">score &ge; 80?</div>
+        <div class="flow-arrow">↓</div>
+        <div class="flow-node" style="background:var(--blue-light); border-color:var(--blue); color:var(--blue-dark);">grade = "B"</div>
+      </div>
+      <div style="text-align:center;">
+        <div class="flow-label">❌ Otherwise</div>
+        <div class="flow-arrow">↓</div>
+        <div class="flow-node" style="background:var(--amber-light); border-color:var(--amber); color:#92400E;">grade = "C"</div>
+      </div>
+    </div>
+  </div>
+  <div class="pseudo-block" style="max-width:480px; margin:12px auto;">
+    <span class="kw">if</span> score >= <span class="num">90</span>:<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;grade = <span class="str">"A"</span><br>
+    <span class="kw">elif</span> score >= <span class="num">80</span>:<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;grade = <span class="str">"B"</span><br>
+    <span class="kw">else</span>:<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;grade = <span class="str">"C"</span>
+  </div>
+  <ul class="bullet-list">
+    <li>• <code>if</code> — check the first condition</li>
+    <li>• <code>elif</code> — "else if" — check another condition (you can have many)</li>
+    <li>• <code>else</code> — what to do if nothing above matched</li>
+    <li>• ⚠️ Python uses <strong>indentation</strong> (4 spaces) to know what's inside each block</li>
+  </ul>
+</div>
+
+<!-- ==================== SLIDE 11: Loops ==================== -->
+<div class="slide">
+  <div class="slide-number">11 / 19</div>
+  <h2>Loops</h2>
+  <p style="font-size:1em; margin-bottom:8px;">
+    Loops are like an <strong>assembly line</strong> — each item comes through, gets the same treatment, and moves on.
+  </p>
+  <div class="two-panel">
+    <div class="panel" style="background:var(--blue-light); border:2px solid var(--blue);">
+      <h3><code>for</code> loop</h3>
+      <p style="font-size:0.85em; color:var(--gray-mid); margin-bottom:8px;">"Do this for each item"</p>
+      <div class="pseudo-block" style="background:rgba(255,255,255,0.7); max-width:100%;">
+        names = [<span class="str">"Ali"</span>, <span class="str">"Sara"</span>]<br><br>
+        <span class="kw">for</span> name <span class="kw">in</span> names:<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;<span class="fn">print</span>(name)<br><br>
+        <span class="comment"># With range()</span><br>
+        <span class="kw">for</span> i <span class="kw">in</span> <span class="fn">range</span>(<span class="num">5</span>):<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;<span class="fn">print</span>(i)&nbsp;<span class="comment"># 0,1,2,3,4</span>
+      </div>
+    </div>
+    <div class="panel" style="background:var(--green-light); border:2px solid var(--green);">
+      <h3><code>while</code> loop</h3>
+      <p style="font-size:0.85em; color:var(--gray-mid); margin-bottom:8px;">"Keep going while condition is true"</p>
+      <div class="pseudo-block" style="background:rgba(255,255,255,0.7); max-width:100%;">
+        count = <span class="num">0</span><br><br>
+        <span class="kw">while</span> count < <span class="num">3</span>:<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;<span class="fn">print</span>(count)<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;count += <span class="num">1</span><br><br>
+        <span class="comment"># ⚠️ Don't forget to</span><br>
+        <span class="comment"># update the condition!</span>
+      </div>
+    </div>
+  </div>
+  <div style="margin-top:16px;">
+    <p style="font-size:0.95em; font-weight:600; color:var(--blue-dark); margin-bottom:6px;">🔧 Power tools: <code>enumerate()</code> and <code>zip()</code></p>
+    <div class="pseudo-block" style="max-width:600px;">
+      <span class="comment"># enumerate: get index + value</span><br>
+      <span class="kw">for</span> i, name <span class="kw">in</span> <span class="fn">enumerate</span>([<span class="str">"age"</span>, <span class="str">"income"</span>]):<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;<span class="fn">print</span>(f<span class="str">"Column {i}: {name}"</span>)<br><br>
+      <span class="comment"># zip: loop over two lists at once</span><br>
+      <span class="kw">for</span> name, score <span class="kw">in</span> <span class="fn">zip</span>([<span class="str">"Ali"</span>, <span class="str">"Sara"</span>], [<span class="num">85</span>, <span class="num">92</span>]):<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;<span class="fn">print</span>(f<span class="str">"{name}: {score}"</span>)
+    </div>
+  </div>
+</div>
+
+<!-- ==================== SLIDE 12: break & continue ==================== -->
+<div class="slide">
+  <div class="slide-number">12 / 19</div>
+  <h2><code>break</code> & <code>continue</code></h2>
+  <p style="font-size:1em; margin-bottom:16px;">
+    Imagine a <strong>conveyor belt</strong> of items. Sometimes you want to <strong>skip one</strong> item, and sometimes you want to <strong>stop the whole belt</strong>.
+  </p>
+
+  <p style="font-size:0.95em; font-weight:600; color:#065F46; margin-bottom:8px;">
+    <code>continue</code> → Skip this item, move to the next one
+  </p>
+  <div class="conveyor">
+    <div class="conveyor-item conv-normal">1</div>
+    <div class="conv-arrow">→</div>
+    <div class="conveyor-item conv-skip">2</div>
+    <div class="conv-arrow">→</div>
+    <div class="conveyor-item conv-normal">3</div>
+    <div class="conv-arrow">→</div>
+    <div class="conveyor-item conv-normal">4</div>
+    <div class="conv-arrow">→</div>
+    <div class="conveyor-item conv-normal">5</div>
+  </div>
+  <div class="pseudo-block" style="max-width:440px; margin:4px auto 20px auto;">
+    <span class="kw">for</span> n <span class="kw">in</span> [<span class="num">1</span>, <span class="num">2</span>, <span class="num">3</span>, <span class="num">4</span>, <span class="num">5</span>]:<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">if</span> n == <span class="num">2</span>:<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">continue</span>&nbsp;&nbsp;<span class="comment"># skip 2</span><br>
+    &nbsp;&nbsp;&nbsp;&nbsp;<span class="fn">print</span>(n)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment"># prints 1, 3, 4, 5</span>
+  </div>
+
+  <p style="font-size:0.95em; font-weight:600; color:var(--red); margin-bottom:8px;">
+    <code>break</code> → Stop the belt entirely
+  </p>
+  <div class="conveyor">
+    <div class="conveyor-item conv-normal">1</div>
+    <div class="conv-arrow">→</div>
+    <div class="conveyor-item conv-normal">2</div>
+    <div class="conv-arrow">→</div>
+    <div class="conveyor-item conv-stop">3</div>
+    <div class="conv-arrow" style="opacity:0.3;">→</div>
+    <div class="conveyor-item conv-normal" style="opacity:0.2;">4</div>
+    <div class="conv-arrow" style="opacity:0.3;">→</div>
+    <div class="conveyor-item conv-normal" style="opacity:0.2;">5</div>
+  </div>
+  <div class="pseudo-block" style="max-width:440px; margin:4px auto;">
+    <span class="kw">for</span> n <span class="kw">in</span> [<span class="num">1</span>, <span class="num">2</span>, <span class="num">3</span>, <span class="num">4</span>, <span class="num">5</span>]:<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">if</span> n == <span class="num">3</span>:<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">break</span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment"># stop here</span><br>
+    &nbsp;&nbsp;&nbsp;&nbsp;<span class="fn">print</span>(n)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment"># prints 1, 2</span>
+  </div>
+  <p class="bottom-text">"<code>continue</code> = skip this one. <code>break</code> = I'm done."</p>
+</div>
+
+<!-- ==================== SLIDE 13: Comprehensions ==================== -->
+<div class="slide">
+  <div class="slide-number">13 / 19</div>
+  <h2>Comprehensions</h2>
+  <p style="font-size:1em; margin-bottom:12px;">
+    A <strong>shortcut</strong> for building lists and dicts from loops — same result, fewer lines.
+  </p>
+
+  <p style="font-size:0.95em; font-weight:600; color:var(--blue-dark); margin-bottom:6px;">
+    📋 List Comprehension
+  </p>
+  <div class="compare-panels">
+    <div class="compare-box compare-before">
+      <h4 style="color:var(--gray-mid);">❌ The long way</h4>
+      <div class="pseudo-block" style="background:rgba(255,255,255,0.7); max-width:100%;">
+        squares = []<br>
+        <span class="kw">for</span> x <span class="kw">in</span> <span class="fn">range</span>(<span class="num">5</span>):<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;squares.append(x ** <span class="num">2</span>)
+      </div>
+    </div>
+    <div class="compare-arrow">→</div>
+    <div class="compare-box compare-after">
+      <h4 style="color:#065F46;">✅ Comprehension</h4>
+      <div class="pseudo-block" style="background:rgba(255,255,255,0.7); max-width:100%;">
+        squares = [x ** <span class="num">2</span> <span class="kw">for</span> x <span class="kw">in</span> <span class="fn">range</span>(<span class="num">5</span>)]
+      </div>
+    </div>
+  </div>
+
+  <p style="font-size:0.85em; color:var(--gray-mid); margin:6px 0 16px 0;">
+    You can add a filter: <code>[x for x in items <strong>if</strong> x > 0]</code>
+  </p>
+
+  <p style="font-size:0.95em; font-weight:600; color:var(--blue-dark); margin-bottom:6px;">
+    📖 Dict Comprehension
+  </p>
+  <div class="pseudo-block" style="max-width:600px;">
+    names = [<span class="str">"age"</span>, <span class="str">"income"</span>, <span class="str">"score"</span>]<br><br>
+    <span class="comment"># Map each name to its length</span><br>
+    name_lengths = {name: <span class="fn">len</span>(name) <span class="kw">for</span> name <span class="kw">in</span> names}<br>
+    <span class="comment"># → {"age": 3, "income": 6, "score": 5}</span>
+  </div>
+
+  <ul class="bullet-list" style="margin-top:12px;">
+    <li>• <strong>List:</strong> <code>[expression <strong>for</strong> item <strong>in</strong> iterable <strong>if</strong> condition]</code></li>
+    <li>• <strong>Dict:</strong> <code>{key: value <strong>for</strong> item <strong>in</strong> iterable <strong>if</strong> condition}</code></li>
+    <li>• ⚠️ If it doesn't fit on one line or needs complex logic — use a regular loop instead</li>
+  </ul>
+</div>
+
+<!-- ==================== SLIDE 14: Lambda Functions ==================== -->
+<div class="slide">
+  <div class="slide-number">14 / 19</div>
+  <h2>Lambda Functions</h2>
+  <p style="font-size:1em; margin-bottom:12px;">
+    A <strong>lambda</strong> is a <strong>mini function in one line</strong> — no name, no <code>def</code>, just input → output. Think of it as a <strong>sticky note</strong> with one quick instruction.
+  </p>
+  <div class="compare-panels">
+    <div class="compare-box compare-before">
+      <h4 style="color:var(--gray-mid);">Regular function</h4>
+      <div class="pseudo-block" style="background:rgba(255,255,255,0.7); max-width:100%;">
+        <span class="kw">def</span> <span class="fn">double</span>(x):<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">return</span> x * <span class="num">2</span>
+      </div>
+    </div>
+    <div class="compare-arrow">→</div>
+    <div class="compare-box compare-after">
+      <h4 style="color:#065F46;">Lambda version</h4>
+      <div class="pseudo-block" style="background:rgba(255,255,255,0.7); max-width:100%;">
+        double = <span class="kw">lambda</span> x: x * <span class="num">2</span>
+      </div>
+    </div>
+  </div>
+
+  <p style="font-size:0.95em; font-weight:600; color:var(--blue-dark); margin: 16px 0 8px 0;">
+    Where lambdas shine: inside other functions
+  </p>
+  <div class="pseudo-block" style="max-width:600px; margin: 0 auto;">
+    <span class="comment"># Sort a list of tuples by the second element</span><br>
+    students = [(<span class="str">"Ali"</span>, <span class="num">85</span>), (<span class="str">"Sara"</span>, <span class="num">92</span>), (<span class="str">"Ravi"</span>, <span class="num">78</span>)]<br><br>
+    <span class="fn">sorted</span>(students, key=<span class="kw">lambda</span> s: s[<span class="num">1</span>])<br>
+    <span class="comment"># → [("Ravi", 78), ("Ali", 85), ("Sara", 92)]</span><br><br>
+    <span class="comment"># Filter with lambda</span><br>
+    <span class="fn">list</span>(<span class="fn">filter</span>(<span class="kw">lambda</span> x: x > <span class="num">80</span>, [<span class="num">78</span>, <span class="num">85</span>, <span class="num">92</span>]))<br>
+    <span class="comment"># → [85, 92]</span><br><br>
+    <span class="comment"># Transform with lambda</span><br>
+    <span class="fn">list</span>(<span class="fn">map</span>(<span class="kw">lambda</span> x: x * <span class="num">2</span>, [<span class="num">1</span>, <span class="num">2</span>, <span class="num">3</span>]))<br>
+    <span class="comment"># → [2, 4, 6]</span>
+  </div>
+  <p class="bottom-text">"If your lambda needs more than one line, use a regular <code>def</code> function instead."</p>
+</div>
+
+<!-- ==================== SLIDE 15: Functions ==================== -->
+<div class="slide">
+  <div class="slide-number">15 / 19</div>
+  <h2>Functions</h2>
+  <p style="font-size:1em; margin-bottom:8px;">
+    A function is like a <strong>recipe</strong> — you define it once with a name, ingredients (inputs), and steps, then anyone can use it anytime with their own ingredients.
+  </p>
+  <div class="annotated-code">
+    <div class="code-block-annotated">
+      <div class="code-line">
+        <span class="code-text"><span style="color:var(--blue);">def</span> <span style="color:var(--amber);">calculate_average</span>(scores):</span>
+        <span class="annotation"><span class="ann-num">1</span> Name + parameters</span>
+      </div>
+      <div class="code-line">
+        <span class="code-text">    <span style="color:var(--green);">"""Return the average of a list of scores."""</span></span>
+        <span class="annotation"><span class="ann-num">2</span> Docstring (optional docs)</span>
+      </div>
+      <div class="code-line">
+        <span class="code-text">    total = <span style="color:var(--blue);">sum</span>(scores)</span>
+        <span class="annotation"><span class="ann-num">3</span> Body — the work</span>
+      </div>
+      <div class="code-line">
+        <span class="code-text">    <span style="color:var(--blue);">return</span> total / <span style="color:var(--blue);">len</span>(scores)</span>
+        <span class="annotation"><span class="ann-num">4</span> Output — send a value back</span>
+      </div>
+    </div>
+  </div>
+  <div style="margin-top:12px;">
+    <div class="pseudo-block" style="max-width:520px; margin:0 auto;">
+      <span class="comment"># Calling the function</span><br>
+      result = <span class="fn">calculate_average</span>([<span class="num">85</span>, <span class="num">92</span>, <span class="num">78</span>])<br>
+      <span class="fn">print</span>(result)&nbsp;&nbsp;<span class="comment"># → 85.0</span>
+    </div>
+  </div>
+  <ul class="bullet-list" style="margin-top:12px;">
+    <li>• <code>def</code> — keyword that starts a function definition</li>
+    <li>• <strong>Parameters</strong> — placeholders in the definition: <code>scores</code></li>
+    <li>• <strong>Arguments</strong> — actual values you pass in: <code>[85, 92, 78]</code></li>
+    <li>• <code>return</code> — sends a result back to the caller. No return = returns <code>None</code></li>
+  </ul>
+</div>
+
+<!-- ==================== SLIDE 16: Functions — Defaults, Scope, Type Hints ==================== -->
+<div class="slide">
+  <div class="slide-number">16 / 19</div>
+  <h2>Functions — Going Deeper</h2>
+
+  <p style="font-size:0.95em; font-weight:600; color:var(--blue-dark); margin-bottom:6px;">
+    📥 Default Arguments
+  </p>
+  <div class="pseudo-block" style="max-width:540px;">
+    <span class="kw">def</span> <span class="fn">greet</span>(name, greeting=<span class="str">"Hello"</span>):<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">return</span> f<span class="str">"{greeting}, {name}!"</span><br><br>
+    <span class="fn">greet</span>(<span class="str">"Ali"</span>)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment"># → "Hello, Ali!"</span><br>
+    <span class="fn">greet</span>(<span class="str">"Ali"</span>, <span class="str">"Welcome"</span>)&nbsp;&nbsp;&nbsp;<span class="comment"># → "Welcome, Ali!"</span>
+  </div>
+
+  <p style="font-size:0.95em; font-weight:600; color:var(--blue-dark); margin: 16px 0 6px 0;">
+    🔍 Type Hints (documentation, not enforced)
+  </p>
+  <div class="pseudo-block" style="max-width:540px;">
+    <span class="kw">def</span> <span class="fn">calculate_average</span>(scores: <span class="fn">list</span>[<span class="fn">float</span>]) -> <span class="fn">float</span>:<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">return</span> <span class="fn">sum</span>(scores) / <span class="fn">len</span>(scores)
+  </div>
+
+  <p style="font-size:0.95em; font-weight:600; color:var(--blue-dark); margin: 16px 0 6px 0;">
+    📦 Scope — where variables live
+  </p>
+  <div class="two-panel" style="margin-top:0;">
+    <div class="panel" style="background:var(--blue-light); border:2px solid var(--blue); padding:14px;">
+      <h3 style="font-size:0.9em;">🌍 Global scope</h3>
+      <div class="pseudo-block" style="background:rgba(255,255,255,0.7); max-width:100%; font-size:0.85em;">
+        name = <span class="str">"Ali"</span>&nbsp;&nbsp;<span class="comment"># visible everywhere</span>
+      </div>
+      <div style="margin:8px auto; padding:10px; background:var(--green-light); border:2px solid var(--green); border-radius:10px;">
+        <p style="font-size:0.8em; font-weight:600; color:#065F46; margin:0;">🏠 Local scope (inside function)</p>
+        <div class="pseudo-block" style="background:rgba(255,255,255,0.7); max-width:100%; font-size:0.85em; margin:6px 0 0 0;">
+          x = <span class="num">10</span>&nbsp;&nbsp;<span class="comment"># only exists here</span>
+        </div>
+      </div>
+    </div>
+    <div class="panel" style="background:var(--gray-light); border:2px solid var(--gray-border); padding:14px;">
+      <h3 style="font-size:0.9em;">Rules</h3>
+      <ul class="bullet-list" style="margin:0;">
+        <li>• Variables inside a function are <strong>local</strong> — they disappear when the function ends</li>
+        <li>• A function <strong>can read</strong> global variables</li>
+        <li>• A function <strong>cannot change</strong> global variables (without <code>global</code> keyword)</li>
+        <li>• Best practice: pass data <strong>in</strong> via parameters, send data <strong>out</strong> via <code>return</code></li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== SLIDE 17: *args and **kwargs ==================== -->
+<div class="slide">
+  <div class="slide-number">17 / 19</div>
+  <h2>Functions — <code>*args</code> & <code>**kwargs</code></h2>
+  <p style="font-size:1em; margin-bottom:12px;">
+    Sometimes you don't know <strong>how many arguments</strong> a function will receive. Python has two special prefixes for this.
+  </p>
+
+  <div class="two-panel">
+    <div class="panel" style="background:var(--blue-light); border:2px solid var(--blue);">
+      <h3><code>*args</code> — Variable Positional Args</h3>
+      <p style="font-size:0.8em; color:var(--gray-mid); margin-bottom:8px;">
+        Collects extra positional arguments into a <strong>tuple</strong>.<br>
+        Think: <em>"I'll take any number of items."</em>
+      </p>
+      <div class="pseudo-block" style="background:rgba(255,255,255,0.7); max-width:100%; font-size:0.85em;">
+        <span class="kw">def</span> <span class="fn">total</span>(*args):<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;<span class="fn">print</span>(args)&nbsp;&nbsp;<span class="comment"># a tuple</span><br>
+        &nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">return</span> <span class="fn">sum</span>(args)<br><br>
+        <span class="fn">total</span>(<span class="num">10</span>, <span class="num">20</span>)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment"># → 30</span><br>
+        <span class="fn">total</span>(<span class="num">1</span>, <span class="num">2</span>, <span class="num">3</span>, <span class="num">4</span>)&nbsp;&nbsp;<span class="comment"># → 10</span>
+      </div>
+    </div>
+    <div class="panel" style="background:var(--green-light); border:2px solid var(--green);">
+      <h3><code>**kwargs</code> — Variable Keyword Args</h3>
+      <p style="font-size:0.8em; color:var(--gray-mid); margin-bottom:8px;">
+        Collects extra keyword arguments into a <strong>dict</strong>.<br>
+        Think: <em>"I'll take any named settings."</em>
+      </p>
+      <div class="pseudo-block" style="background:rgba(255,255,255,0.7); max-width:100%; font-size:0.85em;">
+        <span class="kw">def</span> <span class="fn">build_profile</span>(**kwargs):<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;<span class="fn">print</span>(kwargs)&nbsp;<span class="comment"># a dict</span><br><br>
+        <span class="fn">build_profile</span>(<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;name=<span class="str">"Ali"</span>,<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;age=<span class="num">25</span>,<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;role=<span class="str">"analyst"</span><br>
+        )<br>
+        <span class="comment"># → {"name": "Ali", "age": 25,</span><br>
+        <span class="comment">#&nbsp;&nbsp;&nbsp;&nbsp;"role": "analyst"}</span>
+      </div>
+    </div>
+  </div>
+
+  <p style="font-size:0.95em; font-weight:600; color:var(--blue-dark); margin: 16px 0 6px 0;">
+    🔧 Using both together
+  </p>
+  <div class="pseudo-block" style="max-width:620px; margin:0 auto;">
+    <span class="kw">def</span> <span class="fn">log_event</span>(event, *args, **kwargs):<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;<span class="fn">print</span>(f<span class="str">"Event: {event}"</span>)<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;<span class="fn">print</span>(f<span class="str">"Extra args: {args}"</span>)&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment"># tuple</span><br>
+    &nbsp;&nbsp;&nbsp;&nbsp;<span class="fn">print</span>(f<span class="str">"Options: {kwargs}"</span>)&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment"># dict</span><br><br>
+    <span class="fn">log_event</span>(<span class="str">"login"</span>, <span class="str">"admin"</span>, <span class="num">42</span>, ip=<span class="str">"10.0.0.1"</span>, secure=<span class="kw">True</span>)
+  </div>
+
+  <table class="vocab-table" style="max-width:580px; margin:16px auto 0 auto;">
+    <tr><th>Syntax</th><th>Collects as</th><th>Use when</th></tr>
+    <tr><td><code>*args</code></td><td>Tuple</td><td>Unknown number of positional values</td></tr>
+    <tr><td><code>**kwargs</code></td><td>Dict</td><td>Unknown number of named options</td></tr>
+  </table>
+  <p class="footer-text" style="text-align:center;">Order in a function signature: <code>def f(regular, *args, **kwargs)</code></p>
+</div>
+
+<!-- ==================== SLIDE 18: File I/O ==================== -->
+<div class="slide">
+  <div class="slide-number">18 / 19</div>
+  <h2>File I/O</h2>
+  <p style="font-size:1em; margin-bottom:8px;">
+    Almost every project starts by <strong>reading</strong> data and ends by <strong>writing</strong> results. Think of it like opening a notebook — you open it, read or write, and close it when done.
+  </p>
+
+  <div class="io-flow">
+    <div class="io-box io-file">
+      <div class="icon">📄</div>
+      <p>data.txt</p>
+    </div>
+    <div class="io-arrow">→ <span style="font-size:0.5em; display:block;">open()</span></div>
+    <div class="io-box io-python">
+      <div class="icon">🐍</div>
+      <p>Python</p>
+    </div>
+    <div class="io-arrow">→ <span style="font-size:0.5em; display:block;">write()</span></div>
+    <div class="io-box io-file">
+      <div class="icon">📄</div>
+      <p>output.txt</p>
+    </div>
+  </div>
+
+  <p style="font-size:0.95em; font-weight:600; color:var(--blue-dark); margin-bottom:6px;">
+    ✅ The safe way: <code>with</code> statement (auto-closes the file)
+  </p>
+  <div class="two-panel" style="margin-top:0;">
+    <div class="panel" style="background:var(--blue-light); border:2px solid var(--blue); padding:14px;">
+      <h3 style="font-size:0.9em;">📖 Reading</h3>
+      <div class="pseudo-block" style="background:rgba(255,255,255,0.7); max-width:100%; font-size:0.85em;">
+        <span class="kw">with</span> <span class="fn">open</span>(<span class="str">"data.txt"</span>, <span class="str">"r"</span>) <span class="kw">as</span> f:<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;content = f.read()<br><br>
+        <span class="comment"># Read line by line</span><br>
+        <span class="kw">with</span> <span class="fn">open</span>(<span class="str">"data.txt"</span>) <span class="kw">as</span> f:<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">for</span> line <span class="kw">in</span> f:<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="fn">print</span>(line.strip())
+      </div>
+    </div>
+    <div class="panel" style="background:var(--green-light); border:2px solid var(--green); padding:14px;">
+      <h3 style="font-size:0.9em;">✏️ Writing</h3>
+      <div class="pseudo-block" style="background:rgba(255,255,255,0.7); max-width:100%; font-size:0.85em;">
+        <span class="kw">with</span> <span class="fn">open</span>(<span class="str">"out.txt"</span>, <span class="str">"w"</span>) <span class="kw">as</span> f:<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;f.write(<span class="str">"Hello!\n"</span>)<br><br>
+        <span class="comment"># Append (don't overwrite)</span><br>
+        <span class="kw">with</span> <span class="fn">open</span>(<span class="str">"out.txt"</span>, <span class="str">"a"</span>) <span class="kw">as</span> f:<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;f.write(<span class="str">"New line\n"</span>)
+      </div>
+    </div>
+  </div>
+
+  <table class="vocab-table" style="max-width:500px; margin:16px auto 0 auto;">
+    <tr><th>Mode</th><th>Meaning</th><th>If file exists</th></tr>
+    <tr><td><code>"r"</code></td><td>Read</td><td>Opens it</td></tr>
+    <tr><td><code>"w"</code></td><td>Write</td><td>⚠️ Overwrites it</td></tr>
+    <tr><td><code>"a"</code></td><td>Append</td><td>Adds to the end</td></tr>
+  </table>
+</div>
+
+<!-- ==================== SLIDE 19: Recap ==================== -->
+<div class="slide">
+  <div class="slide-number">19 / 19</div>
+  <h2>Recap</h2>
+  <p style="font-size:0.95em; color:var(--gray-mid); margin-bottom:12px;">
+    Everything you learned today, in one view.
+  </p>
+  <div class="recap-grid">
+    <div class="recap-card" style="background:var(--blue-light); border-color:var(--blue);">
+      <div class="icon">🔢</div>
+      <h4>Data Types</h4>
+      <p>int, float, str, bool, None</p>
+    </div>
+    <div class="recap-card" style="background:var(--amber-light); border-color:var(--amber);">
+      <div class="icon">🧮</div>
+      <h4>Operators</h4>
+      <p>Arithmetic, comparison, logical, assignment</p>
+    </div>
+    <div class="recap-card" style="background:var(--green-light); border-color:var(--green);">
+      <div class="icon">📋</div>
+      <h4>Lists</h4>
+      <p>Ordered, mutable, indexed</p>
+    </div>
+    <div class="recap-card" style="background:var(--purple-light); border-color:var(--purple);">
+      <div class="icon">🔒</div>
+      <h4>Tuples</h4>
+      <p>Immutable, fixed records</p>
+    </div>
+    <div class="recap-card" style="background:var(--teal-light); border-color:var(--teal);">
+      <div class="icon">🎯</div>
+      <h4>Sets</h4>
+      <p>Unique items, fast lookup</p>
+    </div>
+    <div class="recap-card" style="background:var(--amber-light); border-color:var(--amber);">
+      <div class="icon">📖</div>
+      <h4>Dicts</h4>
+      <p>Key → value, instant access</p>
+    </div>
+    <div class="recap-card" style="background:var(--blue-light); border-color:var(--blue);">
+      <div class="icon">🔀</div>
+      <h4>Control Flow</h4>
+      <p>if/elif/else, for, while, break, continue</p>
+    </div>
+    <div class="recap-card" style="background:var(--green-light); border-color:var(--green);">
+      <div class="icon">⚡</div>
+      <h4>Comprehensions</h4>
+      <p>List & dict shortcuts</p>
+    </div>
+    <div class="recap-card" style="background:var(--purple-light); border-color:var(--purple);">
+      <div class="icon">🔧</div>
+      <h4>Functions</h4>
+      <p>def, return, scope, lambda</p>
+    </div>
+  </div>
+  <div class="recap-grid" style="grid-template-columns: 1fr;">
+    <div class="recap-card" style="background:var(--pink-light); border-color:var(--pink);">
+      <div class="icon">📄</div>
+      <h4>File I/O</h4>
+      <p>Read, write, and append with <code>with open()</code></p>
+    </div>
+  </div>
+  <div style="margin-top:24px; text-align:center;">
+    <p style="font-size:1.3em; color:var(--blue-dark); font-weight:700;">
+      Now let's write it in Python →
+    </p>
+  </div>
+</div>
+
+</body>
+</html>
