@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Quiz — NumPy & Pandas: Code Reading</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet">
 <style>
 :root {
   --pri-900: #134E3A; --pri-800: #1A6B4F; --pri-700: #218764; --pri-600: #28A37A;
@@ -41,11 +42,23 @@ body { font-family: var(--font-body); background: var(--slate-50); min-height: 1
 @keyframes slideIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
 .section-badge { display: inline-block; background: var(--pri-50); color: var(--pri-700); font-size: 0.75rem; font-weight: 600; padding: 0.3rem 0.8rem; border-radius: 20px; margin-bottom: 1rem; text-transform: uppercase; letter-spacing: 0.03em; }
 .question-card h2 { font-size: 1.2rem; font-weight: 700; color: var(--slate-900); line-height: 1.5; margin-bottom: 1.5rem; }
-.question-card h2 code {
-  background: #1e293b; color: #e2e8f0; padding: 0.8rem 1rem; border-radius: 8px;
-  display: block; margin-top: 0.75rem; font-size: 0.9rem; line-height: 1.7;
-  font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace; white-space: pre-wrap; text-align: left; font-weight: 400;
+.question-card h2 code, .review-item code {
+  background: #1e293b !important; color: #e2e8f0; padding: 0.8rem 1rem; border-radius: 8px;
+  display: block; margin-top: 0.75rem; font-size: 0.9rem !important; line-height: 1.7 !important;
+  font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace !important; white-space: pre-wrap !important; text-align: left; font-weight: 400;
 }
+code[class*="language-"], pre[class*="language-"] {
+  background: #1e293b !important; text-shadow: none !important;
+}
+.token.comment, .token.prolog { color: #6b7280; }
+.token.keyword { color: #c792ea; }
+.token.string { color: #c3e88d; }
+.token.function { color: #82aaff; }
+.token.number { color: #f78c6c; }
+.token.operator { color: #89ddff; }
+.token.builtin { color: #ffcb6b; }
+.token.boolean { color: #f78c6c; }
+.token.punctuation { color: #89ddff; }
 .options { display: flex; flex-direction: column; gap: 0.75rem; }
 .option { display: flex; align-items: flex-start; gap: 0.85rem; padding: 1rem 1.2rem; border: 2px solid var(--slate-200); border-radius: var(--radius-md); cursor: pointer; transition: all 0.15s var(--ease); line-height: 1.5; }
 .option:hover { border-color: var(--pri-300); background: var(--pri-50); }
@@ -259,14 +272,16 @@ document.getElementById("userName").addEventListener("keydown",function(e){if(e.
 document.getElementById("userGithub").addEventListener("keydown",function(e){if(e.key==="Enter"){e.preventDefault();startQuiz();}});
 document.addEventListener("keydown",function(e){if(!quizActive)return;if(e.key==="Enter"&&answers[currentQ]!==null){e.preventDefault();if(currentQ===questions.length-1)submitQuiz();else nextQuestion();}});
 function getSection(idx){for(const s of sections){if(idx>=s.range[0]&&idx<s.range[1])return s.title;}return"";}
-function renderQuestion(){const q=questions[currentQ],letters=["A","B","C","D"],card=document.getElementById("questionCard");let html=`<div class="section-badge">${getSection(currentQ)}</div><h2>Q${currentQ+1}. ${q.q}</h2><div class="options">`;q.opts.forEach((opt,i)=>{const sel=answers[currentQ]===i?" selected":"";html+=`<div class="option${sel}" onclick="selectOption(${i})"><span class="letter">${letters[i]}</span><span class="text">${opt}</span></div>`;});html+=`</div>`;card.innerHTML=html;const nav=document.getElementById("qNav");let navHtml="";for(let n=0;n<questions.length;n++){let cls="q-nav-btn";if(n===currentQ)cls+=" active";else if(answers[n]!==null)cls+=" answered";navHtml+=`<button class="${cls}" onclick="jumpTo(${n})">${n+1}</button>`;}nav.innerHTML=navHtml;document.getElementById("progressLabel").textContent=`Question ${currentQ+1} of ${questions.length}`;document.getElementById("sectionLabel").textContent=getSection(currentQ);document.getElementById("progressFill").style.width=((currentQ+1)/questions.length*100)+"%";document.getElementById("prevBtn").style.visibility=currentQ===0?"hidden":"visible";const nextBtn=document.getElementById("nextBtn");if(currentQ===questions.length-1){nextBtn.textContent="Submit Quiz";nextBtn.onclick=submitQuiz;}else{nextBtn.textContent="Next";nextBtn.onclick=nextQuestion;}}
+function renderQuestion(){const q=questions[currentQ],letters=["A","B","C","D"],card=document.getElementById("questionCard");let html=`<div class="section-badge">${getSection(currentQ)}</div><h2>Q${currentQ+1}. ${q.q}</h2><div class="options">`;q.opts.forEach((opt,i)=>{const sel=answers[currentQ]===i?" selected":"";html+=`<div class="option${sel}" onclick="selectOption(${i})"><span class="letter">${letters[i]}</span><span class="text">${opt}</span></div>`;});html+=`</div>`;card.innerHTML=html;card.querySelectorAll('code').forEach(el=>el.classList.add('language-python'));if(typeof Prism!=='undefined')Prism.highlightAllUnder(card);const nav=document.getElementById("qNav");let navHtml="";for(let n=0;n<questions.length;n++){let cls="q-nav-btn";if(n===currentQ)cls+=" active";else if(answers[n]!==null)cls+=" answered";navHtml+=`<button class="${cls}" onclick="jumpTo(${n})">${n+1}</button>`;}nav.innerHTML=navHtml;document.getElementById("progressLabel").textContent=`Question ${currentQ+1} of ${questions.length}`;document.getElementById("sectionLabel").textContent=getSection(currentQ);document.getElementById("progressFill").style.width=((currentQ+1)/questions.length*100)+"%";document.getElementById("prevBtn").style.visibility=currentQ===0?"hidden":"visible";const nextBtn=document.getElementById("nextBtn");if(currentQ===questions.length-1){nextBtn.textContent="Submit Quiz";nextBtn.onclick=submitQuiz;}else{nextBtn.textContent="Next";nextBtn.onclick=nextQuestion;}}
 function selectOption(idx){answers[currentQ]=idx;renderQuestion();}
 function jumpTo(idx){currentQ=idx;renderQuestion();window.scrollTo({top:0,behavior:"smooth"});}
 function nextQuestion(){if(answers[currentQ]===null){alert("Please select an answer before continuing.");return;}if(currentQ<questions.length-1){currentQ++;renderQuestion();window.scrollTo({top:0,behavior:"smooth"});}}
 function prevQuestion(){if(currentQ>0){currentQ--;renderQuestion();window.scrollTo({top:0,behavior:"smooth"});}}
 function submitQuiz(){if(answers[currentQ]===null){alert("Please select an answer before submitting.");return;}const unanswered=answers.findIndex(a=>a===null);if(unanswered!==-1){alert(`Please answer Question ${unanswered+1} before submitting.`);currentQ=unanswered;renderQuestion();return;}if(!confirm("Submit your quiz? You won't be able to change answers."))return;quizActive=false;const results=questions.map((q,i)=>answers[i]===q.ans);const score=results.filter(Boolean).length;sendResults(results,score);showResults(results,score);}
 function sendResults(results,score){if(SCRIPT_URL==="YOUR_APPS_SCRIPT_WEB_APP_URL_HERE"){console.warn("No Apps Script URL configured.");return;}fetch(SCRIPT_URL,{method:"POST",mode:"no-cors",headers:{"Content-Type":"application/json"},body:JSON.stringify({quizName:QUIZ_NAME,name:userName,github:userGithub,results:results})}).catch(err=>console.error("Failed:",err));}
-function showResults(results,score){document.getElementById("quizScreen").classList.add("hidden");const container=document.getElementById("resultsScreen");container.classList.remove("hidden");const pct=Math.round((score/questions.length)*100),tier=pct>=80?"high":pct>=50?"mid":"low";const message=pct>=80?"Excellent work!":pct>=50?"Good effort \u2014 review the topics you missed.":"Keep studying \u2014 review the explanations below.";let html=`<div class="score-circle score-${tier}"><span class="number">${score}/${questions.length}</span><span class="label">${pct}%</span></div><h1>${message}</h1><p class="results-subtitle">${userName}${userGithub?" &bull; @"+userGithub:""}</p><div class="review-list">`;const letters=["A","B","C","D"];questions.forEach((q,i)=>{const correct=results[i];const cls=correct?"correct":"incorrect";const status=correct?"\u2713 Correct":"\u2717 Incorrect";html+=`<div class="review-item ${cls}"><div class="q-title">Q${i+1}. ${q.q}</div><div class="status-badge ${cls}">${status}</div><div class="your-answer"><strong>Your answer:</strong> ${letters[answers[i]]} \u2014 ${q.opts[answers[i]]}</div>`;if(!correct)html+=`<div class="correct-answer"><strong>Correct answer:</strong> ${letters[q.ans]} \u2014 ${q.opts[q.ans]}</div>`;html+=`<div class="explanation"><strong>Explanation:</strong> ${q.explanation}</div></div>`;});html+=`</div>`;container.innerHTML=html;window.scrollTo({top:0,behavior:"smooth"});}
+function showResults(results,score){document.getElementById("quizScreen").classList.add("hidden");const container=document.getElementById("resultsScreen");container.classList.remove("hidden");const pct=Math.round((score/questions.length)*100),tier=pct>=80?"high":pct>=50?"mid":"low";const message=pct>=80?"Excellent work!":pct>=50?"Good effort \u2014 review the topics you missed.":"Keep studying \u2014 review the explanations below.";let html=`<div class="score-circle score-${tier}"><span class="number">${score}/${questions.length}</span><span class="label">${pct}%</span></div><h1>${message}</h1><p class="results-subtitle">${userName}${userGithub?" &bull; @"+userGithub:""}</p><div class="review-list">`;const letters=["A","B","C","D"];questions.forEach((q,i)=>{const correct=results[i];const cls=correct?"correct":"incorrect";const status=correct?"\u2713 Correct":"\u2717 Incorrect";html+=`<div class="review-item ${cls}"><div class="q-title">Q${i+1}. ${q.q}</div><div class="status-badge ${cls}">${status}</div><div class="your-answer"><strong>Your answer:</strong> ${letters[answers[i]]} \u2014 ${q.opts[answers[i]]}</div>`;if(!correct)html+=`<div class="correct-answer"><strong>Correct answer:</strong> ${letters[q.ans]} \u2014 ${q.opts[q.ans]}</div>`;html+=`<div class="explanation"><strong>Explanation:</strong> ${q.explanation}</div></div>`;});html+=`</div>`;container.innerHTML=html;container.querySelectorAll('code').forEach(el=>el.classList.add('language-python'));if(typeof Prism!=='undefined')Prism.highlightAllUnder(container);window.scrollTo({top:0,behavior:"smooth"});}
 </script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
 </body>
 </html>

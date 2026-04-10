@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Quiz — OOP & Advanced Functions: Code Reading</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet">
 <style>
 :root {
   --pri-900: #134E3A; --pri-800: #1A6B4F; --pri-700: #218764; --pri-600: #28A37A;
@@ -41,11 +42,23 @@ body { font-family: var(--font-body); background: var(--slate-50); min-height: 1
 @keyframes slideIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
 .section-badge { display: inline-block; background: var(--pri-50); color: var(--pri-700); font-size: 0.75rem; font-weight: 600; padding: 0.3rem 0.8rem; border-radius: 20px; margin-bottom: 1rem; text-transform: uppercase; letter-spacing: 0.03em; }
 .question-card h2 { font-size: 1.2rem; font-weight: 700; color: var(--slate-900); line-height: 1.5; margin-bottom: 1.5rem; }
-.question-card h2 code {
-  background: #1e293b; color: #e2e8f0; padding: 0.8rem 1rem; border-radius: 8px;
-  display: block; margin-top: 0.75rem; font-size: 0.9rem; line-height: 1.7;
-  font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace; white-space: pre-wrap; text-align: left; font-weight: 400;
+.question-card h2 code, .review-item code {
+  background: #1e293b !important; color: #e2e8f0; padding: 0.8rem 1rem; border-radius: 8px;
+  display: block; margin-top: 0.75rem; font-size: 0.9rem !important; line-height: 1.7 !important;
+  font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace !important; white-space: pre-wrap !important; text-align: left; font-weight: 400;
 }
+code[class*="language-"], pre[class*="language-"] {
+  background: #1e293b !important; text-shadow: none !important;
+}
+.token.comment, .token.prolog { color: #6b7280; }
+.token.keyword { color: #c792ea; }
+.token.string { color: #c3e88d; }
+.token.function { color: #82aaff; }
+.token.number { color: #f78c6c; }
+.token.operator { color: #89ddff; }
+.token.builtin { color: #ffcb6b; }
+.token.boolean { color: #f78c6c; }
+.token.punctuation { color: #89ddff; }
 .options { display: flex; flex-direction: column; gap: 0.75rem; }
 .option { display: flex; align-items: flex-start; gap: 0.85rem; padding: 1rem 1.2rem; border: 2px solid var(--slate-200); border-radius: var(--radius-md); cursor: pointer; transition: all 0.15s var(--ease); line-height: 1.5; }
 .option:hover { border-color: var(--pri-300); background: var(--pri-50); }
@@ -269,6 +282,8 @@ function renderQuestion() {
   let html=`<div class="section-badge">${getSection(currentQ)}</div><h2>Q${currentQ+1}. ${q.q}</h2><div class="options">`;
   q.opts.forEach((opt,i)=>{const sel=answers[currentQ]===i?" selected":"";html+=`<div class="option${sel}" onclick="selectOption(${i})"><span class="letter">${letters[i]}</span><span class="text">${opt}</span></div>`;});
   html+=`</div>`;card.innerHTML=html;
+  card.querySelectorAll('code').forEach(el=>el.classList.add('language-python'));
+  if(typeof Prism!=='undefined')Prism.highlightAllUnder(card);
   const nav=document.getElementById("qNav");let navHtml="";
   for(let n=0;n<questions.length;n++){let cls="q-nav-btn";if(n===currentQ)cls+=" active";else if(answers[n]!==null)cls+=" answered";navHtml+=`<button class="${cls}" onclick="jumpTo(${n})">${n+1}</button>`;}
   nav.innerHTML=navHtml;
@@ -304,8 +319,13 @@ function showResults(results,score){
   html+=`<div class="review-item ${cls}"><div class="q-title">Q${i+1}. ${q.q}</div><div class="status-badge ${cls}">${status}</div><div class="your-answer"><strong>Your answer:</strong> ${letters[answers[i]]} \u2014 ${q.opts[answers[i]]}</div>`;
   if(!correct)html+=`<div class="correct-answer"><strong>Correct answer:</strong> ${letters[q.ans]} \u2014 ${q.opts[q.ans]}</div>`;
   html+=`<div class="explanation"><strong>Explanation:</strong> ${q.explanation}</div></div>`;});
-  html+=`</div>`;container.innerHTML=html;window.scrollTo({top:0,behavior:"smooth"});
+  html+=`</div>`;container.innerHTML=html;
+  container.querySelectorAll('code').forEach(el=>el.classList.add('language-python'));
+  if(typeof Prism!=='undefined')Prism.highlightAllUnder(container);
+  window.scrollTo({top:0,behavior:"smooth"});
 }
 </script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
 </body>
 </html>
