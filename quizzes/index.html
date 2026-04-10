@@ -51,13 +51,20 @@ header p { color: var(--slate-500); font-size: 0.95rem; }
   font-size: 0.85rem; font-weight: 700; flex-shrink: 0;
   background: #FEF3C7; color: #92400E;
 }
+.card .num.code { background: #EDE9FE; color: #5B21B6; }
 .card .info h3 { font-size: 0.95rem; font-weight: 600; }
 .card .info p { font-size: 0.8rem; color: var(--slate-500); margin-top: 0.1rem; }
 .card .tag {
   margin-left: auto; font-size: 0.7rem; font-weight: 600;
-  padding: 0.2rem 0.5rem; border-radius: 20px;
+  padding: 0.2rem 0.5rem; border-radius: 20px; white-space: nowrap;
   background: var(--pri-50); color: var(--pri-700);
 }
+.section-title {
+  font-size: 1rem; font-weight: 700; color: var(--slate-700);
+  margin-top: 2rem; margin-bottom: 0.75rem; padding-bottom: 0.4rem;
+  border-bottom: 2px solid var(--slate-200);
+}
+.section-title:first-of-type { margin-top: 0; }
 footer {
   text-align: center; color: var(--slate-500); font-size: 0.8rem;
   margin-top: 3rem; padding-top: 1.5rem; border-top: 1px solid var(--slate-200);
@@ -72,16 +79,68 @@ footer {
     <p>Test your knowledge after each class</p>
   </header>
 
+  <div class="section-title">Python Fundamentals</div>
+  <div class="card-grid">
+    <a class="card" href="python-fundamentals-concepts/">
+      <div class="num">Q</div>
+      <div class="info">
+        <h3>Data Structures &amp; Control Flow &mdash; Concepts</h3>
+        <p>Lists, tuples, sets, dicts, conditionals, loops, functions, file I/O</p>
+      </div>
+      <span class="tag">25 Qs</span>
+    </a>
+    <a class="card" href="python-fundamentals-code/">
+      <div class="num code">C</div>
+      <div class="info">
+        <h3>Data Structures &amp; Control Flow &mdash; Code Reading</h3>
+        <p>Trace outputs, spot bugs, predict behavior in list/dict/loop/function code</p>
+      </div>
+      <span class="tag">20 Qs</span>
+    </a>
+    <a class="card" href="python-oop-concepts/">
+      <div class="num">Q</div>
+      <div class="info">
+        <h3>OOP &amp; Advanced Functions &mdash; Concepts</h3>
+        <p>Classes, *args/**kwargs, properties, inheritance, dunders, decorators, logging</p>
+      </div>
+      <span class="tag">25 Qs</span>
+    </a>
+    <a class="card" href="python-oop-code/">
+      <div class="num code">C</div>
+      <div class="info">
+        <h3>OOP &amp; Advanced Functions &mdash; Code Reading</h3>
+        <p>Trace class instances, method resolution, decorator wrapping, context managers</p>
+      </div>
+      <span class="tag">20 Qs</span>
+    </a>
+    <a class="card" href="python-numpy-pandas-concepts/">
+      <div class="num">Q</div>
+      <div class="info">
+        <h3>NumPy &amp; Pandas &mdash; Concepts</h3>
+        <p>Arrays, dtypes, broadcasting, DataFrames, selection, cleaning, groupby</p>
+      </div>
+      <span class="tag">25 Qs</span>
+    </a>
+    <a class="card" href="python-numpy-pandas-code/">
+      <div class="num code">C</div>
+      <div class="info">
+        <h3>NumPy &amp; Pandas &mdash; Code Reading</h3>
+        <p>Array shapes, slicing, vectorized ops, DataFrame access, fillna, groupby output</p>
+      </div>
+      <span class="tag">20 Qs</span>
+    </a>
+  </div>
+
+  <div class="section-title">Neural Networks &amp; PyTorch</div>
   <div class="card-grid">
     <a class="card" href="class-01/">
-      <div class="num">1</div>
+      <div class="num">Q</div>
       <div class="info">
         <h3>The AI/ML Landscape</h3>
         <p>AI/ML fundamentals, LLMs, transformers, industry applications</p>
       </div>
       <span class="tag">25 Qs</span>
     </a>
-    <!-- Add more quizzes here -->
   </div>
 
   <footer>AI/ML Academy &copy; 2026</footer>

@@ -1,0 +1,930 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quiz — Python Fundamentals: Concepts</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+/* ── Theme: Warm Emerald ── */
+:root {
+  --pri-900: #134E3A;
+  --pri-800: #1A6B4F;
+  --pri-700: #218764;
+  --pri-600: #28A37A;
+  --pri-500: #34C090;
+  --pri-400: #5CD4A8;
+  --pri-300: #8AE4C2;
+  --pri-200: #B5EEDB;
+  --pri-100: #D9F7EC;
+  --pri-50:  #EDFBF5;
+  --slate-50:  #F7F8FA;
+  --slate-100: #EDEEF2;
+  --slate-200: #D5D7DE;
+  --slate-500: #6B7280;
+  --slate-700: #374151;
+  --slate-900: #111827;
+  --success: #059669;
+  --success-bg: #ECFDF5;
+  --error: #DC2626;
+  --error-bg: #FEF2F2;
+  --accent: #F59E0B;
+  --font-body: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+  --shadow-md: 0 4px 12px rgba(0,0,0,.10);
+  --shadow-lg: 0 8px 30px rgba(0,0,0,.14);
+  --ease: cubic-bezier(.4, 0, .2, 1);
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: var(--font-body);
+  background: var(--slate-50);
+  min-height: 100vh;
+  color: var(--slate-900);
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 2rem;
+}
+
+.quiz-container {
+  width: 100%;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+/* ── Start Screen ── */
+.start-screen {
+  background: white;
+  border-radius: var(--radius-lg);
+  padding: 3rem;
+  box-shadow: var(--shadow-md);
+  border: 1px solid var(--slate-200);
+  text-align: center;
+}
+.start-screen h1 {
+  font-size: 1.8rem;
+  font-weight: 800;
+  color: var(--pri-800);
+  margin-bottom: 0.5rem;
+}
+.start-screen .subtitle {
+  color: var(--slate-500);
+  font-size: 1rem;
+  margin-bottom: 2rem;
+}
+.start-screen input {
+  display: block;
+  width: 100%;
+  max-width: 400px;
+  margin: 0.75rem auto;
+  padding: 0.85rem 1rem;
+  border: 2px solid var(--slate-200);
+  border-radius: var(--radius-md);
+  font-family: var(--font-body);
+  font-size: 1rem;
+  transition: border-color 0.2s var(--ease);
+}
+.start-screen input:focus {
+  outline: none;
+  border-color: var(--pri-500);
+}
+.start-screen .info {
+  color: var(--slate-500);
+  font-size: 0.85rem;
+  margin-top: 0.5rem;
+  margin-bottom: 1.5rem;
+}
+
+/* ── Buttons ── */
+.btn {
+  display: inline-block;
+  padding: 0.85rem 2.5rem;
+  border: none;
+  border-radius: var(--radius-md);
+  font-family: var(--font-body);
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s var(--ease);
+}
+.btn-primary {
+  background: var(--pri-700);
+  color: white;
+}
+.btn-primary:hover { background: var(--pri-600); transform: translateY(-1px); }
+.btn-primary:disabled { background: var(--slate-200); color: var(--slate-500); cursor: not-allowed; transform: none; }
+.btn-secondary {
+  background: var(--slate-100);
+  color: var(--slate-700);
+}
+.btn-secondary:hover { background: var(--slate-200); }
+
+/* ── Progress Bar ── */
+.progress-bar {
+  background: var(--slate-200);
+  border-radius: 20px;
+  height: 8px;
+  margin-bottom: 1.5rem;
+  overflow: hidden;
+}
+.progress-fill {
+  height: 100%;
+  background: var(--pri-500);
+  border-radius: 20px;
+  transition: width 0.4s var(--ease);
+}
+.progress-text {
+  color: var(--slate-500);
+  font-size: 0.85rem;
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+  display: flex;
+  justify-content: space-between;
+}
+
+/* ── Question Card ── */
+.question-card {
+  background: white;
+  border-radius: var(--radius-lg);
+  padding: 2.5rem;
+  box-shadow: var(--shadow-md);
+  border: 1px solid var(--slate-200);
+  animation: slideIn 0.3s var(--ease);
+}
+@keyframes slideIn {
+  from { opacity: 0; transform: translateY(15px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.section-badge {
+  display: inline-block;
+  background: var(--pri-50);
+  color: var(--pri-700);
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 0.3rem 0.8rem;
+  border-radius: 20px;
+  margin-bottom: 1rem;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+.question-card h2 {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--slate-900);
+  line-height: 1.5;
+  margin-bottom: 1.5rem;
+}
+
+/* ── Options ── */
+.options { display: flex; flex-direction: column; gap: 0.75rem; }
+.option {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.85rem;
+  padding: 1rem 1.2rem;
+  border: 2px solid var(--slate-200);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: all 0.15s var(--ease);
+  line-height: 1.5;
+}
+.option:hover { border-color: var(--pri-300); background: var(--pri-50); }
+.option.selected { border-color: var(--pri-500); background: var(--pri-50); }
+.option .letter {
+  flex-shrink: 0;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: var(--slate-100);
+  color: var(--slate-700);
+  font-weight: 600;
+  font-size: 0.85rem;
+  margin-top: 1px;
+}
+.option.selected .letter {
+  background: var(--pri-600);
+  color: white;
+}
+.option .text {
+  font-size: 1rem;
+  color: var(--slate-700);
+}
+
+/* ── Navigation ── */
+.nav-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 1.5rem;
+}
+
+/* ── Results Screen ── */
+.results-screen {
+  background: white;
+  border-radius: var(--radius-lg);
+  padding: 3rem;
+  box-shadow: var(--shadow-md);
+  border: 1px solid var(--slate-200);
+  animation: slideIn 0.3s var(--ease);
+}
+.score-circle {
+  width: 160px;
+  height: 160px;
+  border-radius: 50%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 1.5rem;
+  font-weight: 800;
+}
+.score-circle .number { font-size: 2.8rem; line-height: 1; }
+.score-circle .label { font-size: 0.85rem; font-weight: 500; margin-top: 0.25rem; }
+.score-high { background: var(--success-bg); color: var(--success); border: 3px solid var(--success); }
+.score-mid { background: #FFF8E7; color: #B8860B; border: 3px solid #C49545; }
+.score-low { background: var(--error-bg); color: var(--error); border: 3px solid var(--error); }
+
+.results-screen h1 {
+  text-align: center;
+  font-size: 1.5rem;
+  color: var(--pri-800);
+  margin-bottom: 0.5rem;
+}
+.results-screen .results-subtitle {
+  text-align: center;
+  color: var(--slate-500);
+  margin-top: 0.75rem;
+  margin-bottom: 3rem;
+  padding-bottom: 2rem;
+  border-bottom: 1px solid var(--slate-200);
+}
+
+/* ── Review List ── */
+.review-list { display: flex; flex-direction: column; gap: 1rem; }
+.review-item {
+  padding: 1.2rem;
+  border-radius: var(--radius-md);
+  border-left: 4px solid;
+}
+.review-item.correct {
+  background: var(--success-bg);
+  border-color: var(--success);
+}
+.review-item.incorrect {
+  background: var(--error-bg);
+  border-color: var(--error);
+}
+.review-item .q-title {
+  font-weight: 600;
+  font-size: 0.95rem;
+  margin-bottom: 0.5rem;
+  color: var(--slate-900);
+}
+.review-item .status-badge {
+  display: inline-block;
+  font-size: 0.8rem;
+  font-weight: 700;
+  padding: 0.2rem 0.7rem;
+  border-radius: 20px;
+  margin-bottom: 0.5rem;
+}
+.review-item .status-badge.correct { background: var(--success); color: white; }
+.review-item .status-badge.incorrect { background: var(--error); color: white; }
+.review-item .your-answer { font-size: 0.9rem; color: var(--slate-700); margin-bottom: 0.25rem; }
+.review-item .correct-answer { font-size: 0.9rem; color: var(--success); font-weight: 500; margin-top: 0.25rem; }
+.review-item .explanation {
+  font-size: 0.85rem;
+  color: var(--slate-500);
+  margin-top: 0.5rem;
+  padding-top: 0.5rem;
+  border-top: 1px solid rgba(0,0,0,0.08);
+}
+
+/* ── Question Number Nav ── */
+.q-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 1rem;
+  justify-content: center;
+}
+.q-nav-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 2px solid var(--slate-200);
+  background: white;
+  color: var(--slate-500);
+  font-family: var(--font-body);
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s var(--ease);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.q-nav-btn:hover { border-color: var(--pri-400); color: var(--pri-700); }
+.q-nav-btn.active { background: var(--pri-700); color: white; border-color: var(--pri-700); font-weight: 700; }
+.q-nav-btn.answered { background: var(--pri-100); border-color: var(--pri-400); color: var(--pri-800); }
+.q-nav-btn.answered.active { background: var(--pri-700); color: white; border-color: var(--pri-700); }
+
+.hidden { display: none; }
+
+/* ── Submitting state ── */
+.submitting-msg {
+  text-align: center;
+  color: var(--slate-500);
+  font-size: 0.9rem;
+  margin-top: 1rem;
+}
+
+/* ── Responsive ── */
+@media (max-width: 600px) {
+  body { padding: 0.75rem; }
+  .question-card, .start-screen, .results-screen { padding: 1.25rem; }
+  .question-card h2 { font-size: 1rem; }
+  .option { padding: 0.75rem 1rem; gap: 0.6rem; }
+  .option .text { font-size: 0.9rem; }
+  .option .letter { width: 24px; height: 24px; font-size: 0.75rem; }
+  .q-nav { gap: 4px; }
+  .q-nav-btn { width: 28px; height: 28px; font-size: 0.7rem; }
+  .nav-row { margin-top: 1rem; }
+  .btn { padding: 0.75rem 1.5rem; font-size: 0.9rem; }
+  .start-screen h1 { font-size: 1.4rem; }
+  .start-screen input { padding: 0.7rem 0.85rem; font-size: 0.9rem; }
+  .review-item { padding: 1rem; }
+  .review-item .q-title { font-size: 0.9rem; }
+  .score-circle { width: 130px; height: 130px; }
+  .score-circle .number { font-size: 2.2rem; }
+}
+</style>
+</head>
+<body>
+
+<div class="quiz-container">
+
+  <!-- ── START SCREEN ── -->
+  <div id="startScreen" class="start-screen">
+    <h1>Quiz &mdash; Python Fundamentals: Concepts</h1>
+    <p class="subtitle">Data Structures, Control Flow &amp; Functions &mdash; 25 Questions</p>
+    <input type="text" id="userName" placeholder="Your Full Name" required>
+    <input type="text" id="userGithub" placeholder="GitHub Username — optional">
+    <p class="info">5 sections &bull; ~10 minutes &bull; Results shown after submission</p>
+    <button class="btn btn-primary" onclick="startQuiz()">Start Quiz</button>
+  </div>
+
+  <!-- ── QUIZ SCREEN ── -->
+  <div id="quizScreen" class="hidden">
+    <div class="q-nav" id="qNav"></div>
+    <div class="progress-text">
+      <span id="progressLabel">Question 1 of 25</span>
+      <span id="sectionLabel">Section 1: Lists</span>
+    </div>
+    <div class="progress-bar">
+      <div class="progress-fill" id="progressFill" style="width: 4%"></div>
+    </div>
+    <div class="question-card" id="questionCard"></div>
+    <div class="nav-row">
+      <button class="btn btn-secondary" id="prevBtn" onclick="prevQuestion()">Back</button>
+      <button class="btn btn-primary" id="nextBtn" onclick="nextQuestion()">Next</button>
+    </div>
+  </div>
+
+  <!-- ── RESULTS SCREEN ── -->
+  <div id="resultsScreen" class="results-screen hidden"></div>
+
+</div>
+
+<script>
+// ══════════════════════════════════════════════════════════════
+//  CONFIGURATION
+// ══════════════════════════════════════════════════════════════
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxJIg5CYXWJKY-Uuoi9H0Nvnl4wlWwAAAQ4aYQd1FX7iIBmMqj6f9ksXEj-LTtJK8hlRg/exec";
+const QUIZ_NAME = "Python Class 1 \u2014 Conceptual";
+
+// ══════════════════════════════════════════════════════════════
+//  QUIZ DATA
+// ══════════════════════════════════════════════════════════════
+const sections = [
+  { title: "Section 1: Lists", range: [0, 5] },
+  { title: "Section 2: Tuples, Sets & Dictionaries", range: [5, 10] },
+  { title: "Section 3: Conditionals & Loops", range: [10, 15] },
+  { title: "Section 4: Functions", range: [15, 20] },
+  { title: "Section 5: File I/O & Practical Application", range: [20, 25] }
+];
+
+const questions = [
+  // ── Section 1: Lists ──
+  {
+    q: "Which of the following best describes a Python list?",
+    opts: [
+      "An immutable sequence of elements that cannot be changed after creation",
+      "An ordered, mutable collection that can hold elements of different types",
+      "A collection that only allows unique elements",
+      "A key-value mapping structure"
+    ],
+    ans: 1,
+    explanation: "A list is ordered (elements stay in the order you add them), mutable (you can add, remove, or change elements), and heterogeneous (it can hold integers, strings, other lists, etc. all at once)."
+  },
+  {
+    q: "What is the difference between .append() and .extend() on a list?",
+    opts: [
+      "They do the same thing \u2014 both add elements to the end of a list",
+      ".append() adds a single element; .extend() adds each element from an iterable individually",
+      ".append() works on strings; .extend() works on numbers",
+      ".extend() adds an element at a specific index; .append() always adds to the end"
+    ],
+    ans: 1,
+    explanation: ".append(x) adds x as a single item to the end \u2014 even if x is a list, it becomes one nested element. .extend(iterable) unpacks the iterable and adds each item individually. So [1,2].append([3,4]) gives [1,2,[3,4]], while [1,2].extend([3,4]) gives [1,2,3,4]."
+  },
+  {
+    q: "In Python, what does negative indexing do?",
+    opts: [
+      "It reverses the list permanently",
+      "It raises an IndexError because indices must be positive",
+      "It counts from the end of the sequence \u2014 index -1 is the last element",
+      "It removes elements from the end of the list"
+    ],
+    ans: 2,
+    explanation: "Negative indices count backwards from the end: -1 is the last element, -2 is second-to-last, and so on. This is a Python convenience \u2014 you don't need to know the length to access the last few items."
+  },
+  {
+    q: "What is the difference between .remove() and .pop() on a list?",
+    opts: [
+      ".remove(value) searches for and deletes the first occurrence of that value; .pop(index) removes the item at a given position and returns it",
+      ".remove() deletes all matching elements at once; .pop() only removes the first element it finds regardless of position",
+      ".pop() is slower because it must search the entire list; .remove() instantly accesses the item by position",
+      ".remove() gives back the deleted item for later use; .pop() discards it silently and returns None"
+    ],
+    ans: 0,
+    explanation: ".remove('x') finds and deletes the first 'x' in the list \u2014 it searches by value. .pop(2) removes the item at index 2 and returns it \u2014 it works by position. If you need the removed value (e.g., to process it), use .pop(). If you just want to delete something by value, use .remove(). Note: .pop() with no argument removes the last item."
+  },
+  {
+    q: "When you slice a list with my_list[1:4], which elements do you get?",
+    opts: [
+      "Elements at indices 1, 2, 3, and 4",
+      "Elements at indices 1, 2, and 3 \u2014 the start is inclusive, the end is exclusive",
+      "Only the element at index 1",
+      "Elements at indices 0, 1, 2, and 3"
+    ],
+    ans: 1,
+    explanation: "Python slicing follows the pattern [start:stop] where start is inclusive and stop is exclusive. So [1:4] gives you indices 1, 2, 3. This design means the number of elements you get equals stop minus start (4 - 1 = 3 elements)."
+  },
+  // ── Section 2: Tuples, Sets & Dictionaries ──
+  {
+    q: "What is the key difference between a list and a tuple?",
+    opts: [
+      "Lists can hold numbers; tuples can only hold strings",
+      "Tuples are ordered; lists are unordered",
+      "Lists are mutable (can be changed); tuples are immutable (cannot be changed after creation)",
+      "Tuples are faster to create but slower to access"
+    ],
+    ans: 2,
+    explanation: "The main difference is mutability. Lists let you add, remove, and change elements after creation. Tuples are frozen once created \u2014 you can't modify them. This makes tuples useful for data that shouldn't change (like coordinates or database records) and allows them to be used as dictionary keys."
+  },
+  {
+    q: "What makes a set different from a list?",
+    opts: [
+      "Sets are ordered and allow duplicates; lists are unordered",
+      "Sets automatically remove duplicates and have no guaranteed order; lists keep order and allow duplicates",
+      "Sets can only contain numbers; lists can contain any type",
+      "Sets are mutable; lists are immutable"
+    ],
+    ans: 1,
+    explanation: "A set is an unordered collection of unique elements. If you add a duplicate, the set ignores it. Sets are optimized for membership testing (checking if something is in the set) \u2014 this is O(1) on average, vs O(n) for lists. Use sets when uniqueness matters or you need fast lookups."
+  },
+  {
+    q: "How do you access a value in a Python dictionary?",
+    opts: [
+      "By its numerical index, like a list: my_dict[0]",
+      "By its key: my_dict[\"key_name\"] or my_dict.get(\"key_name\")",
+      "By calling .value(\"key_name\") on the dictionary",
+      "Dictionaries are accessed sequentially \u2014 you must iterate to find a value"
+    ],
+    ans: 1,
+    explanation: "Dictionaries are key-value stores. You access values using their key with bracket notation (my_dict[\"key\"]) or the safer .get(\"key\") method. The difference: bracket notation raises a KeyError if the key doesn't exist, while .get() returns None (or a default you specify)."
+  },
+  {
+    q: "When would you choose a dictionary over a list?",
+    opts: [
+      "When you need to store items in a specific order",
+      "When you need to look up values by a meaningful label rather than a position number",
+      "When you need to store only numbers",
+      "When you have fewer than 10 elements"
+    ],
+    ans: 1,
+    explanation: "Use a dictionary when your data has natural labels (keys) \u2014 like looking up a student's grade by name, or a config setting by its parameter name. Lists are better when order and position matter. Dictionaries provide O(1) key lookup, so they scale well for large datasets."
+  },
+  {
+    q: "Which data structure would you use to store a collection of unique user IDs where you frequently need to check if an ID exists?",
+    opts: [
+      "A list, because it preserves insertion order",
+      "A tuple, because it's immutable and fast",
+      "A set, because it enforces uniqueness and has O(1) membership testing",
+      "A dictionary, because you need key-value pairs"
+    ],
+    ans: 2,
+    explanation: "A set is the ideal choice: it automatically enforces uniqueness (no duplicate IDs), and the 'in' operator is O(1) on average for sets vs O(n) for lists. Since you only need IDs (not associated data), a set is more appropriate than a dictionary."
+  },
+  // ── Section 3: Conditionals & Loops ──
+  {
+    q: "What is the purpose of elif in an if/elif/else chain?",
+    opts: [
+      "It's another way to write 'else' \u2014 they're interchangeable",
+      "It checks an additional condition only if all previous conditions were False",
+      "It always runs regardless of previous conditions",
+      "It combines two conditions with AND logic"
+    ],
+    ans: 1,
+    explanation: "elif (short for 'else if') lets you chain multiple conditions. Python checks them top-to-bottom and runs only the first one that's True, then skips the rest. This is different from multiple separate if statements, which are all checked independently."
+  },
+  {
+    q: "What is the main difference between a for loop and a while loop?",
+    opts: [
+      "for loops are faster; while loops are slower",
+      "for loops iterate over a known sequence; while loops repeat as long as a condition is True",
+      "while loops can only run once; for loops run multiple times",
+      "for loops work with numbers; while loops work with strings"
+    ],
+    ans: 1,
+    explanation: "Use a for loop when you know what you're iterating over (a list, range, string, etc.). Use a while loop when you don't know how many iterations you need \u2014 you just keep going until a condition becomes False. Most Python code uses for loops because they're safer (no risk of infinite loops) and more readable."
+  },
+  {
+    q: "Why would you use enumerate() instead of a plain for loop over a list?",
+    opts: [
+      "enumerate() makes the loop run faster",
+      "enumerate() gives you both the index and the value at each step, without maintaining a separate counter",
+      "enumerate() reverses the list before iterating",
+      "enumerate() is required for looping over dictionaries"
+    ],
+    ans: 1,
+    explanation: "enumerate() pairs each element with its index: for i, val in enumerate(my_list). This is cleaner than maintaining a separate counter variable (i = 0; i += 1) and avoids the common pattern of using range(len(list)) which is less Pythonic."
+  },
+  {
+    q: "What does a list comprehension do?",
+    opts: [
+      "It checks if a list contains a specific element",
+      "It creates a new list by applying an expression to each item of an iterable, optionally filtering with a condition",
+      "It sorts a list in ascending order",
+      "It merges two lists together"
+    ],
+    ans: 1,
+    explanation: "A list comprehension like [x * 2 for x in nums if x > 0] is a concise way to build a new list. It replaces a multi-line for-loop-with-append pattern. The optional 'if' clause filters which elements are included. They're one of Python's most powerful features for data transformation."
+  },
+  {
+    q: "What does the zip() function do when used with two lists?",
+    opts: [
+      "It compresses the lists to take less memory",
+      "It pairs up elements from both lists by position \u2014 first with first, second with second, and so on",
+      "It appends the second list to the first",
+      "It finds elements that appear in both lists"
+    ],
+    ans: 1,
+    explanation: "zip() pairs elements from multiple iterables by position, creating tuples: zip([1,2,3], ['a','b','c']) gives [(1,'a'), (2,'b'), (3,'c')]. If the iterables have different lengths, zip stops at the shortest. It's commonly used to iterate over two related lists in parallel."
+  },
+  // ── Section 4: Functions ──
+  {
+    q: "Why would you put code inside a function instead of writing it directly in the script?",
+    opts: [
+      "Functions make code run faster because Python optimizes them",
+      "Functions let you reuse code, give it a meaningful name, and avoid repeating yourself",
+      "Python requires all code to be inside functions",
+      "Functions are only needed when code is longer than 10 lines"
+    ],
+    ans: 1,
+    explanation: "Functions serve three main purposes: reusability (call the same logic multiple times), abstraction (give a complex operation a clear name), and organization (break a large script into manageable pieces). The DRY principle \u2014 Don't Repeat Yourself \u2014 is a core reason to use functions."
+  },
+  {
+    q: "What happens when a function doesn't have a return statement?",
+    opts: [
+      "Python raises a SyntaxError",
+      "The function returns None implicitly",
+      "The function returns 0",
+      "The function returns the last variable that was assigned"
+    ],
+    ans: 1,
+    explanation: "If a function reaches the end without hitting a return statement, Python automatically returns None. This is why you sometimes see unexpected None values \u2014 for example, print() itself returns None, so x = print('hi') sets x to None."
+  },
+  {
+    q: "What is a default parameter value in a function?",
+    opts: [
+      "A value that the function always uses, ignoring any argument passed by the caller",
+      "A value that's used when the caller doesn't provide that argument",
+      "A parameter that must always be specified by the caller",
+      "The first parameter in the function definition"
+    ],
+    ans: 1,
+    explanation: "Default values make parameters optional. In def greet(name, greeting='Hello'), the caller can omit greeting and it defaults to 'Hello'. If they pass a value, it overrides the default. Defaults must come after non-default parameters in the function signature."
+  },
+  {
+    q: "What are type hints in Python, and are they enforced at runtime?",
+    opts: [
+      "They specify data types and Python will raise an error if the wrong type is passed",
+      "They are documentation annotations that indicate expected types but are NOT enforced by Python at runtime",
+      "They convert arguments to the specified type automatically",
+      "They are only available in Python 2, not Python 3"
+    ],
+    ans: 1,
+    explanation: "Type hints like def add(a: int, b: int) -> int are purely informational \u2014 Python does not enforce them at runtime. They serve as documentation for developers and enable tools like mypy to catch type errors before the code runs. They're considered best practice in professional Python code."
+  },
+  {
+    q: "What does 'scope' mean in the context of functions?",
+    opts: [
+      "How many lines of code the function contains",
+      "The region of code where a variable is accessible \u2014 variables created inside a function can't be accessed outside it",
+      "The number of parameters a function accepts",
+      "Whether a function is public or private"
+    ],
+    ans: 1,
+    explanation: "Scope determines where a variable can be used. Variables created inside a function have local scope \u2014 they exist only during that function call and disappear when it returns. Variables created outside all functions have global scope. This prevents functions from accidentally interfering with each other's data."
+  },
+  // ── Section 5: File I/O & Practical Application ──
+  {
+    q: "Why should you use a 'with' statement when opening files?",
+    opts: [
+      "It makes the file open faster",
+      "It automatically closes the file when the block ends, even if an error occurs",
+      "It's the only way to open files in Python",
+      "It allows you to open multiple files at the same time"
+    ],
+    ans: 1,
+    explanation: "The 'with' statement creates a context manager that guarantees the file is properly closed when the block exits \u2014 even if an exception occurs. Without it, you'd need to manually call file.close(), and if your code crashes before that line, the file stays open and can cause data corruption or resource leaks."
+  },
+  {
+    q: "What is the difference between the 'r', 'w', and 'a' modes when opening a file?",
+    opts: [
+      "'r' reads, 'w' writes (overwriting existing content), 'a' appends (adding to the end without erasing)",
+      "'r' runs the file, 'w' watches for changes, 'a' archives the file",
+      "They all read the file but in different encodings",
+      "'r' is for text, 'w' is for binary, 'a' is for JSON"
+    ],
+    ans: 0,
+    explanation: "'r' (read) opens an existing file for reading only. 'w' (write) creates a new file or overwrites an existing one \u2014 all previous content is erased. 'a' (append) opens a file and adds new content to the end, preserving existing content. A common mistake is using 'w' when you meant 'a', accidentally deleting data."
+  },
+  {
+    q: "What does the .strip() method do when reading lines from a file?",
+    opts: [
+      "It removes the line from the file",
+      "It removes leading and trailing whitespace, including the newline character at the end of each line",
+      "It splits the line into a list of words",
+      "It converts the line to lowercase"
+    ],
+    ans: 1,
+    explanation: "When you read lines from a file, each line typically ends with a '\\n' (newline character). .strip() removes this plus any extra whitespace from both ends. You can also use .rstrip() to only strip from the right side, or .lstrip() for the left."
+  },
+  {
+    q: "You're building an application that needs to store data about 100 students \u2014 each with a name, grade, and email. What is the best data structure?",
+    opts: [
+      "A single list containing all names, grades, and emails one after another",
+      "Three separate lists: one for names, one for grades, one for emails",
+      "A list of dictionaries, where each dictionary represents one student with 'name', 'grade', and 'email' keys",
+      "A single dictionary with student names as keys and grades as values"
+    ],
+    ans: 2,
+    explanation: "A list of dictionaries is the most organized approach: each dictionary bundles all of a student's data together with labeled fields. This mirrors how real databases work (each dict is a 'row'). Parallel lists (option B) drift out of sync easily, and a single flat list (option A) requires you to remember the structure."
+  },
+  {
+    q: "What is the advantage of the .get() method over bracket notation for dictionary access?",
+    opts: [
+      ".get() is faster than bracket notation",
+      ".get() returns a default value (None or one you specify) instead of raising a KeyError when the key doesn't exist",
+      ".get() can access nested dictionaries automatically",
+      ".get() only works with string keys while brackets work with any key type"
+    ],
+    ans: 1,
+    explanation: "my_dict['key'] raises a KeyError if 'key' doesn't exist, which crashes your program unless you catch it. my_dict.get('key') returns None, and my_dict.get('key', default) returns your specified default. This is especially useful when processing data where some records might be missing certain fields."
+  }
+];
+
+// ══════════════════════════════════════════════════════════════
+//  STATE
+// ══════════════════════════════════════════════════════════════
+let currentQ = 0;
+let answers = new Array(questions.length).fill(null);
+let userName = "";
+let userGithub = "";
+
+// ══════════════════════════════════════════════════════════════
+//  START
+// ══════════════════════════════════════════════════════════════
+function startQuiz() {
+  userName = document.getElementById("userName").value.trim();
+  userGithub = document.getElementById("userGithub").value.trim();
+  if (!userName) {
+    alert("Please enter your name.");
+    return;
+  }
+  document.getElementById("startScreen").classList.add("hidden");
+  document.getElementById("quizScreen").classList.remove("hidden");
+  quizActive = true;
+  renderQuestion();
+}
+
+let quizActive = false;
+
+// Keyboard: Enter on start screen inputs
+document.getElementById("userName").addEventListener("keydown", function(e) {
+  if (e.key === "Enter") { e.preventDefault(); document.getElementById("userGithub").focus(); }
+});
+document.getElementById("userGithub").addEventListener("keydown", function(e) {
+  if (e.key === "Enter") { e.preventDefault(); startQuiz(); }
+});
+
+// Keyboard: Enter during quiz → next question / submit
+document.addEventListener("keydown", function(e) {
+  if (!quizActive) return;
+  if (e.key === "Enter" && answers[currentQ] !== null) {
+    e.preventDefault();
+    if (currentQ === questions.length - 1) {
+      submitQuiz();
+    } else {
+      nextQuestion();
+    }
+  }
+});
+
+// ══════════════════════════════════════════════════════════════
+//  RENDER
+// ══════════════════════════════════════════════════════════════
+function getSection(idx) {
+  for (const s of sections) {
+    if (idx >= s.range[0] && idx < s.range[1]) return s.title;
+  }
+  return "";
+}
+
+function renderQuestion() {
+  const q = questions[currentQ];
+  const letters = ["A", "B", "C", "D"];
+  const card = document.getElementById("questionCard");
+
+  let html = `<div class="section-badge">${getSection(currentQ)}</div>`;
+  html += `<h2>Q${currentQ + 1}. ${q.q}</h2>`;
+  html += `<div class="options">`;
+  q.opts.forEach((opt, i) => {
+    const sel = answers[currentQ] === i ? " selected" : "";
+    html += `<div class="option${sel}" onclick="selectOption(${i})">
+      <span class="letter">${letters[i]}</span>
+      <span class="text">${opt}</span>
+    </div>`;
+  });
+  html += `</div>`;
+  card.innerHTML = html;
+
+  // Question number nav
+  const nav = document.getElementById("qNav");
+  let navHtml = "";
+  for (let n = 0; n < questions.length; n++) {
+    let cls = "q-nav-btn";
+    if (n === currentQ) cls += " active";
+    else if (answers[n] !== null) cls += " answered";
+    navHtml += `<button class="${cls}" onclick="jumpTo(${n})">${n + 1}</button>`;
+  }
+  nav.innerHTML = navHtml;
+
+  // Progress
+  document.getElementById("progressLabel").textContent = `Question ${currentQ + 1} of ${questions.length}`;
+  document.getElementById("sectionLabel").textContent = getSection(currentQ);
+  document.getElementById("progressFill").style.width = ((currentQ + 1) / questions.length * 100) + "%";
+
+  // Nav buttons
+  document.getElementById("prevBtn").style.visibility = currentQ === 0 ? "hidden" : "visible";
+  const nextBtn = document.getElementById("nextBtn");
+  if (currentQ === questions.length - 1) {
+    nextBtn.textContent = "Submit Quiz";
+    nextBtn.onclick = submitQuiz;
+  } else {
+    nextBtn.textContent = "Next";
+    nextBtn.onclick = nextQuestion;
+  }
+}
+
+function selectOption(idx) {
+  answers[currentQ] = idx;
+  renderQuestion();
+}
+
+function jumpTo(idx) {
+  currentQ = idx;
+  renderQuestion();
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+function nextQuestion() {
+  if (answers[currentQ] === null) {
+    alert("Please select an answer before continuing.");
+    return;
+  }
+  if (currentQ < questions.length - 1) {
+    currentQ++;
+    renderQuestion();
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+}
+
+function prevQuestion() {
+  if (currentQ > 0) {
+    currentQ--;
+    renderQuestion();
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+}
+
+// ══════════════════════════════════════════════════════════════
+//  SUBMIT
+// ══════════════════════════════════════════════════════════════
+function submitQuiz() {
+  if (answers[currentQ] === null) {
+    alert("Please select an answer before submitting.");
+    return;
+  }
+  const unanswered = answers.findIndex(a => a === null);
+  if (unanswered !== -1) {
+    alert(`Please answer Question ${unanswered + 1} before submitting.`);
+    currentQ = unanswered;
+    renderQuestion();
+    return;
+  }
+
+  if (!confirm("Submit your quiz? You won't be able to change answers.")) return;
+
+  quizActive = false;
+
+  const results = questions.map((q, i) => answers[i] === q.ans);
+  const score = results.filter(Boolean).length;
+
+  sendResults(results, score);
+  showResults(results, score);
+}
+
+function sendResults(results, score) {
+  if (SCRIPT_URL === "YOUR_APPS_SCRIPT_WEB_APP_URL_HERE") {
+    console.warn("No Apps Script URL configured \u2014 results not saved to sheet.");
+    return;
+  }
+  fetch(SCRIPT_URL, {
+    method: "POST",
+    mode: "no-cors",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      quizName: QUIZ_NAME,
+      name: userName,
+      github: userGithub,
+      results: results
+    })
+  }).catch(err => console.error("Failed to save results:", err));
+}
+
+// ══════════════════════════════════════════════════════════════
+//  RESULTS
+// ══════════════════════════════════════════════════════════════
+function showResults(results, score) {
+  document.getElementById("quizScreen").classList.add("hidden");
+  const container = document.getElementById("resultsScreen");
+  container.classList.remove("hidden");
+
+  const pct = Math.round((score / questions.length) * 100);
+  const tier = pct >= 80 ? "high" : pct >= 50 ? "mid" : "low";
+  const message = pct >= 80 ? "Excellent work!" : pct >= 50 ? "Good effort \u2014 review the topics you missed." : "Keep studying \u2014 review the explanations below.";
+
+  let html = `
+    <div class="score-circle score-${tier}">
+      <span class="number">${score}/${questions.length}</span>
+      <span class="label">${pct}%</span>
+    </div>
+    <h1>${message}</h1>
+    <p class="results-subtitle">${userName}${userGithub ? " &bull; @" + userGithub : ""}</p>
+    <div class="review-list">
+  `;
+
+  const letters = ["A", "B", "C", "D"];
+  questions.forEach((q, i) => {
+    const correct = results[i];
+    const cls = correct ? "correct" : "incorrect";
+    const status = correct ? "\u2713 Correct" : "\u2717 Incorrect";
+    html += `<div class="review-item ${cls}">`;
+    html += `<div class="q-title">Q${i + 1}. ${q.q}</div>`;
+    html += `<div class="status-badge ${cls}">${status}</div>`;
+    html += `<div class="your-answer"><strong>Your answer:</strong> ${letters[answers[i]]} \u2014 ${q.opts[answers[i]]}</div>`;
+    if (!correct) {
+      html += `<div class="correct-answer"><strong>Correct answer:</strong> ${letters[q.ans]} \u2014 ${q.opts[q.ans]}</div>`;
+    }
+    html += `<div class="explanation"><strong>Explanation:</strong> ${q.explanation}</div>`;
+    html += `</div>`;
+  });
+
+  html += `</div>`;
+  container.innerHTML = html;
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+</script>
+</body>
+</html>

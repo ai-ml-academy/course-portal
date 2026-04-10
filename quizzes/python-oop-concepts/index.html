@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quiz — OOP & Advanced Functions: Concepts</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --pri-900: #134E3A; --pri-800: #1A6B4F; --pri-700: #218764; --pri-600: #28A37A;
+  --pri-500: #34C090; --pri-400: #5CD4A8; --pri-300: #8AE4C2; --pri-200: #B5EEDB;
+  --pri-100: #D9F7EC; --pri-50: #EDFBF5;
+  --slate-50: #F7F8FA; --slate-100: #EDEEF2; --slate-200: #D5D7DE;
+  --slate-500: #6B7280; --slate-700: #374151; --slate-900: #111827;
+  --success: #059669; --success-bg: #ECFDF5; --error: #DC2626; --error-bg: #FEF2F2;
+  --accent: #F59E0B;
+  --font-body: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  --radius-md: 10px; --radius-lg: 16px;
+  --shadow-md: 0 4px 12px rgba(0,0,0,.10); --shadow-lg: 0 8px 30px rgba(0,0,0,.14);
+  --ease: cubic-bezier(.4, 0, .2, 1);
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: var(--font-body); background: var(--slate-50); min-height: 100vh; color: var(--slate-900); display: flex; justify-content: center; align-items: flex-start; padding: 2rem; }
+.quiz-container { width: 100%; max-width: 800px; margin: 0 auto; }
+.start-screen { background: white; border-radius: var(--radius-lg); padding: 3rem; box-shadow: var(--shadow-md); border: 1px solid var(--slate-200); text-align: center; }
+.start-screen h1 { font-size: 1.8rem; font-weight: 800; color: var(--pri-800); margin-bottom: 0.5rem; }
+.start-screen .subtitle { color: var(--slate-500); font-size: 1rem; margin-bottom: 2rem; }
+.start-screen input { display: block; width: 100%; max-width: 400px; margin: 0.75rem auto; padding: 0.85rem 1rem; border: 2px solid var(--slate-200); border-radius: var(--radius-md); font-family: var(--font-body); font-size: 1rem; transition: border-color 0.2s var(--ease); }
+.start-screen input:focus { outline: none; border-color: var(--pri-500); }
+.start-screen .info { color: var(--slate-500); font-size: 0.85rem; margin-top: 0.5rem; margin-bottom: 1.5rem; }
+.btn { display: inline-block; padding: 0.85rem 2.5rem; border: none; border-radius: var(--radius-md); font-family: var(--font-body); font-size: 1rem; font-weight: 600; cursor: pointer; transition: all 0.2s var(--ease); }
+.btn-primary { background: var(--pri-700); color: white; }
+.btn-primary:hover { background: var(--pri-600); transform: translateY(-1px); }
+.btn-primary:disabled { background: var(--slate-200); color: var(--slate-500); cursor: not-allowed; transform: none; }
+.btn-secondary { background: var(--slate-100); color: var(--slate-700); }
+.btn-secondary:hover { background: var(--slate-200); }
+.progress-bar { background: var(--slate-200); border-radius: 20px; height: 8px; margin-bottom: 1.5rem; overflow: hidden; }
+.progress-fill { height: 100%; background: var(--pri-500); border-radius: 20px; transition: width 0.4s var(--ease); }
+.progress-text { color: var(--slate-500); font-size: 0.85rem; font-weight: 500; margin-bottom: 0.5rem; display: flex; justify-content: space-between; }
+.question-card { background: white; border-radius: var(--radius-lg); padding: 2.5rem; box-shadow: var(--shadow-md); border: 1px solid var(--slate-200); animation: slideIn 0.3s var(--ease); }
+@keyframes slideIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+.section-badge { display: inline-block; background: var(--pri-50); color: var(--pri-700); font-size: 0.75rem; font-weight: 600; padding: 0.3rem 0.8rem; border-radius: 20px; margin-bottom: 1rem; text-transform: uppercase; letter-spacing: 0.03em; }
+.question-card h2 { font-size: 1.2rem; font-weight: 700; color: var(--slate-900); line-height: 1.5; margin-bottom: 1.5rem; }
+.options { display: flex; flex-direction: column; gap: 0.75rem; }
+.option { display: flex; align-items: flex-start; gap: 0.85rem; padding: 1rem 1.2rem; border: 2px solid var(--slate-200); border-radius: var(--radius-md); cursor: pointer; transition: all 0.15s var(--ease); line-height: 1.5; }
+.option:hover { border-color: var(--pri-300); background: var(--pri-50); }
+.option.selected { border-color: var(--pri-500); background: var(--pri-50); }
+.option .letter { flex-shrink: 0; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; border-radius: 50%; background: var(--slate-100); color: var(--slate-700); font-weight: 600; font-size: 0.85rem; margin-top: 1px; }
+.option.selected .letter { background: var(--pri-600); color: white; }
+.option .text { font-size: 1rem; color: var(--slate-700); }
+.nav-row { display: flex; justify-content: space-between; align-items: center; margin-top: 1.5rem; }
+.results-screen { background: white; border-radius: var(--radius-lg); padding: 3rem; box-shadow: var(--shadow-md); border: 1px solid var(--slate-200); animation: slideIn 0.3s var(--ease); }
+.score-circle { width: 160px; height: 160px; border-radius: 50%; display: flex; flex-direction: column; align-items: center; justify-content: center; margin: 0 auto 1.5rem; font-weight: 800; }
+.score-circle .number { font-size: 2.8rem; line-height: 1; }
+.score-circle .label { font-size: 0.85rem; font-weight: 500; margin-top: 0.25rem; }
+.score-high { background: var(--success-bg); color: var(--success); border: 3px solid var(--success); }
+.score-mid { background: #FFF8E7; color: #B8860B; border: 3px solid #C49545; }
+.score-low { background: var(--error-bg); color: var(--error); border: 3px solid var(--error); }
+.results-screen h1 { text-align: center; font-size: 1.5rem; color: var(--pri-800); margin-bottom: 0.5rem; }
+.results-screen .results-subtitle { text-align: center; color: var(--slate-500); margin-top: 0.75rem; margin-bottom: 3rem; padding-bottom: 2rem; border-bottom: 1px solid var(--slate-200); }
+.review-list { display: flex; flex-direction: column; gap: 1rem; }
+.review-item { padding: 1.2rem; border-radius: var(--radius-md); border-left: 4px solid; }
+.review-item.correct { background: var(--success-bg); border-color: var(--success); }
+.review-item.incorrect { background: var(--error-bg); border-color: var(--error); }
+.review-item .q-title { font-weight: 600; font-size: 0.95rem; margin-bottom: 0.5rem; color: var(--slate-900); }
+.review-item .status-badge { display: inline-block; font-size: 0.8rem; font-weight: 700; padding: 0.2rem 0.7rem; border-radius: 20px; margin-bottom: 0.5rem; }
+.review-item .status-badge.correct { background: var(--success); color: white; }
+.review-item .status-badge.incorrect { background: var(--error); color: white; }
+.review-item .your-answer { font-size: 0.9rem; color: var(--slate-700); margin-bottom: 0.25rem; }
+.review-item .correct-answer { font-size: 0.9rem; color: var(--success); font-weight: 500; margin-top: 0.25rem; }
+.review-item .explanation { font-size: 0.85rem; color: var(--slate-500); margin-top: 0.5rem; padding-top: 0.5rem; border-top: 1px solid rgba(0,0,0,0.08); }
+.q-nav { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 1rem; justify-content: center; }
+.q-nav-btn { width: 32px; height: 32px; border-radius: 50%; border: 2px solid var(--slate-200); background: white; color: var(--slate-500); font-family: var(--font-body); font-size: 0.75rem; font-weight: 600; cursor: pointer; transition: all 0.15s var(--ease); display: flex; align-items: center; justify-content: center; }
+.q-nav-btn:hover { border-color: var(--pri-400); color: var(--pri-700); }
+.q-nav-btn.active { background: var(--pri-700); color: white; border-color: var(--pri-700); font-weight: 700; }
+.q-nav-btn.answered { background: var(--pri-100); border-color: var(--pri-400); color: var(--pri-800); }
+.q-nav-btn.answered.active { background: var(--pri-700); color: white; border-color: var(--pri-700); }
+.hidden { display: none; }
+.submitting-msg { text-align: center; color: var(--slate-500); font-size: 0.9rem; margin-top: 1rem; }
+@media (max-width: 600px) {
+  body { padding: 0.75rem; }
+  .question-card, .start-screen, .results-screen { padding: 1.25rem; }
+  .question-card h2 { font-size: 1rem; }
+  .option { padding: 0.75rem 1rem; gap: 0.6rem; }
+  .option .text { font-size: 0.9rem; }
+  .option .letter { width: 24px; height: 24px; font-size: 0.75rem; }
+  .q-nav { gap: 4px; } .q-nav-btn { width: 28px; height: 28px; font-size: 0.7rem; }
+  .nav-row { margin-top: 1rem; }
+  .btn { padding: 0.75rem 1.5rem; font-size: 0.9rem; }
+  .start-screen h1 { font-size: 1.4rem; }
+  .start-screen input { padding: 0.7rem 0.85rem; font-size: 0.9rem; }
+  .review-item { padding: 1rem; } .review-item .q-title { font-size: 0.9rem; }
+  .score-circle { width: 130px; height: 130px; } .score-circle .number { font-size: 2.2rem; }
+}
+</style>
+</head>
+<body>
+<div class="quiz-container">
+  <div id="startScreen" class="start-screen">
+    <h1>Quiz &mdash; OOP &amp; Advanced Functions: Concepts</h1>
+    <p class="subtitle">Functions, Classes, Inheritance &amp; Decorators &mdash; 25 Questions</p>
+    <input type="text" id="userName" placeholder="Your Full Name" required>
+    <input type="text" id="userGithub" placeholder="GitHub Username — optional">
+    <p class="info">5 sections &bull; ~10 minutes &bull; Results shown after submission</p>
+    <button class="btn btn-primary" onclick="startQuiz()">Start Quiz</button>
+  </div>
+  <div id="quizScreen" class="hidden">
+    <div class="q-nav" id="qNav"></div>
+    <div class="progress-text">
+      <span id="progressLabel">Question 1 of 25</span>
+      <span id="sectionLabel"></span>
+    </div>
+    <div class="progress-bar"><div class="progress-fill" id="progressFill" style="width:4%"></div></div>
+    <div class="question-card" id="questionCard"></div>
+    <div class="nav-row">
+      <button class="btn btn-secondary" id="prevBtn" onclick="prevQuestion()">Back</button>
+      <button class="btn btn-primary" id="nextBtn" onclick="nextQuestion()">Next</button>
+    </div>
+  </div>
+  <div id="resultsScreen" class="results-screen hidden"></div>
+</div>
+<script>
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxJIg5CYXWJKY-Uuoi9H0Nvnl4wlWwAAAQ4aYQd1FX7iIBmMqj6f9ksXEj-LTtJK8hlRg/exec";
+const QUIZ_NAME = "Python Class 2 \u2014 Conceptual";
+
+const sections = [
+  { title: "Section 1: Advanced Functions", range: [0, 5] },
+  { title: "Section 2: Classes & Objects", range: [5, 10] },
+  { title: "Section 3: Properties & Class Methods", range: [10, 15] },
+  { title: "Section 4: Inheritance & Dunder Methods", range: [15, 20] },
+  { title: "Section 5: Decorators & Logging", range: [20, 25] }
+];
+
+const questions = [
+  // ── Section 1: Advanced Functions ──
+  {
+    q: "What is the difference between *args and **kwargs in a function signature?",
+    opts: [
+      "*args collects extra positional arguments as a tuple; **kwargs collects extra keyword arguments as a dictionary",
+      "*args is for strings; **kwargs is for numbers",
+      "They are interchangeable \u2014 both collect arguments the same way",
+      "*args collects all arguments; **kwargs only collects named arguments that have defaults"
+    ],
+    ans: 0,
+    explanation: "*args captures any extra positional arguments into a tuple (e.g., func(1, 2, 3) \u2192 args = (1, 2, 3)). **kwargs captures extra keyword arguments into a dictionary (e.g., func(lr=0.01, epochs=50) \u2192 kwargs = {'lr': 0.01, 'epochs': 50}). They give functions flexibility to accept variable inputs."
+  },
+  {
+    q: "When should you prefer explicit parameters over **kwargs?",
+    opts: [
+      "Never \u2014 **kwargs is always more flexible and therefore better",
+      "When you want the function signature to clearly document what arguments it expects",
+      "Only when the function takes exactly one argument",
+      "When the function is private (starts with an underscore)"
+    ],
+    ans: 1,
+    explanation: "Explicit parameters with type hints are almost always better for readability \u2014 the signature itself documents what the function expects. **kwargs hides the interface, making it hard for callers to know what to pass. Reserve **kwargs for wrapper functions, config passthrough, and factory patterns where flexibility is genuinely needed."
+  },
+  {
+    q: "What does it mean that functions are 'first-class objects' in Python?",
+    opts: [
+      "Functions run faster than other code because they're optimized",
+      "Functions can be passed as arguments, returned from other functions, and stored in variables",
+      "Functions must be defined before any other code in the file",
+      "Functions automatically have higher priority in memory allocation"
+    ],
+    ans: 1,
+    explanation: "First-class means functions are treated like any other value. You can assign them to variables (fn = print), pass them as arguments (map(str, [1,2,3])), return them from functions, and store them in lists or dicts. This is the foundation for decorators and functional patterns like map/filter."
+  },
+  {
+    q: "What is the purpose of a Google-style docstring in a function?",
+    opts: [
+      "It makes the function run faster by providing compiler hints",
+      "It documents what the function does, its parameters, return type, and possible exceptions in a standardized format",
+      "It enforces the parameter types at runtime",
+      "It automatically generates unit tests for the function"
+    ],
+    ans: 1,
+    explanation: "Docstrings provide structured documentation: what the function does, what each parameter expects (Args:), what it returns (Returns:), and what errors it might raise (Raises:). Anyone can read your docstring by calling help(your_function) in Python \u2014 they don't need to look at the source code. IDEs also use docstrings for autocomplete hints. Google-style is one of the most common formats in data science code."
+  },
+  {
+    q: "What is the difference between positional and keyword arguments when calling a function?",
+    opts: [
+      "Positional arguments are matched by position; keyword arguments are matched by name and can be in any order",
+      "Positional arguments are faster; keyword arguments are slower",
+      "You can only use one style per function call, not both",
+      "Keyword arguments must come before positional arguments"
+    ],
+    ans: 0,
+    explanation: "Positional: func('rf', 100) \u2014 the order determines which parameter gets which value. Keyword: func(epochs=100, model='rf') \u2014 names make order irrelevant and the call self-documenting. You can mix them, but positional must come first: func('rf', epochs=100) is valid; func(model='rf', 100) is not."
+  },
+  // ── Section 2: Classes & Objects ──
+  {
+    q: "What is the purpose of the __init__ method in a class?",
+    opts: [
+      "It deletes the object when it's no longer needed",
+      "It initializes a new instance \u2014 setting up attributes and state when the object is created",
+      "It imports the class from another module",
+      "It makes the class available globally without importing"
+    ],
+    ans: 1,
+    explanation: "__init__ is the initializer (often called the constructor). When you write Model('rf', 0.94), Python creates a new object and immediately calls __init__(self, 'rf', 0.94) on it. This is where you set up instance attributes like self.name and self.accuracy."
+  },
+  {
+    q: "What is the difference between an instance attribute and a class attribute?",
+    opts: [
+      "Instance attributes are created inside __init__ and are unique per object; class attributes are defined on the class and shared by all instances",
+      "Class attributes are faster to access than instance attributes",
+      "Instance attributes are public; class attributes are private",
+      "There is no difference \u2014 they are two names for the same thing"
+    ],
+    ans: 0,
+    explanation: "Class attributes (defined directly in the class body) are shared: if Model.framework = 'sklearn', every instance sees the same value. Instance attributes (set on self in __init__) are unique per object: each Model can have a different name and accuracy."
+  },
+  {
+    q: "What does 'self' refer to in a method definition?",
+    opts: [
+      "The class itself (the blueprint)",
+      "The specific instance that the method is being called on",
+      "The parent class in an inheritance chain",
+      "A keyword that Python requires but has no meaning"
+    ],
+    ans: 1,
+    explanation: "self is a reference to the specific instance calling the method. When you write rf.is_production_ready(), Python translates this to Model.is_production_ready(rf) \u2014 the instance is passed as the first argument. This is how methods access and modify the object's own attributes."
+  },
+  {
+    q: "What is the difference between __repr__ and __str__?",
+    opts: [
+      "__repr__ is for developers (debugging, logging); __str__ is for end users (display, printing)",
+      "__repr__ is faster; __str__ is slower but more detailed",
+      "__str__ is called first and __repr__ is the fallback",
+      "They must always return the same string"
+    ],
+    ans: 0,
+    explanation: "__repr__ should return an unambiguous string useful for debugging \u2014 ideally one that could recreate the object (e.g., \"Model(name='rf', accuracy=0.94)\"). __str__ returns a human-friendly string for display (e.g., \"rf (accuracy: 94.0%)\"). If only one is defined, __repr__ is the better choice \u2014 it's used as fallback for str() too."
+  },
+  {
+    q: "If you create two instances of a class, what happens to their instance attributes?",
+    opts: [
+      "Both instances share the same attributes \u2014 changing one automatically updates the other",
+      "Each instance gets its own independent copy of instance attributes \u2014 changing one does not affect the other",
+      "The second instance overwrites the first, so only one can exist at a time",
+      "Each instance starts with the same values, but they become linked after the first method call"
+    ],
+    ans: 1,
+    explanation: "Every time you call Model('rf', 0.94) or Model('xgb', 0.85), Python creates a brand new object with its own self.name and self.accuracy. Modifying rf.accuracy doesn't touch xgb.accuracy. This is the whole point of instances \u2014 they're independent copies built from the same blueprint (the class)."
+  },
+  // ── Section 3: Properties & Class Methods ──
+  {
+    q: "What does the @property decorator do?",
+    opts: [
+      "It makes an attribute read-only and immutable",
+      "It lets a method be accessed like an attribute \u2014 no parentheses needed \u2014 for computed values",
+      "It automatically caches the method's return value",
+      "It marks the attribute as required in __init__"
+    ],
+    ans: 1,
+    explanation: "@property turns a method into a computed attribute. Instead of calling ds.feature_count(), you access ds.feature_count as if it were a plain attribute. This is useful for values derived from other attributes \u2014 the computation happens on access, so it's always up-to-date."
+  },
+  {
+    q: "What is the main benefit of using @property over a regular method like get_feature_count()?",
+    opts: [
+      "@property is faster because Python automatically caches and reuses the result after the first call",
+      "@property lets you access a computed value like an attribute (no parentheses), while still running code behind the scenes",
+      "@property makes the value permanently read-only so that no other code can ever change or override it",
+      "@property automatically logs every time the value is accessed, which is useful for debugging in production"
+    ],
+    ans: 1,
+    explanation: "With @property, you write ds.feature_count instead of ds.get_feature_count(). It looks like a simple attribute to the caller, but behind the scenes Python runs your method. This is useful for computed values that should feel like data, not function calls \u2014 for example, a feature count derived from a list, or a summary string built from multiple attributes."
+  },
+  {
+    q: "Why use @classmethod constructors like Config.from_dict(data) instead of handling all input formats inside __init__?",
+    opts: [
+      "@classmethods run faster than __init__ because they bypass Python's normal object creation process",
+      "Each @classmethod gives a clear, named way to create an instance from a specific format, keeping __init__ simple \u2014 while __init__ handles the core case of direct arguments",
+      "@classmethods are required by Python whenever a class has more than one way to create objects",
+      "There is no real advantage \u2014 it's purely a style preference with no practical difference"
+    ],
+    ans: 1,
+    explanation: "__init__ is the standard constructor: Config('xgb', {'lr': 0.01}) \u2014 the caller provides clean, ready-to-use arguments. But what if your data comes as a raw dict like {'name': 'xgb', 'lr': 0.01}? A @classmethod handles the parsing: from_dict(cls, data) extracts name = data.pop('name'), then calls cls(name, data) to create the instance. Concrete example: __init__(self, name, params) just does self.name = name; self.params = params. from_dict(cls, d) does the messy work of pulling fields out of the dict, then calls cls(...) which triggers __init__. So __init__ stays clean, and each @classmethod handles one input format."
+  },
+  {
+    q: "When would you use a @staticmethod instead of a regular function outside the class?",
+    opts: [
+      "When the function is logically related to the class but doesn't need access to the instance (self) or class (cls)",
+      "When you want the function to run faster",
+      "When the function needs access to private attributes",
+      "Static methods are always preferred over standalone functions"
+    ],
+    ans: 0,
+    explanation: "A @staticmethod is a regular function that lives inside a class for organizational purposes. It doesn't receive self or cls. Use it when the function is conceptually related to the class (like ModelConfig.validate_lr()) but doesn't need any instance or class data. If there's no logical connection, keep it as a standalone function."
+  },
+  {
+    q: "A leading underscore (_status) in an attribute name signals what in Python?",
+    opts: [
+      "The attribute is truly private and cannot be accessed from outside the class",
+      "It's a convention meaning 'internal use' \u2014 Python doesn't enforce it, but other developers should treat it as private",
+      "The attribute will be automatically deleted when the object is garbage collected",
+      "The attribute is a constant that should never be modified"
+    ],
+    ans: 1,
+    explanation: "Python has no true private attributes. A single underscore (_status) is a convention that says 'this is an implementation detail \u2014 don't access it directly.' It's still fully accessible, but tools and other developers know to use the public interface (like a @property) instead."
+  },
+  // ── Section 4: Inheritance & Dunder Methods ──
+  {
+    q: "What does inheritance allow you to do?",
+    opts: [
+      "Create a new class that gets all the attributes and methods of an existing class, and can add or override behavior",
+      "Merge two unrelated classes into one",
+      "Make a class immutable so its methods can't be changed",
+      "Automatically generate documentation for a class"
+    ],
+    ans: 0,
+    explanation: "Inheritance creates a parent-child relationship. The child class inherits all of the parent's methods and attributes, then can add new ones or override existing ones. For example, CSVDataset inherits describe() from BaseDataset but provides its own load() implementation."
+  },
+  {
+    q: "What does super().__init__() do inside a child class's __init__?",
+    opts: [
+      "It creates a new parent class",
+      "It calls the parent class's __init__ method, ensuring the parent's setup (attribute initialization) runs",
+      "It copies all the parent's methods into the child",
+      "It prevents the parent class from being instantiated directly"
+    ],
+    ans: 1,
+    explanation: "If a child class defines its own __init__, the parent's __init__ doesn't run automatically. super().__init__() explicitly calls it, ensuring attributes like self.name and self.path (set up in the parent) exist. Forgetting this is one of the most common OOP bugs \u2014 you'll get AttributeError when accessing parent attributes."
+  },
+  {
+    q: "What is a dunder method?",
+    opts: [
+      "A method that starts and ends with double underscores, hooking into Python's built-in syntax and operators",
+      "A deprecated method that should no longer be used",
+      "A method that runs in the background without being called",
+      "A method that can only be defined in abstract base classes"
+    ],
+    ans: 0,
+    explanation: "Dunder (double underscore) methods like __len__, __getitem__, __contains__ let your class work with Python's built-in syntax. When you write len(obj), Python calls obj.__len__(). When you write obj[0], Python calls obj.__getitem__(0). They make your classes feel like native Python types."
+  },
+  {
+    q: "What happens behind the scenes when you write: with open('data.csv') as f: ?",
+    opts: [
+      "Python creates a background thread that monitors the file for changes while your code runs inside the block",
+      "Python calls the object's __enter__ dunder method at the start, and guarantees the __exit__ dunder method runs when the block ends \u2014 even if an error occurs",
+      "Python locks the file at the operating system level so no other program can read or write it until your block finishes",
+      "Python reads the entire file into memory at once so that all subsequent access inside the block is instant"
+    ],
+    ans: 1,
+    explanation: "The 'with' statement works with any object that defines the dunder methods __enter__ and __exit__. Python calls __enter__ when entering the block (e.g., open the file, start a timer) and __exit__ when leaving (e.g., close the file, print elapsed time). The key guarantee: __exit__ always runs, even if your code inside the block crashes with an error. That's why 'with open(...)' is safer than manually calling f.close()."
+  },
+  {
+    q: "When should you prefer composition over inheritance?",
+    opts: [
+      "Never \u2014 inheritance is always the right choice for code reuse",
+      "When you just need some behavior from another class, not a full 'is-a' relationship",
+      "Only when the parent class has more than 5 methods",
+      "Composition and inheritance are identical in practice"
+    ],
+    ans: 1,
+    explanation: "Use inheritance when the child truly 'is a' type of the parent (CSVDataset is a BaseDataset). Use composition (having one class contain another) when you just need some functionality. If you're inheriting just to get one helper method, composition is simpler and creates less coupling."
+  },
+  // ── Section 5: Decorators & Logging ──
+  {
+    q: "What does a decorator do in Python?",
+    opts: [
+      "It adds visual formatting to a function's output",
+      "It wraps a function with another function that adds behavior before or after the original runs",
+      "It converts a function into a class method",
+      "It marks a function as deprecated"
+    ],
+    ans: 1,
+    explanation: "A decorator is a function that takes a function and returns a new function that wraps the original. @timer on a function means: every time the function is called, the wrapper runs, can do things before/after (like timing), and then calls the original. This separates cross-cutting concerns (logging, timing) from business logic."
+  },
+  {
+    q: "Why should you use @functools.wraps in a custom decorator?",
+    opts: [
+      "It makes the decorator run faster",
+      "It preserves the original function's name, docstring, and metadata on the wrapper",
+      "It's required by Python \u2014 decorators won't work without it",
+      "It prevents the decorator from being applied to class methods"
+    ],
+    ans: 1,
+    explanation: "Without @functools.wraps, the wrapper replaces the original function's identity: __name__ becomes 'wrapper', __doc__ becomes the wrapper's docstring (often None), and debugging tools show the wrong name. @wraps copies the original's metadata onto the wrapper, keeping everything transparent."
+  },
+  {
+    q: "What is the key advantage of the logging module over print()?",
+    opts: [
+      "logging is faster than print",
+      "logging provides severity levels, timestamps, and can route messages to files, not just the console",
+      "logging works in all languages; print is Python-only",
+      "logging automatically fixes bugs it detects"
+    ],
+    ans: 1,
+    explanation: "print() sends text to stdout and that's it. The logging module adds: severity levels (DEBUG, INFO, WARNING, ERROR, CRITICAL), timestamps, logger names, and the ability to send messages to files, monitoring systems, or filter by level. In production, you can set WARNING level and skip all the DEBUG/INFO noise."
+  },
+  {
+    q: "Which list correctly orders Python's logging levels from least severe to most severe?",
+    opts: [
+      "INFO \u2192 DEBUG \u2192 WARNING \u2192 ERROR \u2192 CRITICAL",
+      "DEBUG \u2192 INFO \u2192 WARNING \u2192 ERROR \u2192 CRITICAL",
+      "WARNING \u2192 INFO \u2192 DEBUG \u2192 ERROR \u2192 CRITICAL",
+      "DEBUG \u2192 WARNING \u2192 INFO \u2192 CRITICAL \u2192 ERROR"
+    ],
+    ans: 1,
+    explanation: "The five levels in order: DEBUG (detailed diagnostic info for developers), INFO (general progress like 'training started'), WARNING (something unexpected but not broken), ERROR (something failed but the program continues), CRITICAL (system-level failure, program may crash). When you set the logging level to WARNING, only WARNING, ERROR, and CRITICAL messages appear \u2014 DEBUG and INFO are filtered out."
+  },
+  {
+    q: "Why does the logging module use %s formatting instead of f-strings?",
+    opts: [
+      "The logging module was written before f-strings existed and hasn't been updated",
+      "If the log level is filtered out, the string formatting is skipped entirely \u2014 saving CPU time in hot loops",
+      "%s formatting is always faster than f-strings in all contexts",
+      "f-strings don't work with the logging module"
+    ],
+    ans: 1,
+    explanation: "With logger.debug('Loading %s', path), if the logging level is set to WARNING, the debug message is filtered out and the string formatting never happens. With f-strings (f'Loading {path}'), the string is always built even if the message is discarded. In tight loops processing millions of records, this difference matters."
+  }
+];
+
+let currentQ = 0;
+let answers = new Array(questions.length).fill(null);
+let userName = "", userGithub = "";
+
+function startQuiz() {
+  userName = document.getElementById("userName").value.trim();
+  userGithub = document.getElementById("userGithub").value.trim();
+  if (!userName) { alert("Please enter your name."); return; }
+  document.getElementById("startScreen").classList.add("hidden");
+  document.getElementById("quizScreen").classList.remove("hidden");
+  quizActive = true; renderQuestion();
+}
+let quizActive = false;
+document.getElementById("userName").addEventListener("keydown", function(e) { if (e.key === "Enter") { e.preventDefault(); document.getElementById("userGithub").focus(); } });
+document.getElementById("userGithub").addEventListener("keydown", function(e) { if (e.key === "Enter") { e.preventDefault(); startQuiz(); } });
+document.addEventListener("keydown", function(e) {
+  if (!quizActive) return;
+  if (e.key === "Enter" && answers[currentQ] !== null) { e.preventDefault(); if (currentQ === questions.length - 1) submitQuiz(); else nextQuestion(); }
+});
+
+function getSection(idx) { for (const s of sections) { if (idx >= s.range[0] && idx < s.range[1]) return s.title; } return ""; }
+
+function renderQuestion() {
+  const q = questions[currentQ]; const letters = ["A","B","C","D"]; const card = document.getElementById("questionCard");
+  let html = `<div class="section-badge">${getSection(currentQ)}</div>`;
+  html += `<h2>Q${currentQ+1}. ${q.q}</h2><div class="options">`;
+  q.opts.forEach((opt,i) => { const sel = answers[currentQ]===i?" selected":""; html += `<div class="option${sel}" onclick="selectOption(${i})"><span class="letter">${letters[i]}</span><span class="text">${opt}</span></div>`; });
+  html += `</div>`; card.innerHTML = html;
+  const nav = document.getElementById("qNav"); let navHtml = "";
+  for (let n=0;n<questions.length;n++) { let cls="q-nav-btn"; if(n===currentQ) cls+=" active"; else if(answers[n]!==null) cls+=" answered"; navHtml+=`<button class="${cls}" onclick="jumpTo(${n})">${n+1}</button>`; }
+  nav.innerHTML = navHtml;
+  document.getElementById("progressLabel").textContent = `Question ${currentQ+1} of ${questions.length}`;
+  document.getElementById("sectionLabel").textContent = getSection(currentQ);
+  document.getElementById("progressFill").style.width = ((currentQ+1)/questions.length*100)+"%";
+  document.getElementById("prevBtn").style.visibility = currentQ===0?"hidden":"visible";
+  const nextBtn = document.getElementById("nextBtn");
+  if (currentQ===questions.length-1) { nextBtn.textContent="Submit Quiz"; nextBtn.onclick=submitQuiz; } else { nextBtn.textContent="Next"; nextBtn.onclick=nextQuestion; }
+}
+function selectOption(idx) { answers[currentQ]=idx; renderQuestion(); }
+function jumpTo(idx) { currentQ=idx; renderQuestion(); window.scrollTo({top:0,behavior:"smooth"}); }
+function nextQuestion() { if(answers[currentQ]===null){alert("Please select an answer before continuing.");return;} if(currentQ<questions.length-1){currentQ++;renderQuestion();window.scrollTo({top:0,behavior:"smooth"});} }
+function prevQuestion() { if(currentQ>0){currentQ--;renderQuestion();window.scrollTo({top:0,behavior:"smooth"});} }
+
+function submitQuiz() {
+  if(answers[currentQ]===null){alert("Please select an answer before submitting.");return;}
+  const unanswered=answers.findIndex(a=>a===null);
+  if(unanswered!==-1){alert(`Please answer Question ${unanswered+1} before submitting.`);currentQ=unanswered;renderQuestion();return;}
+  if(!confirm("Submit your quiz? You won't be able to change answers."))return;
+  quizActive=false;
+  const results=questions.map((q,i)=>answers[i]===q.ans); const score=results.filter(Boolean).length;
+  sendResults(results,score); showResults(results,score);
+}
+function sendResults(results,score) {
+  if(SCRIPT_URL==="YOUR_APPS_SCRIPT_WEB_APP_URL_HERE"){console.warn("No Apps Script URL configured.");return;}
+  fetch(SCRIPT_URL,{method:"POST",mode:"no-cors",headers:{"Content-Type":"application/json"},body:JSON.stringify({quizName:QUIZ_NAME,name:userName,github:userGithub,results:results})}).catch(err=>console.error("Failed to save results:",err));
+}
+function showResults(results,score) {
+  document.getElementById("quizScreen").classList.add("hidden");
+  const container=document.getElementById("resultsScreen"); container.classList.remove("hidden");
+  const pct=Math.round((score/questions.length)*100);
+  const tier=pct>=80?"high":pct>=50?"mid":"low";
+  const message=pct>=80?"Excellent work!":pct>=50?"Good effort \u2014 review the topics you missed.":"Keep studying \u2014 review the explanations below.";
+  let html=`<div class="score-circle score-${tier}"><span class="number">${score}/${questions.length}</span><span class="label">${pct}%</span></div><h1>${message}</h1><p class="results-subtitle">${userName}${userGithub?" &bull; @"+userGithub:""}</p><div class="review-list">`;
+  const letters=["A","B","C","D"];
+  questions.forEach((q,i)=>{const correct=results[i];const cls=correct?"correct":"incorrect";const status=correct?"\u2713 Correct":"\u2717 Incorrect";html+=`<div class="review-item ${cls}"><div class="q-title">Q${i+1}. ${q.q}</div><div class="status-badge ${cls}">${status}</div><div class="your-answer"><strong>Your answer:</strong> ${letters[answers[i]]} \u2014 ${q.opts[answers[i]]}</div>`;if(!correct)html+=`<div class="correct-answer"><strong>Correct answer:</strong> ${letters[q.ans]} \u2014 ${q.opts[q.ans]}</div>`;html+=`<div class="explanation"><strong>Explanation:</strong> ${q.explanation}</div></div>`;});
+  html+=`</div>`; container.innerHTML=html; window.scrollTo({top:0,behavior:"smooth"});
+}
+</script>
+</body>
+</html>

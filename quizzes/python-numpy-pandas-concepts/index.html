@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quiz — NumPy & Pandas: Concepts</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --pri-900: #134E3A; --pri-800: #1A6B4F; --pri-700: #218764; --pri-600: #28A37A;
+  --pri-500: #34C090; --pri-400: #5CD4A8; --pri-300: #8AE4C2; --pri-200: #B5EEDB;
+  --pri-100: #D9F7EC; --pri-50: #EDFBF5;
+  --slate-50: #F7F8FA; --slate-100: #EDEEF2; --slate-200: #D5D7DE;
+  --slate-500: #6B7280; --slate-700: #374151; --slate-900: #111827;
+  --success: #059669; --success-bg: #ECFDF5; --error: #DC2626; --error-bg: #FEF2F2;
+  --accent: #F59E0B;
+  --font-body: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  --radius-md: 10px; --radius-lg: 16px;
+  --shadow-md: 0 4px 12px rgba(0,0,0,.10); --shadow-lg: 0 8px 30px rgba(0,0,0,.14);
+  --ease: cubic-bezier(.4, 0, .2, 1);
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: var(--font-body); background: var(--slate-50); min-height: 100vh; color: var(--slate-900); display: flex; justify-content: center; align-items: flex-start; padding: 2rem; }
+.quiz-container { width: 100%; max-width: 800px; margin: 0 auto; }
+.start-screen { background: white; border-radius: var(--radius-lg); padding: 3rem; box-shadow: var(--shadow-md); border: 1px solid var(--slate-200); text-align: center; }
+.start-screen h1 { font-size: 1.8rem; font-weight: 800; color: var(--pri-800); margin-bottom: 0.5rem; }
+.start-screen .subtitle { color: var(--slate-500); font-size: 1rem; margin-bottom: 2rem; }
+.start-screen input { display: block; width: 100%; max-width: 400px; margin: 0.75rem auto; padding: 0.85rem 1rem; border: 2px solid var(--slate-200); border-radius: var(--radius-md); font-family: var(--font-body); font-size: 1rem; transition: border-color 0.2s var(--ease); }
+.start-screen input:focus { outline: none; border-color: var(--pri-500); }
+.start-screen .info { color: var(--slate-500); font-size: 0.85rem; margin-top: 0.5rem; margin-bottom: 1.5rem; }
+.btn { display: inline-block; padding: 0.85rem 2.5rem; border: none; border-radius: var(--radius-md); font-family: var(--font-body); font-size: 1rem; font-weight: 600; cursor: pointer; transition: all 0.2s var(--ease); }
+.btn-primary { background: var(--pri-700); color: white; }
+.btn-primary:hover { background: var(--pri-600); transform: translateY(-1px); }
+.btn-primary:disabled { background: var(--slate-200); color: var(--slate-500); cursor: not-allowed; transform: none; }
+.btn-secondary { background: var(--slate-100); color: var(--slate-700); }
+.btn-secondary:hover { background: var(--slate-200); }
+.progress-bar { background: var(--slate-200); border-radius: 20px; height: 8px; margin-bottom: 1.5rem; overflow: hidden; }
+.progress-fill { height: 100%; background: var(--pri-500); border-radius: 20px; transition: width 0.4s var(--ease); }
+.progress-text { color: var(--slate-500); font-size: 0.85rem; font-weight: 500; margin-bottom: 0.5rem; display: flex; justify-content: space-between; }
+.question-card { background: white; border-radius: var(--radius-lg); padding: 2.5rem; box-shadow: var(--shadow-md); border: 1px solid var(--slate-200); animation: slideIn 0.3s var(--ease); }
+@keyframes slideIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+.section-badge { display: inline-block; background: var(--pri-50); color: var(--pri-700); font-size: 0.75rem; font-weight: 600; padding: 0.3rem 0.8rem; border-radius: 20px; margin-bottom: 1rem; text-transform: uppercase; letter-spacing: 0.03em; }
+.question-card h2 { font-size: 1.2rem; font-weight: 700; color: var(--slate-900); line-height: 1.5; margin-bottom: 1.5rem; }
+.options { display: flex; flex-direction: column; gap: 0.75rem; }
+.option { display: flex; align-items: flex-start; gap: 0.85rem; padding: 1rem 1.2rem; border: 2px solid var(--slate-200); border-radius: var(--radius-md); cursor: pointer; transition: all 0.15s var(--ease); line-height: 1.5; }
+.option:hover { border-color: var(--pri-300); background: var(--pri-50); }
+.option.selected { border-color: var(--pri-500); background: var(--pri-50); }
+.option .letter { flex-shrink: 0; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; border-radius: 50%; background: var(--slate-100); color: var(--slate-700); font-weight: 600; font-size: 0.85rem; margin-top: 1px; }
+.option.selected .letter { background: var(--pri-600); color: white; }
+.option .text { font-size: 1rem; color: var(--slate-700); }
+.nav-row { display: flex; justify-content: space-between; align-items: center; margin-top: 1.5rem; }
+.results-screen { background: white; border-radius: var(--radius-lg); padding: 3rem; box-shadow: var(--shadow-md); border: 1px solid var(--slate-200); animation: slideIn 0.3s var(--ease); }
+.score-circle { width: 160px; height: 160px; border-radius: 50%; display: flex; flex-direction: column; align-items: center; justify-content: center; margin: 0 auto 1.5rem; font-weight: 800; }
+.score-circle .number { font-size: 2.8rem; line-height: 1; }
+.score-circle .label { font-size: 0.85rem; font-weight: 500; margin-top: 0.25rem; }
+.score-high { background: var(--success-bg); color: var(--success); border: 3px solid var(--success); }
+.score-mid { background: #FFF8E7; color: #B8860B; border: 3px solid #C49545; }
+.score-low { background: var(--error-bg); color: var(--error); border: 3px solid var(--error); }
+.results-screen h1 { text-align: center; font-size: 1.5rem; color: var(--pri-800); margin-bottom: 0.5rem; }
+.results-screen .results-subtitle { text-align: center; color: var(--slate-500); margin-top: 0.75rem; margin-bottom: 3rem; padding-bottom: 2rem; border-bottom: 1px solid var(--slate-200); }
+.review-list { display: flex; flex-direction: column; gap: 1rem; }
+.review-item { padding: 1.2rem; border-radius: var(--radius-md); border-left: 4px solid; }
+.review-item.correct { background: var(--success-bg); border-color: var(--success); }
+.review-item.incorrect { background: var(--error-bg); border-color: var(--error); }
+.review-item .q-title { font-weight: 600; font-size: 0.95rem; margin-bottom: 0.5rem; color: var(--slate-900); }
+.review-item .status-badge { display: inline-block; font-size: 0.8rem; font-weight: 700; padding: 0.2rem 0.7rem; border-radius: 20px; margin-bottom: 0.5rem; }
+.review-item .status-badge.correct { background: var(--success); color: white; }
+.review-item .status-badge.incorrect { background: var(--error); color: white; }
+.review-item .your-answer { font-size: 0.9rem; color: var(--slate-700); margin-bottom: 0.25rem; }
+.review-item .correct-answer { font-size: 0.9rem; color: var(--success); font-weight: 500; margin-top: 0.25rem; }
+.review-item .explanation { font-size: 0.85rem; color: var(--slate-500); margin-top: 0.5rem; padding-top: 0.5rem; border-top: 1px solid rgba(0,0,0,0.08); }
+.q-nav { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 1rem; justify-content: center; }
+.q-nav-btn { width: 32px; height: 32px; border-radius: 50%; border: 2px solid var(--slate-200); background: white; color: var(--slate-500); font-family: var(--font-body); font-size: 0.75rem; font-weight: 600; cursor: pointer; transition: all 0.15s var(--ease); display: flex; align-items: center; justify-content: center; }
+.q-nav-btn:hover { border-color: var(--pri-400); color: var(--pri-700); }
+.q-nav-btn.active { background: var(--pri-700); color: white; border-color: var(--pri-700); font-weight: 700; }
+.q-nav-btn.answered { background: var(--pri-100); border-color: var(--pri-400); color: var(--pri-800); }
+.q-nav-btn.answered.active { background: var(--pri-700); color: white; border-color: var(--pri-700); }
+.hidden { display: none; }
+@media (max-width: 600px) {
+  body { padding: 0.75rem; } .question-card, .start-screen, .results-screen { padding: 1.25rem; }
+  .question-card h2 { font-size: 1rem; } .option { padding: 0.75rem 1rem; gap: 0.6rem; }
+  .option .text { font-size: 0.9rem; } .option .letter { width: 24px; height: 24px; font-size: 0.75rem; }
+  .q-nav { gap: 4px; } .q-nav-btn { width: 28px; height: 28px; font-size: 0.7rem; }
+  .nav-row { margin-top: 1rem; } .btn { padding: 0.75rem 1.5rem; font-size: 0.9rem; }
+  .start-screen h1 { font-size: 1.4rem; } .start-screen input { padding: 0.7rem 0.85rem; font-size: 0.9rem; }
+  .review-item { padding: 1rem; } .score-circle { width: 130px; height: 130px; } .score-circle .number { font-size: 2.2rem; }
+}
+</style>
+</head>
+<body>
+<div class="quiz-container">
+  <div id="startScreen" class="start-screen">
+    <h1>Quiz &mdash; NumPy &amp; Pandas: Concepts</h1>
+    <p class="subtitle">Arrays, DataFrames &amp; Data Manipulation &mdash; 25 Questions</p>
+    <input type="text" id="userName" placeholder="Your Full Name" required>
+    <input type="text" id="userGithub" placeholder="GitHub Username — optional">
+    <p class="info">5 sections &bull; ~10 minutes &bull; Results shown after submission</p>
+    <button class="btn btn-primary" onclick="startQuiz()">Start Quiz</button>
+  </div>
+  <div id="quizScreen" class="hidden">
+    <div class="q-nav" id="qNav"></div>
+    <div class="progress-text"><span id="progressLabel">Question 1 of 25</span><span id="sectionLabel"></span></div>
+    <div class="progress-bar"><div class="progress-fill" id="progressFill" style="width:4%"></div></div>
+    <div class="question-card" id="questionCard"></div>
+    <div class="nav-row">
+      <button class="btn btn-secondary" id="prevBtn" onclick="prevQuestion()">Back</button>
+      <button class="btn btn-primary" id="nextBtn" onclick="nextQuestion()">Next</button>
+    </div>
+  </div>
+  <div id="resultsScreen" class="results-screen hidden"></div>
+</div>
+<script>
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxJIg5CYXWJKY-Uuoi9H0Nvnl4wlWwAAAQ4aYQd1FX7iIBmMqj6f9ksXEj-LTtJK8hlRg/exec";
+const QUIZ_NAME = "Python Class 3 \u2014 Conceptual";
+
+const sections = [
+  { title: "Section 1: NumPy Fundamentals", range: [0, 5] },
+  { title: "Section 2: NumPy Operations", range: [5, 10] },
+  { title: "Section 3: Pandas Basics", range: [10, 15] },
+  { title: "Section 4: Pandas Selection & Cleaning", range: [15, 20] },
+  { title: "Section 5: Aggregation & Best Practices", range: [20, 25] }
+];
+
+const questions = [
+  // ── Section 1: NumPy Fundamentals ──
+  {
+    q: "Why is NumPy faster than plain Python lists for numerical computation?",
+    opts: [
+      "NumPy uses a special compiler that translates Python math into faster machine code before running it",
+      "NumPy arrays use one fixed data type for all elements AND store them side by side in memory, so the computer skips per-element type checking and processes numbers in bulk",
+      "NumPy compresses numbers into fewer bytes so they take less space and are quicker to read from disk",
+      "NumPy bypasses Python entirely and sends all math operations directly to the GPU hardware for parallel processing"
+    ],
+    ans: 1,
+    explanation: "Two things make Python lists slow for math. First, each element can be a different type (int, string, list...), so for every operation Python must check: 'what type is this? how do I do math with it?' \u2014 this type checking happens for every single element. Second, list elements are scattered across memory as separate Python objects, so the CPU has to chase pointers to find each one. NumPy solves both problems: (1) a fixed dtype (e.g., float64) means zero type checking per element, and (2) contiguous storage means all numbers sit side by side in one block of memory, letting the CPU process them in bulk using optimized C code. Both factors together make NumPy 10-100x faster."
+  },
+  {
+    q: "What is a 'dtype' in NumPy?",
+    opts: [
+      "The number of dimensions in an array",
+      "The data type that all elements in the array share (e.g., float64, int32)",
+      "A function that converts lists to arrays",
+      "The total number of elements in the array"
+    ],
+    ans: 1,
+    explanation: "Every NumPy array has a single dtype (data type) that all elements share \u2014 like float64, int32, or bool. This is different from Python lists which can mix types. The fixed dtype is what enables NumPy's performance: the computer knows exactly how many bytes each element takes and can process them efficiently."
+  },
+  {
+    q: "What do 'shape' and 'ndim' tell you about a NumPy array?",
+    opts: [
+      "shape gives the data type; ndim gives the number of elements",
+      "shape is a tuple of dimension sizes (rows, cols, ...); ndim is the number of dimensions",
+      "shape is the total memory used; ndim is the number of unique values",
+      "They both return the length of the array"
+    ],
+    ans: 1,
+    explanation: "For a 2D array with 3 rows and 4 columns: shape = (3, 4) and ndim = 2. For a 1D array of 5 elements: shape = (5,) and ndim = 1. The shape tuple has ndim entries. Together they tell you the structure of your data."
+  },
+  {
+    q: "What is the difference between np.zeros(), np.ones(), and np.arange()?",
+    opts: [
+      "They all create arrays of the same values, just with different names",
+      "zeros creates an array of 0s, ones creates an array of 1s, arange creates a sequence of evenly spaced values",
+      "zeros/ones create 2D arrays; arange creates 1D arrays only",
+      "arange is deprecated and replaced by zeros and ones"
+    ],
+    ans: 1,
+    explanation: "np.zeros(5) creates [0, 0, 0, 0, 0]. np.ones(5) creates [1, 1, 1, 1, 1]. np.arange(0, 10, 2) creates [0, 2, 4, 6, 8] \u2014 like Python's range() but returns an array. Each serves a different purpose: initialization, placeholders, and generating sequences."
+  },
+  {
+    q: "What happens when you create a NumPy array from a list that mixes integers and floats?",
+    opts: [
+      "Python raises a TypeError because types must match",
+      "NumPy upcasts all elements to the most general type \u2014 float64 in this case",
+      "NumPy keeps each element as its original type",
+      "The integers are truncated and stored as strings"
+    ],
+    ans: 1,
+    explanation: "NumPy arrays have a single dtype, so when you mix int and float, NumPy upcasts everything to the more general type. Example: np.array([1, 2.5, 3]) becomes array([1.0, 2.5, 3.0]) with dtype float64. The integer 1 becomes 1.0 because float can represent both integers and decimals, but int can't represent 2.5. This is called type promotion."
+  },
+  // ── Section 2: NumPy Operations ──
+  {
+    q: "What is a 'vectorized operation' in NumPy?",
+    opts: [
+      "An operation that only works on vectors (1D arrays)",
+      "An operation that applies to every element simultaneously without writing a Python loop",
+      "An operation that converts arrays to lists",
+      "An operation that sorts the array in-place"
+    ],
+    ans: 1,
+    explanation: "Vectorized operations apply element-wise across entire arrays in one call: arr * 2 doubles every element, arr > 5 creates a boolean mask. Under the hood, NumPy executes optimized C code in a tight loop \u2014 you get the performance of C with the simplicity of Python. Always prefer vectorized ops over Python for-loops."
+  },
+  {
+    q: "What is broadcasting in NumPy?",
+    opts: [
+      "Sending array data over the network to multiple machines for distributed computing",
+      "A set of rules that let you perform operations between arrays of different shapes \u2014 for example, adding a single row to every row of a matrix without writing a loop",
+      "A method that converts a NumPy array into a pandas DataFrame for tabular analysis",
+      "A function that prints the full contents of large arrays to the console instead of truncating them"
+    ],
+    ans: 1,
+    explanation: "Broadcasting is about combining arrays of different shapes. Simple example: np.array([[1, 2], [3, 4]]) + np.array([10, 20]) gives [[11, 22], [13, 24]] \u2014 the 1D array [10, 20] is 'broadcast' to each row of the 2D matrix. Without broadcasting, you'd need a loop to add [10, 20] to every row manually. The key rule: dimensions are compared from right to left, and they must either match or one of them must be 1. Note: arr + 5 is element-wise addition with a scalar, which is even simpler than broadcasting."
+  },
+  {
+    q: "What is the difference between np.mean(arr) and arr.mean()?",
+    opts: [
+      "np.mean() is faster; arr.mean() is slower",
+      "They produce the same result \u2014 one is a function, the other is a method on the array object",
+      "np.mean() works on lists; arr.mean() only on arrays",
+      "arr.mean() modifies the array in-place; np.mean() returns a new value"
+    ],
+    ans: 1,
+    explanation: "Both compute the arithmetic mean and return the same result. np.mean(arr) is a standalone function; arr.mean() is a method on the ndarray object. It's mostly a style choice, though np.mean() can also work on lists (converting them to arrays first)."
+  },
+  {
+    q: "How does boolean indexing work in NumPy?",
+    opts: [
+      "You pass True or False as an index to get the first or last element",
+      "You create a boolean mask (array of True/False) and use it to select elements where the mask is True",
+      "You convert boolean values to 0 and 1 and use them as indices",
+      "Boolean indexing is only available in pandas, not NumPy"
+    ],
+    ans: 1,
+    explanation: "arr[arr > 5] creates a boolean mask where each element is True/False, then returns only the elements where the mask is True. This is one of NumPy's most powerful features \u2014 it replaces filter loops with a single expression. You can combine conditions with & (and), | (or), and ~ (not)."
+  },
+  {
+    q: "What does .reshape() do, and what constraint must be satisfied?",
+    opts: [
+      "It changes the data type of the array; the new type must be compatible",
+      "It changes the shape of the array without changing the data; the total number of elements must stay the same",
+      "It sorts the array into a new shape; all elements must be numeric",
+      "It adds or removes elements to match the new shape"
+    ],
+    ans: 1,
+    explanation: "reshape() rearranges the array's dimensions. A (6,) array can become (2, 3) or (3, 2) or (6, 1) \u2014 but not (2, 4) because 2*4=8 \u2260 6. The data doesn't move in memory; only the shape metadata changes. Use -1 for one dimension to let NumPy calculate it automatically."
+  },
+  // ── Section 3: Pandas Basics ──
+  {
+    q: "What is the difference between a pandas Series and a DataFrame?",
+    opts: [
+      "A Series is 1D (like a single column); a DataFrame is 2D (like a table with rows and columns)",
+      "A Series can only hold numbers; a DataFrame can hold any type",
+      "A DataFrame is faster than a Series",
+      "They are the same thing with different names"
+    ],
+    ans: 0,
+    explanation: "A Series is a single column of data with an index. A DataFrame is a collection of Series that share the same index \u2014 like a spreadsheet or SQL table. When you select one column from a DataFrame (df['age']), you get a Series."
+  },
+  {
+    q: "What is the 'index' in a pandas DataFrame?",
+    opts: [
+      "The column names across the top",
+      "Row labels that identify each row \u2014 can be integers, strings, dates, etc.",
+      "The data type of each column",
+      "The number of rows in the DataFrame"
+    ],
+    ans: 1,
+    explanation: "The index is the label for each row. By default it's 0, 1, 2, ... but you can set it to meaningful values like dates, IDs, or names. This enables powerful alignment \u2014 when you combine two DataFrames, pandas matches rows by their index labels, not by position."
+  },
+  {
+    q: "How do you create a DataFrame from a Python dictionary?",
+    opts: [
+      "pd.DataFrame(dict) \u2014 keys become column names, values (lists) become columns",
+      "pd.Series(dict) \u2014 keys become row labels",
+      "pd.read_dict(dict) \u2014 a special reader for dictionaries",
+      "You can't create DataFrames from dictionaries directly"
+    ],
+    ans: 0,
+    explanation: "pd.DataFrame({'name': ['Alice', 'Bob'], 'age': [25, 30]}) creates a 2-column DataFrame. Dictionary keys become column names, and the corresponding lists become the data in each column. This is the most common way to create a DataFrame from Python data."
+  },
+  {
+    q: "What do df.head(), df.info(), and df.describe() show you?",
+    opts: [
+      "They all show the same information in different formats",
+      "head() shows the first few rows; info() shows column types and null counts; describe() shows statistical summaries",
+      "head() shows column names; info() shows data types; describe() shows the index",
+      "They are different ways to export the DataFrame"
+    ],
+    ans: 1,
+    explanation: "These are your go-to EDA (Exploratory Data Analysis) functions \u2014 the first things you run when you open a new dataset. head(n) shows the first n rows (default 5) so you can see what the data looks like. info() shows each column's name, non-null count, and dtype \u2014 great for spotting missing data and wrong types. describe() gives count, mean, std, min, max, and quartiles for numeric columns."
+  },
+  {
+    q: "What is the difference between df.shape and len(df)?",
+    opts: [
+      "They return the same thing \u2014 the number of rows",
+      "df.shape returns (rows, columns) as a tuple; len(df) returns just the number of rows",
+      "len(df) returns the number of columns; df.shape returns the number of rows",
+      "df.shape is a method; len(df) is a property"
+    ],
+    ans: 1,
+    explanation: "df.shape returns a tuple like (100, 5) meaning 100 rows and 5 columns. len(df) returns just the row count (100). Use shape when you need both dimensions, len when you just need row count."
+  },
+  // ── Section 4: Pandas Selection & Cleaning ──
+  {
+    q: "What is the difference between .loc[] and .iloc[]?",
+    opts: [
+      ".loc uses label-based indexing (row/column names); .iloc uses integer-based positional indexing",
+      ".loc is for rows; .iloc is for columns",
+      ".loc is faster; .iloc is slower but more flexible",
+      "They are identical \u2014 use whichever you prefer"
+    ],
+    ans: 0,
+    explanation: "df.loc['row_label', 'col_name'] selects by label. df.iloc[0, 2] selects by position (first row, third column). The key difference: .loc includes the endpoint in slicing (loc['a':'c'] includes 'c'), while .iloc excludes it (iloc[0:3] gives indices 0, 1, 2)."
+  },
+  {
+    q: "How do you filter rows in a DataFrame based on a condition?",
+    opts: [
+      "df.filter(condition) \u2014 like SQL WHERE",
+      "df[boolean_mask] \u2014 pass a Series of True/False values to select matching rows",
+      "df.select(condition) \u2014 a pandas method",
+      "You must use a for loop to check each row"
+    ],
+    ans: 1,
+    explanation: "Boolean indexing: df[df['age'] > 30] creates a True/False mask for each row, then returns only rows where the mask is True. You can combine conditions with & (and), | (or): df[(df['age'] > 30) & (df['city'] == 'NYC')]. Parentheses around each condition are required."
+  },
+  {
+    q: "What does df.isna() return?",
+    opts: [
+      "The count of missing values per column",
+      "A DataFrame of the same shape with True where values are missing (NaN) and False elsewhere",
+      "A list of column names that contain missing values",
+      "It removes all missing values from the DataFrame"
+    ],
+    ans: 1,
+    explanation: "isna() returns a boolean DataFrame: True for every NaN/None cell, False for every non-null cell. To get counts, chain it: df.isna().sum() gives missing counts per column. To get percentages: df.isna().mean() * 100."
+  },
+  {
+    q: "What is the difference between .fillna() and .dropna()?",
+    opts: [
+      "fillna() replaces missing values with a specified value; dropna() removes rows (or columns) that contain missing values",
+      "fillna() is for numeric columns; dropna() is for string columns",
+      "dropna() replaces NaN with 0; fillna() removes NaN rows",
+      "They do the same thing but fillna() is faster"
+    ],
+    ans: 0,
+    explanation: "fillna(value) substitutes NaN with the value you specify (0, mean, median, 'Unknown', etc.). dropna() removes entire rows or columns containing NaN. The choice depends on context: drop rows if they're few and random; fill values if you can reasonably estimate what the missing data should be."
+  },
+  {
+    q: "What does .astype() do in pandas?",
+    opts: [
+      "It renames columns to match the specified type names",
+      "It converts a column's data type \u2014 for example, from object (string) to int or float",
+      "It creates a new column with the specified type",
+      "It checks whether a column's type matches the expected type"
+    ],
+    ans: 1,
+    explanation: "df['price'].astype(float) converts the 'price' column to float. This is essential when data is read as strings (e.g., from CSV) but needs to be numeric for calculations. Always check with df.dtypes first to see current types."
+  },
+  // ── Section 5: Aggregation & Best Practices ──
+  {
+    q: "What does .groupby() do in pandas?",
+    opts: [
+      "It sorts the DataFrame by the specified column",
+      "It splits the DataFrame into groups by a column's values, then lets you apply aggregate functions to each group",
+      "It merges two DataFrames together",
+      "It creates a new column with group labels"
+    ],
+    ans: 1,
+    explanation: "groupby() implements the split-apply-combine pattern: (1) Split the data into groups based on unique values in a column, (2) Apply a function to each group (sum, mean, count, etc.), (3) Combine the results back into a DataFrame. Example: df.groupby('department')['salary'].mean() gives average salary per department."
+  },
+  {
+    q: "What does .agg() let you do that .mean() or .sum() alone can't?",
+    opts: [
+      ".agg() is faster than calling individual methods",
+      ".agg() lets you apply multiple different aggregate functions at once, possibly different functions per column",
+      ".agg() works on non-numeric data; .mean() doesn't",
+      ".agg() modifies the DataFrame in-place"
+    ],
+    ans: 1,
+    explanation: "With .agg() you can compute multiple statistics in one call: df.groupby('dept').agg({'salary': ['mean', 'max'], 'age': 'median'}). This gives you a multi-level column output with mean and max salary plus median age per department \u2014 all in one operation."
+  },
+  {
+    q: "What is method chaining in pandas?",
+    opts: [
+      "Calling multiple methods in sequence on the same line: df.dropna().groupby('x').mean()",
+      "Linking multiple DataFrames together into one",
+      "Running the same method multiple times on different columns",
+      "A debugging technique that traces method calls"
+    ],
+    ans: 0,
+    explanation: "Method chaining strings operations together because each method returns a new DataFrame: df.dropna().query('age > 30').groupby('city')['salary'].mean(). This reads like a pipeline and avoids creating intermediate variables. It's considered idiomatic pandas style."
+  },
+  {
+    q: "Why is using inplace=True generally discouraged in modern pandas?",
+    opts: [
+      "inplace=True doesn't actually work \u2014 it's broken in all pandas versions",
+      "It makes debugging harder (breaks method chaining, the original is silently mutated), and it's being deprecated",
+      "It makes operations slower because pandas copies the data anyway",
+      "It's only discouraged for large DataFrames; it's fine for small ones"
+    ],
+    ans: 1,
+    explanation: "inplace=True mutates the original DataFrame and returns None, which breaks method chaining and makes code harder to debug (you can't inspect intermediate steps). The pandas team has been moving away from it. Best practice: df = df.dropna() instead of df.dropna(inplace=True)."
+  },
+  {
+    q: "When should you use NumPy directly vs. pandas?",
+    opts: [
+      "Always use pandas \u2014 it does everything NumPy does but better",
+      "NumPy for pure numerical arrays and math; pandas when you need labeled columns, mixed types, or tabular data operations",
+      "NumPy for 2D data; pandas for 1D data",
+      "Use NumPy first, then convert to pandas when you need to export"
+    ],
+    ans: 1,
+    explanation: "NumPy is ideal for homogeneous numerical arrays \u2014 matrices, images, signal data, linear algebra. Pandas excels at tabular data with named columns, mixed types (strings + numbers), missing values, and SQL-like operations (groupby, merge, pivot). In practice, pandas uses NumPy internally \u2014 they work together, not in competition."
+  }
+];
+
+let currentQ=0,answers=new Array(questions.length).fill(null),userName="",userGithub="";
+function startQuiz(){userName=document.getElementById("userName").value.trim();userGithub=document.getElementById("userGithub").value.trim();if(!userName){alert("Please enter your name.");return;}document.getElementById("startScreen").classList.add("hidden");document.getElementById("quizScreen").classList.remove("hidden");quizActive=true;renderQuestion();}
+let quizActive=false;
+document.getElementById("userName").addEventListener("keydown",function(e){if(e.key==="Enter"){e.preventDefault();document.getElementById("userGithub").focus();}});
+document.getElementById("userGithub").addEventListener("keydown",function(e){if(e.key==="Enter"){e.preventDefault();startQuiz();}});
+document.addEventListener("keydown",function(e){if(!quizActive)return;if(e.key==="Enter"&&answers[currentQ]!==null){e.preventDefault();if(currentQ===questions.length-1)submitQuiz();else nextQuestion();}});
+function getSection(idx){for(const s of sections){if(idx>=s.range[0]&&idx<s.range[1])return s.title;}return"";}
+function renderQuestion(){const q=questions[currentQ],letters=["A","B","C","D"],card=document.getElementById("questionCard");let html=`<div class="section-badge">${getSection(currentQ)}</div><h2>Q${currentQ+1}. ${q.q}</h2><div class="options">`;q.opts.forEach((opt,i)=>{const sel=answers[currentQ]===i?" selected":"";html+=`<div class="option${sel}" onclick="selectOption(${i})"><span class="letter">${letters[i]}</span><span class="text">${opt}</span></div>`;});html+=`</div>`;card.innerHTML=html;const nav=document.getElementById("qNav");let navHtml="";for(let n=0;n<questions.length;n++){let cls="q-nav-btn";if(n===currentQ)cls+=" active";else if(answers[n]!==null)cls+=" answered";navHtml+=`<button class="${cls}" onclick="jumpTo(${n})">${n+1}</button>`;}nav.innerHTML=navHtml;document.getElementById("progressLabel").textContent=`Question ${currentQ+1} of ${questions.length}`;document.getElementById("sectionLabel").textContent=getSection(currentQ);document.getElementById("progressFill").style.width=((currentQ+1)/questions.length*100)+"%";document.getElementById("prevBtn").style.visibility=currentQ===0?"hidden":"visible";const nextBtn=document.getElementById("nextBtn");if(currentQ===questions.length-1){nextBtn.textContent="Submit Quiz";nextBtn.onclick=submitQuiz;}else{nextBtn.textContent="Next";nextBtn.onclick=nextQuestion;}}
+function selectOption(idx){answers[currentQ]=idx;renderQuestion();}
+function jumpTo(idx){currentQ=idx;renderQuestion();window.scrollTo({top:0,behavior:"smooth"});}
+function nextQuestion(){if(answers[currentQ]===null){alert("Please select an answer before continuing.");return;}if(currentQ<questions.length-1){currentQ++;renderQuestion();window.scrollTo({top:0,behavior:"smooth"});}}
+function prevQuestion(){if(currentQ>0){currentQ--;renderQuestion();window.scrollTo({top:0,behavior:"smooth"});}}
+function submitQuiz(){if(answers[currentQ]===null){alert("Please select an answer before submitting.");return;}const unanswered=answers.findIndex(a=>a===null);if(unanswered!==-1){alert(`Please answer Question ${unanswered+1} before submitting.`);currentQ=unanswered;renderQuestion();return;}if(!confirm("Submit your quiz? You won't be able to change answers."))return;quizActive=false;const results=questions.map((q,i)=>answers[i]===q.ans);const score=results.filter(Boolean).length;sendResults(results,score);showResults(results,score);}
+function sendResults(results,score){if(SCRIPT_URL==="YOUR_APPS_SCRIPT_WEB_APP_URL_HERE"){console.warn("No Apps Script URL configured.");return;}fetch(SCRIPT_URL,{method:"POST",mode:"no-cors",headers:{"Content-Type":"application/json"},body:JSON.stringify({quizName:QUIZ_NAME,name:userName,github:userGithub,results:results})}).catch(err=>console.error("Failed:",err));}
+function showResults(results,score){document.getElementById("quizScreen").classList.add("hidden");const container=document.getElementById("resultsScreen");container.classList.remove("hidden");const pct=Math.round((score/questions.length)*100),tier=pct>=80?"high":pct>=50?"mid":"low";const message=pct>=80?"Excellent work!":pct>=50?"Good effort \u2014 review the topics you missed.":"Keep studying \u2014 review the explanations below.";let html=`<div class="score-circle score-${tier}"><span class="number">${score}/${questions.length}</span><span class="label">${pct}%</span></div><h1>${message}</h1><p class="results-subtitle">${userName}${userGithub?" &bull; @"+userGithub:""}</p><div class="review-list">`;const letters=["A","B","C","D"];questions.forEach((q,i)=>{const correct=results[i];const cls=correct?"correct":"incorrect";const status=correct?"\u2713 Correct":"\u2717 Incorrect";html+=`<div class="review-item ${cls}"><div class="q-title">Q${i+1}. ${q.q}</div><div class="status-badge ${cls}">${status}</div><div class="your-answer"><strong>Your answer:</strong> ${letters[answers[i]]} \u2014 ${q.opts[answers[i]]}</div>`;if(!correct)html+=`<div class="correct-answer"><strong>Correct answer:</strong> ${letters[q.ans]} \u2014 ${q.opts[q.ans]}</div>`;html+=`<div class="explanation"><strong>Explanation:</strong> ${q.explanation}</div></div>`;});html+=`</div>`;container.innerHTML=html;window.scrollTo({top:0,behavior:"smooth"});}
+</script>
+</body>
+</html>

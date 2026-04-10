@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quiz — NumPy & Pandas: Code Reading</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --pri-900: #134E3A; --pri-800: #1A6B4F; --pri-700: #218764; --pri-600: #28A37A;
+  --pri-500: #34C090; --pri-400: #5CD4A8; --pri-300: #8AE4C2; --pri-200: #B5EEDB;
+  --pri-100: #D9F7EC; --pri-50: #EDFBF5;
+  --slate-50: #F7F8FA; --slate-100: #EDEEF2; --slate-200: #D5D7DE;
+  --slate-500: #6B7280; --slate-700: #374151; --slate-900: #111827;
+  --success: #059669; --success-bg: #ECFDF5; --error: #DC2626; --error-bg: #FEF2F2;
+  --accent: #F59E0B;
+  --font-body: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  --radius-md: 10px; --radius-lg: 16px;
+  --shadow-md: 0 4px 12px rgba(0,0,0,.10); --shadow-lg: 0 8px 30px rgba(0,0,0,.14);
+  --ease: cubic-bezier(.4, 0, .2, 1);
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: var(--font-body); background: var(--slate-50); min-height: 100vh; color: var(--slate-900); display: flex; justify-content: center; align-items: flex-start; padding: 2rem; }
+.quiz-container { width: 100%; max-width: 800px; margin: 0 auto; }
+.start-screen { background: white; border-radius: var(--radius-lg); padding: 3rem; box-shadow: var(--shadow-md); border: 1px solid var(--slate-200); text-align: center; }
+.start-screen h1 { font-size: 1.8rem; font-weight: 800; color: var(--pri-800); margin-bottom: 0.5rem; }
+.start-screen .subtitle { color: var(--slate-500); font-size: 1rem; margin-bottom: 2rem; }
+.start-screen input { display: block; width: 100%; max-width: 400px; margin: 0.75rem auto; padding: 0.85rem 1rem; border: 2px solid var(--slate-200); border-radius: var(--radius-md); font-family: var(--font-body); font-size: 1rem; transition: border-color 0.2s var(--ease); }
+.start-screen input:focus { outline: none; border-color: var(--pri-500); }
+.start-screen .info { color: var(--slate-500); font-size: 0.85rem; margin-top: 0.5rem; margin-bottom: 1.5rem; }
+.btn { display: inline-block; padding: 0.85rem 2.5rem; border: none; border-radius: var(--radius-md); font-family: var(--font-body); font-size: 1rem; font-weight: 600; cursor: pointer; transition: all 0.2s var(--ease); }
+.btn-primary { background: var(--pri-700); color: white; }
+.btn-primary:hover { background: var(--pri-600); transform: translateY(-1px); }
+.btn-primary:disabled { background: var(--slate-200); color: var(--slate-500); cursor: not-allowed; transform: none; }
+.btn-secondary { background: var(--slate-100); color: var(--slate-700); }
+.btn-secondary:hover { background: var(--slate-200); }
+.progress-bar { background: var(--slate-200); border-radius: 20px; height: 8px; margin-bottom: 1.5rem; overflow: hidden; }
+.progress-fill { height: 100%; background: var(--pri-500); border-radius: 20px; transition: width 0.4s var(--ease); }
+.progress-text { color: var(--slate-500); font-size: 0.85rem; font-weight: 500; margin-bottom: 0.5rem; display: flex; justify-content: space-between; }
+.question-card { background: white; border-radius: var(--radius-lg); padding: 2.5rem; box-shadow: var(--shadow-md); border: 1px solid var(--slate-200); animation: slideIn 0.3s var(--ease); }
+@keyframes slideIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+.section-badge { display: inline-block; background: var(--pri-50); color: var(--pri-700); font-size: 0.75rem; font-weight: 600; padding: 0.3rem 0.8rem; border-radius: 20px; margin-bottom: 1rem; text-transform: uppercase; letter-spacing: 0.03em; }
+.question-card h2 { font-size: 1.2rem; font-weight: 700; color: var(--slate-900); line-height: 1.5; margin-bottom: 1.5rem; }
+.question-card h2 code {
+  background: #1e293b; color: #e2e8f0; padding: 0.8rem 1rem; border-radius: 8px;
+  display: block; margin-top: 0.75rem; font-size: 0.9rem; line-height: 1.7;
+  font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace; white-space: pre-wrap; text-align: left; font-weight: 400;
+}
+.options { display: flex; flex-direction: column; gap: 0.75rem; }
+.option { display: flex; align-items: flex-start; gap: 0.85rem; padding: 1rem 1.2rem; border: 2px solid var(--slate-200); border-radius: var(--radius-md); cursor: pointer; transition: all 0.15s var(--ease); line-height: 1.5; }
+.option:hover { border-color: var(--pri-300); background: var(--pri-50); }
+.option.selected { border-color: var(--pri-500); background: var(--pri-50); }
+.option .letter { flex-shrink: 0; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; border-radius: 50%; background: var(--slate-100); color: var(--slate-700); font-weight: 600; font-size: 0.85rem; margin-top: 1px; }
+.option.selected .letter { background: var(--pri-600); color: white; }
+.option .text { font-size: 1rem; color: var(--slate-700); }
+.nav-row { display: flex; justify-content: space-between; align-items: center; margin-top: 1.5rem; }
+.results-screen { background: white; border-radius: var(--radius-lg); padding: 3rem; box-shadow: var(--shadow-md); border: 1px solid var(--slate-200); animation: slideIn 0.3s var(--ease); }
+.score-circle { width: 160px; height: 160px; border-radius: 50%; display: flex; flex-direction: column; align-items: center; justify-content: center; margin: 0 auto 1.5rem; font-weight: 800; }
+.score-circle .number { font-size: 2.8rem; line-height: 1; }
+.score-circle .label { font-size: 0.85rem; font-weight: 500; margin-top: 0.25rem; }
+.score-high { background: var(--success-bg); color: var(--success); border: 3px solid var(--success); }
+.score-mid { background: #FFF8E7; color: #B8860B; border: 3px solid #C49545; }
+.score-low { background: var(--error-bg); color: var(--error); border: 3px solid var(--error); }
+.results-screen h1 { text-align: center; font-size: 1.5rem; color: var(--pri-800); margin-bottom: 0.5rem; }
+.results-screen .results-subtitle { text-align: center; color: var(--slate-500); margin-top: 0.75rem; margin-bottom: 3rem; padding-bottom: 2rem; border-bottom: 1px solid var(--slate-200); }
+.review-list { display: flex; flex-direction: column; gap: 1rem; }
+.review-item { padding: 1.2rem; border-radius: var(--radius-md); border-left: 4px solid; }
+.review-item.correct { background: var(--success-bg); border-color: var(--success); }
+.review-item.incorrect { background: var(--error-bg); border-color: var(--error); }
+.review-item .q-title { font-weight: 600; font-size: 0.95rem; margin-bottom: 0.5rem; color: var(--slate-900); }
+.review-item .status-badge { display: inline-block; font-size: 0.8rem; font-weight: 700; padding: 0.2rem 0.7rem; border-radius: 20px; margin-bottom: 0.5rem; }
+.review-item .status-badge.correct { background: var(--success); color: white; }
+.review-item .status-badge.incorrect { background: var(--error); color: white; }
+.review-item .your-answer { font-size: 0.9rem; color: var(--slate-700); margin-bottom: 0.25rem; }
+.review-item .correct-answer { font-size: 0.9rem; color: var(--success); font-weight: 500; margin-top: 0.25rem; }
+.review-item .explanation { font-size: 0.85rem; color: var(--slate-500); margin-top: 0.5rem; padding-top: 0.5rem; border-top: 1px solid rgba(0,0,0,0.08); }
+.q-nav { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 1rem; justify-content: center; }
+.q-nav-btn { width: 32px; height: 32px; border-radius: 50%; border: 2px solid var(--slate-200); background: white; color: var(--slate-500); font-family: var(--font-body); font-size: 0.75rem; font-weight: 600; cursor: pointer; transition: all 0.15s var(--ease); display: flex; align-items: center; justify-content: center; }
+.q-nav-btn:hover { border-color: var(--pri-400); color: var(--pri-700); }
+.q-nav-btn.active { background: var(--pri-700); color: white; border-color: var(--pri-700); font-weight: 700; }
+.q-nav-btn.answered { background: var(--pri-100); border-color: var(--pri-400); color: var(--pri-800); }
+.q-nav-btn.answered.active { background: var(--pri-700); color: white; border-color: var(--pri-700); }
+.hidden { display: none; }
+@media (max-width: 600px) {
+  body { padding: 0.75rem; } .question-card, .start-screen, .results-screen { padding: 1.25rem; }
+  .question-card h2 { font-size: 1rem; } .option { padding: 0.75rem 1rem; gap: 0.6rem; }
+  .option .text { font-size: 0.9rem; } .option .letter { width: 24px; height: 24px; font-size: 0.75rem; }
+  .q-nav { gap: 4px; } .q-nav-btn { width: 28px; height: 28px; font-size: 0.7rem; }
+  .nav-row { margin-top: 1rem; } .btn { padding: 0.75rem 1.5rem; font-size: 0.9rem; }
+  .start-screen h1 { font-size: 1.4rem; } .start-screen input { padding: 0.7rem 0.85rem; font-size: 0.9rem; }
+  .review-item { padding: 1rem; } .score-circle { width: 130px; height: 130px; } .score-circle .number { font-size: 2.2rem; }
+}
+</style>
+</head>
+<body>
+<div class="quiz-container">
+  <div id="startScreen" class="start-screen">
+    <h1>Quiz &mdash; NumPy &amp; Pandas: Code Reading</h1>
+    <p class="subtitle">Arrays, DataFrames &amp; Data Manipulation &mdash; 20 Questions</p>
+    <input type="text" id="userName" placeholder="Your Full Name" required>
+    <input type="text" id="userGithub" placeholder="GitHub Username — optional">
+    <p class="info">4 sections &bull; ~12 minutes &bull; Results shown after submission</p>
+    <button class="btn btn-primary" onclick="startQuiz()">Start Quiz</button>
+  </div>
+  <div id="quizScreen" class="hidden">
+    <div class="q-nav" id="qNav"></div>
+    <div class="progress-text"><span id="progressLabel">Question 1 of 20</span><span id="sectionLabel"></span></div>
+    <div class="progress-bar"><div class="progress-fill" id="progressFill" style="width:5%"></div></div>
+    <div class="question-card" id="questionCard"></div>
+    <div class="nav-row">
+      <button class="btn btn-secondary" id="prevBtn" onclick="prevQuestion()">Back</button>
+      <button class="btn btn-primary" id="nextBtn" onclick="nextQuestion()">Next</button>
+    </div>
+  </div>
+  <div id="resultsScreen" class="results-screen hidden"></div>
+</div>
+<script>
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxJIg5CYXWJKY-Uuoi9H0Nvnl4wlWwAAAQ4aYQd1FX7iIBmMqj6f9ksXEj-LTtJK8hlRg/exec";
+const QUIZ_NAME = "Python Class 3 \u2014 Code Reading";
+
+const sections = [
+  { title: "Section 1: NumPy Arrays & Indexing", range: [0, 5] },
+  { title: "Section 2: NumPy Operations", range: [5, 10] },
+  { title: "Section 3: Pandas DataFrames", range: [10, 15] },
+  { title: "Section 4: Pandas Cleaning & Aggregation", range: [15, 20] }
+];
+
+const questions = [
+  // ── Section 1: NumPy Arrays & Indexing ──
+  {
+    q: "What does this code print?<br><br><code>import numpy as np\na = np.array([1, 2.5, 3])\nprint(a.dtype)</code>",
+    opts: ["int64", "float64", "object", "mixed"],
+    ans: 1,
+    explanation: "When you mix int and float in a NumPy array, all elements are upcasted to float64 (the most general numeric type). So 1 becomes 1.0, and the array dtype is float64."
+  },
+  {
+    q: "What does this code print?<br><br><code>import numpy as np\na = np.array([[1, 2, 3], [4, 5, 6]])\nprint(a.shape)</code>",
+    opts: ["(6,)", "(2, 3)", "(3, 2)", "2"],
+    ans: 1,
+    explanation: "The array has 2 rows and 3 columns, so shape is (2, 3). The first dimension is rows, the second is columns. a.ndim would be 2, and a.size would be 6."
+  },
+  {
+    q: "What does this code print?<br><br><code>import numpy as np\na = np.arange(10)\nprint(a[2:7:2])</code>",
+    opts: ["[2 3 4 5 6]", "[2 4 6]", "[2 3 4 5 6 7]", "[3 5 7]"],
+    ans: 1,
+    explanation: "a is [0,1,2,3,4,5,6,7,8,9]. The slice [2:7:2] means: start at index 2, stop before index 7, step by 2. So indices 2, 4, 6 give values [2, 4, 6]."
+  },
+  {
+    q: "What does this code print?<br><br><code>import numpy as np\na = np.array([[10, 20, 30], [40, 50, 60]])\nprint(a[0, -1])</code>",
+    opts: ["10", "30", "60", "[10, 20, 30]"],
+    ans: 1,
+    explanation: "a[0, -1] selects row 0 ([10, 20, 30]), column -1 (last column). So the result is 30. In NumPy, you can combine row and column indices with a comma."
+  },
+  {
+    q: "What does this code print?<br><br><code>import numpy as np\na = np.arange(6)\nb = a.reshape(2, 3)\nprint(b)</code>",
+    opts: ["[[0 1 2] [3 4 5]]", "[[0 1] [2 3] [4 5]]", "[0 1 2 3 4 5]", "Error: can't reshape"],
+    ans: 0,
+    explanation: "arange(6) creates [0,1,2,3,4,5]. reshape(2,3) arranges these into 2 rows and 3 columns, filling row by row: [[0,1,2], [3,4,5]]. Total elements (6) must match 2*3=6."
+  },
+  // ── Section 2: NumPy Operations ──
+  {
+    q: "What does this code print?<br><br><code>import numpy as np\na = np.array([1, 2, 3, 4])\nprint(a * 2 + 1)</code>",
+    opts: ["[3 5 7 9]", "[2 4 6 8]", "[1 2 3 4 2 4 6 8]", "Error: can't multiply array by int"],
+    ans: 0,
+    explanation: "NumPy vectorized operations: a * 2 gives [2,4,6,8], then + 1 gives [3,5,7,9]. Each operation applies element-wise to the entire array. No loops needed."
+  },
+  {
+    q: "What does this code print?<br><br><code>import numpy as np\na = np.array([10, 20, 30, 40, 50])\nmask = a &gt; 25\nprint(a[mask])</code>",
+    opts: ["[True True True]", "[30 40 50]", "[10 20]", "[False False True True True]"],
+    ans: 1,
+    explanation: "a > 25 creates boolean mask [False, False, True, True, True]. Using this mask to index a returns only elements where the mask is True: [30, 40, 50]. This is boolean indexing."
+  },
+  {
+    q: "What does this code print?<br><br><code>import numpy as np\na = np.array([[1, 2], [3, 4]])\nprint(a.sum(axis=0))</code>",
+    opts: ["[4 6]", "[3 7]", "10", "[[1 2] [3 4]]"],
+    ans: 0,
+    explanation: "axis=0 means 'collapse rows' (sum down each column). Column 0: 1+3=4. Column 1: 2+4=6. Result: [4, 6]. axis=1 would sum across columns (each row): [3, 7]. No axis gives the total: 10."
+  },
+  {
+    q: "What does this code print?<br><br><code>import numpy as np\na = np.array([3, 1, 4, 1, 5])\nidx = np.argsort(a)\nprint(idx)</code>",
+    opts: ["[1 1 3 4 5]", "[1 3 0 2 4]", "[5 4 3 1 1]", "[0 1 2 3 4]"],
+    ans: 1,
+    explanation: "argsort returns the indices that would sort the array. Sorted order: 1(idx1), 1(idx3), 3(idx0), 4(idx2), 5(idx4). So the indices are [1, 3, 0, 2, 4]. You can verify: a[[1,3,0,2,4]] gives [1,1,3,4,5]."
+  },
+  {
+    q: "What does this code print?<br><br><code>import numpy as np\na = np.array([1, 2, 3])\nb = np.array([10, 20, 30])\nprint(np.dot(a, b))</code>",
+    opts: ["[10 40 90]", "140", "[11 22 33]", "Error: different shapes"],
+    ans: 1,
+    explanation: "np.dot on two 1D arrays computes the dot product: 1*10 + 2*20 + 3*30 = 10 + 40 + 90 = 140. This is a scalar, not an array. For element-wise multiplication, use a * b which gives [10, 40, 90]."
+  },
+  // ── Section 3: Pandas DataFrames ──
+  {
+    q: "What does this code print?<br><br><code>import pandas as pd\ndf = pd.DataFrame({'a': [1, 2, 3], 'b': [4, 5, 6]})\nprint(df.shape)</code>",
+    opts: ["(2, 3)", "(3, 2)", "(3,)", "6"],
+    ans: 1,
+    explanation: "The DataFrame has 3 rows (from the lists) and 2 columns ('a' and 'b'). shape returns (rows, columns) = (3, 2)."
+  },
+  {
+    q: "What does this code print?<br><br><code>import pandas as pd\ndf = pd.DataFrame({'name': ['Alice', 'Bob'], 'age': [25, 30]})\nprint(type(df['age']))</code>",
+    opts: ["&lt;class 'list'&gt;", "&lt;class 'numpy.ndarray'&gt;", "&lt;class 'pandas.Series'&gt;", "&lt;class 'pandas.DataFrame'&gt;"],
+    ans: 2,
+    explanation: "Selecting a single column from a DataFrame with df['age'] returns a pandas Series, not a DataFrame. To get a DataFrame with one column, use df[['age']] (double brackets)."
+  },
+  {
+    q: "What does this code print?<br><br><code>import pandas as pd\ndf = pd.DataFrame({'x': [10, 20, 30, 40]}, index=['a', 'b', 'c', 'd'])\nprint(df.loc['b':'d'])</code>",
+    opts: ["x values 20, 30", "x values 20, 30, 40", "x values 10, 20, 30", "Error: can't slice with strings"],
+    ans: 1,
+    explanation: "With .loc, slicing is inclusive on both ends. 'b':'d' includes rows 'b', 'c', and 'd' \u2014 giving x values 20, 30, 40. This is different from .iloc where the end is exclusive."
+  },
+  {
+    q: "What does this code print?<br><br><code>import pandas as pd\ndf = pd.DataFrame({'a': [1, 2, 3], 'b': [4, 5, 6]})\nresult = df[df['a'] &gt; 1]\nprint(len(result))</code>",
+    opts: ["1", "2", "3", "Error"],
+    ans: 1,
+    explanation: "df['a'] > 1 creates the mask [False, True, True]. Applying it to df keeps only rows where 'a' is 2 and 3. That's 2 rows, so len(result) is 2."
+  },
+  {
+    q: "What does this code print?<br><br><code>import pandas as pd\ndf = pd.DataFrame({'x': [10, 20, 30]})\ndf['y'] = df['x'] * 2\nprint(df.columns.tolist())</code>",
+    opts: ["['x']", "['x', 'y']", "['y']", "Error: can't add column this way"],
+    ans: 1,
+    explanation: "df['y'] = df['x'] * 2 creates a new column 'y' with values [20, 40, 60]. The DataFrame now has two columns. columns.tolist() converts the column index to a regular list: ['x', 'y']."
+  },
+  // ── Section 4: Pandas Cleaning & Aggregation ──
+  {
+    q: "What does this code print?<br><br><code>import pandas as pd\nimport numpy as np\ns = pd.Series([1, np.nan, 3, np.nan, 5])\nprint(s.isna().sum())</code>",
+    opts: ["0", "2", "3", "5"],
+    ans: 1,
+    explanation: "isna() returns [False, True, False, True, False]. sum() on booleans counts True values: there are 2 NaN values, so the result is 2."
+  },
+  {
+    q: "What does this code print?<br><br><code>import pandas as pd\nimport numpy as np\ns = pd.Series([1, np.nan, 3])\nfilled = s.fillna(0)\nprint(filled.tolist())</code>",
+    opts: ["[1, nan, 3]", "[1.0, 0.0, 3.0]", "[0, 0, 0]", "[1, 3]"],
+    ans: 1,
+    explanation: "fillna(0) replaces NaN with 0. Since the Series contains a float (NaN is a float), all values are float64: [1.0, 0.0, 3.0]. The original Series s is unchanged \u2014 fillna returns a new Series."
+  },
+  {
+    q: "What does this code print?<br><br><code>import pandas as pd\nimport numpy as np\ndf = pd.DataFrame({'a': [1, np.nan, 3], 'b': [4, 5, np.nan]})\nresult = df.dropna()\nprint(len(result))</code>",
+    opts: ["1", "2", "3", "0"],
+    ans: 0,
+    explanation: "dropna() removes any row that contains at least one NaN. Row 0: [1, 4] \u2014 no NaN, kept. Row 1: [NaN, 5] \u2014 has NaN, dropped. Row 2: [3, NaN] \u2014 has NaN, dropped. Only 1 row survives."
+  },
+  {
+    q: "What does this code print?<br><br><code>import pandas as pd\ndf = pd.DataFrame({\n    'dept': ['A', 'B', 'A', 'B'],\n    'sal': [50, 60, 70, 80]\n})\nprint(df.groupby('dept')['sal'].mean().tolist())</code>",
+    opts: ["[60.0, 70.0]", "[50, 60, 70, 80]", "[65.0]", "[55.0, 75.0]"],
+    ans: 0,
+    explanation: "groupby('dept') splits into groups: A=[50,70], B=[60,80]. mean() of A = (50+70)/2 = 60.0. mean() of B = (60+80)/2 = 70.0. tolist() gives [60.0, 70.0]. Groups are sorted alphabetically by default."
+  },
+  {
+    q: "What does this code print?<br><br><code>import pandas as pd\ndf = pd.DataFrame({'a': ['1', '2', '3']})\ndf['b'] = df['a'].astype(int) * 10\nprint(df['b'].tolist())</code>",
+    opts: ["['10', '20', '30']", "[10, 20, 30]", "Error: can't multiply string by int", "['1111111111', '2222222222', '3333333333']"],
+    ans: 1,
+    explanation: "Column 'a' contains strings '1', '2', '3'. astype(int) converts them to integers 1, 2, 3. Multiplying by 10 gives [10, 20, 30]. Without astype, '1' * 10 would repeat the string 10 times."
+  }
+];
+
+let currentQ=0,answers=new Array(questions.length).fill(null),userName="",userGithub="";
+function startQuiz(){userName=document.getElementById("userName").value.trim();userGithub=document.getElementById("userGithub").value.trim();if(!userName){alert("Please enter your name.");return;}document.getElementById("startScreen").classList.add("hidden");document.getElementById("quizScreen").classList.remove("hidden");quizActive=true;renderQuestion();}
+let quizActive=false;
+document.getElementById("userName").addEventListener("keydown",function(e){if(e.key==="Enter"){e.preventDefault();document.getElementById("userGithub").focus();}});
+document.getElementById("userGithub").addEventListener("keydown",function(e){if(e.key==="Enter"){e.preventDefault();startQuiz();}});
+document.addEventListener("keydown",function(e){if(!quizActive)return;if(e.key==="Enter"&&answers[currentQ]!==null){e.preventDefault();if(currentQ===questions.length-1)submitQuiz();else nextQuestion();}});
+function getSection(idx){for(const s of sections){if(idx>=s.range[0]&&idx<s.range[1])return s.title;}return"";}
+function renderQuestion(){const q=questions[currentQ],letters=["A","B","C","D"],card=document.getElementById("questionCard");let html=`<div class="section-badge">${getSection(currentQ)}</div><h2>Q${currentQ+1}. ${q.q}</h2><div class="options">`;q.opts.forEach((opt,i)=>{const sel=answers[currentQ]===i?" selected":"";html+=`<div class="option${sel}" onclick="selectOption(${i})"><span class="letter">${letters[i]}</span><span class="text">${opt}</span></div>`;});html+=`</div>`;card.innerHTML=html;const nav=document.getElementById("qNav");let navHtml="";for(let n=0;n<questions.length;n++){let cls="q-nav-btn";if(n===currentQ)cls+=" active";else if(answers[n]!==null)cls+=" answered";navHtml+=`<button class="${cls}" onclick="jumpTo(${n})">${n+1}</button>`;}nav.innerHTML=navHtml;document.getElementById("progressLabel").textContent=`Question ${currentQ+1} of ${questions.length}`;document.getElementById("sectionLabel").textContent=getSection(currentQ);document.getElementById("progressFill").style.width=((currentQ+1)/questions.length*100)+"%";document.getElementById("prevBtn").style.visibility=currentQ===0?"hidden":"visible";const nextBtn=document.getElementById("nextBtn");if(currentQ===questions.length-1){nextBtn.textContent="Submit Quiz";nextBtn.onclick=submitQuiz;}else{nextBtn.textContent="Next";nextBtn.onclick=nextQuestion;}}
+function selectOption(idx){answers[currentQ]=idx;renderQuestion();}
+function jumpTo(idx){currentQ=idx;renderQuestion();window.scrollTo({top:0,behavior:"smooth"});}
+function nextQuestion(){if(answers[currentQ]===null){alert("Please select an answer before continuing.");return;}if(currentQ<questions.length-1){currentQ++;renderQuestion();window.scrollTo({top:0,behavior:"smooth"});}}
+function prevQuestion(){if(currentQ>0){currentQ--;renderQuestion();window.scrollTo({top:0,behavior:"smooth"});}}
+function submitQuiz(){if(answers[currentQ]===null){alert("Please select an answer before submitting.");return;}const unanswered=answers.findIndex(a=>a===null);if(unanswered!==-1){alert(`Please answer Question ${unanswered+1} before submitting.`);currentQ=unanswered;renderQuestion();return;}if(!confirm("Submit your quiz? You won't be able to change answers."))return;quizActive=false;const results=questions.map((q,i)=>answers[i]===q.ans);const score=results.filter(Boolean).length;sendResults(results,score);showResults(results,score);}
+function sendResults(results,score){if(SCRIPT_URL==="YOUR_APPS_SCRIPT_WEB_APP_URL_HERE"){console.warn("No Apps Script URL configured.");return;}fetch(SCRIPT_URL,{method:"POST",mode:"no-cors",headers:{"Content-Type":"application/json"},body:JSON.stringify({quizName:QUIZ_NAME,name:userName,github:userGithub,results:results})}).catch(err=>console.error("Failed:",err));}
+function showResults(results,score){document.getElementById("quizScreen").classList.add("hidden");const container=document.getElementById("resultsScreen");container.classList.remove("hidden");const pct=Math.round((score/questions.length)*100),tier=pct>=80?"high":pct>=50?"mid":"low";const message=pct>=80?"Excellent work!":pct>=50?"Good effort \u2014 review the topics you missed.":"Keep studying \u2014 review the explanations below.";let html=`<div class="score-circle score-${tier}"><span class="number">${score}/${questions.length}</span><span class="label">${pct}%</span></div><h1>${message}</h1><p class="results-subtitle">${userName}${userGithub?" &bull; @"+userGithub:""}</p><div class="review-list">`;const letters=["A","B","C","D"];questions.forEach((q,i)=>{const correct=results[i];const cls=correct?"correct":"incorrect";const status=correct?"\u2713 Correct":"\u2717 Incorrect";html+=`<div class="review-item ${cls}"><div class="q-title">Q${i+1}. ${q.q}</div><div class="status-badge ${cls}">${status}</div><div class="your-answer"><strong>Your answer:</strong> ${letters[answers[i]]} \u2014 ${q.opts[answers[i]]}</div>`;if(!correct)html+=`<div class="correct-answer"><strong>Correct answer:</strong> ${letters[q.ans]} \u2014 ${q.opts[q.ans]}</div>`;html+=`<div class="explanation"><strong>Explanation:</strong> ${q.explanation}</div></div>`;});html+=`</div>`;container.innerHTML=html;window.scrollTo({top:0,behavior:"smooth"});}
+</script>
+</body>
+</html>

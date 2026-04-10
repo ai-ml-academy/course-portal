@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quiz — OOP & Advanced Functions: Code Reading</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --pri-900: #134E3A; --pri-800: #1A6B4F; --pri-700: #218764; --pri-600: #28A37A;
+  --pri-500: #34C090; --pri-400: #5CD4A8; --pri-300: #8AE4C2; --pri-200: #B5EEDB;
+  --pri-100: #D9F7EC; --pri-50: #EDFBF5;
+  --slate-50: #F7F8FA; --slate-100: #EDEEF2; --slate-200: #D5D7DE;
+  --slate-500: #6B7280; --slate-700: #374151; --slate-900: #111827;
+  --success: #059669; --success-bg: #ECFDF5; --error: #DC2626; --error-bg: #FEF2F2;
+  --accent: #F59E0B;
+  --font-body: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  --radius-md: 10px; --radius-lg: 16px;
+  --shadow-md: 0 4px 12px rgba(0,0,0,.10); --shadow-lg: 0 8px 30px rgba(0,0,0,.14);
+  --ease: cubic-bezier(.4, 0, .2, 1);
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: var(--font-body); background: var(--slate-50); min-height: 100vh; color: var(--slate-900); display: flex; justify-content: center; align-items: flex-start; padding: 2rem; }
+.quiz-container { width: 100%; max-width: 800px; margin: 0 auto; }
+.start-screen { background: white; border-radius: var(--radius-lg); padding: 3rem; box-shadow: var(--shadow-md); border: 1px solid var(--slate-200); text-align: center; }
+.start-screen h1 { font-size: 1.8rem; font-weight: 800; color: var(--pri-800); margin-bottom: 0.5rem; }
+.start-screen .subtitle { color: var(--slate-500); font-size: 1rem; margin-bottom: 2rem; }
+.start-screen input { display: block; width: 100%; max-width: 400px; margin: 0.75rem auto; padding: 0.85rem 1rem; border: 2px solid var(--slate-200); border-radius: var(--radius-md); font-family: var(--font-body); font-size: 1rem; transition: border-color 0.2s var(--ease); }
+.start-screen input:focus { outline: none; border-color: var(--pri-500); }
+.start-screen .info { color: var(--slate-500); font-size: 0.85rem; margin-top: 0.5rem; margin-bottom: 1.5rem; }
+.btn { display: inline-block; padding: 0.85rem 2.5rem; border: none; border-radius: var(--radius-md); font-family: var(--font-body); font-size: 1rem; font-weight: 600; cursor: pointer; transition: all 0.2s var(--ease); }
+.btn-primary { background: var(--pri-700); color: white; }
+.btn-primary:hover { background: var(--pri-600); transform: translateY(-1px); }
+.btn-primary:disabled { background: var(--slate-200); color: var(--slate-500); cursor: not-allowed; transform: none; }
+.btn-secondary { background: var(--slate-100); color: var(--slate-700); }
+.btn-secondary:hover { background: var(--slate-200); }
+.progress-bar { background: var(--slate-200); border-radius: 20px; height: 8px; margin-bottom: 1.5rem; overflow: hidden; }
+.progress-fill { height: 100%; background: var(--pri-500); border-radius: 20px; transition: width 0.4s var(--ease); }
+.progress-text { color: var(--slate-500); font-size: 0.85rem; font-weight: 500; margin-bottom: 0.5rem; display: flex; justify-content: space-between; }
+.question-card { background: white; border-radius: var(--radius-lg); padding: 2.5rem; box-shadow: var(--shadow-md); border: 1px solid var(--slate-200); animation: slideIn 0.3s var(--ease); }
+@keyframes slideIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+.section-badge { display: inline-block; background: var(--pri-50); color: var(--pri-700); font-size: 0.75rem; font-weight: 600; padding: 0.3rem 0.8rem; border-radius: 20px; margin-bottom: 1rem; text-transform: uppercase; letter-spacing: 0.03em; }
+.question-card h2 { font-size: 1.2rem; font-weight: 700; color: var(--slate-900); line-height: 1.5; margin-bottom: 1.5rem; }
+.question-card h2 code {
+  background: #1e293b; color: #e2e8f0; padding: 0.8rem 1rem; border-radius: 8px;
+  display: block; margin-top: 0.75rem; font-size: 0.9rem; line-height: 1.7;
+  font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace; white-space: pre-wrap; text-align: left; font-weight: 400;
+}
+.options { display: flex; flex-direction: column; gap: 0.75rem; }
+.option { display: flex; align-items: flex-start; gap: 0.85rem; padding: 1rem 1.2rem; border: 2px solid var(--slate-200); border-radius: var(--radius-md); cursor: pointer; transition: all 0.15s var(--ease); line-height: 1.5; }
+.option:hover { border-color: var(--pri-300); background: var(--pri-50); }
+.option.selected { border-color: var(--pri-500); background: var(--pri-50); }
+.option .letter { flex-shrink: 0; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; border-radius: 50%; background: var(--slate-100); color: var(--slate-700); font-weight: 600; font-size: 0.85rem; margin-top: 1px; }
+.option.selected .letter { background: var(--pri-600); color: white; }
+.option .text { font-size: 1rem; color: var(--slate-700); }
+.nav-row { display: flex; justify-content: space-between; align-items: center; margin-top: 1.5rem; }
+.results-screen { background: white; border-radius: var(--radius-lg); padding: 3rem; box-shadow: var(--shadow-md); border: 1px solid var(--slate-200); animation: slideIn 0.3s var(--ease); }
+.score-circle { width: 160px; height: 160px; border-radius: 50%; display: flex; flex-direction: column; align-items: center; justify-content: center; margin: 0 auto 1.5rem; font-weight: 800; }
+.score-circle .number { font-size: 2.8rem; line-height: 1; }
+.score-circle .label { font-size: 0.85rem; font-weight: 500; margin-top: 0.25rem; }
+.score-high { background: var(--success-bg); color: var(--success); border: 3px solid var(--success); }
+.score-mid { background: #FFF8E7; color: #B8860B; border: 3px solid #C49545; }
+.score-low { background: var(--error-bg); color: var(--error); border: 3px solid var(--error); }
+.results-screen h1 { text-align: center; font-size: 1.5rem; color: var(--pri-800); margin-bottom: 0.5rem; }
+.results-screen .results-subtitle { text-align: center; color: var(--slate-500); margin-top: 0.75rem; margin-bottom: 3rem; padding-bottom: 2rem; border-bottom: 1px solid var(--slate-200); }
+.review-list { display: flex; flex-direction: column; gap: 1rem; }
+.review-item { padding: 1.2rem; border-radius: var(--radius-md); border-left: 4px solid; }
+.review-item.correct { background: var(--success-bg); border-color: var(--success); }
+.review-item.incorrect { background: var(--error-bg); border-color: var(--error); }
+.review-item .q-title { font-weight: 600; font-size: 0.95rem; margin-bottom: 0.5rem; color: var(--slate-900); }
+.review-item .status-badge { display: inline-block; font-size: 0.8rem; font-weight: 700; padding: 0.2rem 0.7rem; border-radius: 20px; margin-bottom: 0.5rem; }
+.review-item .status-badge.correct { background: var(--success); color: white; }
+.review-item .status-badge.incorrect { background: var(--error); color: white; }
+.review-item .your-answer { font-size: 0.9rem; color: var(--slate-700); margin-bottom: 0.25rem; }
+.review-item .correct-answer { font-size: 0.9rem; color: var(--success); font-weight: 500; margin-top: 0.25rem; }
+.review-item .explanation { font-size: 0.85rem; color: var(--slate-500); margin-top: 0.5rem; padding-top: 0.5rem; border-top: 1px solid rgba(0,0,0,0.08); }
+.q-nav { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 1rem; justify-content: center; }
+.q-nav-btn { width: 32px; height: 32px; border-radius: 50%; border: 2px solid var(--slate-200); background: white; color: var(--slate-500); font-family: var(--font-body); font-size: 0.75rem; font-weight: 600; cursor: pointer; transition: all 0.15s var(--ease); display: flex; align-items: center; justify-content: center; }
+.q-nav-btn:hover { border-color: var(--pri-400); color: var(--pri-700); }
+.q-nav-btn.active { background: var(--pri-700); color: white; border-color: var(--pri-700); font-weight: 700; }
+.q-nav-btn.answered { background: var(--pri-100); border-color: var(--pri-400); color: var(--pri-800); }
+.q-nav-btn.answered.active { background: var(--pri-700); color: white; border-color: var(--pri-700); }
+.hidden { display: none; }
+@media (max-width: 600px) {
+  body { padding: 0.75rem; }
+  .question-card, .start-screen, .results-screen { padding: 1.25rem; }
+  .question-card h2 { font-size: 1rem; } .option { padding: 0.75rem 1rem; gap: 0.6rem; }
+  .option .text { font-size: 0.9rem; } .option .letter { width: 24px; height: 24px; font-size: 0.75rem; }
+  .q-nav { gap: 4px; } .q-nav-btn { width: 28px; height: 28px; font-size: 0.7rem; }
+  .nav-row { margin-top: 1rem; } .btn { padding: 0.75rem 1.5rem; font-size: 0.9rem; }
+  .start-screen h1 { font-size: 1.4rem; } .start-screen input { padding: 0.7rem 0.85rem; font-size: 0.9rem; }
+  .review-item { padding: 1rem; } .score-circle { width: 130px; height: 130px; } .score-circle .number { font-size: 2.2rem; }
+}
+</style>
+</head>
+<body>
+<div class="quiz-container">
+  <div id="startScreen" class="start-screen">
+    <h1>Quiz &mdash; OOP &amp; Advanced Functions: Code Reading</h1>
+    <p class="subtitle">Functions, Classes, Inheritance &amp; Decorators &mdash; 20 Questions</p>
+    <input type="text" id="userName" placeholder="Your Full Name" required>
+    <input type="text" id="userGithub" placeholder="GitHub Username — optional">
+    <p class="info">4 sections &bull; ~12 minutes &bull; Results shown after submission</p>
+    <button class="btn btn-primary" onclick="startQuiz()">Start Quiz</button>
+  </div>
+  <div id="quizScreen" class="hidden">
+    <div class="q-nav" id="qNav"></div>
+    <div class="progress-text"><span id="progressLabel">Question 1 of 20</span><span id="sectionLabel"></span></div>
+    <div class="progress-bar"><div class="progress-fill" id="progressFill" style="width:5%"></div></div>
+    <div class="question-card" id="questionCard"></div>
+    <div class="nav-row">
+      <button class="btn btn-secondary" id="prevBtn" onclick="prevQuestion()">Back</button>
+      <button class="btn btn-primary" id="nextBtn" onclick="nextQuestion()">Next</button>
+    </div>
+  </div>
+  <div id="resultsScreen" class="results-screen hidden"></div>
+</div>
+<script>
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxJIg5CYXWJKY-Uuoi9H0Nvnl4wlWwAAAQ4aYQd1FX7iIBmMqj6f9ksXEj-LTtJK8hlRg/exec";
+const QUIZ_NAME = "Python Class 2 \u2014 Code Reading";
+
+const sections = [
+  { title: "Section 1: Functions & Arguments", range: [0, 5] },
+  { title: "Section 2: Classes & Methods", range: [5, 10] },
+  { title: "Section 3: Inheritance & Dunders", range: [10, 15] },
+  { title: "Section 4: Decorators & Logging", range: [15, 20] }
+];
+
+const questions = [
+  // ── Section 1: Functions & Arguments ──
+  {
+    q: "What does this code print?<br><br><code>def mean(*values):\n    return sum(values) / len(values)\n\nprint(mean(10, 20, 30))</code>",
+    opts: ["60", "20.0", "30", "[10, 20, 30]"],
+    ans: 1,
+    explanation: "*values captures 10, 20, 30 as the tuple (10, 20, 30). sum((10, 20, 30)) = 60, len((10, 20, 30)) = 3. 60 / 3 = 20.0. Note: Python 3 division always returns a float."
+  },
+  {
+    q: "What does this code print?<br><br><code>def create_config(**kwargs):\n    return len(kwargs)\n\nprint(create_config(lr=0.01, epochs=50, batch=32))</code>",
+    opts: ["3", "{'lr': 0.01, 'epochs': 50, 'batch': 32}", "Error: unexpected keyword arguments", "(0.01, 50, 32)"],
+    ans: 0,
+    explanation: "**kwargs collects all keyword arguments into a dictionary: {'lr': 0.01, 'epochs': 50, 'batch': 32}. len() of that dict is 3."
+  },
+  {
+    q: "What does this code print?<br><br><code>def apply(data, fn):\n    return [fn(x) for x in data]\n\nresult = apply([1, 4, 9], lambda x: x ** 0.5)\nprint(result)</code>",
+    opts: ["[1, 2, 3]", "[1.0, 2.0, 3.0]", "[1, 16, 81]", "Error: can't pass lambda"],
+    ans: 1,
+    explanation: "The lambda computes x ** 0.5 (square root). 1**0.5 = 1.0, 4**0.5 = 2.0, 9**0.5 = 3.0. The ** operator with a float exponent returns floats, so the result is [1.0, 2.0, 3.0]."
+  },
+  {
+    q: "What does this code print?<br><br><code>def train(model, epochs=10, lr=0.01):\n    return f'{model}: {epochs}e, lr={lr}'\n\nprint(train('xgb', lr=0.001))</code>",
+    opts: ["xgb: 10e, lr=0.001", "xgb: 10e, lr=0.01", "Error: missing epochs argument", "xgb: 0.001e, lr=10"],
+    ans: 0,
+    explanation: "'xgb' fills model (positional). epochs is not provided, so it uses the default 10. lr=0.001 overrides the default 0.01. Result: 'xgb: 10e, lr=0.001'."
+  },
+  {
+    q: "What does this code print?<br><br><code>def outer():\n    x = 'hello'\n    def inner():\n        return x.upper()\n    return inner\n\nfn = outer()\nprint(fn())</code>",
+    opts: ["hello", "HELLO", "Error: x is not defined", "None"],
+    ans: 1,
+    explanation: "outer() returns the inner function. The inner function is a closure \u2014 it remembers x = 'hello' from its enclosing scope. When fn() is called, inner() runs x.upper() and returns 'HELLO'."
+  },
+  // ── Section 2: Classes & Methods ──
+  {
+    q: "What does this code print?<br><br><code>class Model:\n    framework = 'sklearn'\n    def __init__(self, name):\n        self.name = name\n\na = Model('rf')\nb = Model('xgb')\nprint(a.framework, b.name)</code>",
+    opts: ["sklearn xgb", "sklearn rf", "rf xgb", "Error: framework not defined"],
+    ans: 0,
+    explanation: "framework is a class attribute shared by all instances \u2014 a.framework is 'sklearn'. name is an instance attribute unique to each object \u2014 b.name is 'xgb'. So the output is 'sklearn xgb'."
+  },
+  {
+    q: "What does this code print?<br><br><code>class Model:\n    def __init__(self, name, acc):\n        self.name = name\n        self.acc = acc\n    def __repr__(self):\n        return f'Model({self.name!r}, {self.acc})'\n\nm = Model('rf', 0.94)\nprint(m)</code>",
+    opts: ["rf 0.94", "Model('rf', 0.94)", "<Model object>", "Error"],
+    ans: 1,
+    explanation: "print() calls __str__ first, but since __str__ isn't defined, it falls back to __repr__. The !r in the f-string adds quotes around self.name, producing Model('rf', 0.94)."
+  },
+  {
+    q: "What does this code print?<br><br><code>class Dataset:\n    def __init__(self, features):\n        self.features = features\n    @property\n    def count(self):\n        return len(self.features)\n\nds = Dataset(['age', 'income'])\nprint(ds.count)</code>",
+    opts: ["2", "Error: count is a method, needs ()", "<bound method>", "['age', 'income']"],
+    ans: 0,
+    explanation: "@property makes count accessible without parentheses. ds.count calls the method behind the scenes and returns len(['age', 'income']) = 2. Without @property, you'd need ds.count() instead."
+  },
+  {
+    q: "What does this code print?<br><br><code>class Exp:\n    def __init__(self):\n        self._status = 'created'\n    @property\n    def status(self):\n        return self._status\n    @status.setter\n    def status(self, val):\n        valid = {'created', 'running', 'done'}\n        if val not in valid:\n            raise ValueError(f'Invalid: {val}')\n        self._status = val\n\ne = Exp()\ne.status = 'running'\nprint(e.status)</code>",
+    opts: ["created", "running", "Error: can't assign to property", "ValueError"],
+    ans: 1,
+    explanation: "The setter validates 'running' is in the valid set (it is), then sets self._status = 'running'. The getter returns self._status. So print(e.status) outputs 'running'."
+  },
+  {
+    q: "What does this code print?<br><br><code>class Config:\n    def __init__(self, name, params):\n        self.name = name\n        self.params = params\n    @classmethod\n    def from_dict(cls, data):\n        name = data.pop('name')\n        return cls(name, data)\n\nc = Config.from_dict({'name': 'xgb', 'lr': 0.01})\nprint(c.name, c.params)</code>",
+    opts: ["xgb {'lr': 0.01}", "xgb {'name': 'xgb', 'lr': 0.01}", "Error: can't call from_dict on the class", "{'name': 'xgb', 'lr': 0.01} xgb"],
+    ans: 0,
+    explanation: "from_dict pops 'name' from the dict (removing it), leaving {'lr': 0.01}. Then cls('xgb', {'lr': 0.01}) creates a Config instance. c.name is 'xgb' and c.params is {'lr': 0.01}."
+  },
+  // ── Section 3: Inheritance & Dunders ──
+  {
+    q: "What does this code print?<br><br><code>class Base:\n    def __init__(self, name):\n        self.name = name\n    def describe(self):\n        return f'{self.name}: base'\n\nclass Child(Base):\n    pass\n\nc = Child('test')\nprint(c.describe())</code>",
+    opts: ["test: base", "Error: Child has no describe method", "None", "test: child"],
+    ans: 0,
+    explanation: "Child inherits everything from Base without overriding anything. So Child('test') calls Base.__init__, setting self.name = 'test'. c.describe() uses Base's describe method, returning 'test: base'."
+  },
+  {
+    q: "What does this code print?<br><br><code>class Base:\n    def __init__(self, x):\n        self.x = x\n\nclass Child(Base):\n    def __init__(self, x, y):\n        super().__init__(x)\n        self.y = y\n\nc = Child(10, 20)\nprint(c.x + c.y)</code>",
+    opts: ["30", "10", "Error: Base has no attribute y", "Error: super() failed"],
+    ans: 0,
+    explanation: "super().__init__(10) calls Base.__init__, setting self.x = 10. Then self.y = 20 is set in Child.__init__. c.x + c.y = 10 + 20 = 30."
+  },
+  {
+    q: "What does this code print?<br><br><code>class Features:\n    def __init__(self, names):\n        self._names = names\n    def __len__(self):\n        return len(self._names)\n    def __getitem__(self, i):\n        return self._names[i]\n\nf = Features(['age', 'income', 'score'])\nprint(len(f), f[1])</code>",
+    opts: ["3 income", "3 age", "2 income", "Error: Features doesn't support len()"],
+    ans: 0,
+    explanation: "len(f) calls f.__len__(), which returns len(['age', 'income', 'score']) = 3. f[1] calls f.__getitem__(1), which returns self._names[1] = 'income'. Output: '3 income'."
+  },
+  {
+    q: "What does this code print?<br><br><code>class Features:\n    def __init__(self, names):\n        self._names = names\n    def __contains__(self, name):\n        return name in self._names\n\nf = Features(['age', 'income'])\nprint('age' in f, 'city' in f)</code>",
+    opts: ["True True", "True False", "False True", "Error: 'in' not supported"],
+    ans: 1,
+    explanation: "'age' in f calls f.__contains__('age'). Since 'age' is in ['age', 'income'], it returns True. 'city' is not in the list, so it returns False. Output: 'True False'."
+  },
+  {
+    q: "What does this code print?<br><br><code>class Child(Base):\n    def __init__(self, x):\n        self.x = x\n\nclass Base:\n    def __init__(self, x):\n        self.x = x * 2\n\nc = Child(5)\nprint(c.x)</code>",
+    opts: ["5", "10", "Error: Base is not defined when Child is created", "None"],
+    ans: 2,
+    explanation: "Python reads class definitions top-to-bottom. When Child(Base) is defined, Base hasn't been defined yet, so Python raises a NameError. The order of class definitions matters \u2014 parents must be defined before children."
+  },
+  // ── Section 4: Decorators & Logging ──
+  {
+    q: "What does this code print?<br><br><code>import functools\ndef shout(func):\n    @functools.wraps(func)\n    def wrapper(*a, **kw):\n        result = func(*a, **kw)\n        return result.upper()\n    return wrapper\n\n@shout\ndef greet(name):\n    return f'hello {name}'\n\nprint(greet('alice'))</code>",
+    opts: ["hello alice", "HELLO ALICE", "Error: can't call upper on greet", "GREET"],
+    ans: 1,
+    explanation: "@shout wraps greet: when greet('alice') is called, the wrapper runs greet('alice') which returns 'hello alice', then calls .upper() on it, producing 'HELLO ALICE'."
+  },
+  {
+    q: "What does this code print?<br><br><code>def bad_decorator(func):\n    def wrapper(*args, **kwargs):\n        return func(*args, **kwargs)\n    return wrapper\n\n@bad_decorator\ndef my_func():\n    '''Important docstring.'''\n    pass\n\nprint(my_func.__name__)</code>",
+    opts: ["my_func", "wrapper", "bad_decorator", "Error"],
+    ans: 1,
+    explanation: "Without @functools.wraps(func), the wrapper function replaces my_func entirely. my_func.__name__ now points to 'wrapper' instead of 'my_func'. This is why @functools.wraps is important \u2014 it preserves the original function's identity."
+  },
+  {
+    q: "What does this code print?<br><br><code>import functools, time\ndef timer(func):\n    @functools.wraps(func)\n    def wrapper(*a, **kw):\n        result = func(*a, **kw)\n        return result\n    return wrapper\n\n@timer\ndef add(a, b):\n    '''Add two numbers.'''\n    return a + b\n\nprint(add.__name__, add.__doc__)</code>",
+    opts: ["wrapper None", "add Add two numbers.", "timer None", "add None"],
+    ans: 1,
+    explanation: "@functools.wraps(func) copies func's __name__ and __doc__ onto the wrapper. So add.__name__ is still 'add' and add.__doc__ is still 'Add two numbers.' \u2014 the decorator is transparent."
+  },
+  {
+    q: "What does this code print?<br><br><code>import logging\nlogging.basicConfig(level=logging.WARNING, format='%(levelname)s: %(message)s', force=True)\nlogger = logging.getLogger('test')\nlogger.info('step 1')\nlogger.warning('step 2')\nlogger.error('step 3')</code>",
+    opts: ["INFO: step 1\\nWARNING: step 2\\nERROR: step 3", "WARNING: step 2\\nERROR: step 3", "ERROR: step 3", "step 1\\nstep 2\\nstep 3"],
+    ans: 1,
+    explanation: "The logging level is set to WARNING, which means only WARNING and above (ERROR, CRITICAL) are output. The INFO message is filtered out. So only 'WARNING: step 2' and 'ERROR: step 3' are printed."
+  },
+  {
+    q: "What does this code print?<br><br><code>import time\nclass Timer:\n    def __enter__(self):\n        self.start = time.perf_counter()\n        return self\n    def __exit__(self, *args):\n        print(f'done')\n\nwith Timer() as t:\n    x = 1 + 1\nprint(x)</code>",
+    opts: ["2", "done\\n2", "done", "Error: Timer is not a context manager"],
+    ans: 1,
+    explanation: "Timer defines __enter__ and __exit__, making it a context manager. The 'with' block runs: x = 1 + 1. When the block exits, __exit__ prints 'done'. Then print(x) outputs 2. So the full output is 'done' followed by '2'."
+  }
+];
+
+let currentQ = 0, answers = new Array(questions.length).fill(null), userName = "", userGithub = "";
+function startQuiz() {
+  userName = document.getElementById("userName").value.trim(); userGithub = document.getElementById("userGithub").value.trim();
+  if (!userName) { alert("Please enter your name."); return; }
+  document.getElementById("startScreen").classList.add("hidden"); document.getElementById("quizScreen").classList.remove("hidden"); quizActive = true; renderQuestion();
+}
+let quizActive = false;
+document.getElementById("userName").addEventListener("keydown", function(e) { if (e.key==="Enter"){e.preventDefault();document.getElementById("userGithub").focus();} });
+document.getElementById("userGithub").addEventListener("keydown", function(e) { if (e.key==="Enter"){e.preventDefault();startQuiz();} });
+document.addEventListener("keydown", function(e) { if(!quizActive)return; if(e.key==="Enter"&&answers[currentQ]!==null){e.preventDefault();if(currentQ===questions.length-1)submitQuiz();else nextQuestion();} });
+function getSection(idx) { for(const s of sections){if(idx>=s.range[0]&&idx<s.range[1])return s.title;} return ""; }
+function renderQuestion() {
+  const q=questions[currentQ],letters=["A","B","C","D"],card=document.getElementById("questionCard");
+  let html=`<div class="section-badge">${getSection(currentQ)}</div><h2>Q${currentQ+1}. ${q.q}</h2><div class="options">`;
+  q.opts.forEach((opt,i)=>{const sel=answers[currentQ]===i?" selected":"";html+=`<div class="option${sel}" onclick="selectOption(${i})"><span class="letter">${letters[i]}</span><span class="text">${opt}</span></div>`;});
+  html+=`</div>`;card.innerHTML=html;
+  const nav=document.getElementById("qNav");let navHtml="";
+  for(let n=0;n<questions.length;n++){let cls="q-nav-btn";if(n===currentQ)cls+=" active";else if(answers[n]!==null)cls+=" answered";navHtml+=`<button class="${cls}" onclick="jumpTo(${n})">${n+1}</button>`;}
+  nav.innerHTML=navHtml;
+  document.getElementById("progressLabel").textContent=`Question ${currentQ+1} of ${questions.length}`;
+  document.getElementById("sectionLabel").textContent=getSection(currentQ);
+  document.getElementById("progressFill").style.width=((currentQ+1)/questions.length*100)+"%";
+  document.getElementById("prevBtn").style.visibility=currentQ===0?"hidden":"visible";
+  const nextBtn=document.getElementById("nextBtn");
+  if(currentQ===questions.length-1){nextBtn.textContent="Submit Quiz";nextBtn.onclick=submitQuiz;}else{nextBtn.textContent="Next";nextBtn.onclick=nextQuestion;}
+}
+function selectOption(idx){answers[currentQ]=idx;renderQuestion();}
+function jumpTo(idx){currentQ=idx;renderQuestion();window.scrollTo({top:0,behavior:"smooth"});}
+function nextQuestion(){if(answers[currentQ]===null){alert("Please select an answer before continuing.");return;}if(currentQ<questions.length-1){currentQ++;renderQuestion();window.scrollTo({top:0,behavior:"smooth"});}}
+function prevQuestion(){if(currentQ>0){currentQ--;renderQuestion();window.scrollTo({top:0,behavior:"smooth"});}}
+function submitQuiz(){
+  if(answers[currentQ]===null){alert("Please select an answer before submitting.");return;}
+  const unanswered=answers.findIndex(a=>a===null);if(unanswered!==-1){alert(`Please answer Question ${unanswered+1} before submitting.`);currentQ=unanswered;renderQuestion();return;}
+  if(!confirm("Submit your quiz? You won't be able to change answers."))return;
+  quizActive=false;const results=questions.map((q,i)=>answers[i]===q.ans);const score=results.filter(Boolean).length;
+  sendResults(results,score);showResults(results,score);
+}
+function sendResults(results,score){
+  if(SCRIPT_URL==="YOUR_APPS_SCRIPT_WEB_APP_URL_HERE"){console.warn("No Apps Script URL configured.");return;}
+  fetch(SCRIPT_URL,{method:"POST",mode:"no-cors",headers:{"Content-Type":"application/json"},body:JSON.stringify({quizName:QUIZ_NAME,name:userName,github:userGithub,results:results})}).catch(err=>console.error("Failed:",err));
+}
+function showResults(results,score){
+  document.getElementById("quizScreen").classList.add("hidden");const container=document.getElementById("resultsScreen");container.classList.remove("hidden");
+  const pct=Math.round((score/questions.length)*100),tier=pct>=80?"high":pct>=50?"mid":"low";
+  const message=pct>=80?"Excellent work!":pct>=50?"Good effort \u2014 review the topics you missed.":"Keep studying \u2014 review the explanations below.";
+  let html=`<div class="score-circle score-${tier}"><span class="number">${score}/${questions.length}</span><span class="label">${pct}%</span></div><h1>${message}</h1><p class="results-subtitle">${userName}${userGithub?" &bull; @"+userGithub:""}</p><div class="review-list">`;
+  const letters=["A","B","C","D"];
+  questions.forEach((q,i)=>{const correct=results[i];const cls=correct?"correct":"incorrect";const status=correct?"\u2713 Correct":"\u2717 Incorrect";
+  html+=`<div class="review-item ${cls}"><div class="q-title">Q${i+1}. ${q.q}</div><div class="status-badge ${cls}">${status}</div><div class="your-answer"><strong>Your answer:</strong> ${letters[answers[i]]} \u2014 ${q.opts[answers[i]]}</div>`;
+  if(!correct)html+=`<div class="correct-answer"><strong>Correct answer:</strong> ${letters[q.ans]} \u2014 ${q.opts[q.ans]}</div>`;
+  html+=`<div class="explanation"><strong>Explanation:</strong> ${q.explanation}</div></div>`;});
+  html+=`</div>`;container.innerHTML=html;window.scrollTo({top:0,behavior:"smooth"});
+}
+</script>
+</body>
+</html>

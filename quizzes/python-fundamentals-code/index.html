@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quiz — Python Fundamentals: Code Reading</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+/* ── Theme: Warm Emerald ── */
+:root {
+  --pri-900: #134E3A;
+  --pri-800: #1A6B4F;
+  --pri-700: #218764;
+  --pri-600: #28A37A;
+  --pri-500: #34C090;
+  --pri-400: #5CD4A8;
+  --pri-300: #8AE4C2;
+  --pri-200: #B5EEDB;
+  --pri-100: #D9F7EC;
+  --pri-50:  #EDFBF5;
+  --slate-50:  #F7F8FA;
+  --slate-100: #EDEEF2;
+  --slate-200: #D5D7DE;
+  --slate-500: #6B7280;
+  --slate-700: #374151;
+  --slate-900: #111827;
+  --success: #059669;
+  --success-bg: #ECFDF5;
+  --error: #DC2626;
+  --error-bg: #FEF2F2;
+  --accent: #F59E0B;
+  --font-body: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+  --shadow-md: 0 4px 12px rgba(0,0,0,.10);
+  --shadow-lg: 0 8px 30px rgba(0,0,0,.14);
+  --ease: cubic-bezier(.4, 0, .2, 1);
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: var(--font-body);
+  background: var(--slate-50);
+  min-height: 100vh;
+  color: var(--slate-900);
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 2rem;
+}
+.quiz-container { width: 100%; max-width: 800px; margin: 0 auto; }
+.start-screen {
+  background: white; border-radius: var(--radius-lg); padding: 3rem;
+  box-shadow: var(--shadow-md); border: 1px solid var(--slate-200); text-align: center;
+}
+.start-screen h1 { font-size: 1.8rem; font-weight: 800; color: var(--pri-800); margin-bottom: 0.5rem; }
+.start-screen .subtitle { color: var(--slate-500); font-size: 1rem; margin-bottom: 2rem; }
+.start-screen input {
+  display: block; width: 100%; max-width: 400px; margin: 0.75rem auto;
+  padding: 0.85rem 1rem; border: 2px solid var(--slate-200); border-radius: var(--radius-md);
+  font-family: var(--font-body); font-size: 1rem; transition: border-color 0.2s var(--ease);
+}
+.start-screen input:focus { outline: none; border-color: var(--pri-500); }
+.start-screen .info { color: var(--slate-500); font-size: 0.85rem; margin-top: 0.5rem; margin-bottom: 1.5rem; }
+.btn {
+  display: inline-block; padding: 0.85rem 2.5rem; border: none; border-radius: var(--radius-md);
+  font-family: var(--font-body); font-size: 1rem; font-weight: 600; cursor: pointer; transition: all 0.2s var(--ease);
+}
+.btn-primary { background: var(--pri-700); color: white; }
+.btn-primary:hover { background: var(--pri-600); transform: translateY(-1px); }
+.btn-primary:disabled { background: var(--slate-200); color: var(--slate-500); cursor: not-allowed; transform: none; }
+.btn-secondary { background: var(--slate-100); color: var(--slate-700); }
+.btn-secondary:hover { background: var(--slate-200); }
+.progress-bar { background: var(--slate-200); border-radius: 20px; height: 8px; margin-bottom: 1.5rem; overflow: hidden; }
+.progress-fill { height: 100%; background: var(--pri-500); border-radius: 20px; transition: width 0.4s var(--ease); }
+.progress-text { color: var(--slate-500); font-size: 0.85rem; font-weight: 500; margin-bottom: 0.5rem; display: flex; justify-content: space-between; }
+.question-card {
+  background: white; border-radius: var(--radius-lg); padding: 2.5rem;
+  box-shadow: var(--shadow-md); border: 1px solid var(--slate-200); animation: slideIn 0.3s var(--ease);
+}
+@keyframes slideIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+.section-badge {
+  display: inline-block; background: var(--pri-50); color: var(--pri-700);
+  font-size: 0.75rem; font-weight: 600; padding: 0.3rem 0.8rem; border-radius: 20px;
+  margin-bottom: 1rem; text-transform: uppercase; letter-spacing: 0.03em;
+}
+.question-card h2 { font-size: 1.2rem; font-weight: 700; color: var(--slate-900); line-height: 1.5; margin-bottom: 1.5rem; }
+.question-card h2 code {
+  background: #1e293b; color: #e2e8f0; padding: 0.8rem 1rem; border-radius: 8px;
+  display: block; margin-top: 0.75rem; font-size: 0.9rem; line-height: 1.7;
+  font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace; white-space: pre-wrap; text-align: left; font-weight: 400;
+}
+.options { display: flex; flex-direction: column; gap: 0.75rem; }
+.option {
+  display: flex; align-items: flex-start; gap: 0.85rem; padding: 1rem 1.2rem;
+  border: 2px solid var(--slate-200); border-radius: var(--radius-md);
+  cursor: pointer; transition: all 0.15s var(--ease); line-height: 1.5;
+}
+.option:hover { border-color: var(--pri-300); background: var(--pri-50); }
+.option.selected { border-color: var(--pri-500); background: var(--pri-50); }
+.option .letter {
+  flex-shrink: 0; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center;
+  border-radius: 50%; background: var(--slate-100); color: var(--slate-700); font-weight: 600; font-size: 0.85rem; margin-top: 1px;
+}
+.option.selected .letter { background: var(--pri-600); color: white; }
+.option .text { font-size: 1rem; color: var(--slate-700); }
+.nav-row { display: flex; justify-content: space-between; align-items: center; margin-top: 1.5rem; }
+.results-screen {
+  background: white; border-radius: var(--radius-lg); padding: 3rem;
+  box-shadow: var(--shadow-md); border: 1px solid var(--slate-200); animation: slideIn 0.3s var(--ease);
+}
+.score-circle {
+  width: 160px; height: 160px; border-radius: 50%; display: flex; flex-direction: column;
+  align-items: center; justify-content: center; margin: 0 auto 1.5rem; font-weight: 800;
+}
+.score-circle .number { font-size: 2.8rem; line-height: 1; }
+.score-circle .label { font-size: 0.85rem; font-weight: 500; margin-top: 0.25rem; }
+.score-high { background: var(--success-bg); color: var(--success); border: 3px solid var(--success); }
+.score-mid { background: #FFF8E7; color: #B8860B; border: 3px solid #C49545; }
+.score-low { background: var(--error-bg); color: var(--error); border: 3px solid var(--error); }
+.results-screen h1 { text-align: center; font-size: 1.5rem; color: var(--pri-800); margin-bottom: 0.5rem; }
+.results-screen .results-subtitle {
+  text-align: center; color: var(--slate-500); margin-top: 0.75rem; margin-bottom: 3rem;
+  padding-bottom: 2rem; border-bottom: 1px solid var(--slate-200);
+}
+.review-list { display: flex; flex-direction: column; gap: 1rem; }
+.review-item { padding: 1.2rem; border-radius: var(--radius-md); border-left: 4px solid; }
+.review-item.correct { background: var(--success-bg); border-color: var(--success); }
+.review-item.incorrect { background: var(--error-bg); border-color: var(--error); }
+.review-item .q-title { font-weight: 600; font-size: 0.95rem; margin-bottom: 0.5rem; color: var(--slate-900); }
+.review-item .status-badge { display: inline-block; font-size: 0.8rem; font-weight: 700; padding: 0.2rem 0.7rem; border-radius: 20px; margin-bottom: 0.5rem; }
+.review-item .status-badge.correct { background: var(--success); color: white; }
+.review-item .status-badge.incorrect { background: var(--error); color: white; }
+.review-item .your-answer { font-size: 0.9rem; color: var(--slate-700); margin-bottom: 0.25rem; }
+.review-item .correct-answer { font-size: 0.9rem; color: var(--success); font-weight: 500; margin-top: 0.25rem; }
+.review-item .explanation { font-size: 0.85rem; color: var(--slate-500); margin-top: 0.5rem; padding-top: 0.5rem; border-top: 1px solid rgba(0,0,0,0.08); }
+.q-nav { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 1rem; justify-content: center; }
+.q-nav-btn {
+  width: 32px; height: 32px; border-radius: 50%; border: 2px solid var(--slate-200); background: white;
+  color: var(--slate-500); font-family: var(--font-body); font-size: 0.75rem; font-weight: 600;
+  cursor: pointer; transition: all 0.15s var(--ease); display: flex; align-items: center; justify-content: center;
+}
+.q-nav-btn:hover { border-color: var(--pri-400); color: var(--pri-700); }
+.q-nav-btn.active { background: var(--pri-700); color: white; border-color: var(--pri-700); font-weight: 700; }
+.q-nav-btn.answered { background: var(--pri-100); border-color: var(--pri-400); color: var(--pri-800); }
+.q-nav-btn.answered.active { background: var(--pri-700); color: white; border-color: var(--pri-700); }
+.hidden { display: none; }
+.submitting-msg { text-align: center; color: var(--slate-500); font-size: 0.9rem; margin-top: 1rem; }
+@media (max-width: 600px) {
+  body { padding: 0.75rem; }
+  .question-card, .start-screen, .results-screen { padding: 1.25rem; }
+  .question-card h2 { font-size: 1rem; }
+  .option { padding: 0.75rem 1rem; gap: 0.6rem; }
+  .option .text { font-size: 0.9rem; }
+  .option .letter { width: 24px; height: 24px; font-size: 0.75rem; }
+  .q-nav { gap: 4px; }
+  .q-nav-btn { width: 28px; height: 28px; font-size: 0.7rem; }
+  .nav-row { margin-top: 1rem; }
+  .btn { padding: 0.75rem 1.5rem; font-size: 0.9rem; }
+  .start-screen h1 { font-size: 1.4rem; }
+  .start-screen input { padding: 0.7rem 0.85rem; font-size: 0.9rem; }
+  .review-item { padding: 1rem; }
+  .review-item .q-title { font-size: 0.9rem; }
+  .score-circle { width: 130px; height: 130px; }
+  .score-circle .number { font-size: 2.2rem; }
+}
+</style>
+</head>
+<body>
+
+<div class="quiz-container">
+  <div id="startScreen" class="start-screen">
+    <h1>Quiz &mdash; Python Fundamentals: Code Reading</h1>
+    <p class="subtitle">Data Structures, Control Flow &amp; Functions &mdash; 20 Questions</p>
+    <input type="text" id="userName" placeholder="Your Full Name" required>
+    <input type="text" id="userGithub" placeholder="GitHub Username — optional">
+    <p class="info">4 sections &bull; ~12 minutes &bull; Results shown after submission</p>
+    <button class="btn btn-primary" onclick="startQuiz()">Start Quiz</button>
+  </div>
+
+  <div id="quizScreen" class="hidden">
+    <div class="q-nav" id="qNav"></div>
+    <div class="progress-text">
+      <span id="progressLabel">Question 1 of 20</span>
+      <span id="sectionLabel">Section 1</span>
+    </div>
+    <div class="progress-bar">
+      <div class="progress-fill" id="progressFill" style="width: 5%"></div>
+    </div>
+    <div class="question-card" id="questionCard"></div>
+    <div class="nav-row">
+      <button class="btn btn-secondary" id="prevBtn" onclick="prevQuestion()">Back</button>
+      <button class="btn btn-primary" id="nextBtn" onclick="nextQuestion()">Next</button>
+    </div>
+  </div>
+
+  <div id="resultsScreen" class="results-screen hidden"></div>
+</div>
+
+<script>
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxJIg5CYXWJKY-Uuoi9H0Nvnl4wlWwAAAQ4aYQd1FX7iIBmMqj6f9ksXEj-LTtJK8hlRg/exec";
+const QUIZ_NAME = "Python Class 1 \u2014 Code Reading";
+
+const sections = [
+  { title: "Section 1: Lists & Data Structures", range: [0, 5] },
+  { title: "Section 2: Dictionaries & Sets", range: [5, 10] },
+  { title: "Section 3: Conditionals & Loops", range: [10, 15] },
+  { title: "Section 4: Functions & File I/O", range: [15, 20] }
+];
+
+const questions = [
+  // ── Section 1: Lists & Data Structures ──
+  {
+    q: "What does this code print?<br><br><code>nums = [1, 2, 3]\nnums.append([4, 5])\nprint(len(nums))</code>",
+    opts: ["5", "4", "3", "Error"],
+    ans: 1,
+    explanation: ".append() adds its argument as a single element. So [4, 5] becomes one nested list element inside nums, giving [1, 2, 3, [4, 5]] \u2014 which has 4 elements, not 5. If you wanted 5 elements, you'd use .extend([4, 5])."
+  },
+  {
+    q: "What does this code print?<br><br><code>fruits = ['apple', 'banana', 'cherry']\nprint(fruits[-2])</code>",
+    opts: ["cherry", "banana", "apple", "Error: negative index"],
+    ans: 1,
+    explanation: "Negative indexing counts from the end: -1 is 'cherry', -2 is 'banana', -3 is 'apple'. So fruits[-2] returns 'banana'."
+  },
+  {
+    q: "What does this code print?<br><br><code>data = [10, 20, 30, 40, 50]\nprint(data[1:4])</code>",
+    opts: ["[10, 20, 30, 40]", "[20, 30, 40]", "[20, 30, 40, 50]", "[10, 20, 30]"],
+    ans: 1,
+    explanation: "Slicing [1:4] starts at index 1 (inclusive) and stops at index 4 (exclusive). So you get elements at indices 1, 2, 3 which are [20, 30, 40]."
+  },
+  {
+    q: "What does this code print?<br><br><code>a = [1, 2, 3]\nb = a\nb.append(4)\nprint(a)</code>",
+    opts: ["[1, 2, 3]", "[1, 2, 3, 4]", "[4]", "Error"],
+    ans: 1,
+    explanation: "b = a does NOT create a copy \u2014 both variables point to the same list in memory. When you modify b, you're also modifying a. To create an independent copy, use b = a.copy() or b = a[:]."
+  },
+  {
+    q: "What does this code print?<br><br><code>colors = ['red', 'green', 'blue']\ncolors.insert(1, 'yellow')\nprint(colors[2])</code>",
+    opts: ["green", "yellow", "blue", "red"],
+    ans: 0,
+    explanation: "insert(1, 'yellow') puts 'yellow' at index 1, shifting everything after it. The list becomes ['red', 'yellow', 'green', 'blue']. So colors[2] is now 'green' (which shifted from index 1 to index 2)."
+  },
+  // ── Section 2: Dictionaries & Sets ──
+  {
+    q: "What does this code print?<br><br><code>d = {'a': 1, 'b': 2, 'c': 3}\nprint(d.get('x', 0))</code>",
+    opts: ["None", "KeyError", "0", "x"],
+    ans: 2,
+    explanation: ".get('x', 0) looks for key 'x'. Since it doesn't exist, it returns the default value 0 instead of raising a KeyError. Without the second argument, .get('x') would return None."
+  },
+  {
+    q: "What does this code print?<br><br><code>d = {'name': 'Alice', 'age': 30}\nd['age'] = 31\nd['city'] = 'NYC'\nprint(len(d))</code>",
+    opts: ["2", "3", "4", "Error"],
+    ans: 1,
+    explanation: "The dict starts with 2 keys. d['age'] = 31 updates an existing key (no new key added). d['city'] = 'NYC' adds a new key. Final count: 'name', 'age', 'city' = 3 keys."
+  },
+  {
+    q: "What does this code print?<br><br><code>s = {1, 2, 3, 2, 1}\nprint(len(s))</code>",
+    opts: ["5", "3", "2", "Error: duplicate elements"],
+    ans: 1,
+    explanation: "Sets automatically remove duplicates. {1, 2, 3, 2, 1} becomes {1, 2, 3} which has 3 unique elements. No error is raised \u2014 duplicates are silently ignored."
+  },
+  {
+    q: "What does this code print?<br><br><code>a = {1, 2, 3, 4}\nb = {3, 4, 5, 6}\nprint(a &amp; b)</code>",
+    opts: ["{1, 2, 3, 4, 5, 6}", "{3, 4}", "{1, 2, 5, 6}", "Error"],
+    ans: 1,
+    explanation: "The & operator on sets returns the intersection \u2014 elements that appear in both sets. 3 and 4 are in both a and b, so the result is {3, 4}. Use | for union (all elements from both)."
+  },
+  {
+    q: "What does this code print?<br><br><code>d = {'x': 10, 'y': 20}\nkeys = list(d.keys())\nprint(keys)</code>",
+    opts: ["['x', 'y']", "[10, 20]", "[('x', 10), ('y', 20)]", "{'x', 'y'}"],
+    ans: 0,
+    explanation: "d.keys() returns the dictionary's keys. Wrapping in list() converts them to a regular list. So you get ['x', 'y']. Use d.values() for [10, 20] or d.items() for key-value tuples."
+  },
+  // ── Section 3: Conditionals & Loops ──
+  {
+    q: "What does this code print?<br><br><code>x = 15\nif x &gt; 20:\n    print('high')\nelif x &gt; 10:\n    print('medium')\nelse:\n    print('low')</code>",
+    opts: ["high", "medium", "low", "medium and low"],
+    ans: 1,
+    explanation: "x is 15. The first condition (15 > 20) is False. The elif condition (15 > 10) is True, so 'medium' prints. Once a branch executes, the rest are skipped \u2014 'low' never runs even though x > 10 doesn't exclude it."
+  },
+  {
+    q: "What does this code print?<br><br><code>result = []\nfor i in range(3):\n    result.append(i * 2)\nprint(result)</code>",
+    opts: ["[0, 1, 2]", "[2, 4, 6]", "[0, 2, 4]", "[1, 2, 3]"],
+    ans: 2,
+    explanation: "range(3) produces 0, 1, 2. Multiplying each by 2 gives 0, 2, 4. Remember: range(3) starts at 0, not 1. So i * 2 for each: 0*2=0, 1*2=2, 2*2=4."
+  },
+  {
+    q: "What does this code print?<br><br><code>words = ['hello', 'world']\nfor i, w in enumerate(words):\n    print(f'{i}: {w}')</code>",
+    opts: ["hello: 0\\nworld: 1", "0: hello\\n1: world", "1: hello\\n2: world", "Error: too many values"],
+    ans: 1,
+    explanation: "enumerate() returns (index, value) pairs. With unpacking into i and w: first iteration is (0, 'hello'), second is (1, 'world'). The f-string formats them as '0: hello' and '1: world'."
+  },
+  {
+    q: "What does this code print?<br><br><code>nums = [1, 2, 3, 4, 5]\nevens = [x for x in nums if x % 2 == 0]\nprint(evens)</code>",
+    opts: ["[1, 3, 5]", "[2, 4]", "[1, 2, 3, 4, 5]", "[0, 0, 0, 0, 0]"],
+    ans: 1,
+    explanation: "This list comprehension filters nums: it keeps only elements where x % 2 == 0 (i.e., even numbers). 2 % 2 = 0 and 4 % 2 = 0, so the result is [2, 4]."
+  },
+  {
+    q: "What does this code print?<br><br><code>names = ['Alice', 'Bob']\nages = [25, 30]\nfor name, age in zip(names, ages):\n    print(f'{name} is {age}')</code>",
+    opts: ["Alice is Bob\\n25 is 30", "Alice is 25\\nBob is 30", "('Alice', 25)\\n('Bob', 30)", "Error"],
+    ans: 1,
+    explanation: "zip() pairs elements by position: ('Alice', 25) and ('Bob', 30). The for loop unpacks each pair into name and age. The f-string formats them as 'Alice is 25' and 'Bob is 30'."
+  },
+  // ── Section 4: Functions & File I/O ──
+  {
+    q: "What does this code print?<br><br><code>def greet(name, greeting='Hello'):\n    return f'{greeting}, {name}!'\n\nprint(greet('Alice'))</code>",
+    opts: ["Hello, Alice!", "Alice, Hello!", "Error: missing argument", "None"],
+    ans: 0,
+    explanation: "greeting has a default value of 'Hello', so calling greet('Alice') uses that default. The f-string formats it as 'Hello, Alice!'. The function returns the string, and print() displays it."
+  },
+  {
+    q: "What does this code print?<br><br><code>def add(a, b):\n    result = a + b\n\nx = add(3, 4)\nprint(x)</code>",
+    opts: ["7", "None", "Error: result not defined", "Error: missing return"],
+    ans: 1,
+    explanation: "The function calculates result = 7 but never returns it \u2014 there's no return statement. When a function has no return, Python implicitly returns None. So x is None, and print(x) outputs 'None'."
+  },
+  {
+    q: "What does this code print?<br><br><code>x = 10\ndef change():\n    x = 20\n\nchange()\nprint(x)</code>",
+    opts: ["20", "10", "Error: x is not defined", "None"],
+    ans: 1,
+    explanation: "Inside change(), 'x = 20' creates a new local variable x that shadows the global x. When the function ends, the local x disappears. The global x was never modified, so print(x) outputs 10. To modify the global, you'd need 'global x' inside the function."
+  },
+  {
+    q: "What does this code print?<br><br><code>def double(items):\n    return [x * 2 for x in items]\n\nresult = double([1, 2, 3])\nprint(result)</code>",
+    opts: ["[1, 2, 3, 1, 2, 3]", "[2, 4, 6]", "[[1, 1], [2, 2], [3, 3]]", "[1, 2, 3]"],
+    ans: 1,
+    explanation: "The function uses a list comprehension that multiplies each element by 2: 1*2=2, 2*2=4, 3*2=6. So it returns [2, 4, 6]. Note: for integers, * 2 doubles the value. For lists, * 2 would repeat the list."
+  },
+  {
+    q: "What does this code print?<br><br><code>def process(data: list[int]) -&gt; int:\n    return sum(data)\n\nresult = process(['a', 'b', 'c'])\nprint(result)</code>",
+    opts: ["0", "3", "Error: type hints are enforced and strings were passed", "Error: sum() can't add strings this way"],
+    ans: 3,
+    explanation: "Type hints (list[int]) are NOT enforced at runtime \u2014 Python won't reject the strings. However, sum() tries to add strings with + starting from 0, which fails because you can't add an integer (0) and a string. The error is from sum()'s logic, not from the type hints."
+  }
+];
+
+let currentQ = 0;
+let answers = new Array(questions.length).fill(null);
+let userName = "";
+let userGithub = "";
+
+function startQuiz() {
+  userName = document.getElementById("userName").value.trim();
+  userGithub = document.getElementById("userGithub").value.trim();
+  if (!userName) { alert("Please enter your name."); return; }
+  document.getElementById("startScreen").classList.add("hidden");
+  document.getElementById("quizScreen").classList.remove("hidden");
+  quizActive = true;
+  renderQuestion();
+}
+
+let quizActive = false;
+
+document.getElementById("userName").addEventListener("keydown", function(e) {
+  if (e.key === "Enter") { e.preventDefault(); document.getElementById("userGithub").focus(); }
+});
+document.getElementById("userGithub").addEventListener("keydown", function(e) {
+  if (e.key === "Enter") { e.preventDefault(); startQuiz(); }
+});
+document.addEventListener("keydown", function(e) {
+  if (!quizActive) return;
+  if (e.key === "Enter" && answers[currentQ] !== null) {
+    e.preventDefault();
+    if (currentQ === questions.length - 1) submitQuiz(); else nextQuestion();
+  }
+});
+
+function getSection(idx) {
+  for (const s of sections) { if (idx >= s.range[0] && idx < s.range[1]) return s.title; }
+  return "";
+}
+
+function renderQuestion() {
+  const q = questions[currentQ];
+  const letters = ["A", "B", "C", "D"];
+  const card = document.getElementById("questionCard");
+
+  let html = `<div class="section-badge">${getSection(currentQ)}</div>`;
+  html += `<h2>Q${currentQ + 1}. ${q.q}</h2>`;
+  html += `<div class="options">`;
+  q.opts.forEach((opt, i) => {
+    const sel = answers[currentQ] === i ? " selected" : "";
+    html += `<div class="option${sel}" onclick="selectOption(${i})">
+      <span class="letter">${letters[i]}</span>
+      <span class="text">${opt}</span>
+    </div>`;
+  });
+  html += `</div>`;
+  card.innerHTML = html;
+
+  const nav = document.getElementById("qNav");
+  let navHtml = "";
+  for (let n = 0; n < questions.length; n++) {
+    let cls = "q-nav-btn";
+    if (n === currentQ) cls += " active";
+    else if (answers[n] !== null) cls += " answered";
+    navHtml += `<button class="${cls}" onclick="jumpTo(${n})">${n + 1}</button>`;
+  }
+  nav.innerHTML = navHtml;
+
+  document.getElementById("progressLabel").textContent = `Question ${currentQ + 1} of ${questions.length}`;
+  document.getElementById("sectionLabel").textContent = getSection(currentQ);
+  document.getElementById("progressFill").style.width = ((currentQ + 1) / questions.length * 100) + "%";
+
+  document.getElementById("prevBtn").style.visibility = currentQ === 0 ? "hidden" : "visible";
+  const nextBtn = document.getElementById("nextBtn");
+  if (currentQ === questions.length - 1) { nextBtn.textContent = "Submit Quiz"; nextBtn.onclick = submitQuiz; }
+  else { nextBtn.textContent = "Next"; nextBtn.onclick = nextQuestion; }
+}
+
+function selectOption(idx) { answers[currentQ] = idx; renderQuestion(); }
+function jumpTo(idx) { currentQ = idx; renderQuestion(); window.scrollTo({ top: 0, behavior: "smooth" }); }
+function nextQuestion() {
+  if (answers[currentQ] === null) { alert("Please select an answer before continuing."); return; }
+  if (currentQ < questions.length - 1) { currentQ++; renderQuestion(); window.scrollTo({ top: 0, behavior: "smooth" }); }
+}
+function prevQuestion() { if (currentQ > 0) { currentQ--; renderQuestion(); window.scrollTo({ top: 0, behavior: "smooth" }); } }
+
+function submitQuiz() {
+  if (answers[currentQ] === null) { alert("Please select an answer before submitting."); return; }
+  const unanswered = answers.findIndex(a => a === null);
+  if (unanswered !== -1) { alert(`Please answer Question ${unanswered + 1} before submitting.`); currentQ = unanswered; renderQuestion(); return; }
+  if (!confirm("Submit your quiz? You won't be able to change answers.")) return;
+  quizActive = false;
+  const results = questions.map((q, i) => answers[i] === q.ans);
+  const score = results.filter(Boolean).length;
+  sendResults(results, score);
+  showResults(results, score);
+}
+
+function sendResults(results, score) {
+  if (SCRIPT_URL === "YOUR_APPS_SCRIPT_WEB_APP_URL_HERE") { console.warn("No Apps Script URL configured."); return; }
+  fetch(SCRIPT_URL, { method: "POST", mode: "no-cors", headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ quizName: QUIZ_NAME, name: userName, github: userGithub, results: results })
+  }).catch(err => console.error("Failed to save results:", err));
+}
+
+function showResults(results, score) {
+  document.getElementById("quizScreen").classList.add("hidden");
+  const container = document.getElementById("resultsScreen");
+  container.classList.remove("hidden");
+  const pct = Math.round((score / questions.length) * 100);
+  const tier = pct >= 80 ? "high" : pct >= 50 ? "mid" : "low";
+  const message = pct >= 80 ? "Excellent work!" : pct >= 50 ? "Good effort \u2014 review the topics you missed." : "Keep studying \u2014 review the explanations below.";
+  let html = `
+    <div class="score-circle score-${tier}">
+      <span class="number">${score}/${questions.length}</span>
+      <span class="label">${pct}%</span>
+    </div>
+    <h1>${message}</h1>
+    <p class="results-subtitle">${userName}${userGithub ? " &bull; @" + userGithub : ""}</p>
+    <div class="review-list">`;
+  const letters = ["A", "B", "C", "D"];
+  questions.forEach((q, i) => {
+    const correct = results[i];
+    const cls = correct ? "correct" : "incorrect";
+    const status = correct ? "\u2713 Correct" : "\u2717 Incorrect";
+    html += `<div class="review-item ${cls}">`;
+    html += `<div class="q-title">Q${i + 1}. ${q.q}</div>`;
+    html += `<div class="status-badge ${cls}">${status}</div>`;
+    html += `<div class="your-answer"><strong>Your answer:</strong> ${letters[answers[i]]} \u2014 ${q.opts[answers[i]]}</div>`;
+    if (!correct) html += `<div class="correct-answer"><strong>Correct answer:</strong> ${letters[q.ans]} \u2014 ${q.opts[q.ans]}</div>`;
+    html += `<div class="explanation"><strong>Explanation:</strong> ${q.explanation}</div>`;
+    html += `</div>`;
+  });
+  html += `</div>`;
+  container.innerHTML = html;
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+</script>
+</body>
+</html>
