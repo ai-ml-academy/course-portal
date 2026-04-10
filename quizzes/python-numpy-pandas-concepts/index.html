@@ -122,7 +122,6 @@ const sections = [
 ];
 
 const questions = [
-  // ── Section 1: NumPy Fundamentals ──
   {
     q: "Why is NumPy faster than plain Python lists for numerical computation?",
     opts: [
@@ -132,18 +131,18 @@ const questions = [
       "NumPy bypasses Python entirely and sends all math operations directly to the GPU hardware for parallel processing"
     ],
     ans: 1,
-    explanation: "Two things make Python lists slow for math. First, each element can be a different type (int, string, list...), so for every operation Python must check: 'what type is this? how do I do math with it?' \u2014 this type checking happens for every single element. Second, list elements are scattered across memory as separate Python objects, so the CPU has to chase pointers to find each one. NumPy solves both problems: (1) a fixed dtype (e.g., float64) means zero type checking per element, and (2) contiguous storage means all numbers sit side by side in one block of memory, letting the CPU process them in bulk using optimized C code. Both factors together make NumPy 10-100x faster."
+    explanation: "Two things make Python lists slow for math. First, each element can be a different type (int, string, list...), so for every operation Python must check: \"what type is this? how do I do math with it?\" — this type checking happens for every single element. Second, list elements are scattered across memory as separate Python objects, so the CPU has to chase pointers to find each one. NumPy solves both problems: (1) a fixed dtype (e.g., float64) means zero type checking per element, and (2) contiguous storage means all numbers sit side by side in one block of memory, letting the CPU process them in bulk using optimized C code. Both factors together make NumPy 10-100x faster."
   },
   {
-    q: "What is a 'dtype' in NumPy?",
+    q: "You create an array from integers: 'np.array([1, 2, 3])'. You then try to assign 'arr[0] = 3.7'. What value does arr[0] hold afterwards?",
     opts: [
-      "The number of dimensions in an array",
-      "The data type that all elements in the array share (e.g., float64, int32)",
-      "A function that converts lists to arrays",
-      "The total number of elements in the array"
+      "3.7 — NumPy automatically converts the array to float to accommodate the decimal value",
+      "3 — the array's dtype is int64, so 3.7 is silently truncated to 3 (no error, no warning)",
+      "Error — you can't assign a float to an integer array; Python raises a TypeError",
+      "4 — NumPy rounds 3.7 to the nearest integer when the array dtype is int64"
     ],
     ans: 1,
-    explanation: "Every NumPy array has a single dtype (data type) that all elements share \u2014 like float64, int32, or bool. This is different from Python lists which can mix types. The fixed dtype is what enables NumPy's performance: the computer knows exactly how many bytes each element takes and can process them efficiently."
+    explanation: "Every NumPy array has a fixed dtype set at creation. np.array([1, 2, 3]) is int64 because all inputs are integers. When you assign 3.7 to an int64 array, NumPy silently truncates it to 3 — no error, no rounding, no warning. This is a common source of subtle bugs: you think you stored 3.7 but you actually stored 3. To avoid this, create the array as float from the start: np.array([1.0, 2.0, 3.0]) or np.array([1, 2, 3], dtype=float)."
   },
   {
     q: "What do 'shape' and 'ndim' tell you about a NumPy array?",
@@ -154,31 +153,30 @@ const questions = [
       "They both return the length of the array"
     ],
     ans: 1,
-    explanation: "For a 2D array with 3 rows and 4 columns: shape = (3, 4) and ndim = 2. For a 1D array of 5 elements: shape = (5,) and ndim = 1. The shape tuple has ndim entries. Together they tell you the structure of your data."
+    explanation: "For a 2D array with 3 rows and 4 columns: shape = (3, 4) and ndim = 2. The shape tuple has ndim entries."
   },
   {
-    q: "What is the difference between np.zeros(), np.ones(), and np.arange()?",
+    q: "A student slices a NumPy array with 'b = a[1:4]' and then modifies 'b[0] = 999'. They're surprised that 'a[1]' is also 999. Why did this happen?",
     opts: [
-      "They all create arrays of the same values, just with different names",
-      "zeros creates an array of 0s, ones creates an array of 1s, arange creates a sequence of evenly spaced values",
-      "zeros/ones create 2D arrays; arange creates 1D arrays only",
-      "arange is deprecated and replaced by zeros and ones"
+      "It's a Python bug — slicing should always create an independent copy of the data",
+      "NumPy slicing returns a view (not a copy) that shares memory with the original — modifying the view changes the original array too",
+      "The = operator on arrays always creates a reference, and you need .slice() to get a proper independent copy",
+      "This only happens with integer arrays; float arrays would behave differently and create a true copy"
     ],
     ans: 1,
-    explanation: "np.zeros(5) creates [0, 0, 0, 0, 0]. np.ones(5) creates [1, 1, 1, 1, 1]. np.arange(0, 10, 2) creates [0, 2, 4, 6, 8] \u2014 like Python's range() but returns an array. Each serves a different purpose: initialization, placeholders, and generating sequences."
+    explanation: "In NumPy, basic slicing (a[1:4]) returns a VIEW — a window into the same underlying memory, not a copy. This is intentional for performance: copying millions of elements every time you slice would be wasteful. But it means changes to the view affect the original. If you need an independent copy, use b = a[1:4].copy(). This view-vs-copy behavior is one of the most important things to understand in NumPy, and it's different from Python lists where slicing always copies."
   },
   {
     q: "What happens when you create a NumPy array from a list that mixes integers and floats?",
     opts: [
-      "Python raises a TypeError because types must match",
-      "NumPy upcasts all elements to the most general type \u2014 float64 in this case",
-      "NumPy keeps each element as its original type",
-      "The integers are truncated and stored as strings"
+      "Python raises a TypeError because all elements in a NumPy array must be created with the same type",
+      "NumPy upcasts all elements to the most general type — float64 in this case, so integers silently become floats",
+      "NumPy keeps each element as its original type, storing int and float side by side in the same array",
+      "The integers are truncated to zero decimal places and then stored as string representations"
     ],
     ans: 1,
-    explanation: "NumPy arrays have a single dtype, so when you mix int and float, NumPy upcasts everything to the more general type. Example: np.array([1, 2.5, 3]) becomes array([1.0, 2.5, 3.0]) with dtype float64. The integer 1 becomes 1.0 because float can represent both integers and decimals, but int can't represent 2.5. This is called type promotion."
+    explanation: "NumPy arrays have a single dtype, so when you mix int and float, NumPy upcasts everything to the more general type. Example: 'np.array([1, 2.5, 3])' becomes 'array([1.0, 2.5, 3.0])' with dtype float64. The integer 1 becomes 1.0 because float can represent both integers and decimals, but int can't represent 2.5. This is called type promotion."
   },
-  // ── Section 2: NumPy Operations ──
   {
     q: "What is a 'vectorized operation' in NumPy?",
     opts: [
@@ -188,29 +186,29 @@ const questions = [
       "An operation that sorts the array in-place"
     ],
     ans: 1,
-    explanation: "Vectorized operations apply element-wise across entire arrays in one call: arr * 2 doubles every element, arr > 5 creates a boolean mask. Under the hood, NumPy executes optimized C code in a tight loop \u2014 you get the performance of C with the simplicity of Python. Always prefer vectorized ops over Python for-loops."
+    explanation: "arr * 2 doubles every element, arr > 5 creates a boolean mask. NumPy executes optimized C code — always prefer vectorized ops over Python for-loops."
   },
   {
     q: "What is broadcasting in NumPy?",
     opts: [
       "Sending array data over the network to multiple machines for distributed computing",
-      "A set of rules that let you perform operations between arrays of different shapes \u2014 for example, adding a single row to every row of a matrix without writing a loop",
+      "A set of rules that let you perform operations between arrays of different shapes — for example, adding a single row to every row of a matrix without writing a loop",
       "A method that converts a NumPy array into a pandas DataFrame for tabular analysis",
       "A function that prints the full contents of large arrays to the console instead of truncating them"
     ],
     ans: 1,
-    explanation: "Broadcasting is about combining arrays of different shapes. Simple example: np.array([[1, 2], [3, 4]]) + np.array([10, 20]) gives [[11, 22], [13, 24]] \u2014 the 1D array [10, 20] is 'broadcast' to each row of the 2D matrix. Without broadcasting, you'd need a loop to add [10, 20] to every row manually. The key rule: dimensions are compared from right to left, and they must either match or one of them must be 1. Note: arr + 5 is element-wise addition with a scalar, which is even simpler than broadcasting."
+    explanation: "Broadcasting is about combining arrays of different shapes. Example: 'np.array([[1, 2], [3, 4]]) + np.array([10, 20])' gives '[[11, 22], [13, 24]]' — the 1D array [10, 20] is 'broadcast' to each row of the 2D matrix. Without broadcasting, you'd need a loop to add [10, 20] to every row manually. The key rule: dimensions are compared from right to left, and they must either match or one of them must be 1. Note: 'arr + 5' is element-wise addition with a scalar, which is even simpler than broadcasting."
   },
   {
-    q: "What is the difference between np.mean(arr) and arr.mean()?",
+    q: "You compute 'arr.sum(axis=0)' on a 2D array with shape (3, 4). What shape is the result, and what did axis=0 do?",
     opts: [
-      "np.mean() is faster; arr.mean() is slower",
-      "They produce the same result \u2014 one is a function, the other is a method on the array object",
-      "np.mean() works on lists; arr.mean() only on arrays",
-      "arr.mean() modifies the array in-place; np.mean() returns a new value"
+      "Shape (3, 4) — axis=0 does nothing, the array is returned unchanged",
+      "Shape (4,) — axis=0 collapses the rows, summing down each column to produce one value per column",
+      "Shape (3,) — axis=0 collapses the columns, summing across each row to produce one value per row",
+      "Shape () — a single scalar that is the total sum of all 12 elements regardless of the axis"
     ],
     ans: 1,
-    explanation: "Both compute the arithmetic mean and return the same result. np.mean(arr) is a standalone function; arr.mean() is a method on the ndarray object. It's mostly a style choice, though np.mean() can also work on lists (converting them to arrays first)."
+    explanation: "The axis parameter specifies WHICH dimension to collapse. axis=0 means \"collapse along dimension 0 (rows)\" — so for a (3, 4) array, you sum the 3 values in each column, producing 4 results: shape (4,). axis=1 would collapse columns instead, summing across each row to get shape (3,). No axis at all returns a single scalar (sum of everything). The trick to remember: the axis you specify is the one that DISAPPEARS from the result shape."
   },
   {
     q: "How does boolean indexing work in NumPy?",
@@ -221,7 +219,7 @@ const questions = [
       "Boolean indexing is only available in pandas, not NumPy"
     ],
     ans: 1,
-    explanation: "arr[arr > 5] creates a boolean mask where each element is True/False, then returns only the elements where the mask is True. This is one of NumPy's most powerful features \u2014 it replaces filter loops with a single expression. You can combine conditions with & (and), | (or), and ~ (not)."
+    explanation: "arr[arr > 5] creates a boolean mask then returns only elements where True. Combine conditions with & (and), | (or), ~ (not)."
   },
   {
     q: "What does .reshape() do, and what constraint must be satisfied?",
@@ -232,9 +230,8 @@ const questions = [
       "It adds or removes elements to match the new shape"
     ],
     ans: 1,
-    explanation: "reshape() rearranges the array's dimensions. A (6,) array can become (2, 3) or (3, 2) or (6, 1) \u2014 but not (2, 4) because 2*4=8 \u2260 6. The data doesn't move in memory; only the shape metadata changes. Use -1 for one dimension to let NumPy calculate it automatically."
+    explanation: "reshape() rearranges dimensions. A (6,) array can become (2,3) or (3,2) but not (2,4) because 2*4≠6. Use -1 for one dimension to let NumPy calculate it."
   },
-  // ── Section 3: Pandas Basics ──
   {
     q: "What is the difference between a pandas Series and a DataFrame?",
     opts: [
@@ -244,74 +241,73 @@ const questions = [
       "They are the same thing with different names"
     ],
     ans: 0,
-    explanation: "A Series is a single column of data with an index. A DataFrame is a collection of Series that share the same index \u2014 like a spreadsheet or SQL table. When you select one column from a DataFrame (df['age']), you get a Series."
+    explanation: "A Series is a single column with an index. A DataFrame is a collection of Series sharing the same index — like a spreadsheet or SQL table."
   },
   {
-    q: "What is the 'index' in a pandas DataFrame?",
+    q: "You filter a DataFrame with 'df[df['age'] > 30]' and the result has index values [2, 5, 8] instead of [0, 1, 2]. Why, and does it matter?",
     opts: [
-      "The column names across the top",
-      "Row labels that identify each row \u2014 can be integers, strings, dates, etc.",
-      "The data type of each column",
-      "The number of rows in the DataFrame"
+      "It's a pandas bug — filtered DataFrames should always reset their index to start from 0",
+      "Pandas preserves the original row labels after filtering — the rows keep their original index, which is useful for tracking back to the source data",
+      "The numbers [2, 5, 8] are the age values, not the indices — pandas confuses columns and indices after filtering",
+      "This only happens if the DataFrame was loaded from a CSV file; programmatically created DataFrames always reset"
     ],
     ans: 1,
-    explanation: "The index is the label for each row. By default it's 0, 1, 2, ... but you can set it to meaningful values like dates, IDs, or names. This enables powerful alignment \u2014 when you combine two DataFrames, pandas matches rows by their index labels, not by position."
+    explanation: "When you filter a DataFrame, pandas keeps the original index values — they don't get renumbered. This is actually useful: the indices tell you which rows from the original data passed the filter (rows 2, 5, and 8). If you need a clean 0, 1, 2 index, call .reset_index(drop=True) on the result. This behavior catches beginners off guard when they try to access the filtered result by position (iloc vs loc), since iloc[0] gives you the first filtered row, but loc[0] might not exist."
   },
   {
     q: "How do you create a DataFrame from a Python dictionary?",
     opts: [
-      "pd.DataFrame(dict) \u2014 keys become column names, values (lists) become columns",
-      "pd.Series(dict) \u2014 keys become row labels",
-      "pd.read_dict(dict) \u2014 a special reader for dictionaries",
+      "pd.DataFrame(dict) — keys become column names, values (lists) become columns",
+      "pd.Series(dict) — keys become row labels",
+      "pd.read_dict(dict) — a special reader for dictionaries",
       "You can't create DataFrames from dictionaries directly"
     ],
     ans: 0,
-    explanation: "pd.DataFrame({'name': ['Alice', 'Bob'], 'age': [25, 30]}) creates a 2-column DataFrame. Dictionary keys become column names, and the corresponding lists become the data in each column. This is the most common way to create a DataFrame from Python data."
+    explanation: "pd.DataFrame({'name': ['Alice', 'Bob'], 'age': [25, 30]}) creates a 2-column DataFrame. This is the most common way."
   },
   {
     q: "What do df.head(), df.info(), and df.describe() show you?",
     opts: [
-      "They all show the same information in different formats",
+      "They all show the same summary information but formatted differently for various output contexts",
       "head() shows the first few rows; info() shows column types and null counts; describe() shows statistical summaries",
-      "head() shows column names; info() shows data types; describe() shows the index",
-      "They are different ways to export the DataFrame"
+      "head() shows only column names and types; info() shows data types in detail; describe() shows the row index",
+      "They are three different methods for exporting the DataFrame to CSV, JSON, and Excel respectively"
     ],
     ans: 1,
-    explanation: "These are your go-to EDA (Exploratory Data Analysis) functions \u2014 the first things you run when you open a new dataset. head(n) shows the first n rows (default 5) so you can see what the data looks like. info() shows each column's name, non-null count, and dtype \u2014 great for spotting missing data and wrong types. describe() gives count, mean, std, min, max, and quartiles for numeric columns."
+    explanation: "These are your go-to EDA (Exploratory Data Analysis) functions — the first things you run when you open a new dataset. head(n) shows the first n rows so you can see what the data looks like. info() shows each column's name, non-null count, and dtype — great for spotting missing data and wrong types. describe() gives count, mean, std, min, max, and quartiles for numeric columns."
   },
   {
     q: "What is the difference between df.shape and len(df)?",
     opts: [
-      "They return the same thing \u2014 the number of rows",
+      "They return the same thing — the number of rows",
       "df.shape returns (rows, columns) as a tuple; len(df) returns just the number of rows",
       "len(df) returns the number of columns; df.shape returns the number of rows",
       "df.shape is a method; len(df) is a property"
     ],
     ans: 1,
-    explanation: "df.shape returns a tuple like (100, 5) meaning 100 rows and 5 columns. len(df) returns just the row count (100). Use shape when you need both dimensions, len when you just need row count."
+    explanation: "df.shape returns (100, 5) meaning 100 rows and 5 columns. len(df) returns just 100."
   },
-  // ── Section 4: Pandas Selection & Cleaning ──
   {
     q: "What is the difference between .loc[] and .iloc[]?",
     opts: [
       ".loc uses label-based indexing (row/column names); .iloc uses integer-based positional indexing",
       ".loc is for rows; .iloc is for columns",
       ".loc is faster; .iloc is slower but more flexible",
-      "They are identical \u2014 use whichever you prefer"
+      "They are identical"
     ],
     ans: 0,
-    explanation: "df.loc['row_label', 'col_name'] selects by label. df.iloc[0, 2] selects by position (first row, third column). The key difference: .loc includes the endpoint in slicing (loc['a':'c'] includes 'c'), while .iloc excludes it (iloc[0:3] gives indices 0, 1, 2)."
+    explanation: "df.loc['row_label', 'col_name'] selects by label. df.iloc[0, 2] selects by position. Key difference: .loc includes the endpoint in slicing, .iloc excludes it."
   },
   {
     q: "How do you filter rows in a DataFrame based on a condition?",
     opts: [
-      "df.filter(condition) \u2014 like SQL WHERE",
-      "df[boolean_mask] \u2014 pass a Series of True/False values to select matching rows",
-      "df.select(condition) \u2014 a pandas method",
+      "df.filter(condition) — like SQL WHERE",
+      "df[boolean_mask] — pass a Series of True/False values to select matching rows",
+      "df.select(condition) — a pandas method",
       "You must use a for loop to check each row"
     ],
     ans: 1,
-    explanation: "Boolean indexing: df[df['age'] > 30] creates a True/False mask for each row, then returns only rows where the mask is True. You can combine conditions with & (and), | (or): df[(df['age'] > 30) & (df['city'] == 'NYC')]. Parentheses around each condition are required."
+    explanation: "df[df['age'] > 30] creates a True/False mask and returns matching rows. Combine with & (and), | (or). Parentheses around each condition are required."
   },
   {
     q: "What does df.isna() return?",
@@ -322,7 +318,7 @@ const questions = [
       "It removes all missing values from the DataFrame"
     ],
     ans: 1,
-    explanation: "isna() returns a boolean DataFrame: True for every NaN/None cell, False for every non-null cell. To get counts, chain it: df.isna().sum() gives missing counts per column. To get percentages: df.isna().mean() * 100."
+    explanation: "isna() returns a boolean DataFrame. Chain it: df.isna().sum() for counts, df.isna().mean() * 100 for percentages."
   },
   {
     q: "What is the difference between .fillna() and .dropna()?",
@@ -333,41 +329,40 @@ const questions = [
       "They do the same thing but fillna() is faster"
     ],
     ans: 0,
-    explanation: "fillna(value) substitutes NaN with the value you specify (0, mean, median, 'Unknown', etc.). dropna() removes entire rows or columns containing NaN. The choice depends on context: drop rows if they're few and random; fill values if you can reasonably estimate what the missing data should be."
+    explanation: "fillna(value) substitutes NaN. dropna() removes rows/columns with NaN. Drop if they're few; fill if you can estimate what's missing."
   },
   {
     q: "What does .astype() do in pandas?",
     opts: [
       "It renames columns to match the specified type names",
-      "It converts a column's data type \u2014 for example, from object (string) to int or float",
+      "It converts a column's data type — for example, from object (string) to int or float",
       "It creates a new column with the specified type",
       "It checks whether a column's type matches the expected type"
     ],
     ans: 1,
-    explanation: "df['price'].astype(float) converts the 'price' column to float. This is essential when data is read as strings (e.g., from CSV) but needs to be numeric for calculations. Always check with df.dtypes first to see current types."
+    explanation: "df['price'].astype(float) converts to float. Essential when data is read as strings but needs to be numeric."
   },
-  // ── Section 5: Aggregation & Best Practices ──
   {
     q: "What does .groupby() do in pandas?",
     opts: [
-      "It sorts the DataFrame by the specified column",
+      "It sorts the DataFrame by the specified column in ascending order and returns a reindexed copy",
       "It splits the DataFrame into groups by a column's values, then lets you apply aggregate functions to each group",
-      "It merges two DataFrames together",
-      "It creates a new column with group labels"
+      "It merges two DataFrames together on a shared column, similar to a SQL JOIN operation",
+      "It creates a new column containing numeric group labels assigned to each row automatically"
     ],
     ans: 1,
-    explanation: "groupby() implements the split-apply-combine pattern: (1) Split the data into groups based on unique values in a column, (2) Apply a function to each group (sum, mean, count, etc.), (3) Combine the results back into a DataFrame. Example: df.groupby('department')['salary'].mean() gives average salary per department."
+    explanation: "groupby() implements split-apply-combine: split by unique values, apply a function (sum, mean, etc.), combine results."
   },
   {
     q: "What does .agg() let you do that .mean() or .sum() alone can't?",
     opts: [
-      ".agg() is faster than calling individual methods",
-      ".agg() lets you apply multiple different aggregate functions at once, possibly different functions per column",
-      ".agg() works on non-numeric data; .mean() doesn't",
-      ".agg() modifies the DataFrame in-place"
+      ".agg() is significantly faster than calling individual methods because it batches operations internally",
+      ".agg() lets you apply multiple different aggregate functions at once, and even different functions per column",
+      ".agg() works on non-numeric columns like strings and dates, while .mean() and .sum() are numbers-only",
+      ".agg() modifies the grouped DataFrame in-place, while .mean() and .sum() always return new copies"
     ],
     ans: 1,
-    explanation: "With .agg() you can compute multiple statistics in one call: df.groupby('dept').agg({'salary': ['mean', 'max'], 'age': 'median'}). This gives you a multi-level column output with mean and max salary plus median age per department \u2014 all in one operation."
+    explanation: "df.groupby('dept').agg({'salary': ['mean', 'max'], 'age': 'median'}) computes multiple statistics in one call."
   },
   {
     q: "What is method chaining in pandas?",
@@ -378,29 +373,29 @@ const questions = [
       "A debugging technique that traces method calls"
     ],
     ans: 0,
-    explanation: "Method chaining strings operations together because each method returns a new DataFrame: df.dropna().query('age > 30').groupby('city')['salary'].mean(). This reads like a pipeline and avoids creating intermediate variables. It's considered idiomatic pandas style."
+    explanation: "Each method returns a new DataFrame, so you can chain: df.dropna().query('age > 30').groupby('city')['salary'].mean(). This is idiomatic pandas style."
   },
   {
     q: "Why is using inplace=True generally discouraged in modern pandas?",
     opts: [
-      "inplace=True doesn't actually work \u2014 it's broken in all pandas versions",
-      "It makes debugging harder (breaks method chaining, the original is silently mutated), and it's being deprecated",
+      "inplace=True doesn't actually work",
+      "It breaks method chaining and silently mutates the original, making code harder to debug",
       "It makes operations slower because pandas copies the data anyway",
-      "It's only discouraged for large DataFrames; it's fine for small ones"
+      "It's only discouraged for large DataFrames"
     ],
     ans: 1,
-    explanation: "inplace=True mutates the original DataFrame and returns None, which breaks method chaining and makes code harder to debug (you can't inspect intermediate steps). The pandas team has been moving away from it. Best practice: df = df.dropna() instead of df.dropna(inplace=True)."
+    explanation: "inplace=True returns None, so you can't chain: df.dropna(inplace=True).groupby(...) fails. It also silently modifies the original DataFrame, making it harder to trace what changed and when. Best practice: df = df.dropna() — explicit reassignment is clearer and supports chaining."
   },
   {
     q: "When should you use NumPy directly vs. pandas?",
     opts: [
-      "Always use pandas \u2014 it does everything NumPy does but better",
+      "Always use pandas for everything — it does all of NumPy's math plus tabular operations, making NumPy redundant",
       "NumPy for pure numerical arrays and math; pandas when you need labeled columns, mixed types, or tabular data operations",
-      "NumPy for 2D data; pandas for 1D data",
-      "Use NumPy first, then convert to pandas when you need to export"
+      "NumPy is designed for 2D matrices and higher; pandas is specifically optimized for 1D Series data only",
+      "Start with NumPy for all computation, then convert to pandas only at the final step when you need to export results"
     ],
     ans: 1,
-    explanation: "NumPy is ideal for homogeneous numerical arrays \u2014 matrices, images, signal data, linear algebra. Pandas excels at tabular data with named columns, mixed types (strings + numbers), missing values, and SQL-like operations (groupby, merge, pivot). In practice, pandas uses NumPy internally \u2014 they work together, not in competition."
+    explanation: "NumPy is ideal for homogeneous numerical arrays (matrices, images, linear algebra). Pandas excels at tabular data with named columns, mixed types, and SQL-like operations. They work together."
   }
 ];
 

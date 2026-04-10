@@ -422,7 +422,6 @@ const sections = [
 ];
 
 const questions = [
-  // ── Section 1: Lists ──
   {
     q: "Which of the following best describes a Python list?",
     opts: [
@@ -437,24 +436,24 @@ const questions = [
   {
     q: "What is the difference between .append() and .extend() on a list?",
     opts: [
-      "They do the same thing \u2014 both add elements to the end of a list",
-      ".append() adds a single element; .extend() adds each element from an iterable individually",
-      ".append() works on strings; .extend() works on numbers",
-      ".extend() adds an element at a specific index; .append() always adds to the end"
+      "They do the same thing — both add all elements from an iterable to the end of a list one by one",
+      ".append() adds its argument as a single element (even if it's a list); .extend() unpacks an iterable and adds each item individually",
+      ".append() is for adding strings to a list; .extend() is specifically designed for adding numbers",
+      ".extend() inserts an element at a specific index position; .append() always adds to the very end"
     ],
     ans: 1,
-    explanation: ".append(x) adds x as a single item to the end \u2014 even if x is a list, it becomes one nested element. .extend(iterable) unpacks the iterable and adds each item individually. So [1,2].append([3,4]) gives [1,2,[3,4]], while [1,2].extend([3,4]) gives [1,2,3,4]."
+    explanation: ".append(x) adds x as a single item to the end — even if x is a list, it becomes one nested element. .extend(iterable) unpacks the iterable and adds each item individually. So [1,2].append([3,4]) gives [1,2,[3,4]], while [1,2].extend([3,4]) gives [1,2,3,4]."
   },
   {
-    q: "In Python, what does negative indexing do?",
+    q: "A student writes 'my_list = [10, 20, 30]' and then 'my_list[3]'. They expect to get 30. What actually happens and why?",
     opts: [
-      "It reverses the list permanently",
-      "It raises an IndexError because indices must be positive",
-      "It counts from the end of the sequence \u2014 index -1 is the last element",
-      "It removes elements from the end of the list"
+      "Returns 30 — index 3 is the last element in a 3-item list",
+      "IndexError — the list has indices 0, 1, 2 only. Index 3 is out of range because Python counts from 0, so the last valid index is len(list) - 1",
+      "Returns None — accessing beyond the list returns a null value instead of crashing",
+      "Returns 10 — Python wraps around to the beginning when the index exceeds the list length"
     ],
-    ans: 2,
-    explanation: "Negative indices count backwards from the end: -1 is the last element, -2 is second-to-last, and so on. This is a Python convenience \u2014 you don't need to know the length to access the last few items."
+    ans: 1,
+    explanation: "This is one of the most common beginner mistakes in Python. A list with 3 elements has valid indices 0, 1, 2 — NOT 1, 2, 3. The last element is at index len(list) - 1 = 2, not 3. Python does NOT silently return None or wrap around — it raises an IndexError to alert you immediately. To safely get the last element regardless of list length, use my_list[-1] (negative indexing counts from the end)."
   },
   {
     q: "What is the difference between .remove() and .pop() on a list?",
@@ -465,20 +464,19 @@ const questions = [
       ".remove() gives back the deleted item for later use; .pop() discards it silently and returns None"
     ],
     ans: 0,
-    explanation: ".remove('x') finds and deletes the first 'x' in the list \u2014 it searches by value. .pop(2) removes the item at index 2 and returns it \u2014 it works by position. If you need the removed value (e.g., to process it), use .pop(). If you just want to delete something by value, use .remove(). Note: .pop() with no argument removes the last item."
+    explanation: ".remove('x') finds and deletes the first 'x' in the list — it searches by value. .pop(2) removes the item at index 2 and returns it — it works by position. If you need the removed value (e.g., to process it), use .pop(). If you just want to delete something by value, use .remove(). Note: .pop() with no argument removes the last item."
   },
   {
     q: "When you slice a list with my_list[1:4], which elements do you get?",
     opts: [
       "Elements at indices 1, 2, 3, and 4",
-      "Elements at indices 1, 2, and 3 \u2014 the start is inclusive, the end is exclusive",
+      "Elements at indices 1, 2, and 3 — the start is inclusive, the end is exclusive",
       "Only the element at index 1",
       "Elements at indices 0, 1, 2, and 3"
     ],
     ans: 1,
     explanation: "Python slicing follows the pattern [start:stop] where start is inclusive and stop is exclusive. So [1:4] gives you indices 1, 2, 3. This design means the number of elements you get equals stop minus start (4 - 1 = 3 elements)."
   },
-  // ── Section 2: Tuples, Sets & Dictionaries ──
   {
     q: "What is the key difference between a list and a tuple?",
     opts: [
@@ -488,7 +486,7 @@ const questions = [
       "Tuples are faster to create but slower to access"
     ],
     ans: 2,
-    explanation: "The main difference is mutability. Lists let you add, remove, and change elements after creation. Tuples are frozen once created \u2014 you can't modify them. This makes tuples useful for data that shouldn't change (like coordinates or database records) and allows them to be used as dictionary keys."
+    explanation: "The main difference is mutability. Lists let you add, remove, and change elements after creation. Tuples are frozen once created. This makes tuples useful for data that shouldn't change (like coordinates) and allows them to be used as dictionary keys."
   },
   {
     q: "What makes a set different from a list?",
@@ -499,7 +497,7 @@ const questions = [
       "Sets are mutable; lists are immutable"
     ],
     ans: 1,
-    explanation: "A set is an unordered collection of unique elements. If you add a duplicate, the set ignores it. Sets are optimized for membership testing (checking if something is in the set) \u2014 this is O(1) on average, vs O(n) for lists. Use sets when uniqueness matters or you need fast lookups."
+    explanation: "A set is an unordered collection of unique elements. If you add a duplicate, the set ignores it. Sets are optimized for membership testing — this is O(1) on average, vs O(n) for lists."
   },
   {
     q: "How do you access a value in a Python dictionary?",
@@ -507,10 +505,10 @@ const questions = [
       "By its numerical index, like a list: my_dict[0]",
       "By its key: my_dict[\"key_name\"] or my_dict.get(\"key_name\")",
       "By calling .value(\"key_name\") on the dictionary",
-      "Dictionaries are accessed sequentially \u2014 you must iterate to find a value"
+      "Dictionaries are accessed sequentially — you must iterate to find a value"
     ],
     ans: 1,
-    explanation: "Dictionaries are key-value stores. You access values using their key with bracket notation (my_dict[\"key\"]) or the safer .get(\"key\") method. The difference: bracket notation raises a KeyError if the key doesn't exist, while .get() returns None (or a default you specify)."
+    explanation: "Dictionaries are key-value stores accessed by key, not position. Two access methods with very different behavior: my_dict[\"key\"] raises KeyError if missing — use when the key must exist. my_dict.get(\"key\") returns None if missing, or a custom default: my_dict.get(\"key\", 0) returns 0. The bracket method fails loudly (good for catching bugs), .get() fails gracefully (good for optional config)."
   },
   {
     q: "When would you choose a dictionary over a list?",
@@ -521,7 +519,7 @@ const questions = [
       "When you have fewer than 10 elements"
     ],
     ans: 1,
-    explanation: "Use a dictionary when your data has natural labels (keys) \u2014 like looking up a student's grade by name, or a config setting by its parameter name. Lists are better when order and position matter. Dictionaries provide O(1) key lookup, so they scale well for large datasets."
+    explanation: "Use a dictionary when your data has natural labels (keys) — like looking up a student's grade by name. Dictionaries provide O(1) key lookup, so they scale well for large datasets."
   },
   {
     q: "Which data structure would you use to store a collection of unique user IDs where you frequently need to check if an ID exists?",
@@ -532,19 +530,18 @@ const questions = [
       "A dictionary, because you need key-value pairs"
     ],
     ans: 2,
-    explanation: "A set is the ideal choice: it automatically enforces uniqueness (no duplicate IDs), and the 'in' operator is O(1) on average for sets vs O(n) for lists. Since you only need IDs (not associated data), a set is more appropriate than a dictionary."
+    explanation: "A set is the ideal choice: it automatically enforces uniqueness (no duplicate IDs), and the 'in' operator is O(1) on average for sets vs O(n) for lists."
   },
-  // ── Section 3: Conditionals & Loops ──
   {
-    q: "What is the purpose of elif in an if/elif/else chain?",
+    q: "A student writes three separate 'if' statements instead of 'if/elif/elif'. They say it works the same. When does this actually cause different behavior?",
     opts: [
-      "It's another way to write 'else' \u2014 they're interchangeable",
-      "It checks an additional condition only if all previous conditions were False",
-      "It always runs regardless of previous conditions",
-      "It combines two conditions with AND logic"
+      "It never matters — separate if statements and if/elif chains always produce identical results",
+      "When multiple conditions are True: if/elif runs only the FIRST matching branch, but separate if statements check and run ALL of them",
+      "Separate if statements are faster because Python can skip the elif overhead",
+      "if/elif chains can only check two conditions, while separate if statements have no limit"
     ],
     ans: 1,
-    explanation: "elif (short for 'else if') lets you chain multiple conditions. Python checks them top-to-bottom and runs only the first one that's True, then skips the rest. This is different from multiple separate if statements, which are all checked independently."
+    explanation: "This is a subtle but important distinction. With 'if/elif/elif', Python stops at the first True condition — it never checks the rest. With three separate 'if' statements, ALL three are checked independently. Example: if score > 90, if score > 80, if score > 70 — with score=95, all three would trigger. With elif, only the first (> 90) runs. Using separate ifs when you meant elif is a common source of bugs where multiple branches execute unexpectedly."
   },
   {
     q: "What is the main difference between a for loop and a while loop?",
@@ -555,7 +552,7 @@ const questions = [
       "for loops work with numbers; while loops work with strings"
     ],
     ans: 1,
-    explanation: "Use a for loop when you know what you're iterating over (a list, range, string, etc.). Use a while loop when you don't know how many iterations you need \u2014 you just keep going until a condition becomes False. Most Python code uses for loops because they're safer (no risk of infinite loops) and more readable."
+    explanation: "Use a for loop when you know what you're iterating over. Use a while loop when you don't know how many iterations you need. Most Python code uses for loops because they're safer (no risk of infinite loops)."
   },
   {
     q: "Why would you use enumerate() instead of a plain for loop over a list?",
@@ -566,41 +563,40 @@ const questions = [
       "enumerate() is required for looping over dictionaries"
     ],
     ans: 1,
-    explanation: "enumerate() pairs each element with its index: for i, val in enumerate(my_list). This is cleaner than maintaining a separate counter variable (i = 0; i += 1) and avoids the common pattern of using range(len(list)) which is less Pythonic."
+    explanation: "enumerate() pairs each element with its index: 'for i, val in enumerate(my_list)'. This is cleaner than maintaining a separate counter variable."
   },
   {
-    q: "What does a list comprehension do?",
+    q: "A student rewrites a 4-line for loop into a list comprehension and their colleague says \"that's less readable.\" When is the colleague right?",
     opts: [
-      "It checks if a list contains a specific element",
-      "It creates a new list by applying an expression to each item of an iterable, optionally filtering with a condition",
-      "It sorts a list in ascending order",
-      "It merges two lists together"
+      "Always — list comprehensions are a bad practice and should never be used in professional code",
+      "When the comprehension has nested loops and complex conditions — at that point a regular for loop is clearer and easier to debug",
+      "Never — list comprehensions are always more readable than for loops, regardless of complexity",
+      "Only when the list has more than 100 elements, because comprehensions are slower on large datasets"
     ],
     ans: 1,
-    explanation: "A list comprehension like [x * 2 for x in nums if x > 0] is a concise way to build a new list. It replaces a multi-line for-loop-with-append pattern. The optional 'if' clause filters which elements are included. They're one of Python's most powerful features for data transformation."
+    explanation: "Simple comprehensions like '[x * 2 for x in nums]' are cleaner than a for loop with append. But once you add nested loops, multiple conditions, or complex expressions — like '[f(x) for sublist in matrix for x in sublist if x > 0 and x % 2 == 0]' — a regular for loop becomes far easier to read and debug. The rule of thumb: if the comprehension doesn't fit on one line, or if you have to think hard to understand it, use a for loop instead. Readability always beats cleverness."
   },
   {
     q: "What does the zip() function do when used with two lists?",
     opts: [
       "It compresses the lists to take less memory",
-      "It pairs up elements from both lists by position \u2014 first with first, second with second, and so on",
+      "It pairs up elements from both lists by position — first with first, second with second, and so on",
       "It appends the second list to the first",
       "It finds elements that appear in both lists"
     ],
     ans: 1,
-    explanation: "zip() pairs elements from multiple iterables by position, creating tuples: zip([1,2,3], ['a','b','c']) gives [(1,'a'), (2,'b'), (3,'c')]. If the iterables have different lengths, zip stops at the shortest. It's commonly used to iterate over two related lists in parallel."
+    explanation: "zip() pairs elements from multiple iterables by position, creating tuples. If the iterables have different lengths, zip stops at the shortest."
   },
-  // ── Section 4: Functions ──
   {
-    q: "Why would you put code inside a function instead of writing it directly in the script?",
+    q: "You notice the same 5 lines of data-cleaning code copy-pasted in 4 different places in your script. You fix a bug in one copy but forget the others. What principle does this violate, and what's the fix?",
     opts: [
-      "Functions make code run faster because Python optimizes them",
-      "Functions let you reuse code, give it a meaningful name, and avoid repeating yourself",
-      "Python requires all code to be inside functions",
-      "Functions are only needed when code is longer than 10 lines"
+      "The DRY principle (Don't Repeat Yourself) — extract those 5 lines into a function and call it from all 4 places, so the fix applies everywhere automatically",
+      "The SOLID principle — you need to create a separate class for each copy of the code to ensure proper encapsulation",
+      "The PEP 8 style guide — Python limits you to 3 copies of any code block, and 4 copies triggers a linting error",
+      "Nothing is wrong — having multiple copies makes the code more resilient because if one breaks, the others keep working"
     ],
-    ans: 1,
-    explanation: "Functions serve three main purposes: reusability (call the same logic multiple times), abstraction (give a complex operation a clear name), and organization (break a large script into manageable pieces). The DRY principle \u2014 Don't Repeat Yourself \u2014 is a core reason to use functions."
+    ans: 0,
+    explanation: "This is the DRY (Don't Repeat Yourself) principle in action. When the same logic appears in multiple places, a bug fix in one copy often misses the others — creating inconsistent behavior. The fix: extract it into a function like 'def clean_data(df)', then call 'clean_data(df)' in all 4 places. Now a bug fix in the function applies everywhere. Functions also give the logic a name that documents what it does, making the calling code more readable."
   },
   {
     q: "What happens when a function doesn't have a return statement?",
@@ -611,7 +607,7 @@ const questions = [
       "The function returns the last variable that was assigned"
     ],
     ans: 1,
-    explanation: "If a function reaches the end without hitting a return statement, Python automatically returns None. This is why you sometimes see unexpected None values \u2014 for example, print() itself returns None, so x = print('hi') sets x to None."
+    explanation: "If a function reaches the end without an explicit 'return' statement, Python automatically returns None. This is a common source of confusion: a student writes 'def add(a, b): result = a + b' (forgetting 'return result'), then does 'x = add(3, 4)' and wonders why x is None instead of 7. The function computed the sum correctly but never sent it back. Always check: does your function have a 'return' with the value you want?"
   },
   {
     q: "What is a default parameter value in a function?",
@@ -622,7 +618,7 @@ const questions = [
       "The first parameter in the function definition"
     ],
     ans: 1,
-    explanation: "Default values make parameters optional. In def greet(name, greeting='Hello'), the caller can omit greeting and it defaults to 'Hello'. If they pass a value, it overrides the default. Defaults must come after non-default parameters in the function signature."
+    explanation: "Default values make parameters optional. In 'def greet(name, greeting='Hello')', the caller can omit greeting and it defaults to 'Hello'."
   },
   {
     q: "What are type hints in Python, and are they enforced at runtime?",
@@ -633,20 +629,19 @@ const questions = [
       "They are only available in Python 2, not Python 3"
     ],
     ans: 1,
-    explanation: "Type hints like def add(a: int, b: int) -> int are purely informational \u2014 Python does not enforce them at runtime. They serve as documentation for developers and enable tools like mypy to catch type errors before the code runs. They're considered best practice in professional Python code."
+    explanation: "Type hints like 'def add(a: int, b: int) -> int' are purely informational — Python does not enforce them at runtime. They serve as documentation and enable tools like mypy."
   },
   {
     q: "What does 'scope' mean in the context of functions?",
     opts: [
       "How many lines of code the function contains",
-      "The region of code where a variable is accessible \u2014 variables created inside a function can't be accessed outside it",
+      "The region of code where a variable is accessible — variables created inside a function can't be accessed outside it",
       "The number of parameters a function accepts",
       "Whether a function is public or private"
     ],
     ans: 1,
-    explanation: "Scope determines where a variable can be used. Variables created inside a function have local scope \u2014 they exist only during that function call and disappear when it returns. Variables created outside all functions have global scope. This prevents functions from accidentally interfering with each other's data."
+    explanation: "Variables created inside a function have local scope — they exist only during that function call. This prevents functions from accidentally interfering with each other's data."
   },
-  // ── Section 5: File I/O & Practical Application ──
   {
     q: "Why should you use a 'with' statement when opening files?",
     opts: [
@@ -656,7 +651,7 @@ const questions = [
       "It allows you to open multiple files at the same time"
     ],
     ans: 1,
-    explanation: "The 'with' statement creates a context manager that guarantees the file is properly closed when the block exits \u2014 even if an exception occurs. Without it, you'd need to manually call file.close(), and if your code crashes before that line, the file stays open and can cause data corruption or resource leaks."
+    explanation: "Without 'with', you'd write 'f = open('data.csv')' and later 'f.close()'. But if your code crashes between open and close, the file stays open — potentially corrupting data or leaking system resources. The 'with' statement guarantees cleanup: 'with open('data.csv') as f:' automatically calls f.close() when the block ends, even if an error occurs inside it. This is why 'with' is the standard pattern for files, database connections, and any resource that needs cleanup."
   },
   {
     q: "What is the difference between the 'r', 'w', and 'a' modes when opening a file?",
@@ -667,7 +662,7 @@ const questions = [
       "'r' is for text, 'w' is for binary, 'a' is for JSON"
     ],
     ans: 0,
-    explanation: "'r' (read) opens an existing file for reading only. 'w' (write) creates a new file or overwrites an existing one \u2014 all previous content is erased. 'a' (append) opens a file and adds new content to the end, preserving existing content. A common mistake is using 'w' when you meant 'a', accidentally deleting data."
+    explanation: "'r' opens for reading only. 'w' creates or overwrites — all previous content is erased. 'a' adds to the end, preserving existing content. A common mistake is using 'w' when you meant 'a'."
   },
   {
     q: "What does the .strip() method do when reading lines from a file?",
@@ -678,10 +673,10 @@ const questions = [
       "It converts the line to lowercase"
     ],
     ans: 1,
-    explanation: "When you read lines from a file, each line typically ends with a '\\n' (newline character). .strip() removes this plus any extra whitespace from both ends. You can also use .rstrip() to only strip from the right side, or .lstrip() for the left."
+    explanation: "When you read lines from a file, each line typically ends with a '\n'. .strip() removes this plus any extra whitespace from both ends."
   },
   {
-    q: "You're building an application that needs to store data about 100 students \u2014 each with a name, grade, and email. What is the best data structure?",
+    q: "You're building an application that needs to store data about 100 students — each with a name, grade, and email. What is the best data structure?",
     opts: [
       "A single list containing all names, grades, and emails one after another",
       "Three separate lists: one for names, one for grades, one for emails",
@@ -689,18 +684,18 @@ const questions = [
       "A single dictionary with student names as keys and grades as values"
     ],
     ans: 2,
-    explanation: "A list of dictionaries is the most organized approach: each dictionary bundles all of a student's data together with labeled fields. This mirrors how real databases work (each dict is a 'row'). Parallel lists (option B) drift out of sync easily, and a single flat list (option A) requires you to remember the structure."
+    explanation: "A list of dictionaries is the most organized approach: each dictionary bundles all of a student's data together with labeled fields. This mirrors how real databases work."
   },
   {
     q: "What is the advantage of the .get() method over bracket notation for dictionary access?",
     opts: [
-      ".get() is faster than bracket notation",
-      ".get() returns a default value (None or one you specify) instead of raising a KeyError when the key doesn't exist",
-      ".get() can access nested dictionaries automatically",
-      ".get() only works with string keys while brackets work with any key type"
+      ".get() is faster than bracket notation because it uses an optimized internal lookup algorithm",
+      ".get() returns a default value (None or one you specify) instead of crashing with a KeyError when the key doesn't exist",
+      ".get() can automatically traverse nested dictionaries and access deeply nested values in one call",
+      ".get() works only with string keys, while bracket notation supports integers, tuples, and any hashable type"
     ],
     ans: 1,
-    explanation: "my_dict['key'] raises a KeyError if 'key' doesn't exist, which crashes your program unless you catch it. my_dict.get('key') returns None, and my_dict.get('key', default) returns your specified default. This is especially useful when processing data where some records might be missing certain fields."
+    explanation: "my_dict['key'] raises a KeyError if 'key' doesn't exist. my_dict.get('key') returns None, and my_dict.get('key', default) returns your specified default."
   }
 ];
 

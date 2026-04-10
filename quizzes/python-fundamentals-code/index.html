@@ -221,129 +221,225 @@ const sections = [
 ];
 
 const questions = [
-  // ── Section 1: Lists & Data Structures ──
   {
-    q: "What does this code print?<br><br><code>nums = [1, 2, 3]\nnums.append([4, 5])\nprint(len(nums))</code>",
-    opts: ["5", "4", "3", "Error"],
+    q: "What does this code print?<br><br><code>a = [1, 2, 3]\nb = a\nb.append(99)\nprint(a, len(a))</code>",
+    opts: [
+      "[1, 2, 3] 3 — b is a separate copy, so a stays the same",
+      "[1, 2, 3, 99] 4 — both variables share the same list",
+      "[99] 1 — b = a replaces a's contents entirely",
+      "Error — append doesn't work on aliased references"
+    ],
     ans: 1,
-    explanation: ".append() adds its argument as a single element. So [4, 5] becomes one nested list element inside nums, giving [1, 2, 3, [4, 5]] \u2014 which has 4 elements, not 5. If you wanted 5 elements, you'd use .extend([4, 5])."
+    explanation: "This tests one of the most important gotchas in Python: 'b = a' does NOT copy the list. Both variables now reference the exact same list object in memory. When you call b.append(99), you're modifying that shared list, so a sees the change too. This is called aliasing and it's a frequent source of bugs. If you want an independent copy, use 'b = a.copy()' or 'b = a[:]' — then modifying b won't affect a."
   },
   {
-    q: "What does this code print?<br><br><code>fruits = ['apple', 'banana', 'cherry']\nprint(fruits[-2])</code>",
-    opts: ["cherry", "banana", "apple", "Error: negative index"],
+    q: "What does this code print?<br><br><code>data = [10, 20, 30]\ndata.append([40, 50])\nprint(len(data), data[-1])</code>",
+    opts: [
+      "5 50 — append adds both 40 and 50 as separate elements, and -1 is the last one",
+      "4 [40, 50] — append adds the entire list as ONE element, so data[-1] is the nested list",
+      "4 50 — append adds the list as one element, but indexing into it returns the last number",
+      "Error — you can't append a list to a list because the types are incompatible"
+    ],
     ans: 1,
-    explanation: "Negative indexing counts from the end: -1 is 'cherry', -2 is 'banana', -3 is 'apple'. So fruits[-2] returns 'banana'."
+    explanation: ".append() adds its argument as a single element, regardless of what it is. So data becomes [10, 20, 30, [40, 50]] — 4 elements, where the 4th element is itself a list. data[-1] returns that nested list: [40, 50]. If you wanted 5 separate elements, use .extend([40, 50]) instead, which unpacks the iterable and adds each item individually. This append-vs-extend confusion is one of the most common list bugs."
   },
   {
-    q: "What does this code print?<br><br><code>data = [10, 20, 30, 40, 50]\nprint(data[1:4])</code>",
-    opts: ["[10, 20, 30, 40]", "[20, 30, 40]", "[20, 30, 40, 50]", "[10, 20, 30]"],
+    q: "What does this code print?<br><br><code>data = [10, 20, 30, 40, 50]\nprint(data[::2])</code>",
+    opts: [
+      "[10, 20, 30, 40, 50] — the step of 2 has no effect when start and stop are omitted",
+      "[10, 30, 50] — starts at index 0, takes every 2nd element (step=2) through the whole list",
+      "[20, 40] — starts at index 1 because step=2 skips the first element",
+      "[10, 20] — the 2 means \"take only 2 elements from the start\""
+    ],
     ans: 1,
-    explanation: "Slicing [1:4] starts at index 1 (inclusive) and stops at index 4 (exclusive). So you get elements at indices 1, 2, 3 which are [20, 30, 40]."
+    explanation: "The slice [::2] means [start:stop:step] with start=beginning, stop=end, step=2. It takes every 2nd element starting from index 0: indices 0, 2, 4 → values [10, 30, 50]. The step parameter is the third value in the slice — it controls how many indices to skip between elements. [::3] would give every 3rd element, [::-1] reverses the list. This is more advanced than basic [1:4] slicing and is useful for things like selecting alternating rows from data."
   },
   {
-    q: "What does this code print?<br><br><code>a = [1, 2, 3]\nb = a\nb.append(4)\nprint(a)</code>",
-    opts: ["[1, 2, 3]", "[1, 2, 3, 4]", "[4]", "Error"],
+    q: "What does this code print?<br><br><code>nums = [3, 1, 4, 1, 5]\nresult = sorted(nums)\nprint(nums, result)</code>",
+    opts: [
+      "[1, 1, 3, 4, 5] [1, 1, 3, 4, 5] — both sorted",
+      "[3, 1, 4, 1, 5] [1, 1, 3, 4, 5]",
+      "[1, 1, 3, 4, 5] [3, 1, 4, 1, 5]",
+      "[3, 1, 4, 1, 5] [3, 1, 4, 1, 5] — sorted returns None"
+    ],
     ans: 1,
-    explanation: "b = a does NOT create a copy \u2014 both variables point to the same list in memory. When you modify b, you're also modifying a. To create an independent copy, use b = a.copy() or b = a[:]."
+    explanation: "sorted() returns a NEW sorted list and leaves the original unchanged. nums stays [3, 1, 4, 1, 5], result is the new sorted list [1, 1, 3, 4, 5]. This is different from nums.sort(), which sorts in-place (modifies the original) and returns None. Confusing sorted() with .sort() is a common bug — one creates a copy, the other mutates."
   },
   {
-    q: "What does this code print?<br><br><code>colors = ['red', 'green', 'blue']\ncolors.insert(1, 'yellow')\nprint(colors[2])</code>",
-    opts: ["green", "yellow", "blue", "red"],
+    q: "What does this code print?<br><br><code>colors = [&#39;red&#39;, &#39;green&#39;, &#39;blue&#39;]\ncolors.insert(1, &#39;yellow&#39;)\nprint(colors[2])</code>",
+    opts: [
+      "green",
+      "yellow",
+      "blue",
+      "red"
+    ],
     ans: 0,
-    explanation: "insert(1, 'yellow') puts 'yellow' at index 1, shifting everything after it. The list becomes ['red', 'yellow', 'green', 'blue']. So colors[2] is now 'green' (which shifted from index 1 to index 2)."
+    explanation: "insert(1, 'yellow') puts 'yellow' at index 1, shifting everything after it. The list becomes ['red', 'yellow', 'green', 'blue']. So colors[2] is 'green'."
   },
-  // ── Section 2: Dictionaries & Sets ──
   {
-    q: "What does this code print?<br><br><code>d = {'a': 1, 'b': 2, 'c': 3}\nprint(d.get('x', 0))</code>",
-    opts: ["None", "KeyError", "0", "x"],
+    q: "What does this code print?<br><br><code>d = {&#39;a&#39;: 1, &#39;b&#39;: 2, &#39;c&#39;: 3}\nprint(d.get(&#39;x&#39;, 0))</code>",
+    opts: [
+      "None",
+      "KeyError",
+      "0",
+      "x"
+    ],
     ans: 2,
-    explanation: ".get('x', 0) looks for key 'x'. Since it doesn't exist, it returns the default value 0 instead of raising a KeyError. Without the second argument, .get('x') would return None."
+    explanation: ".get('x', 0) looks for key 'x'. Since it doesn't exist, it returns the default value 0 instead of raising a KeyError."
   },
   {
-    q: "What does this code print?<br><br><code>d = {'name': 'Alice', 'age': 30}\nd['age'] = 31\nd['city'] = 'NYC'\nprint(len(d))</code>",
-    opts: ["2", "3", "4", "Error"],
+    q: "What does this code print?<br><br><code>d = {&#39;a&#39;: 1, &#39;b&#39;: 2}\nd[&#39;c&#39;] = 3\nd[&#39;a&#39;] = 99\ndel d[&#39;b&#39;]\nprint(d)</code>",
+    opts: [
+      "{'a': 1, 'b': 2, 'c': 3} — the original dict with 'c' added, but 'a' and 'b' changes were ignored",
+      "{'a': 99, 'c': 3} — 'a' was updated to 99, 'c' was added, 'b' was deleted",
+      "{'c': 3, 'a': 99} — same keys but in reverse order because del rearranges the dict",
+      "Error — you can't delete a key from a dictionary while other code still references it"
+    ],
     ans: 1,
-    explanation: "The dict starts with 2 keys. d['age'] = 31 updates an existing key (no new key added). d['city'] = 'NYC' adds a new key. Final count: 'name', 'age', 'city' = 3 keys."
+    explanation: "Walk through it step by step: start with {'a': 1, 'b': 2}. d['c'] = 3 adds a new key → {'a': 1, 'b': 2, 'c': 3}. d['a'] = 99 updates existing key 'a' → {'a': 99, 'b': 2, 'c': 3}. del d['b'] removes key 'b' entirely → {'a': 99, 'c': 3}. Key point: assigning to an existing key updates it (doesn't create a duplicate), and del removes a key-value pair completely. Dicts in Python 3.7+ maintain insertion order."
   },
   {
     q: "What does this code print?<br><br><code>s = {1, 2, 3, 2, 1}\nprint(len(s))</code>",
-    opts: ["5", "3", "2", "Error: duplicate elements"],
+    opts: [
+      "5",
+      "3",
+      "2",
+      "Error: duplicate elements"
+    ],
     ans: 1,
-    explanation: "Sets automatically remove duplicates. {1, 2, 3, 2, 1} becomes {1, 2, 3} which has 3 unique elements. No error is raised \u2014 duplicates are silently ignored."
+    explanation: "Sets automatically discard duplicate values — that's their defining feature. When you write {1, 2, 3, 2, 1}, Python keeps only the unique values: {1, 2, 3}, which has 3 elements. No error is raised; duplicates are silently dropped. This is why sets are useful for deduplication (list(set(my_list)) removes duplicates) and for fast membership testing ('x' in my_set is O(1) vs O(n) for lists)."
   },
   {
-    q: "What does this code print?<br><br><code>a = {1, 2, 3, 4}\nb = {3, 4, 5, 6}\nprint(a &amp; b)</code>",
-    opts: ["{1, 2, 3, 4, 5, 6}", "{3, 4}", "{1, 2, 5, 6}", "Error"],
+    q: "What does this code print?<br><br><code>a = {1, 2, 3, 4}\nb = {3, 4, 5, 6}\nprint(a & b)</code>",
+    opts: [
+      "{1, 2, 3, 4, 5, 6}",
+      "{3, 4}",
+      "{1, 2, 5, 6}",
+      "Error"
+    ],
     ans: 1,
-    explanation: "The & operator on sets returns the intersection \u2014 elements that appear in both sets. 3 and 4 are in both a and b, so the result is {3, 4}. Use | for union (all elements from both)."
+    explanation: "The & operator on sets returns the intersection — elements in both sets. 3 and 4 are in both a and b. Use | for union."
   },
   {
-    q: "What does this code print?<br><br><code>d = {'x': 10, 'y': 20}\nkeys = list(d.keys())\nprint(keys)</code>",
-    opts: ["['x', 'y']", "[10, 20]", "[('x', 10), ('y', 20)]", "{'x', 'y'}"],
+    q: "What does this code print?<br><br><code>d = {&#39;x&#39;: 10, &#39;y&#39;: 20}\nkeys = list(d.keys())\nprint(keys)</code>",
+    opts: [
+      "['x', 'y']",
+      "[10, 20]",
+      "[('x', 10), ('y', 20)]",
+      "{'x', 'y'}"
+    ],
     ans: 0,
-    explanation: "d.keys() returns the dictionary's keys. Wrapping in list() converts them to a regular list. So you get ['x', 'y']. Use d.values() for [10, 20] or d.items() for key-value tuples."
+    explanation: "d.keys() returns the dictionary's keys. list() converts them to a regular list: ['x', 'y']."
   },
-  // ── Section 3: Conditionals & Loops ──
   {
-    q: "What does this code print?<br><br><code>x = 15\nif x &gt; 20:\n    print('high')\nelif x &gt; 10:\n    print('medium')\nelse:\n    print('low')</code>",
-    opts: ["high", "medium", "low", "medium and low"],
+    q: "What does this code print?<br><br><code>x = 42\nif x &gt; 100:\n    label = &#39;big&#39;\nelif x &gt; 50:\n    label = &#39;medium&#39;\nelif x &gt; 0:\n    label = &#39;small&#39;\nelse:\n    label = &#39;zero&#39;\nprint(label, x % 10)</code>",
+    opts: [
+      "medium 42",
+      "small 2",
+      "big 2",
+      "zero 42"
+    ],
     ans: 1,
-    explanation: "x is 15. The first condition (15 > 20) is False. The elif condition (15 > 10) is True, so 'medium' prints. Once a branch executes, the rest are skipped \u2014 'low' never runs even though x > 10 doesn't exclude it."
+    explanation: "42 > 100 is False. 42 > 50 is False. 42 > 0 is True → label = 'small'. Once a branch matches, all remaining elif/else are skipped. 42 % 10 = 2 (remainder). So it prints 'small 2'."
   },
   {
     q: "What does this code print?<br><br><code>result = []\nfor i in range(3):\n    result.append(i * 2)\nprint(result)</code>",
-    opts: ["[0, 1, 2]", "[2, 4, 6]", "[0, 2, 4]", "[1, 2, 3]"],
+    opts: [
+      "[0, 1, 2]",
+      "[2, 4, 6]",
+      "[0, 2, 4]",
+      "[1, 2, 3]"
+    ],
     ans: 2,
-    explanation: "range(3) produces 0, 1, 2. Multiplying each by 2 gives 0, 2, 4. Remember: range(3) starts at 0, not 1. So i * 2 for each: 0*2=0, 1*2=2, 2*2=4."
+    explanation: "range(3) produces 0, 1, 2. Multiplying each by 2: 0\u00d72=0, 1\u00d72=2, 2\u00d72=4. Result: [0, 2, 4]."
   },
   {
-    q: "What does this code print?<br><br><code>words = ['hello', 'world']\nfor i, w in enumerate(words):\n    print(f'{i}: {w}')</code>",
-    opts: ["hello: 0\\nworld: 1", "0: hello\\n1: world", "1: hello\\n2: world", "Error: too many values"],
+    q: "What does this code print?<br><br><code>words = [&#39;hello&#39;, &#39;world&#39;]\nfor i, w in enumerate(words):\n    print(f&#39;{i}: {w}&#39;)</code>",
+    opts: [
+      "hello: 0 then world: 1",
+      "0: hello then 1: world",
+      "1: hello then 2: world",
+      "Error: too many values"
+    ],
     ans: 1,
-    explanation: "enumerate() returns (index, value) pairs. With unpacking into i and w: first iteration is (0, 'hello'), second is (1, 'world'). The f-string formats them as '0: hello' and '1: world'."
+    explanation: "enumerate() wraps an iterable and returns (index, value) tuples. For ['hello', 'world'], it produces (0, 'hello') and (1, 'world'). The 'for i, w in ...' syntax unpacks each tuple into two variables. This is the Pythonic alternative to the ugly 'for i in range(len(words)): w = words[i]' pattern. The index starts at 0 by default, but you can change it with enumerate(words, start=1) to get (1, 'hello'), (2, 'world')."
   },
   {
     q: "What does this code print?<br><br><code>nums = [1, 2, 3, 4, 5]\nevens = [x for x in nums if x % 2 == 0]\nprint(evens)</code>",
-    opts: ["[1, 3, 5]", "[2, 4]", "[1, 2, 3, 4, 5]", "[0, 0, 0, 0, 0]"],
+    opts: [
+      "[1, 3, 5]",
+      "[2, 4]",
+      "[1, 2, 3, 4, 5]",
+      "[0, 0, 0, 0, 0]"
+    ],
     ans: 1,
-    explanation: "This list comprehension filters nums: it keeps only elements where x % 2 == 0 (i.e., even numbers). 2 % 2 = 0 and 4 % 2 = 0, so the result is [2, 4]."
+    explanation: "The comprehension keeps only elements where x % 2 == 0 (even numbers). 2 and 4 qualify."
   },
   {
-    q: "What does this code print?<br><br><code>names = ['Alice', 'Bob']\nages = [25, 30]\nfor name, age in zip(names, ages):\n    print(f'{name} is {age}')</code>",
-    opts: ["Alice is Bob\\n25 is 30", "Alice is 25\\nBob is 30", "('Alice', 25)\\n('Bob', 30)", "Error"],
+    q: "What does this code print?<br><br><code>names = [&#39;Alice&#39;, &#39;Bob&#39;, &#39;Charlie&#39;]\nscores = [90, 85]\npairs = list(zip(names, scores))\nprint(len(pairs), pairs[-1])</code>",
+    opts: [
+      "3 ('Charlie', None) — zip pads the shorter list with None to match the longer one",
+      "2 ('Bob', 85) — zip stops at the SHORTEST iterable, so 'Charlie' is silently dropped",
+      "3 ('Charlie', 85) — zip repeats the last score for any unmatched names",
+      "Error — zip requires both lists to have exactly the same length"
+    ],
     ans: 1,
-    explanation: "zip() pairs elements by position: ('Alice', 25) and ('Bob', 30). The for loop unpacks each pair into name and age. The f-string formats them as 'Alice is 25' and 'Bob is 30'."
+    explanation: "zip() pairs elements by position and stops at the shortest iterable. With 3 names and 2 scores, you get only 2 pairs: [('Alice', 90), ('Bob', 85)]. 'Charlie' is silently dropped — no error, no warning. This is a common source of silent data loss. If you want to keep all elements and fill missing values, use itertools.zip_longest(names, scores, fillvalue=0) instead. Always check that your iterables have matching lengths before zipping."
   },
-  // ── Section 4: Functions & File I/O ──
   {
-    q: "What does this code print?<br><br><code>def greet(name, greeting='Hello'):\n    return f'{greeting}, {name}!'\n\nprint(greet('Alice'))</code>",
-    opts: ["Hello, Alice!", "Alice, Hello!", "Error: missing argument", "None"],
+    q: "What does this code print?<br><br><code>def power(base, exp=2):\n    return base ** exp\n\nresults = [power(3), power(2, 3), power(exp=4, base=2)]\nprint(results)</code>",
+    opts: [
+      "[9, 8, 16]",
+      "[6, 6, 8]",
+      "[9, 6, 16]",
+      "Error: keyword argument before positional"
+    ],
     ans: 0,
-    explanation: "greeting has a default value of 'Hello', so calling greet('Alice') uses that default. The f-string formats it as 'Hello, Alice!'. The function returns the string, and print() displays it."
+    explanation: "power(3) uses default exp=2 → 3²=9. power(2, 3) → 2³=8. power(exp=4, base=2) uses keyword args (order doesn't matter when named) → 2⁴=16. Result: [9, 8, 16]."
   },
   {
-    q: "What does this code print?<br><br><code>def add(a, b):\n    result = a + b\n\nx = add(3, 4)\nprint(x)</code>",
-    opts: ["7", "None", "Error: result not defined", "Error: missing return"],
-    ans: 1,
-    explanation: "The function calculates result = 7 but never returns it \u2014 there's no return statement. When a function has no return, Python implicitly returns None. So x is None, and print(x) outputs 'None'."
+    q: "What does this code print?<br><br><code>def process(items):\n    result = []\n    for item in items:\n        if isinstance(item, str):\n            result.append(item.upper())\n        else:\n            result.append(item * 2)\n    return result\n\nprint(process([1, &#39;hi&#39;, 3, &#39;bye&#39;]))</code>",
+    opts: [
+      "[2, &#39;HI&#39;, 6, &#39;BYE&#39;]",
+      "[1, &#39;HI&#39;, 3, &#39;BYE&#39;]",
+      "[&#39;1&#39;, &#39;HI&#39;, &#39;3&#39;, &#39;BYE&#39;]",
+      "Error: can't mix types"
+    ],
+    ans: 0,
+    explanation: "The function checks each item's type. Strings get .upper(): 'hi'→'HI', 'bye'→'BYE'. Non-strings get multiplied by 2: 1→2, 3→6. Python lists can hold mixed types — no error. Result: [2, 'HI', 6, 'BYE']."
   },
   {
     q: "What does this code print?<br><br><code>x = 10\ndef change():\n    x = 20\n\nchange()\nprint(x)</code>",
-    opts: ["20", "10", "Error: x is not defined", "None"],
+    opts: [
+      "20",
+      "10",
+      "Error: x is not defined",
+      "None"
+    ],
     ans: 1,
-    explanation: "Inside change(), 'x = 20' creates a new local variable x that shadows the global x. When the function ends, the local x disappears. The global x was never modified, so print(x) outputs 10. To modify the global, you'd need 'global x' inside the function."
+    explanation: "Inside change(), 'x = 20' creates a new local variable that shadows the global x. The global x was never modified."
   },
   {
-    q: "What does this code print?<br><br><code>def double(items):\n    return [x * 2 for x in items]\n\nresult = double([1, 2, 3])\nprint(result)</code>",
-    opts: ["[1, 2, 3, 1, 2, 3]", "[2, 4, 6]", "[[1, 1], [2, 2], [3, 3]]", "[1, 2, 3]"],
+    q: "What does this code print?<br><br><code>with open(&#39;data.txt&#39;, &#39;w&#39;) as f:\n    f.write(&#39;hello\\n&#39;)\n    f.write(&#39;world&#39;)\n\nwith open(&#39;data.txt&#39;, &#39;r&#39;) as f:\n    lines = f.readlines()\nprint(len(lines), lines[0].strip())</code>",
+    opts: [
+      "1 helloworld",
+      "2 hello",
+      "2 hello\\n",
+      "Error: can't read right after writing"
+    ],
     ans: 1,
-    explanation: "The function uses a list comprehension that multiplies each element by 2: 1*2=2, 2*2=4, 3*2=6. So it returns [2, 4, 6]. Note: for integers, * 2 doubles the value. For lists, * 2 would repeat the list."
+    explanation: "The first 'with' block writes two lines: 'hello\\n' and 'world'. The '\\n' after 'hello' creates a line break, so the file has 2 lines. The second 'with' block reads them — readlines() returns ['hello\\n', 'world'], a list of 2 elements. lines[0] is 'hello\\n' and .strip() removes the trailing newline → 'hello'. The file is automatically closed and flushed after each 'with' block exits."
   },
   {
-    q: "What does this code print?<br><br><code>def process(data: list[int]) -&gt; int:\n    return sum(data)\n\nresult = process(['a', 'b', 'c'])\nprint(result)</code>",
-    opts: ["0", "3", "Error: type hints are enforced and strings were passed", "Error: sum() can't add strings this way"],
+    q: "What does this code print?<br><br><code>def process(data: list[int]) -&gt; int:\n    return sum(data)\n\nresult = process([&#39;a&#39;, &#39;b&#39;, &#39;c&#39;])\nprint(result)</code>",
+    opts: [
+      "0",
+      "3",
+      "Error: type hints are enforced and strings were passed",
+      "Error: sum() can't add strings this way"
+    ],
     ans: 3,
-    explanation: "Type hints (list[int]) are NOT enforced at runtime \u2014 Python won't reject the strings. However, sum() tries to add strings with + starting from 0, which fails because you can't add an integer (0) and a string. The error is from sum()'s logic, not from the type hints."
+    explanation: "Type hints are NOT enforced at runtime. However, sum() tries to add strings starting from 0 (int), which fails because you can't add int + str. The error is from sum()'s logic, not type hints."
   }
 ];
 

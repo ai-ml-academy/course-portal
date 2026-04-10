@@ -134,15 +134,15 @@ const sections = [
 const questions = [
   // ── Section 1: Advanced Functions ──
   {
-    q: "What is the difference between *args and **kwargs in a function signature?",
+    q: "A student writes def process(**kwargs) and calls process(data=[1,2,3], labels=[0,1]). They try to access kwargs[0] to get the first argument. What happens?",
     opts: [
-      "*args collects extra positional arguments as a tuple; **kwargs collects extra keyword arguments as a dictionary",
-      "*args is for strings; **kwargs is for numbers",
-      "They are interchangeable \u2014 both collect arguments the same way",
-      "*args collects all arguments; **kwargs only collects named arguments that have defaults"
+      "Returns [1, 2, 3] \u2014 kwargs stores arguments in insertion order, so index 0 gives the first value passed",
+      "KeyError \u2014 kwargs is a dictionary keyed by argument names ('data', 'labels'), not a list you can index by position",
+      "Returns 'data' \u2014 index 0 gives you the first keyword name as a string, not the value itself",
+      "Returns ([1,2,3], [0,1]) \u2014 kwargs[0] returns all argument values bundled together as a tuple"
     ],
-    ans: 0,
-    explanation: "*args captures any extra positional arguments into a tuple (e.g., func(1, 2, 3) \u2192 args = (1, 2, 3)). **kwargs captures extra keyword arguments into a dictionary (e.g., func(lr=0.01, epochs=50) \u2192 kwargs = {'lr': 0.01, 'epochs': 50}). They give functions flexibility to accept variable inputs."
+    ans: 1,
+    explanation: "**kwargs collects keyword arguments into a dictionary: {'data': [1,2,3], 'labels': [0,1]}. You access values by key name (kwargs['data']), not by position (kwargs[0]). Trying kwargs[0] raises a KeyError because 0 is not one of the keys. This is a common misconception \u2014 *args gives you a tuple (position-indexed), but **kwargs gives you a dict (name-indexed). If you need the first value regardless of name, you'd use list(kwargs.values())[0], but that's fragile and rarely what you want."
   },
   {
     q: "When should you prefer explicit parameters over **kwargs?",
@@ -156,15 +156,15 @@ const questions = [
     explanation: "Explicit parameters with type hints are almost always better for readability \u2014 the signature itself documents what the function expects. **kwargs hides the interface, making it hard for callers to know what to pass. Reserve **kwargs for wrapper functions, config passthrough, and factory patterns where flexibility is genuinely needed."
   },
   {
-    q: "What does it mean that functions are 'first-class objects' in Python?",
+    q: "A colleague stores functions in a dictionary: dispatch = {'add': add_fn, 'delete': delete_fn} and calls dispatch['add'](data). Is this valid Python?",
     opts: [
-      "Functions run faster than other code because they're optimized",
-      "Functions can be passed as arguments, returned from other functions, and stored in variables",
-      "Functions must be defined before any other code in the file",
-      "Functions automatically have higher priority in memory allocation"
+      "No \u2014 dictionaries can only store basic data types like strings, integers, and lists, not callable functions",
+      "Yes \u2014 functions are first-class objects, so they can be stored in variables, lists, and dicts, and called from wherever they're referenced",
+      "Yes, but only for Python built-in functions \u2014 user-defined functions lose their callable behavior when stored in containers",
+      "No \u2014 you must use dispatch.get('add')(data) instead of bracket notation, because bracket access doesn't preserve callability"
     ],
     ans: 1,
-    explanation: "First-class means functions are treated like any other value. You can assign them to variables (fn = print), pass them as arguments (map(str, [1,2,3])), return them from functions, and store them in lists or dicts. This is the foundation for decorators and functional patterns like map/filter."
+    explanation: "In Python, functions are 'first-class objects' \u2014 they're treated like any other value. You can assign a function to a variable (fn = print), put it in a list or dict, pass it as an argument to another function, or return it from a function. The dispatch dictionary pattern is actually very common in production code \u2014 it replaces long if/elif chains with clean lookups. This concept is also the foundation for how decorators work: a decorator is just a function that takes a function and returns a new function."
   },
   {
     q: "What is the purpose of a Google-style docstring in a function?",
@@ -190,15 +190,15 @@ const questions = [
   },
   // ── Section 2: Classes & Objects ──
   {
-    q: "What is the purpose of the __init__ method in a class?",
+    q: "A student creates a class with no __init__ method and tries obj = MyClass('hello'). What happens?",
     opts: [
-      "It deletes the object when it's no longer needed",
-      "It initializes a new instance \u2014 setting up attributes and state when the object is created",
-      "It imports the class from another module",
-      "It makes the class available globally without importing"
+      "It works fine \u2014 Python provides a default __init__ that silently accepts and ignores any extra arguments",
+      "TypeError \u2014 without a custom __init__ that accepts a parameter, the class doesn't know what to do with 'hello'",
+      "The string 'hello' is automatically stored as obj.data because Python infers the attribute name",
+      "The class cannot be instantiated at all \u2014 every class requires an __init__ to create objects"
     ],
     ans: 1,
-    explanation: "__init__ is the initializer (often called the constructor). When you write Model('rf', 0.94), Python creates a new object and immediately calls __init__(self, 'rf', 0.94) on it. This is where you set up instance attributes like self.name and self.accuracy."
+    explanation: "Python provides a default __init__ that takes no arguments (just self). If you pass 'hello' but no __init__ is defined to receive it, you get: TypeError: MyClass() takes no arguments. However, you CAN create instances without __init__ \u2014 obj = MyClass() with no arguments works fine, you just get an empty object with no attributes. The __init__ method is only required when you need to accept arguments or set up initial state during object creation."
   },
   {
     q: "What is the difference between an instance attribute and a class attribute?",
@@ -298,19 +298,19 @@ const questions = [
       "The attribute is a constant that should never be modified"
     ],
     ans: 1,
-    explanation: "Python has no true private attributes. A single underscore (_status) is a convention that says 'this is an implementation detail \u2014 don't access it directly.' It's still fully accessible, but tools and other developers know to use the public interface (like a @property) instead."
+    explanation: "A single leading underscore (_status) is purely a convention meaning 'internal use \u2014 don't access directly.' Python does not enforce any access restriction for it. Note: a double underscore (__status) triggers name mangling (renamed to _ClassName__status), which makes accidental access harder but still isn't truly private. For everyday use, single underscore is the standard signal for 'implementation detail.'"
   },
   // ── Section 4: Inheritance & Dunder Methods ──
   {
-    q: "What does inheritance allow you to do?",
+    q: "A student has CSVLoader and JSONLoader classes, both with an identical describe() method copy-pasted in each. How does inheritance solve this problem?",
     opts: [
-      "Create a new class that gets all the attributes and methods of an existing class, and can add or override behavior",
-      "Merge two unrelated classes into one",
-      "Make a class immutable so its methods can't be changed",
-      "Automatically generate documentation for a class"
+      "Inheritance merges both classes into a single CSVJSONLoader that automatically handles both file formats",
+      "Put the shared describe() in a parent BaseLoader class \u2014 both children inherit it, eliminating duplication so changes apply everywhere",
+      "Inheritance auto-generates describe() from the class name, so you don't write it at all in any class",
+      "Inheritance makes describe() run faster because the parent class caches the result for all child classes to reuse"
     ],
-    ans: 0,
-    explanation: "Inheritance creates a parent-child relationship. The child class inherits all of the parent's methods and attributes, then can add new ones or override existing ones. For example, CSVDataset inherits describe() from BaseDataset but provides its own load() implementation."
+    ans: 1,
+    explanation: "When multiple classes share identical code, that's a signal to use inheritance. Create a parent class (BaseLoader) with the shared method, then have both CSVLoader(BaseLoader) and JSONLoader(BaseLoader) inherit it. Now describe() exists in one place \u2014 if you fix a bug or add a feature, the change applies to all children automatically. Each child can still override describe() with its own version if needed, and can add class-specific methods (like load()) that the parent doesn't have."
   },
   {
     q: "What does super().__init__() do inside a child class's __init__?",

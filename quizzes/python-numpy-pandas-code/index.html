@@ -139,129 +139,326 @@ const sections = [
 ];
 
 const questions = [
-  // ── Section 1: NumPy Arrays & Indexing ──
   {
-    q: "What does this code print?<br><br><code>import numpy as np\na = np.array([1, 2.5, 3])\nprint(a.dtype)</code>",
-    opts: ["int64", "float64", "object", "mixed"],
+    q: "What does this code print?<br><br><code>import numpy as np\na = np.array([1, 2, 3])\na[0] = 7.9\nprint(a)</code>",
+    opts: [
+      "[7.9 2.  3. ] — the array converts to float to hold the decimal value",
+      "[7 2 3] — the array is int64, so 7.9 is silently truncated to 7 with no warning",
+      "Error — you can't assign a float to an integer array; types must match exactly",
+      "[8 2 3] — NumPy rounds 7.9 to the nearest integer when assigning to an int array"
+    ],
     ans: 1,
-    explanation: "When you mix int and float in a NumPy array, all elements are upcasted to float64 (the most general numeric type). So 1 becomes 1.0, and the array dtype is float64."
+    explanation: "np.array([1, 2, 3]) creates an int64 array. When you assign 7.9 to it, NumPy doesn't convert the array to float or raise an error — it silently truncates 7.9 to 7 (drops the decimal, no rounding). This is a common source of subtle bugs: you think you stored 7.9 but the array holds 7. To avoid this, create the array as float from the start: np.array([1.0, 2.0, 3.0]) or np.array([1, 2, 3], dtype=float)."
   },
   {
-    q: "What does this code print?<br><br><code>import numpy as np\na = np.array([[1, 2, 3], [4, 5, 6]])\nprint(a.shape)</code>",
-    opts: ["(6,)", "(2, 3)", "(3, 2)", "2"],
+    q: "What does this code print?<br><br><code>import numpy as np\na = np.array([1, 2, 3, 4, 5])\nb = a[1:4]\nb[0] = 99\nprint(a)</code>",
+    opts: [
+      "[1 2 3 4 5] — b is an independent copy, so changing b doesn't affect a",
+      "[1 99 3 4 5] — slicing creates a VIEW that shares memory, so modifying b changes a",
+      "[99 2 3 4 5] — b[0] maps to a[0], not a[1], because the view resets indexing to 0",
+      "Error — you can't assign to a slice of a NumPy array once it's been created"
+    ],
     ans: 1,
-    explanation: "The array has 2 rows and 3 columns, so shape is (2, 3). The first dimension is rows, the second is columns. a.ndim would be 2, and a.size would be 6."
+    explanation: "In NumPy, basic slicing (a[1:4]) returns a VIEW — not a copy. The view b shares the same memory as a, just looking at elements 1, 2, 3. When you set b[0] = 99, you're actually setting a[1] = 99 (since b[0] points to a[1]). This is different from Python lists, where slicing always copies. If you need an independent copy, use b = a[1:4].copy(). Understanding views vs copies is critical for avoiding subtle bugs in NumPy."
   },
   {
-    q: "What does this code print?<br><br><code>import numpy as np\na = np.arange(10)\nprint(a[2:7:2])</code>",
-    opts: ["[2 3 4 5 6]", "[2 4 6]", "[2 3 4 5 6 7]", "[3 5 7]"],
-    ans: 1,
-    explanation: "a is [0,1,2,3,4,5,6,7,8,9]. The slice [2:7:2] means: start at index 2, stop before index 7, step by 2. So indices 2, 4, 6 give values [2, 4, 6]."
-  },
-  {
-    q: "What does this code print?<br><br><code>import numpy as np\na = np.array([[10, 20, 30], [40, 50, 60]])\nprint(a[0, -1])</code>",
-    opts: ["10", "30", "60", "[10, 20, 30]"],
-    ans: 1,
-    explanation: "a[0, -1] selects row 0 ([10, 20, 30]), column -1 (last column). So the result is 30. In NumPy, you can combine row and column indices with a comma."
-  },
-  {
-    q: "What does this code print?<br><br><code>import numpy as np\na = np.arange(6)\nb = a.reshape(2, 3)\nprint(b)</code>",
-    opts: ["[[0 1 2] [3 4 5]]", "[[0 1] [2 3] [4 5]]", "[0 1 2 3 4 5]", "Error: can't reshape"],
+    q: "What does this code print?<br><br><code>import numpy as np\na = np.array([[1, 2, 3], [4, 5, 6]])\nprint(a.sum(axis=1))</code>",
+    opts: [
+      "[6 15] — sums across each row: 1+2+3=6, 4+5+6=15",
+      "[5 7 9] — sums down each column: 1+4=5, 2+5=7, 3+6=9",
+      "21 — the total sum of all elements in the array",
+      "[[6] [15]] — same values but with an extra dimension preserved"
+    ],
     ans: 0,
-    explanation: "arange(6) creates [0,1,2,3,4,5]. reshape(2,3) arranges these into 2 rows and 3 columns, filling row by row: [[0,1,2], [3,4,5]]. Total elements (6) must match 2*3=6."
+    explanation: "The axis parameter tells NumPy which dimension to collapse. axis=1 means \"collapse along dimension 1 (columns)\" — so for each row, sum across all columns: row 0: 1+2+3=6, row 1: 4+5+6=15, giving [6, 15] with shape (2,). axis=0 would collapse rows instead, summing down columns to give [5, 7, 9] with shape (3,). The trick: the axis you specify is the one that DISAPPEARS from the result shape. (2,3) with axis=1 → dim 1 disappears → shape (2,)."
   },
-  // ── Section 2: NumPy Operations ──
   {
-    q: "What does this code print?<br><br><code>import numpy as np\na = np.array([1, 2, 3, 4])\nprint(a * 2 + 1)</code>",
-    opts: ["[3 5 7 9]", "[2 4 6 8]", "[1 2 3 4 2 4 6 8]", "Error: can't multiply array by int"],
-    ans: 0,
-    explanation: "NumPy vectorized operations: a * 2 gives [2,4,6,8], then + 1 gives [3,5,7,9]. Each operation applies element-wise to the entire array. No loops needed."
+    q: "What does this code print?<br><br><code>import numpy as np\na = np.array([1, 2, 3])\nb = np.array([True, False, True])\nprint(a[b])</code>",
+    opts: [
+      "[True False True] — boolean arrays are returned as-is when used for indexing",
+      "[1 3] — boolean indexing selects elements where the mask is True (positions 0 and 2)",
+      "[1 0 3] — False positions become 0 and True positions keep their value",
+      "Error — you can't use a boolean array to index into a numeric array"
+    ],
+    ans: 1,
+    explanation: "Boolean indexing is one of NumPy's most powerful features. When you index with a boolean array, NumPy returns only the elements where the mask is True. Here, b = [True, False, True], so a[b] picks elements at positions 0 and 2: [1, 3]. This is how expressions like a[a > 2] work — a > 2 creates [False, False, True], which selects only the value 3. Boolean indexing always returns a copy (not a view), unlike basic slicing."
+  },
+  {
+    q: "What does this code print?<br><br><code>import numpy as np\na = np.array([10, 20, 30])\nb = np.array([[1], [2], [3]])\nprint((a + b).shape)</code>",
+    opts: [
+      "Error — you can't add arrays with shapes (3,) and (3, 1) because they're incompatible",
+      "(3, 3) — NumPy broadcasts: a becomes a row repeated 3 times, b becomes a column repeated 3 times",
+      "(3,) — the result matches the 1D array's shape, ignoring the 2D array's extra dimension",
+      "(3, 1) — the result matches b's shape because it has more dimensions"
+    ],
+    ans: 1,
+    explanation: "Broadcasting in action. a has shape (3,) and b has shape (3, 1). NumPy compares from the right: 3 matches 1 (broadcast the 1), then the missing dimension is added to a → effectively (1, 3). So a is \"stretched\" to (3, 3) by repeating the row, and b is stretched to (3, 3) by repeating the column. Result: [[11, 21, 31], [12, 22, 32], [13, 23, 33]] with shape (3, 3). Broadcasting avoids explicitly creating the full (3,3) arrays — NumPy does it virtually."
+  },
+  {
+    q: "What does this code print?<br><br><code>import numpy as np\na = np.array([1, 2, 3])\nb = a * 3\na[0] = 99\nprint(b[0])</code>",
+    opts: [
+      "99 — b shares memory with a (like slicing), so changing a changes b too",
+      "3 — b = a * 3 creates a NEW array (not a view), so b is independent of a after creation",
+      "297 — b[0] was 3, but since it tracks a, it recalculates as 99 * 3 = 297",
+      "Error — modifying a invalidates any arrays derived from it"
+    ],
+    ans: 1,
+    explanation: "Arithmetic operations like a * 3 always create a NEW array — they don't return a view. So b = [3, 6, 9] is independent of a. Changing a[0] to 99 has no effect on b. This is different from slicing (b = a[1:4]) which returns a view sharing the same memory. The rule: slicing → view (shared memory), arithmetic → new array (independent copy). This distinction matters a lot when debugging unexpected value changes."
   },
   {
     q: "What does this code print?<br><br><code>import numpy as np\na = np.array([10, 20, 30, 40, 50])\nmask = a &gt; 25\nprint(a[mask])</code>",
-    opts: ["[True True True]", "[30 40 50]", "[10 20]", "[False False True True True]"],
+    opts: [
+      "[True True True]",
+      "[30 40 50]",
+      "[10 20]",
+      "[False False True True True]"
+    ],
     ans: 1,
-    explanation: "a > 25 creates boolean mask [False, False, True, True, True]. Using this mask to index a returns only elements where the mask is True: [30, 40, 50]. This is boolean indexing."
+    explanation: "a > 25 → [False, False, True, True, True]. a[mask] returns elements where True: [30, 40, 50]."
   },
   {
     q: "What does this code print?<br><br><code>import numpy as np\na = np.array([[1, 2], [3, 4]])\nprint(a.sum(axis=0))</code>",
-    opts: ["[4 6]", "[3 7]", "10", "[[1 2] [3 4]]"],
+    opts: [
+      "[4 6]",
+      "[3 7]",
+      "10",
+      "[[1 2] [3 4]]"
+    ],
     ans: 0,
-    explanation: "axis=0 means 'collapse rows' (sum down each column). Column 0: 1+3=4. Column 1: 2+4=6. Result: [4, 6]. axis=1 would sum across columns (each row): [3, 7]. No axis gives the total: 10."
+    explanation: "axis=0 means \"collapse along dimension 0 (rows)\" — for each column, sum all the rows together. Column 0: 1+3=4. Column 1: 2+4=6. Result: [4, 6] with shape (2,). If you used axis=1 instead, you'd collapse columns: row 0: 1+2=3, row 1: 3+4=7 → [3, 7]. With no axis, you'd get 10 (total sum). The trick to remember: the axis you specify is the dimension that disappears from the output shape."
   },
   {
     q: "What does this code print?<br><br><code>import numpy as np\na = np.array([3, 1, 4, 1, 5])\nidx = np.argsort(a)\nprint(idx)</code>",
-    opts: ["[1 1 3 4 5]", "[1 3 0 2 4]", "[5 4 3 1 1]", "[0 1 2 3 4]"],
+    opts: [
+      "[1 1 3 4 5]",
+      "[1 3 0 2 4]",
+      "[5 4 3 1 1]",
+      "[0 1 2 3 4]"
+    ],
     ans: 1,
-    explanation: "argsort returns the indices that would sort the array. Sorted order: 1(idx1), 1(idx3), 3(idx0), 4(idx2), 5(idx4). So the indices are [1, 3, 0, 2, 4]. You can verify: a[[1,3,0,2,4]] gives [1,1,3,4,5]."
+    explanation: "argsort returns indices that would sort the array. Sorted: 1(idx1), 1(idx3), 3(idx0), 4(idx2), 5(idx4) → [1, 3, 0, 2, 4]."
   },
   {
     q: "What does this code print?<br><br><code>import numpy as np\na = np.array([1, 2, 3])\nb = np.array([10, 20, 30])\nprint(np.dot(a, b))</code>",
-    opts: ["[10 40 90]", "140", "[11 22 33]", "Error: different shapes"],
+    opts: [
+      "[10 40 90]",
+      "140",
+      "[11 22 33]",
+      "Error: different shapes"
+    ],
     ans: 1,
-    explanation: "np.dot on two 1D arrays computes the dot product: 1*10 + 2*20 + 3*30 = 10 + 40 + 90 = 140. This is a scalar, not an array. For element-wise multiplication, use a * b which gives [10, 40, 90]."
-  },
-  // ── Section 3: Pandas DataFrames ──
-  {
-    q: "What does this code print?<br><br><code>import pandas as pd\ndf = pd.DataFrame({'a': [1, 2, 3], 'b': [4, 5, 6]})\nprint(df.shape)</code>",
-    opts: ["(2, 3)", "(3, 2)", "(3,)", "6"],
-    ans: 1,
-    explanation: "The DataFrame has 3 rows (from the lists) and 2 columns ('a' and 'b'). shape returns (rows, columns) = (3, 2)."
+    explanation: "Dot product of 1D arrays: 1*10 + 2*20 + 3*30 = 140 (a scalar). For element-wise, use a * b → [10, 40, 90]."
   },
   {
-    q: "What does this code print?<br><br><code>import pandas as pd\ndf = pd.DataFrame({'name': ['Alice', 'Bob'], 'age': [25, 30]})\nprint(type(df['age']))</code>",
-    opts: ["&lt;class 'list'&gt;", "&lt;class 'numpy.ndarray'&gt;", "&lt;class 'pandas.Series'&gt;", "&lt;class 'pandas.DataFrame'&gt;"],
-    ans: 2,
-    explanation: "Selecting a single column from a DataFrame with df['age'] returns a pandas Series, not a DataFrame. To get a DataFrame with one column, use df[['age']] (double brackets)."
+    q: "What does this code print?<br><br><code>import pandas as pd\ndf = pd.DataFrame({&#39;x&#39;: [10, 20, 30]})\ndf2 = df\ndf2[&#39;y&#39;] = [4, 5, 6]\nprint(df.columns.tolist())</code>",
+    opts: [
+      "['x'] — df2 is a separate copy, so adding a column to df2 doesn't affect df",
+      "['x', 'y'] — df2 = df doesn't copy the DataFrame; both variables point to the same object",
+      "Error — you can't add columns to df2 because it was created by assignment, not pd.DataFrame()",
+      "['y'] — the new column replaces the existing one because df2 and df share memory"
+    ],
+    ans: 1,
+    explanation: "Just like Python lists, df2 = df does NOT copy the DataFrame — both variables reference the same object. Adding column 'y' to df2 also adds it to df, because they ARE the same DataFrame. This catches many beginners: they think they're working on a safe copy but they're modifying the original. To create an independent copy, use df2 = df.copy(). This is the same aliasing behavior as Python lists (a = [1,2]; b = a; b.append(3) changes a too)."
   },
   {
-    q: "What does this code print?<br><br><code>import pandas as pd\ndf = pd.DataFrame({'x': [10, 20, 30, 40]}, index=['a', 'b', 'c', 'd'])\nprint(df.loc['b':'d'])</code>",
-    opts: ["x values 20, 30", "x values 20, 30, 40", "x values 10, 20, 30", "Error: can't slice with strings"],
-    ans: 1,
-    explanation: "With .loc, slicing is inclusive on both ends. 'b':'d' includes rows 'b', 'c', and 'd' \u2014 giving x values 20, 30, 40. This is different from .iloc where the end is exclusive."
+    q: "What does this code print?<br><br><code>import pandas as pd\ndf = pd.DataFrame({&#39;a&#39;: [10, 20, 30]}, index=[5, 10, 15])\nprint(df.iloc[0][&#39;a&#39;], df.loc[5][&#39;a&#39;])</code>",
+    opts: [
+      "10 10 — both return the first row's value, just accessed differently (by position vs by label)",
+      "5 10 — iloc returns the index label, loc returns the value",
+      "Error — you can't use both iloc and loc on the same DataFrame",
+      "10 Error — loc[5] fails because 5 is a position, not a label"
+    ],
+    ans: 0,
+    explanation: "This demonstrates the critical difference between iloc (integer position) and loc (label). iloc[0] means \"first row by position\" → value 10. loc[5] means \"row with label 5\" → also value 10 (because the first row has index label 5). They give the same result here by coincidence. But iloc[1] would give 20 (second row by position) while loc[10] would also give 20 (row labeled 10). The confusion gets dangerous when index labels are integers that don't match positions — which is exactly what this example tests."
   },
   {
-    q: "What does this code print?<br><br><code>import pandas as pd\ndf = pd.DataFrame({'a': [1, 2, 3], 'b': [4, 5, 6]})\nresult = df[df['a'] &gt; 1]\nprint(len(result))</code>",
-    opts: ["1", "2", "3", "Error"],
+    q: "What does this code print?<br><br><code>import pandas as pd\ndf = pd.DataFrame({&#39;x&#39;: [10, 20, 30, 40]}, index=[&#39;a&#39;, &#39;b&#39;, &#39;c&#39;, &#39;d&#39;])\nprint(df.loc[&#39;b&#39;:&#39;d&#39;])</code>",
+    opts: [
+      "x values 20, 30",
+      "x values 20, 30, 40",
+      "x values 10, 20, 30",
+      "Error: can't slice with strings"
+    ],
     ans: 1,
-    explanation: "df['a'] > 1 creates the mask [False, True, True]. Applying it to df keeps only rows where 'a' is 2 and 3. That's 2 rows, so len(result) is 2."
+    explanation: ".loc slicing is inclusive on both ends. 'b':'d' includes rows 'b', 'c', 'd' → values 20, 30, 40. (.iloc would exclude the end.)"
   },
   {
-    q: "What does this code print?<br><br><code>import pandas as pd\ndf = pd.DataFrame({'x': [10, 20, 30]})\ndf['y'] = df['x'] * 2\nprint(df.columns.tolist())</code>",
-    opts: ["['x']", "['x', 'y']", "['y']", "Error: can't add column this way"],
+    q: "What does this code print?<br><br><code>import pandas as pd\ndf = pd.DataFrame({&#39;a&#39;: [1, 2, 3], &#39;b&#39;: [4, 5, 6]})\nresult = df[df[&#39;a&#39;] &gt; 1]\nprint(len(result))</code>",
+    opts: [
+      "1",
+      "2",
+      "3",
+      "Error"
+    ],
     ans: 1,
-    explanation: "df['y'] = df['x'] * 2 creates a new column 'y' with values [20, 40, 60]. The DataFrame now has two columns. columns.tolist() converts the column index to a regular list: ['x', 'y']."
+    explanation: "df['a'] > 1 → [False, True, True]. Keeps rows where 'a' is 2 and 3 → 2 rows."
   },
-  // ── Section 4: Pandas Cleaning & Aggregation ──
+  {
+    q: "What does this code print?<br><br><code>import pandas as pd\nimport numpy as np\ndf = pd.DataFrame({&#39;val&#39;: [1.0, np.nan, 3.0, np.nan]})\nprint(df[&#39;val&#39;].mean())</code>",
+    opts: [
+      "nan — any NaN in the data makes the entire mean calculation return NaN",
+      "2.0 — pandas skips NaN values by default when computing mean, so it calculates (1+3)/2",
+      "1.75 — pandas treats NaN as 0 when computing mean, so it calculates (1+0+3+0)/4",
+      "Error — you can't compute mean on a column that contains missing values"
+    ],
+    ans: 1,
+    explanation: "By default, pandas aggregation functions (mean, sum, std, etc.) skip NaN values automatically. So df['val'].mean() computes (1.0 + 3.0) / 2 = 2.0, not (1.0 + NaN + 3.0 + NaN) / 4. This is usually what you want, but it's important to know it's happening — the denominator is 2 (non-NaN count), not 4 (total count). If you want NaN to propagate, use df['val'].mean(skipna=False), which would return NaN."
+  },
   {
     q: "What does this code print?<br><br><code>import pandas as pd\nimport numpy as np\ns = pd.Series([1, np.nan, 3, np.nan, 5])\nprint(s.isna().sum())</code>",
-    opts: ["0", "2", "3", "5"],
+    opts: [
+      "0",
+      "2",
+      "3",
+      "5"
+    ],
     ans: 1,
-    explanation: "isna() returns [False, True, False, True, False]. sum() on booleans counts True values: there are 2 NaN values, so the result is 2."
+    explanation: "isna() → [False, True, False, True, False]. sum() counts True values: 2 NaN values."
   },
   {
     q: "What does this code print?<br><br><code>import pandas as pd\nimport numpy as np\ns = pd.Series([1, np.nan, 3])\nfilled = s.fillna(0)\nprint(filled.tolist())</code>",
-    opts: ["[1, nan, 3]", "[1.0, 0.0, 3.0]", "[0, 0, 0]", "[1, 3]"],
+    opts: [
+      "[1, nan, 3]",
+      "[1.0, 0.0, 3.0]",
+      "[0, 0, 0]",
+      "[1, 3]"
+    ],
     ans: 1,
-    explanation: "fillna(0) replaces NaN with 0. Since the Series contains a float (NaN is a float), all values are float64: [1.0, 0.0, 3.0]. The original Series s is unchanged \u2014 fillna returns a new Series."
+    explanation: "fillna(0) replaces NaN with 0. Since NaN is a float, all values are float64: [1.0, 0.0, 3.0]. The original Series is unchanged."
   },
   {
-    q: "What does this code print?<br><br><code>import pandas as pd\nimport numpy as np\ndf = pd.DataFrame({'a': [1, np.nan, 3], 'b': [4, 5, np.nan]})\nresult = df.dropna()\nprint(len(result))</code>",
-    opts: ["1", "2", "3", "0"],
+    q: "What does this code print?<br><br><code>import pandas as pd\nimport numpy as np\ndf = pd.DataFrame({&#39;a&#39;: [1, np.nan, 3], &#39;b&#39;: [4, 5, np.nan]})\nresult = df.dropna()\nprint(len(result))</code>",
+    opts: [
+      "1",
+      "2",
+      "3",
+      "0"
+    ],
     ans: 0,
-    explanation: "dropna() removes any row that contains at least one NaN. Row 0: [1, 4] \u2014 no NaN, kept. Row 1: [NaN, 5] \u2014 has NaN, dropped. Row 2: [3, NaN] \u2014 has NaN, dropped. Only 1 row survives."
+    explanation: "dropna() removes any row with at least one NaN. Row 0: no NaN (kept). Row 1: NaN in 'a' (dropped). Row 2: NaN in 'b' (dropped). 1 row survives."
   },
   {
-    q: "What does this code print?<br><br><code>import pandas as pd\ndf = pd.DataFrame({\n    'dept': ['A', 'B', 'A', 'B'],\n    'sal': [50, 60, 70, 80]\n})\nprint(df.groupby('dept')['sal'].mean().tolist())</code>",
-    opts: ["[60.0, 70.0]", "[50, 60, 70, 80]", "[65.0]", "[55.0, 75.0]"],
+    q: "What does this code print?<br><br><code>import pandas as pd\ndf = pd.DataFrame({\n    &#39;dept&#39;: [&#39;A&#39;, &#39;B&#39;, &#39;A&#39;, &#39;B&#39;],\n    &#39;sal&#39;: [50, 60, 70, 80]\n})\nprint(df.groupby(&#39;dept&#39;)[&#39;sal&#39;].mean().tolist())</code>",
+    opts: [
+      "[60.0, 70.0]",
+      "[50, 60, 70, 80]",
+      "[65.0]",
+      "[55.0, 75.0]"
+    ],
     ans: 0,
-    explanation: "groupby('dept') splits into groups: A=[50,70], B=[60,80]. mean() of A = (50+70)/2 = 60.0. mean() of B = (60+80)/2 = 70.0. tolist() gives [60.0, 70.0]. Groups are sorted alphabetically by default."
+    explanation: "Groups: A=[50,70], B=[60,80]. mean(A) = 60.0, mean(B) = 70.0. Groups sorted alphabetically → [60.0, 70.0]."
   },
   {
-    q: "What does this code print?<br><br><code>import pandas as pd\ndf = pd.DataFrame({'a': ['1', '2', '3']})\ndf['b'] = df['a'].astype(int) * 10\nprint(df['b'].tolist())</code>",
-    opts: ["['10', '20', '30']", "[10, 20, 30]", "Error: can't multiply string by int", "['1111111111', '2222222222', '3333333333']"],
+    q: "What does this code print?<br><br><code>import pandas as pd\ndf = pd.DataFrame({&#39;a&#39;: [&#39;1&#39;, &#39;2&#39;, &#39;3&#39;]})\ndf[&#39;b&#39;] = df[&#39;a&#39;].astype(int) * 10\nprint(df[&#39;b&#39;].tolist())</code>",
+    opts: [
+      "['10', '20', '30']",
+      "[10, 20, 30]",
+      "Error: can't multiply string by int",
+      "['1111111111', '2222222222', '3333333333']"
+    ],
     ans: 1,
-    explanation: "Column 'a' contains strings '1', '2', '3'. astype(int) converts them to integers 1, 2, 3. Multiplying by 10 gives [10, 20, 30]. Without astype, '1' * 10 would repeat the string 10 times."
+    explanation: "Column 'a' has strings. astype(int) converts to integers. Then * 10 gives [10, 20, 30]. Without astype, '1' * 10 would repeat the string."
+  }
+]; b = a; b.append(3) changes a too)."
+  },
+  {
+    q: "What does this code print?",
+    opts: [
+      "10 10 — both return the first row's value, just accessed differently (by position vs by label)",
+      "5 10 — iloc returns the index label, loc returns the value",
+      "Error — you can't use both iloc and loc on the same DataFrame",
+      "10 Error — loc[5] fails because 5 is a position, not a label"
+    ],
+    ans: 0,
+    explanation: "This demonstrates the critical difference between iloc (integer position) and loc (label). iloc[0] means \"first row by position\" → value 10. loc[5] means \"row with label 5\" → also value 10 (because the first row has index label 5). They give the same result here by coincidence. But iloc[1] would give 20 (second row by position) while loc[10] would also give 20 (row labeled 10). The confusion gets dangerous when index labels are integers that don't match positions — which is exactly what this example tests."
+  },
+  {
+    q: "What does this code print?",
+    opts: [
+      "x values 20, 30",
+      "x values 20, 30, 40",
+      "x values 10, 20, 30",
+      "Error: can't slice with strings"
+    ],
+    ans: 1,
+    explanation: ".loc slicing is inclusive on both ends. 'b':'d' includes rows 'b', 'c', 'd' → values 20, 30, 40. (.iloc would exclude the end.)"
+  },
+  {
+    q: "What does this code print?",
+    opts: [
+      "1",
+      "2",
+      "3",
+      "Error"
+    ],
+    ans: 1,
+    explanation: "df['a'] > 1 → [False, True, True]. Keeps rows where 'a' is 2 and 3 → 2 rows."
+  },
+  {
+    q: "What does this code print?",
+    opts: [
+      "nan — any NaN in the data makes the entire mean calculation return NaN",
+      "2.0 — pandas skips NaN values by default when computing mean, so it calculates (1+3)/2",
+      "1.75 — pandas treats NaN as 0 when computing mean, so it calculates (1+0+3+0)/4",
+      "Error — you can't compute mean on a column that contains missing values"
+    ],
+    ans: 1,
+    explanation: "By default, pandas aggregation functions (mean, sum, std, etc.) skip NaN values automatically. So df['val'].mean() computes (1.0 + 3.0) / 2 = 2.0, not (1.0 + NaN + 3.0 + NaN) / 4. This is usually what you want, but it's important to know it's happening — the denominator is 2 (non-NaN count), not 4 (total count). If you want NaN to propagate, use df['val'].mean(skipna=False), which would return NaN."
+  },
+  {
+    q: "What does this code print?",
+    opts: [
+      "0",
+      "2",
+      "3",
+      "5"
+    ],
+    ans: 1,
+    explanation: "isna() → [False, True, False, True, False]. sum() counts True values: 2 NaN values."
+  },
+  {
+    q: "What does this code print?",
+    opts: [
+      "[1, nan, 3]",
+      "[1.0, 0.0, 3.0]",
+      "[0, 0, 0]",
+      "[1, 3]"
+    ],
+    ans: 1,
+    explanation: "fillna(0) replaces NaN with 0. Since NaN is a float, all values are float64: [1.0, 0.0, 3.0]. The original Series is unchanged."
+  },
+  {
+    q: "What does this code print?",
+    opts: [
+      "1",
+      "2",
+      "3",
+      "0"
+    ],
+    ans: 0,
+    explanation: "dropna() removes any row with at least one NaN. Row 0: no NaN (kept). Row 1: NaN in 'a' (dropped). Row 2: NaN in 'b' (dropped). 1 row survives."
+  },
+  {
+    q: "What does this code print?",
+    opts: [
+      "[60.0, 70.0]",
+      "[50, 60, 70, 80]",
+      "[65.0]",
+      "[55.0, 75.0]"
+    ],
+    ans: 0,
+    explanation: "Groups: A=[50,70], B=[60,80]. mean(A) = 60.0, mean(B) = 70.0. Groups sorted alphabetically → [60.0, 70.0]."
+  },
+  {
+    q: "What does this code print?",
+    opts: [
+      "['10', '20', '30']",
+      "[10, 20, 30]",
+      "Error: can't multiply string by int",
+      "['1111111111', '2222222222', '3333333333']"
+    ],
+    ans: 1,
+    explanation: "Column 'a' has strings. astype(int) converts to integers. Then * 10 gives [10, 20, 30]. Without astype, '1' * 10 would repeat the string."
   }
 ];
 

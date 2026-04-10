@@ -142,28 +142,28 @@ const sections = [
 const questions = [
   // ── Section 1: Functions & Arguments ──
   {
-    q: "What does this code print?<br><br><code>def mean(*values):\n    return sum(values) / len(values)\n\nprint(mean(10, 20, 30))</code>",
-    opts: ["60", "20.0", "30", "[10, 20, 30]"],
+    q: "What does this code print?<br><br><code>def greet(*names, sep=', '):\n    return sep.join(names)\n\nprint(greet('Alice', 'Bob', 'Charlie'))</code>",
+    opts: ["('Alice', 'Bob', 'Charlie')", "Alice, Bob, Charlie", "Error: sep must be passed as a positional argument before the names", "Alice Bob Charlie"],
     ans: 1,
-    explanation: "*values captures 10, 20, 30 as the tuple (10, 20, 30). sum((10, 20, 30)) = 60, len((10, 20, 30)) = 3. 60 / 3 = 20.0. Note: Python 3 division always returns a float."
+    explanation: "*names captures all positional arguments into the tuple ('Alice', 'Bob', 'Charlie'). The parameter sep comes after *names, making it keyword-only \u2014 it can't be passed positionally. Since sep isn't provided, it uses the default ', '. The .join() method concatenates the tuple elements with ', ' between them, producing 'Alice, Bob, Charlie'. Note: any parameter defined after *args is automatically keyword-only in Python."
   },
   {
-    q: "What does this code print?<br><br><code>def create_config(**kwargs):\n    return len(kwargs)\n\nprint(create_config(lr=0.01, epochs=50, batch=32))</code>",
-    opts: ["3", "{'lr': 0.01, 'epochs': 50, 'batch': 32}", "Error: unexpected keyword arguments", "(0.01, 50, 32)"],
+    q: "What does this code print?<br><br><code>def config(**kwargs):\n    return 'lr' in kwargs, kwargs.get('batch', 64)\n\nprint(config(lr=0.01, epochs=50))</code>",
+    opts: ["(True, 64)", "(True, None)", "(False, 64)", "Error: batch is not a valid keyword argument"],
     ans: 0,
-    explanation: "**kwargs collects all keyword arguments into a dictionary: {'lr': 0.01, 'epochs': 50, 'batch': 32}. len() of that dict is 3."
+    explanation: "**kwargs collects all keyword arguments into a dict: {'lr': 0.01, 'epochs': 50}. The expression 'lr' in kwargs checks if 'lr' is a key \u2014 it is, so True. kwargs.get('batch', 64) looks for key 'batch' \u2014 it's NOT in the dict (we only passed lr and epochs), so .get() returns the default value 64. The function returns a tuple (True, 64). This pattern is very common when handling optional configuration: use .get(key, default) to safely access keys that might not be present."
   },
   {
     q: "What does this code print?<br><br><code>def apply(data, fn):\n    return [fn(x) for x in data]\n\nresult = apply([1, 4, 9], lambda x: x ** 0.5)\nprint(result)</code>",
     opts: ["[1, 2, 3]", "[1.0, 2.0, 3.0]", "[1, 16, 81]", "Error: can't pass lambda"],
     ans: 1,
-    explanation: "The lambda computes x ** 0.5 (square root). 1**0.5 = 1.0, 4**0.5 = 2.0, 9**0.5 = 3.0. The ** operator with a float exponent returns floats, so the result is [1.0, 2.0, 3.0]."
+    explanation: "The function applies fn to each element using a list comprehension: [fn(x) for x in data]. The lambda computes square roots: 1**0.5=1.0, 4**0.5=2.0, 9**0.5=3.0. Note that ** with a float exponent always returns a float, even for perfect squares. Result: [1.0, 2.0, 3.0]."
   },
   {
     q: "What does this code print?<br><br><code>def train(model, epochs=10, lr=0.01):\n    return f'{model}: {epochs}e, lr={lr}'\n\nprint(train('xgb', lr=0.001))</code>",
     opts: ["xgb: 10e, lr=0.001", "xgb: 10e, lr=0.01", "Error: missing epochs argument", "xgb: 0.001e, lr=10"],
     ans: 0,
-    explanation: "'xgb' fills model (positional). epochs is not provided, so it uses the default 10. lr=0.001 overrides the default 0.01. Result: 'xgb: 10e, lr=0.001'."
+    explanation: "'xgb' is passed positionally and fills the model parameter. epochs is not provided, so it uses its default value of 10. lr=0.001 is passed as a keyword argument, which overrides the default of 0.01. This demonstrates how you can skip optional parameters in the middle \u2014 you don't have to provide epochs to specify lr, as long as you use the keyword syntax. If you tried train('xgb', 0.001) without the keyword, 0.001 would fill epochs (the second positional), not lr."
   },
   {
     q: "What does this code print?<br><br><code>def outer():\n    x = 'hello'\n    def inner():\n        return x.upper()\n    return inner\n\nfn = outer()\nprint(fn())</code>",
@@ -176,13 +176,13 @@ const questions = [
     q: "What does this code print?<br><br><code>class Model:\n    framework = 'sklearn'\n    def __init__(self, name):\n        self.name = name\n\na = Model('rf')\nb = Model('xgb')\nprint(a.framework, b.name)</code>",
     opts: ["sklearn xgb", "sklearn rf", "rf xgb", "Error: framework not defined"],
     ans: 0,
-    explanation: "framework is a class attribute shared by all instances \u2014 a.framework is 'sklearn'. name is an instance attribute unique to each object \u2014 b.name is 'xgb'. So the output is 'sklearn xgb'."
+    explanation: "This tests the distinction between class attributes and instance attributes. framework = 'sklearn' is defined at the class level (outside __init__), so it's shared by ALL instances \u2014 a.framework and b.framework both return 'sklearn'. But self.name is set inside __init__ and is unique per instance \u2014 a.name is 'rf' and b.name is 'xgb'. The print statement asks for a.framework (class attribute = 'sklearn') and b.name (b's instance attribute = 'xgb'), giving 'sklearn xgb'."
   },
   {
     q: "What does this code print?<br><br><code>class Model:\n    def __init__(self, name, acc):\n        self.name = name\n        self.acc = acc\n    def __repr__(self):\n        return f'Model({self.name!r}, {self.acc})'\n\nm = Model('rf', 0.94)\nprint(m)</code>",
     opts: ["rf 0.94", "Model('rf', 0.94)", "<Model object>", "Error"],
     ans: 1,
-    explanation: "print() calls __str__ first, but since __str__ isn't defined, it falls back to __repr__. The !r in the f-string adds quotes around self.name, producing Model('rf', 0.94)."
+    explanation: "print(m) looks for __str__ first. Since it's not defined, Python falls back to __repr__. Here, __repr__ returns f'Model({self.name!r}, {self.acc})'. The !r forces repr() on self.name, adding quotes: 'rf'. So the output is Model('rf', 0.94)."
   },
   {
     q: "What does this code print?<br><br><code>class Dataset:\n    def __init__(self, features):\n        self.features = features\n    @property\n    def count(self):\n        return len(self.features)\n\nds = Dataset(['age', 'income'])\nprint(ds.count)</code>",
@@ -191,10 +191,10 @@ const questions = [
     explanation: "@property makes count accessible without parentheses. ds.count calls the method behind the scenes and returns len(['age', 'income']) = 2. Without @property, you'd need ds.count() instead."
   },
   {
-    q: "What does this code print?<br><br><code>class Exp:\n    def __init__(self):\n        self._status = 'created'\n    @property\n    def status(self):\n        return self._status\n    @status.setter\n    def status(self, val):\n        valid = {'created', 'running', 'done'}\n        if val not in valid:\n            raise ValueError(f'Invalid: {val}')\n        self._status = val\n\ne = Exp()\ne.status = 'running'\nprint(e.status)</code>",
-    opts: ["created", "running", "Error: can't assign to property", "ValueError"],
+    q: "What does this code print?<br><br><code>class Stack:\n    def __init__(self):\n        self._items = []\n    \n    def push(self, item):\n        self._items.append(item)\n        return self\n    \n    def pop(self):\n        return self._items.pop()\n    \n    def __len__(self):\n        return len(self._items)\n\ns = Stack()\ns.push(10).push(20).push(30)\nval = s.pop()\nprint(len(s), val)</code>",
+    opts: ["3 30", "2 30", "3 10", "2 10"],
     ans: 1,
-    explanation: "The setter validates 'running' is in the valid set (it is), then sets self._status = 'running'. The getter returns self._status. So print(e.status) outputs 'running'."
+    explanation: "push returns self, enabling method chaining \u2014 s.push(10).push(20).push(30) adds all three items, so _items = [10, 20, 30]. Then s.pop() removes and returns the last item (30), leaving _items = [10, 20]. len(s) calls __len__ \u2192 2. So it prints 2 30. This tests method chaining (returning self), the dunder __len__, and list .pop() behavior."
   },
   {
     q: "What does this code print?<br><br><code>class Config:\n    def __init__(self, name, params):\n        self.name = name\n        self.params = params\n    @classmethod\n    def from_dict(cls, data):\n        name = data.pop('name')\n        return cls(name, data)\n\nc = Config.from_dict({'name': 'xgb', 'lr': 0.01})\nprint(c.name, c.params)</code>",
@@ -207,7 +207,7 @@ const questions = [
     q: "What does this code print?<br><br><code>class Base:\n    def __init__(self, name):\n        self.name = name\n    def describe(self):\n        return f'{self.name}: base'\n\nclass Child(Base):\n    pass\n\nc = Child('test')\nprint(c.describe())</code>",
     opts: ["test: base", "Error: Child has no describe method", "None", "test: child"],
     ans: 0,
-    explanation: "Child inherits everything from Base without overriding anything. So Child('test') calls Base.__init__, setting self.name = 'test'. c.describe() uses Base's describe method, returning 'test: base'."
+    explanation: "Child inherits from Base but defines no methods of its own. Child('test') calls Base.__init__ (inherited), setting self.name = 'test'. c.describe() calls Base.describe (inherited), which returns f'{self.name}: base' = 'test: base'. The child class gets all parent methods and attributes for free \u2014 that's the point of inheritance."
   },
   {
     q: "What does this code print?<br><br><code>class Base:\n    def __init__(self, x):\n        self.x = x\n\nclass Child(Base):\n    def __init__(self, x, y):\n        super().__init__(x)\n        self.y = y\n\nc = Child(10, 20)\nprint(c.x + c.y)</code>",
@@ -256,13 +256,13 @@ const questions = [
     q: "What does this code print?<br><br><code>import logging\nlogging.basicConfig(level=logging.WARNING, format='%(levelname)s: %(message)s', force=True)\nlogger = logging.getLogger('test')\nlogger.info('step 1')\nlogger.warning('step 2')\nlogger.error('step 3')</code>",
     opts: ["INFO: step 1\\nWARNING: step 2\\nERROR: step 3", "WARNING: step 2\\nERROR: step 3", "ERROR: step 3", "step 1\\nstep 2\\nstep 3"],
     ans: 1,
-    explanation: "The logging level is set to WARNING, which means only WARNING and above (ERROR, CRITICAL) are output. The INFO message is filtered out. So only 'WARNING: step 2' and 'ERROR: step 3' are printed."
+    explanation: "The logger level is set to WARNING, which means only messages at WARNING level and above (WARNING, ERROR, CRITICAL) will be output. logger.info('step 1') is at INFO level \u2014 below WARNING \u2014 so it's silently filtered out. logger.warning('step 2') and logger.error('step 3') both pass the threshold. Output: 'WARNING: step 2' then 'ERROR: step 3'."
   },
   {
     q: "What does this code print?<br><br><code>import time\nclass Timer:\n    def __enter__(self):\n        self.start = time.perf_counter()\n        return self\n    def __exit__(self, *args):\n        print(f'done')\n\nwith Timer() as t:\n    x = 1 + 1\nprint(x)</code>",
     opts: ["2", "done\\n2", "done", "Error: Timer is not a context manager"],
     ans: 1,
-    explanation: "Timer defines __enter__ and __exit__, making it a context manager. The 'with' block runs: x = 1 + 1. When the block exits, __exit__ prints 'done'. Then print(x) outputs 2. So the full output is 'done' followed by '2'."
+    explanation: "with Timer() as t calls __enter__ at the start of the block. Inside the block, x = 1 + 1 sets a local variable x = 2. When the block ends, __exit__ runs automatically and prints 'done'. Then execution continues with print(x) \u2192 prints 2. Full output: 'done' then '2'. The context manager pattern (with ... as) guarantees __exit__ runs even if the block raises an exception."
   }
 ];
 
