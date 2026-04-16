@@ -1,0 +1,1279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Class 04 — Convolutional Neural Networks</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"
+  onload="renderMathInElement(document.body, { delimiters: [
+    { left: '$$', right: '$$', display: true },
+    { left: '$', right: '$', display: false }
+  ] });"></script>
+<style>
+/* ============================================================
+   Gen AI Engineer Course — Slide Theme (inlined)
+   ============================================================ */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+:root {
+  /* --- Navy scale (primary — professional medium blue, not dark) ------- */
+  --navy-900: #1A3264; --navy-800: #214078; --navy-700: #2E5090; --navy-600: #3660A3;
+  --navy-500: #4272B8; --navy-400: #5A8ACB; --navy-300: #7BA4D8; --navy-200: #A3C0E4;
+  --navy-100: #C8D9EF; --navy-50:  #E8EFF7;
+
+  /* --- Slate neutrals ---------------------------------------------------- */
+  --slate-900: #1E1E2E; --slate-800: #2A2A3C; --slate-700: #3A3A4F; --slate-600: #4A4A62;
+  --slate-500: #6B6B82; --slate-400: #8E8EA3; --slate-300: #B0B0C2;
+  --slate-200: #D0D0DC; --slate-100: #E8E8EF; --slate-50:  #F5F5F9;
+
+  /* --- Accent: muted teal / cyan for highlights and links -------------- */
+  --accent:       #4BB8C9;
+  --accent-light: #7FCDD8;
+  --accent-dim:   #2A8F9E;
+
+  /* --- Semantic: info (teal), success (sage), warning (warm amber),
+         error (muted brick) ---------------------------------------------- */
+  --info:    #36A2B5; --info-bg:    #EAF5F7;
+  --success: #5B9E7B; --success-bg: #EDF5F0;
+  --warning: #C49545; --warning-bg: #FBF4E8;
+  --error:   #D4594E; --error-bg:   #FBEEED;
+
+  --font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-code: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
+  --slide-padding: 3rem 4rem; --slide-max-width: 1100px;
+  --radius-sm: 6px; --radius-md: 10px; --radius-lg: 16px;
+  --shadow-sm: 0 1px 3px rgba(38, 69, 110, 0.06);
+  --shadow-md: 0 4px 14px rgba(38, 69, 110, 0.08);
+  --shadow-lg: 0 8px 28px rgba(38, 69, 110, 0.12);
+  --ease: cubic-bezier(.4, 0, .2, 1);
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { font-size: 19px; scroll-behavior: smooth; -webkit-font-smoothing: antialiased; }
+body { font-family: var(--font-body); color: var(--slate-800); background: var(--slate-50); line-height: 1.6; }
+
+.slide { min-height: 100vh; padding: var(--slide-padding); display: flex; flex-direction: column;
+         justify-content: center; max-width: var(--slide-max-width); margin: 0 auto; position: relative; }
+.slide-number { position: absolute; bottom: 1.2rem; right: 1.5rem; font-size: 0.75rem;
+                font-weight: 600; color: var(--slate-400); letter-spacing: 0.04em; }
+.slide + .slide { border-top: 1px solid var(--slate-100); }
+
+h1, h2, h3, h4 { color: var(--navy-700); line-height: 1.25; font-weight: 700; letter-spacing: -0.01em; }
+h1 { font-size: 2.8rem; font-weight: 800; margin-bottom: 1rem; }
+h2 { font-size: 2.15rem; margin-bottom: 0.8rem; }
+h3 { font-size: 1.6rem;  margin-bottom: 0.6rem; }
+h4 { font-size: 1.3rem;  font-weight: 600; margin-bottom: 0.5rem; }
+p  { margin-bottom: 1rem; }
+strong { font-weight: 600; color: var(--navy-700); }
+
+a { color: var(--accent-dim); text-decoration: none; border-bottom: 1px solid transparent;
+    transition: border-color 0.2s var(--ease); }
+a:hover { border-bottom-color: var(--accent-dim); }
+
+ul, ol { margin: 0.5rem 0 1rem 1.6rem; }
+li { margin-bottom: 0.35rem; }
+li::marker { color: var(--navy-400); }
+
+.subtitle { font-size: 1.3rem; color: var(--slate-500); font-weight: 400; margin-bottom: 1.5rem; }
+.muted { color: var(--slate-500); }
+
+.slide.title-slide { text-align: center; color: var(--slate-50);
+  background: linear-gradient(135deg, var(--navy-800) 0%, var(--navy-600) 100%); min-height: 100vh; }
+.slide.title-slide h1 { color: var(--slate-50); font-size: 3.4rem; margin-bottom: 0.6rem; }
+.slide.title-slide .subtitle { color: var(--navy-100); font-size: 1.4rem; }
+.slide.title-slide .meta { margin-top: 2rem; font-size: 0.9rem; color: var(--navy-200); }
+
+.slide.section-header { text-align: center; background: var(--navy-50); }
+.slide.section-header h2 { font-size: 2.4rem; color: var(--navy-700); margin-bottom: 0.6rem; }
+.slide.section-header .section-number { display: inline-block; font-size: 0.85rem;
+  font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;
+  color: var(--accent-dim); margin-bottom: 0.8rem; }
+.slide.section-header .subtitle { font-size: 1.15rem; color: var(--slate-600); max-width: 720px; margin: 0 auto; }
+
+/* A "lens label" for the 4 architecture views (big picture / two halves /
+   shapes / final code). Keeps the intentional repetition visually obvious. */
+.lens-label { display: inline-block; font-size: 0.72rem; font-weight: 700;
+  letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent-dim);
+  background: var(--info-bg); padding: 0.25em 0.8em; border-radius: 4px;
+  margin-bottom: 0.7rem; }
+
+/* -------- Images -------- */
+.fig { display: block; margin: 1rem auto; max-width: 100%; height: auto; border-radius: var(--radius-md); }
+.fig-caption { text-align: center; font-size: 0.88rem; color: var(--slate-500); margin-top: -0.2rem; font-style: italic; }
+
+/* -------- Code blocks -------- */
+.code-block { background: var(--slate-900); color: #E2E8F0; font-family: var(--font-code);
+  font-size: 0.88rem; line-height: 1.7; padding: 1.4rem 1.6rem; border-radius: var(--radius-md);
+  overflow-x: auto; margin: 1rem 0; box-shadow: var(--shadow-md); position: relative; }
+.code-block .label { position: absolute; top: 0.5rem; right: 0.8rem; font-size: 0.65rem;
+  font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em;
+  color: var(--slate-500); font-family: var(--font-body); }
+.code-block .kw  { color: #C792EA; } .code-block .fn  { color: #82AAFF; }
+.code-block .str { color: #C3E88D; } .code-block .num { color: #F78C6C; }
+.code-block .comment { color: #50FA7B; font-style: italic; }
+.code-block .op  { color: #89DDFF; } .code-block .cls { color: #E8C577; }
+.code-block .dec { color: #F07178; } .code-block .builtin { color: #89DDFF; }
+.code-block .param { color: #E2E8F0; font-style: italic; }
+code { font-family: var(--font-code); font-size: 0.88em; background: var(--navy-50);
+  color: var(--navy-700); padding: 0.15em 0.4em; border-radius: 4px; }
+
+/* -------- Layout helpers -------- */
+.two-panel { display: grid; grid-template-columns: 1fr 1fr; gap: 1.3rem; margin: 1rem 0; }
+.three-panel { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1.3rem; margin: 1rem 0; }
+.panel { background: #fff; border: 1px solid var(--slate-200); border-radius: var(--radius-md);
+  padding: 1.2rem 1.3rem; box-shadow: var(--shadow-sm); }
+.panel h4 { margin-bottom: 0.5rem; color: var(--navy-600); font-size: 1.05rem; }
+.panel.highlight { border-color: var(--accent-dim);
+  box-shadow: 0 0 0 2px rgba(42, 143, 158, 0.12), var(--shadow-sm); }
+.panel .panel-label { display: inline-block; font-size: 0.7rem; font-weight: 700;
+  letter-spacing: 0.08em; text-transform: uppercase; padding: 0.2em 0.6em;
+  border-radius: 4px; margin-bottom: 0.5rem; }
+.panel .panel-label.bad  { background: var(--error-bg);   color: var(--error); }
+.panel .panel-label.good { background: var(--success-bg); color: var(--success); }
+.panel .panel-label.neutral { background: var(--slate-100); color: var(--slate-600); }
+
+/* -------- Tables -------- */
+.data-table { width: 100%; border-collapse: collapse; margin: 0.8rem 0; font-size: 0.92rem; }
+.data-table th { background: var(--navy-700); color: var(--slate-50); font-weight: 600;
+  text-align: left; padding: 0.6rem 0.9rem; }
+.data-table th:first-child { border-radius: var(--radius-sm) 0 0 0; }
+.data-table th:last-child  { border-radius: 0 var(--radius-sm) 0 0; }
+.data-table td { padding: 0.55rem 0.9rem; border-bottom: 1px solid var(--slate-100); vertical-align: top; }
+.data-table tr:last-child td { border-bottom: none; }
+.data-table tbody tr:hover { background: var(--navy-50); }
+.data-table .mono { font-family: var(--font-code); font-size: 0.85em; }
+.data-table .num  { text-align: right; font-variant-numeric: tabular-nums; }
+
+/* -------- Callouts -------- */
+.callout { padding: 1rem 1.2rem; border-radius: var(--radius-md); margin: 0.9rem 0;
+  border-left: 4px solid; font-size: 0.94rem; }
+.callout-title { font-weight: 700; margin-bottom: 0.25rem; font-size: 0.88rem; letter-spacing: 0.02em; }
+.callout.info    { background: var(--info-bg);    border-color: var(--info);    }
+.callout.warning { background: var(--warning-bg); border-color: var(--warning); }
+.callout.success { background: var(--success-bg); border-color: var(--success); }
+.callout.error   { background: var(--error-bg);   border-color: var(--error);   }
+.callout.info    .callout-title { color: var(--info);    }
+.callout.warning .callout-title { color: var(--warning); }
+.callout.success .callout-title { color: var(--success); }
+.callout.error   .callout-title { color: var(--error);   }
+.callout p:last-child { margin-bottom: 0; }
+
+/* -------- Card grid -------- */
+.card-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 1.1rem; margin: 0.8rem 0; }
+.card { background: #fff; border: 1px solid var(--slate-200); border-radius: var(--radius-md);
+  padding: 1.2rem; box-shadow: var(--shadow-sm); transition: transform 0.2s var(--ease), box-shadow 0.2s var(--ease); }
+.card:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
+.card h4 { font-size: 1.05rem; margin-bottom: 0.35rem; color: var(--navy-700); }
+.card p  { font-size: 0.9rem; color: var(--slate-600); margin-bottom: 0; }
+.card .card-icon { font-size: 1.6rem; margin-bottom: 0.5rem; display: block; }
+
+/* -------- Formula box -------- */
+.formula-box { background: var(--navy-50); border: 1px solid var(--navy-200);
+  border-radius: var(--radius-md); padding: 1rem 1.4rem; margin: 1rem 0; text-align: center; }
+.formula-box .formula-label { display: block; font-size: 0.76rem; font-weight: 600;
+  text-transform: uppercase; letter-spacing: 0.08em; color: var(--navy-400); margin-bottom: 0.4rem; }
+.katex { font-size: 1.05em !important; }
+.katex-display { margin: 0.8rem 0 !important; }
+.katex-display > .katex { color: var(--navy-700); }
+
+/* -------- Badges -------- */
+.badge { display: inline-block; font-size: 0.72rem; font-weight: 600; letter-spacing: 0.04em;
+  padding: 0.2em 0.65em; border-radius: 999px; vertical-align: middle; }
+.badge.navy    { background: var(--navy-100); color: var(--navy-700); }
+.badge.accent  { background: var(--info-bg);  color: var(--accent-dim); }
+.badge.success { background: var(--success-bg); color: var(--success); }
+.badge.warning { background: var(--warning-bg); color: var(--warning); }
+.badge.error   { background: var(--error-bg);   color: var(--error); }
+
+.text-center { text-align: center; }
+.mt-2 { margin-top: 1rem; } .mt-3 { margin-top: 1.5rem; }
+.mb-0 { margin-bottom: 0; }
+
+/* ============================================================
+   CSS-only filter-slide animation (Slide 5)
+   A translucent filter rectangle slides across a 6×6 cell grid.
+   ============================================================ */
+.conv-demo { display: flex; justify-content: center; margin: 1.2rem 0 0.6rem 0; }
+.conv-canvas {
+  position: relative;
+  width: 360px; height: 360px;
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  grid-template-rows:    repeat(6, 1fr);
+  gap: 3px;
+  padding: 3px;
+  background: var(--slate-200);
+  border-radius: var(--radius-md);
+}
+.conv-canvas .cell {
+  background: var(--navy-50);
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--font-code); font-size: 0.82rem; color: var(--navy-700);
+  border-radius: 3px;
+}
+.conv-canvas .cell.dim { color: var(--slate-400); }
+/* The moving filter — 3x3 worth of canvas (50% × 50%), stepped to one cell = ~16.67% */
+.conv-canvas .filter {
+  position: absolute;
+  width: calc(50% - 3px);
+  height: calc(50% - 3px);
+  top: 3px; left: 3px;
+  border: 3px solid var(--accent-dim);
+  background: rgba(42, 143, 158, 0.18);
+  border-radius: 4px;
+  animation: slideFilter 9s steps(1, end) infinite;
+}
+@keyframes slideFilter {
+  0%   { top: 3px;    left: 3px;  }
+  11%  { top: 3px;    left: calc(16.67% + 3px);  }
+  22%  { top: 3px;    left: calc(33.33% + 3px);  }
+  33%  { top: 3px;    left: calc(50% + 3px);  }
+  44%  { top: calc(16.67% + 3px); left: 3px;  }
+  55%  { top: calc(16.67% + 3px); left: calc(16.67% + 3px);  }
+  66%  { top: calc(16.67% + 3px); left: calc(33.33% + 3px);  }
+  77%  { top: calc(16.67% + 3px); left: calc(50% + 3px);  }
+  88%  { top: calc(33.33% + 3px); left: 3px;  }
+  100% { top: calc(50% + 3px);    left: calc(50% + 3px);  }
+}
+.conv-caption { text-align: center; font-size: 0.88rem; color: var(--slate-500); margin-top: 0.3rem; font-style: italic; }
+
+/* ============================================================
+   CSS architectural flow (inline) — used wherever HTML is cleaner
+   ============================================================ */
+.arch-flow { display: flex; align-items: stretch; justify-content: center; gap: 0.4rem; flex-wrap: wrap; margin: 0.8rem 0; }
+.arch-block { background: #fff; border: 1px solid var(--slate-200); border-radius: var(--radius-sm);
+  padding: 0.5rem 0.7rem; font-family: var(--font-code); font-size: 0.82rem; color: var(--slate-800);
+  min-width: 70px; text-align: center; }
+.arch-block.primary { background: var(--navy-700); color: var(--slate-50); border-color: var(--navy-800); }
+.arch-block.accent  { background: var(--accent-dim); color: var(--slate-50); border-color: #1E7A87; }
+.arch-arrow { align-self: center; color: var(--slate-400); font-weight: 700; }
+
+/* ============================================================
+   Responsive
+   ============================================================ */
+@media (max-width: 900px) {
+  :root { --slide-padding: 2rem 1.8rem; }
+  html { font-size: 17px; }
+  h1 { font-size: 2.2rem; } h2 { font-size: 1.7rem; } h3 { font-size: 1.35rem; }
+  .two-panel, .three-panel { grid-template-columns: 1fr; }
+  .slide.title-slide h1 { font-size: 2.6rem; }
+  .conv-canvas { width: 300px; height: 300px; }
+}
+@media (max-width: 600px) {
+  :root { --slide-padding: 1.5rem 1rem; }
+  html { font-size: 15px; }
+  .card-grid { grid-template-columns: 1fr; }
+  .code-block { font-size: 0.78rem; padding: 1rem; }
+}
+</style>
+</head>
+<body>
+
+<!-- ============================================================
+     SLIDE 1 — TITLE
+     ============================================================ -->
+<div class="slide title-slide">
+  <h1>Convolutional Neural Networks</h1>
+  <p class="subtitle">How neural networks learn to see</p>
+  <p class="meta">Module 2 · Class 04 · Gen AI Engineer Course</p>
+</div>
+
+<!-- ============================================================
+     SLIDE 2 — WHAT YOU'LL LEARN
+     ============================================================ -->
+<div class="slide">
+  <h2>What You'll Learn Today</h2>
+  <p>You've trained neural networks on tabular data. Today you'll train one that <strong>sees</strong>. By the end of class you will build a CNN from scratch, reach ~85% on Fashion-MNIST, and score it with the metrics every production classifier is judged on.</p>
+
+  <div class="card-grid" style="grid-template-columns: 1fr 1fr;">
+    <div class="card">
+      <span class="card-icon">🔍</span>
+      <h4>Understand convolution</h4>
+      <p>What a filter does, why parameter sharing is what lets CNNs scale to large images.</p>
+    </div>
+    <div class="card">
+      <span class="card-icon">🏗️</span>
+      <h4>Build a CNN</h4>
+      <p><code>Conv2d</code>, <code>MaxPool2d</code>, <code>flatten</code>, <code>Linear</code> — four primitives, one <code>nn.Module</code>.</p>
+    </div>
+    <div class="card">
+      <span class="card-icon">👗</span>
+      <h4>Train on Fashion-MNIST</h4>
+      <p>Your first image classification task — <code>CrossEntropyLoss</code>, the full training loop, and ~85% accuracy.</p>
+    </div>
+    <div class="card">
+      <span class="card-icon">📊</span>
+      <h4>Evaluate the classifier</h4>
+      <p>Accuracy, confusion matrix, per-class precision / recall / F1, and ROC — the metrics every production classifier is scored on.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     SECTION 1 — WHY CNNs EXIST
+     ============================================================ -->
+<div class="slide section-header">
+  <span class="section-number">Section 1</span>
+  <h2>Why CNNs exist</h2>
+  <p class="subtitle">Fully-connected networks can classify images — but the cost scales badly and they throw away spatial structure. Convolution fixes both problems with a single architectural idea: small, shared filters that respect locality.</p>
+</div>
+
+<!-- ============================================================
+     SECTION 1 · SLIDE — WHY FC STRUGGLES WITH IMAGES
+     ============================================================ -->
+<div class="slide">
+  <h2>Why fully connected layers struggle with images</h2>
+  <p>Fully-connected layers are a natural tool for tabular data: every input feeds into every neuron. On images that universal connectivity is exactly the problem — the weight count explodes and spatial structure is thrown away.</p>
+
+  <img class="fig" src="img_class04/flatten_problem.png" alt="28×28 image flattened to 784 vector; one Linear(784, 256) layer costs 200,960 trainable parameters and loses spatial structure" style="max-width: 100%; width: 100%; height: auto;">
+
+  <div class="three-panel">
+    <div class="panel">
+      <h4>1 · Spatial structure is destroyed</h4>
+      <p style="font-size:0.92rem; margin-bottom:0;">Pixels <code>(5, 5)</code> and <code>(5, 6)</code> were neighbours. Flatten the image and the FC layer sees 784 arbitrary-order numbers with no clue which were next to which.</p>
+    </div>
+    <div class="panel">
+      <h4>2 · Parameters scale with image size</h4>
+      <p style="font-size:0.92rem; margin-bottom:0;">A single <code>Linear(784, 256)</code> takes <strong>200,960</strong> weights + biases. At ImageNet resolution that blows up to <strong>~38 million</strong> — for one layer.</p>
+    </div>
+    <div class="panel">
+      <h4>3 · No translation invariance</h4>
+      <p style="font-size:0.92rem; margin-bottom:0;">A cat in the top-left and the same cat in the bottom-right activate completely different weights. The FC network has to re-learn the same feature at every position.</p>
+    </div>
+  </div>
+
+  <div class="callout info">
+    <div class="callout-title">💡 The fix: convolution</div>
+    <p>A small <strong>filter</strong> slides across the image, sharing the same weights at every position. That one idea — <em>local receptive field plus parameter sharing</em> — gives us spatial locality, translation invariance, and size-independent weight counts.</p>
+  </div>
+</div>
+
+<!-- ============================================================
+     SECTION 1 · SLIDE — END-TO-END PIPELINE (preview · Lens 1 of 4)
+     ============================================================ -->
+<div class="slide">
+  <h2>A CNN at a glance</h2>
+  <p>Before we drill into the pieces, here is the whole thing on one slide. The convolutional stack on the left extracts features; a small dense network on the right turns those features into class scores. Every slide in Sections 2 and 3 is a deep-dive into one block of this diagram.</p>
+
+  <img class="fig" src="img_class04/cnn_full_arch.png" alt="End-to-end CNN pipeline: image → conv+ReLU → pool → conv+ReLU → pool → flatten → dense → class scores" style="max-width: 100%; height: auto;">
+
+  <div class="three-panel">
+    <div class="panel">
+      <h4>Feature extractor</h4>
+      <p style="font-size:0.9rem; margin-bottom:0;">Stacked <code>conv → ReLU → pool</code> blocks. Each block halves the spatial size while growing the channel depth — edges give way to textures, then parts.</p>
+    </div>
+    <div class="panel">
+      <h4>Flatten bridge</h4>
+      <p style="font-size:0.9rem; margin-bottom:0;">Reshapes the 3D feature tensor <code>(C, H, W)</code> into a 1D vector so the dense head can consume it. Feature extraction is already done — flattening <em>here</em> is safe.</p>
+    </div>
+    <div class="panel">
+      <h4>Classifier</h4>
+      <p style="font-size:0.9rem; margin-bottom:0;">A small dense network that maps features to one logit per class. <code>argmax</code> picks the prediction; the loss compares it to the true label.</p>
+    </div>
+  </div>
+
+  <p class="muted" style="font-size:0.88rem; margin-bottom:0;">You'll see this architecture <strong>three times</strong> across the lecture, each through a different lens: the big picture here, the feature-extractor / classifier split in Section 3, and the final PyTorch code.</p>
+</div>
+
+<!-- ============================================================
+     SECTION 2 — CNN BUILDING BLOCKS
+     ============================================================ -->
+<div class="slide section-header">
+  <span class="section-number">Section 2</span>
+  <h2>CNN building blocks</h2>
+  <p class="subtitle">Convolution, stride, padding, channels, pooling — the five operations a CNN stacks to turn pixels into features. We'll introduce each one with a concrete visual, then use them in Section 3.</p>
+</div>
+
+<!-- ============================================================
+     SLIDE 5 — WHAT IS CONVOLUTION? (CSS-only animation)
+     ============================================================ -->
+<div class="slide">
+  <h2>Convolution in one picture</h2>
+  <p>A <strong>filter</strong> — a small matrix of weights, here 3 × 3 — slides across the image. At every position it multiplies with the 3 × 3 patch underneath, sums the result into a single number, and writes that number to the corresponding cell of the output. The output is a new image called a <strong>feature map</strong>.</p>
+
+  <div class="conv-demo">
+    <div class="conv-canvas" aria-hidden="true">
+      <div class="cell">3</div><div class="cell">0</div><div class="cell">1</div>
+      <div class="cell">2</div><div class="cell">7</div><div class="cell">4</div>
+      <div class="cell">1</div><div class="cell">5</div><div class="cell">8</div>
+      <div class="cell">9</div><div class="cell">3</div><div class="cell">0</div>
+      <div class="cell">2</div><div class="cell">7</div><div class="cell">2</div>
+      <div class="cell">5</div><div class="cell">1</div><div class="cell">6</div>
+      <div class="cell">4</div><div class="cell">6</div><div class="cell">0</div>
+      <div class="cell">8</div><div class="cell">4</div><div class="cell">2</div>
+      <div class="cell">2</div><div class="cell">1</div><div class="cell">3</div>
+      <div class="cell">7</div><div class="cell">6</div><div class="cell">5</div>
+      <div class="cell">0</div><div class="cell">3</div><div class="cell">9</div>
+      <div class="cell">1</div><div class="cell">4</div><div class="cell">7</div>
+      <div class="filter"></div>
+    </div>
+  </div>
+  <p class="conv-caption">The same 9 filter weights are applied at every position.</p>
+
+  <div class="three-panel">
+    <div class="panel">
+      <h4>Parameter sharing</h4>
+      <p style="font-size:0.9rem; margin-bottom:0;">One filter = 9 weights total, reused across the whole image. No matter how big the image gets, the weight count stays the same.</p>
+    </div>
+    <div class="panel">
+      <h4>Locality</h4>
+      <p style="font-size:0.9rem; margin-bottom:0;">Each output cell depends only on its 3 × 3 neighbourhood. Nearby pixels influence each other; distant pixels do not — just like real images.</p>
+    </div>
+    <div class="panel">
+      <h4>What a filter detects</h4>
+      <p style="font-size:0.9rem; margin-bottom:0;">One filter = one pattern detector. Early layers pick up edges and gradients; stack them and deeper layers respond to textures, object parts, finally whole objects.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     SLIDE 6 — CONVOLUTION BY THE NUMBERS (animated GIF)
+     ============================================================ -->
+<div class="slide">
+  <h2>Convolution, By the Numbers</h2>
+  <p>Real numbers. 5 × 5 input, 3 × 3 filter (a vertical edge detector: <code>[[1,0,-1],[1,0,-1],[1,0,-1]]</code>). Watch the filter slide through all 9 positions — each position produces <strong>one</strong> output cell as the dot product of patch and filter.</p>
+
+  <img class="fig" src="img_class04/conv_anim.gif" alt="Animated convolution: a 3x3 filter slides over a 5x5 input, computing one output cell per position" style="max-width: 100%; height: auto;">
+
+  <div class="callout info">
+    <div class="callout-title">🔍 What to notice</div>
+    <p>The filter's 9 weights never change as it moves — that's the <em>same</em> vertical-edge detector being reapplied at every spatial position. Because the filter is 3 × 3 and the input is 5 × 5, the output is <strong>3 × 3</strong> (no padding, stride 1). Reset the animation and count the positions: 3 across × 3 down = 9 output cells.</p>
+  </div>
+</div>
+
+<!-- ============================================================
+     SLIDE 7 — STRIDE / PADDING / OUTPUT SIZE
+     ============================================================ -->
+<div class="slide">
+  <h2>Stride, Padding, Output Size</h2>
+  <p>Three knobs control the output spatial size of a convolution. Each panel below shows the same 5 × 5 input under different settings, with the filter drawn at its first (solid) and second (dashed) positions.</p>
+
+  <img class="fig" src="img_class04/stride_padding.gif" alt="Animated 3×3 filter sliding across a padded 5×5 input with stride 2, producing a 3×3 output">
+
+  <div class="formula-box">
+    <span class="formula-label">Output Spatial Size</span>
+    $$\text{out} = \left\lfloor \frac{\text{in} + 2p - k}{s} \right\rfloor + 1$$
+    <p style="font-size:0.85rem; margin-top:0.4rem; margin-bottom:0;"><code>in</code> = input size · <code>k</code> = kernel · <code>p</code> = padding · <code>s</code> = stride</p>
+  </div>
+
+  <div class="three-panel">
+    <div class="panel">
+      <h4>Stride</h4>
+      <p style="font-size:0.9rem; margin-bottom:0;">Pixels the filter moves per step. <code>1</code> = full resolution. <code>2</code> = output half the size and 4× cheaper compute.</p>
+    </div>
+    <div class="panel">
+      <h4>Padding</h4>
+      <p style="font-size:0.9rem; margin-bottom:0;">Zeros added around the input border so the filter covers edge pixels. <code>padding=1</code> with a 3×3 kernel is "same" — preserves H and W.</p>
+    </div>
+    <div class="panel">
+      <h4>Default in this class</h4>
+      <p style="font-size:0.9rem; margin-bottom:0;">3 × 3 kernels, <code>padding=1</code>, <code>stride=1</code>. Spatial size unchanged by conv; pooling halves it.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     SLIDE 9 — MAX POOLING
+     ============================================================ -->
+<div class="slide">
+  <h2>Max Pooling: Keep the Strongest</h2>
+  <p>After convolution, feature maps can be large. <strong>Max pooling</strong> slides a small window (typically 2 × 2, stride 2) over the map and keeps only the maximum value in each window.</p>
+
+  <div class="two-panel" style="grid-template-columns: 1.6fr 1fr; align-items: center;">
+    <div>
+      <img class="fig" src="img_class04/pooling.gif" alt="Animated MaxPool2d — 2x2 filter slides with stride 2 across a 4x4 feature map, producing a 2x2 output" style="margin:0; max-width: 100%;">
+    </div>
+    <div class="panel">
+      <h4>Why pool?</h4>
+      <ul style="font-size:0.92rem; margin-bottom:0; line-height:1.6;">
+        <li><strong>Halves H and W</strong> → cheaper compute downstream</li>
+        <li><strong>Slight translation tolerance</strong> — small shifts of the input still produce the same max</li>
+        <li><strong>Keeps the strongest activation,</strong> drops the rest — noise-robust</li>
+        <li><strong>No learnable parameters</strong> — pure downsampling op</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="callout info">
+    <div class="callout-title">💡 When to skip pooling</div>
+    <p>Modern architectures sometimes replace pooling with <strong>stride-2 convolutions</strong> — the convolution itself downsamples. This lets the model <em>learn</em> how to downsample instead of using a fixed operation. Pooling is still the simpler default, and the one you'll reach for first.</p>
+  </div>
+</div>
+
+<!-- ============================================================
+     SLIDE 9b — AVERAGE POOLING
+     ============================================================ -->
+<div class="slide">
+  <h2>Average Pooling: Keep the Smooth Summary</h2>
+  <p><strong>Average pooling</strong> uses the same 2 × 2 window but takes the <em>mean</em> of each window instead of the max. Same shape reduction, same zero parameters — but a different signal survives.</p>
+
+  <div class="two-panel" style="grid-template-columns: 1.6fr 1fr; align-items: center;">
+    <div>
+      <img class="fig" src="img_class04/avg_pooling.gif" alt="Animated AvgPool2d — 2x2 filter slides with stride 2 across a 4x4 feature map, taking the mean each window" style="margin:0; max-width: 100%;">
+    </div>
+    <div class="panel">
+      <h4>Max vs Average</h4>
+      <ul style="font-size:0.92rem; margin-bottom:0; line-height:1.6;">
+        <li><strong>Max:</strong> strongest activation survives → good for detecting that a feature is <em>present</em></li>
+        <li><strong>Average:</strong> all activations contribute → smoother, better when you care about <em>overall intensity</em></li>
+        <li>Max pooling <strong>dominates</strong> in intermediate layers of modern CNNs</li>
+        <li>Average pooling shines at the <strong>end</strong> — "global average pool" replaces flatten in ResNet, MobileNet, EfficientNet</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="callout success">
+    <div class="callout-title">🔍 Global average pooling</div>
+    <p>Take the mean over the <em>entire</em> spatial map, producing one number per channel. A <code>(32, 7, 7)</code> tensor becomes <code>(32,)</code> — no flatten, no giant Linear layer, huge parameter savings. This is why modern classifiers barely have a fully-connected head.</p>
+  </div>
+</div>
+
+<!-- ============================================================
+     SECTION 3 — BUILDING A CNN IN PYTORCH
+     ============================================================ -->
+<div class="slide section-header">
+  <span class="section-number">Section 3</span>
+  <h2>Building a CNN in PyTorch</h2>
+  <p class="subtitle">From math to <code>nn.Module</code>. We wire the primitives into a network, trace tensor shapes through every layer, and end with working code you can read top-to-bottom.</p>
+</div>
+
+<!-- ============================================================
+     SECTION 3 · SLIDE — nn.Conv2d IN PYTORCH (with channels visual)
+     ============================================================ -->
+<div class="slide">
+  <h2><code>nn.Conv2d</code> in PyTorch</h2>
+  <p>One line creates a full convolutional layer with learnable filters. Five parameters cover 95% of real use — pass an input with <code>in_channels</code> planes and it produces <code>out_channels</code> feature maps.</p>
+
+  <img class="fig" src="img_class04/channels.png" alt="3-channel RGB input goes through 16 filters to produce 16 output feature maps" style="max-width: 100%; height: auto;">
+
+  <div class="code-block"><span class="label">Python</span><pre>
+<span class="kw">import</span> torch.nn <span class="kw">as</span> nn
+
+conv1 <span class="op">=</span> nn.<span class="cls">Conv2d</span>(
+    <span class="param">in_channels</span><span class="op">=</span><span class="num">3</span>,      <span class="comment"># 3-channel RGB input (= data channels or prev layer's out_channels)</span>
+    <span class="param">out_channels</span><span class="op">=</span><span class="num">16</span>,    <span class="comment"># produce 16 feature maps — your design choice</span>
+    <span class="param">kernel_size</span><span class="op">=</span><span class="num">3</span>,     <span class="comment"># 3×3 filters (standard)</span>
+    <span class="param">stride</span><span class="op">=</span><span class="num">1</span>,          <span class="comment"># move 1 pixel per step (default)</span>
+    <span class="param">padding</span><span class="op">=</span><span class="num">1</span>           <span class="comment"># "same" padding — preserves H and W</span>
+)
+</pre></div>
+
+  <div class="callout info">
+    <div class="callout-title">🎓 Size-independent parameter count</div>
+    <p><code>Conv2d(3, 16, 3)</code> has <strong>448 params on any image size</strong> — 16 filters × (3×3×3 weights + 1 bias). Compare to <code>Linear(3·H·W, 16)</code> on a flattened image: the weight count grows with H and W. Convolution's count stays constant as the image gets bigger.</p>
+  </div>
+</div>
+
+<!-- ============================================================
+     SECTION 3 · SLIDE — COMPLETE CNN ARCHITECTURE
+     ============================================================ -->
+<div class="slide">
+  <h2>A CNN Classifier</h2>
+  <p>Stack two <code>Conv → ReLU → Pool</code> blocks, flatten, then two <code>Linear</code> layers. You already know the <code>nn.Module</code> pattern from Class 03 — only the layers inside are new.</p>
+
+  <img class="fig" src="img_class04/cnn_full_arch.png" alt="End-to-end CNN pipeline matching the SimpleCNN code below" style="max-width: 100%; height: auto;">
+
+  <div class="code-block"><span class="label">Python</span><pre>
+<span class="kw">class</span> <span class="cls">SimpleCNN</span>(nn.<span class="cls">Module</span>):
+    <span class="kw">def</span> <span class="fn">__init__</span>(<span class="param">self</span>):
+        <span class="fn">super</span>().<span class="fn">__init__</span>()
+        <span class="comment"># Feature extractor</span>
+        <span class="param">self</span>.conv1 <span class="op">=</span> nn.<span class="cls">Conv2d</span>(<span class="num">3</span>,  <span class="num">16</span>, <span class="param">kernel_size</span><span class="op">=</span><span class="num">3</span>, <span class="param">padding</span><span class="op">=</span><span class="num">1</span>)
+        <span class="param">self</span>.conv2 <span class="op">=</span> nn.<span class="cls">Conv2d</span>(<span class="num">16</span>, <span class="num">32</span>, <span class="param">kernel_size</span><span class="op">=</span><span class="num">3</span>, <span class="param">padding</span><span class="op">=</span><span class="num">1</span>)
+        <span class="param">self</span>.pool  <span class="op">=</span> nn.<span class="cls">MaxPool2d</span>(<span class="num">2</span>)
+        <span class="comment"># Classifier</span>
+        <span class="param">self</span>.fc1 <span class="op">=</span> nn.<span class="cls">Linear</span>(<span class="num">32</span> <span class="op">*</span> <span class="num">7</span> <span class="op">*</span> <span class="num">7</span>, <span class="num">128</span>)
+        <span class="param">self</span>.fc2 <span class="op">=</span> nn.<span class="cls">Linear</span>(<span class="num">128</span>, <span class="num">10</span>)
+
+    <span class="kw">def</span> <span class="fn">forward</span>(<span class="param">self</span>, x):
+        x <span class="op">=</span> <span class="param">self</span>.<span class="fn">pool</span>(F.<span class="fn">relu</span>(<span class="param">self</span>.<span class="fn">conv1</span>(x)))   <span class="comment"># (B, 16, H/2, W/2)</span>
+        x <span class="op">=</span> <span class="param">self</span>.<span class="fn">pool</span>(F.<span class="fn">relu</span>(<span class="param">self</span>.<span class="fn">conv2</span>(x)))   <span class="comment"># (B, 32, H/4, W/4)</span>
+        x <span class="op">=</span> torch.<span class="fn">flatten</span>(x, <span class="num">1</span>)                    <span class="comment"># (B, 32·H/4·W/4)</span>
+        x <span class="op">=</span> F.<span class="fn">relu</span>(<span class="param">self</span>.<span class="fn">fc1</span>(x))                    <span class="comment"># (B, 128)</span>
+        <span class="kw">return</span> <span class="param">self</span>.<span class="fn">fc2</span>(x)                            <span class="comment"># (B, 10) — raw logits</span>
+</pre></div>
+
+  <p class="muted" style="font-size:0.88rem; margin-bottom:0;">Most of the parameters live in <code>fc1</code>, not in the convolutions. This is typical — convolutions are compute-heavy but parameter-light, and the flatten-into-dense head is where weight count piles up.</p>
+</div>
+
+<!-- ============================================================
+     SECTION 3 · SLIDE — THE FLATTEN STEP (inside the CNN)
+     ============================================================ -->
+<div class="slide">
+  <h2>Flatten — matching shapes between layers</h2>
+  <p><code>Flatten</code> isn't a CNN-specific thing. It's a generic reshape layer whose only job is to collapse the trailing dimensions of a tensor so the next layer's expected input shape is satisfied. Here the conv stack produces a 3D tensor <code>(C, H, W)</code> and the dense head expects a 1D vector — flatten bridges them. No learnable weights, no magic.</p>
+
+  <div class="code-block"><span class="label">Python</span><pre>
+<span class="comment"># Inside forward(), after the last conv + pool block:</span>
+<span class="comment"># x has shape (batch, C, H, W) — e.g. (batch, 32, 7, 7)</span>
+x <span class="op">=</span> torch.<span class="fn">flatten</span>(x, <span class="param">start_dim</span><span class="op">=</span><span class="num">1</span>)   <span class="comment"># keep batch dim; flatten the rest</span>
+<span class="comment"># x is now shape (batch, C·H·W) — one row per sample, ready for Linear</span>
+</pre></div>
+
+  <div class="callout error">
+    <div class="callout-title">⚠️ The shape-mismatch gotcha</div>
+    <p>The first <code>Linear</code> layer's input size must equal <code>C × H × W</code> after the last pool. Change pool count, channels, or input resolution and that product changes — your <code>Linear(C·H·W, …)</code> errors. Always recompute when the architecture changes.</p>
+  </div>
+</div>
+
+<!-- ============================================================
+     SLIDE — DEBUGGING SHAPES WITH torchinfo.summary
+     ============================================================ -->
+<div class="slide">
+  <h2>Debugging shapes: <code>torchinfo.summary</code></h2>
+  <p>Shape mismatches at the flatten / Linear boundary are the #1 CNN bug — <code>RuntimeError: mat1 and mat2 shapes cannot be multiplied</code>. Rather than tracing every layer by hand, run <code>torchinfo.summary</code> once on your model and read the table. It runs a dummy input through the network and prints input shape, output shape, and parameter count per layer.</p>
+
+  <div class="code-block"><span class="label">Python</span><pre>
+<span class="kw">from</span> torchinfo <span class="kw">import</span> summary
+<span class="fn">summary</span>(model, <span class="param">input_size</span><span class="op">=</span>(<span class="num">1</span>, <span class="num">3</span>, <span class="num">224</span>, <span class="num">224</span>),
+        <span class="param">col_names</span><span class="op">=</span>(<span class="str">'input_size'</span>, <span class="str">'output_size'</span>, <span class="str">'num_params'</span>))
+</pre></div>
+
+  <div class="code-block" style="background:#fff; color:var(--slate-800); border:1px solid var(--slate-200); box-shadow:var(--shadow-sm);"><pre style="font-size:0.78rem; line-height:1.55;">
+====================================================================================
+Layer (type:depth-idx)   Input Shape          Output Shape          Param #
+====================================================================================
+SimpleCNN                [1, 3, 224, 224]     [1, 10]               --
+├─Conv2d: 1-1            [1, 3, 224, 224]     [1, 16, 224, 224]     448
+├─MaxPool2d: 1-2         [1, 16, 224, 224]    [1, 16, 112, 112]     --
+├─Conv2d: 1-3            [1, 16, 112, 112]    [1, 32, 112, 112]     4,640
+├─MaxPool2d: 1-4         [1, 32, 112, 112]    [1, 32, 56, 56]       --
+├─Linear: 1-5            [1, 100352]          [1, 128]              12,845,184
+├─Linear: 1-6            [1, 128]             [1, 10]               1,290
+====================================================================================
+Total params: 12,851,562
+Trainable params: 12,851,562
+====================================================================================</pre></div>
+
+  <div class="callout warning">
+    <div class="callout-title">🔑 The key number to match</div>
+    <p>The first <code>Linear</code> layer's input size must equal <code>channels × H × W</code> right before the flatten. Get it wrong and the model won't run. The summary prints this number directly — read the <code>Linear: 1-5</code> row, check its input shape, and match it in your model code.</p>
+  </div>
+
+  <p class="muted" style="font-size:0.88rem; margin-bottom:0;">Notice where the parameters live: the two conv layers hold ~5K weights combined, while <code>fc1</code> alone holds ~12.8M. At 224 × 224 input the flatten-into-dense head dominates — which is exactly why modern classifiers replace it with global average pooling.</p>
+</div>
+
+<!-- ============================================================
+     SECTION 4 — TRAINING THE CNN
+     ============================================================ -->
+<div class="slide section-header">
+  <span class="section-number">Section 4</span>
+  <h2>Training the CNN</h2>
+  <p class="subtitle">We have a working CNN. Now we load a real dataset, wire up the loss and optimiser, and run the training loop — same 5-line pattern you know from Class 03, just with image inputs.</p>
+</div>
+
+<!-- ============================================================
+     SLIDE — FASHION-MNIST DATASET
+     ============================================================ -->
+<div class="slide">
+  <h2>Fashion-MNIST: The Dataset</h2>
+  <p>A drop-in replacement for MNIST digits — same size, same format, but clothing. More visually challenging, more realistic. 70,000 images total, split 60K train / 10K test, 10 balanced classes.</p>
+
+  <img class="fig" src="img_class04/samples.png" alt="One sample from each of the 10 Fashion-MNIST classes" style="max-width: 100%; height: auto;">
+
+  <div class="panel">
+    <h4>Format</h4>
+    <ul style="font-size:0.92rem; margin-bottom:0;">
+      <li>Grayscale, 28 × 28, uint8 [0, 255]</li>
+      <li>10 classes · 7,000 per class</li>
+      <li>One line via <code>torchvision</code></li>
+    </ul>
+  </div>
+</div>
+
+<!-- ============================================================
+     SLIDE — LOADING DATA WITH torchvision
+     ============================================================ -->
+<div class="slide">
+  <h2>Loading Data with <code>torchvision</code></h2>
+  <p>You already know <code>Dataset</code> and <code>DataLoader</code> from the previous class. <code>torchvision</code> ships Fashion-MNIST ready to use — one line of code downloads the entire dataset and hands you a <code>Dataset</code> object ready to wrap with a <code>DataLoader</code>.</p>
+
+  <div class="code-block"><span class="label">Python</span><pre>
+<span class="kw">from</span> torchvision <span class="kw">import</span> datasets
+<span class="kw">from</span> torch.utils.data <span class="kw">import</span> DataLoader
+
+<span class="comment"># `transform` is a preprocessing pipeline we'll define on the next slide</span>
+<span class="comment"># (ToTensor + Normalize — applied to every image the dataset yields)</span>
+
+train_ds <span class="op">=</span> datasets.<span class="fn">FashionMNIST</span>(<span class="param">root</span><span class="op">=</span><span class="str">'./data'</span>, <span class="param">train</span><span class="op">=</span><span class="kw">True</span>,
+                                   <span class="param">download</span><span class="op">=</span><span class="kw">True</span>, <span class="param">transform</span><span class="op">=</span>transform)
+
+train_loader <span class="op">=</span> <span class="fn">DataLoader</span>(train_ds, <span class="param">batch_size</span><span class="op">=</span><span class="num">64</span>, <span class="param">shuffle</span><span class="op">=</span><span class="kw">True</span>)
+
+X, y <span class="op">=</span> <span class="fn">next</span>(<span class="fn">iter</span>(train_loader))
+<span class="fn">print</span>(<span class="fn">tuple</span>(X.shape), <span class="fn">tuple</span>(y.shape))
+<span class="comment"># (64, 1, 28, 28)  (64,)</span>
+</pre></div>
+
+  <div class="callout info">
+    <div class="callout-title">🔍 The 4D tensor format</div>
+    <p><code>X.shape</code> is <code>(B, C, H, W)</code> = <strong>(batch, channels, height, width)</strong>. CNNs always expect this 4D format. Your grayscale batch is <code>(64, 1, 28, 28)</code> — the channel dimension is 1, not missing. Forget the channel dim and <code>Conv2d</code> will throw.</p>
+  </div>
+</div>
+
+<!-- ============================================================
+     SLIDE — IMAGE PREPROCESSING
+     ============================================================ -->
+<div class="slide">
+  <h2>Preprocessing with <code>transforms.Compose</code></h2>
+  <p>Images on disk are PIL objects with pixel values in <strong>[0, 255]</strong>. Neural networks train much better on <strong>small, zero-centred floats</strong>. Two standard transforms bridge the gap, and <code>transforms.Compose</code> chains them into one callable that the dataset applies to every image.</p>
+
+  <table class="data-table">
+    <thead>
+      <tr>
+        <th>Step</th>
+        <th>What it does</th>
+        <th>Values before → after</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="mono">ToTensor()</td>
+        <td>PIL image → <code>torch.Tensor</code>, divides by 255</td>
+        <td class="mono">[0, 255] uint8 → [0.0, 1.0] float32</td>
+      </tr>
+      <tr>
+        <td class="mono">Normalize(mean, std)</td>
+        <td>Subtract mean, divide by std — <strong>zero-centre</strong></td>
+        <td class="mono">[0, 1] → roughly [−0.81, 2.02] <em>(not</em> [−1, 1]<em>)</em></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="code-block"><span class="label">Python</span><pre>
+<span class="kw">from</span> torchvision <span class="kw">import</span> transforms
+
+<span class="comment"># Pre-computed Fashion-MNIST channel statistics</span>
+FMNIST_MEAN <span class="op">=</span> <span class="num">0.2860</span>
+FMNIST_STD  <span class="op">=</span> <span class="num">0.3530</span>
+
+transform <span class="op">=</span> transforms.<span class="fn">Compose</span>([
+    transforms.<span class="fn">ToTensor</span>(),                               <span class="comment"># PIL → float in [0, 1]</span>
+    transforms.<span class="fn">Normalize</span>((FMNIST_MEAN,), (FMNIST_STD,)),   <span class="comment"># zero-centre</span>
+])
+</pre></div>
+
+  <div class="callout info">
+    <div class="callout-title">🔍 Why zero-centre?</div>
+    <p>The <strong>range is not what matters</strong> — Normalize produces roughly zero-mean with unit-ish standard deviation, <em>not</em> a strict <code>[-1, 1]</code> bound. What matters is that activations live around 0, which keeps gradients well-scaled through ReLU and the Linear layers. Compute <code>mean</code> and <code>std</code> once on your training set; save them as constants like we did here.</p>
+  </div>
+</div>
+
+<!-- ============================================================
+     SLIDE — TRAIN / VAL SPLIT WITH SKLEARN (NEW)
+     ============================================================ -->
+<div class="slide">
+  <h2>Train / Validation Split with sklearn</h2>
+  <p>Fashion-MNIST ships a 60k training pool. Before training we carve out a <strong>validation set</strong> so we can watch generalisation per epoch without peeking at held-out test data. The idiomatic PyTorch + sklearn pattern: split the <strong>indices</strong>, wrap each half with <code>torch.utils.data.Subset</code>.</p>
+
+  <div class="code-block"><span class="label">Python</span><pre>
+<span class="kw">import</span> numpy <span class="kw">as</span> np
+<span class="kw">from</span> sklearn.model_selection <span class="kw">import</span> train_test_split
+<span class="kw">from</span> torch.utils.data <span class="kw">import</span> Subset
+
+<span class="comment"># Convert torch tensor → numpy so sklearn can consume it</span>
+all_labels <span class="op">=</span> full_train.targets.<span class="fn">numpy</span>()
+
+<span class="comment"># Split INDICES — not images. No data is copied.</span>
+train_idx, val_idx <span class="op">=</span> <span class="fn">train_test_split</span>(
+    np.<span class="fn">arange</span>(<span class="fn">len</span>(full_train)),
+    <span class="param">test_size</span><span class="op">=</span><span class="num">0.2</span>,
+    <span class="param">random_state</span><span class="op">=</span><span class="num">0</span>,
+    <span class="comment"># stratify=all_labels,   # turn this on for imbalanced data</span>
+)
+
+train_set <span class="op">=</span> <span class="fn">Subset</span>(full_train, train_idx.<span class="fn">tolist</span>())
+val_set   <span class="op">=</span> <span class="fn">Subset</span>(full_train, val_idx.<span class="fn">tolist</span>())
+</pre></div>
+
+  <div class="three-panel">
+    <div class="panel">
+      <h4>Why split indices?</h4>
+      <p style="font-size:0.9rem; margin-bottom:0;">Splitting 60k integers is free; splitting 60k image tensors wastes memory. <code>Subset</code> just tells the dataset <em>which</em> indices to serve — the transform and storage stay in one place.</p>
+    </div>
+    <div class="panel">
+      <h4>Stratify when imbalanced</h4>
+      <p style="font-size:0.9rem; margin-bottom:0;">With 95% class A, 5% class B, a random split can drop almost all B-examples into one side by chance. Pass <code>stratify=labels</code> so each side matches the full-pool class proportions. <strong>Always check label counts first</strong>.</p>
+    </div>
+    <div class="panel">
+      <h4>Reproducible</h4>
+      <p style="font-size:0.9rem; margin-bottom:0;">Pass <code>random_state=seed</code> to <code>train_test_split</code>. Same seed → same split. Paired with <code>torch.manual_seed</code> this makes your pipeline bit-for-bit reproducible.</p>
+    </div>
+  </div>
+</div>
+
+
+<!-- ============================================================
+     SLIDE 19 — CROSSENTROPYLOSS
+     ============================================================ -->
+<div class="slide">
+  <h2>Classification Loss: <code>CrossEntropyLoss</code></h2>
+  <p>Regression used <code>MSELoss</code>. Classification uses <code>nn.CrossEntropyLoss</code>, which internally does log-softmax + negative log-likelihood in one numerically stable step.</p>
+
+  <div class="code-block"><span class="label">Python</span><pre>
+criterion <span class="op">=</span> nn.<span class="cls">CrossEntropyLoss</span>()
+
+logits <span class="op">=</span> <span class="fn">model</span>(X)          <span class="comment"># (64, 10) — raw scores, NO softmax</span>
+loss   <span class="op">=</span> <span class="fn">criterion</span>(logits, y)  <span class="comment"># y is (64,), dtype long, values 0–9</span>
+</pre></div>
+
+  <div class="two-panel">
+    <div class="panel">
+      <h4>Concrete example</h4>
+      <p style="font-size:0.9rem; margin-bottom:0;">True class = 3. Logits = <code>[0.1, 0.2, 0.1, <strong>2.5</strong>, 0.3, 0.1, 0.2, 0.1, 0.2, 0.2]</code>. The softmax probability on class 3 is <strong>0.68</strong>, so the loss is <code>-log(0.68) ≈ 0.39</code>. If the model had put <code>2.5</code> on class 6 instead, softmax on class 3 drops to <code>0.04</code> and loss jumps to <code>-log(0.04) ≈ 3.2</code>.</p>
+    </div>
+    <div class="panel">
+      <h4>What it expects</h4>
+      <ul style="font-size:0.9rem; margin-bottom:0;">
+        <li><strong>Logits</strong> — <code>(B, num_classes)</code>, no softmax applied</li>
+        <li><strong>Targets</strong> — <code>(B,)</code>, integer class indices (dtype <code>long</code>)</li>
+        <li>No one-hot encoding anywhere</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="callout error">
+    <div class="callout-title">⚠️ Never apply softmax before <code>CrossEntropyLoss</code></div>
+    <p>PyTorch does log-softmax internally for numerical stability. Adding a softmax yourself double-softmaxes the logits — gradients get squashed, the loss looks low but the model won't actually learn. Feed <strong>raw logits</strong>.</p>
+  </div>
+</div>
+
+<!-- ============================================================
+     SLIDE — BINARY vs MULTI-CLASS CLASSIFICATION (NEW)
+     ============================================================ -->
+<div class="slide">
+  <h2>Binary vs Multi-class — What Changes?</h2>
+  <p>Today's task has 10 classes. If it had 2 (say <em>cat vs dog</em>), you'd choose between two idiomatic PyTorch setups. The good news: one of them requires almost no code change.</p>
+
+  <table class="data-table">
+    <thead>
+      <tr>
+        <th>Piece</th>
+        <th>Multi-class (today)</th>
+        <th>Binary · option A</th>
+        <th>Binary · option B</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Final layer</td>
+        <td class="mono">Linear(128, 10)</td>
+        <td class="mono">Linear(128, 2)</td>
+        <td class="mono">Linear(128, 1)</td>
+      </tr>
+      <tr>
+        <td>Loss</td>
+        <td class="mono">CrossEntropyLoss</td>
+        <td class="mono">CrossEntropyLoss</td>
+        <td class="mono">BCEWithLogitsLoss</td>
+      </tr>
+      <tr>
+        <td>Label <code>y</code></td>
+        <td class="mono">long · 0…9</td>
+        <td class="mono">long · 0 or 1</td>
+        <td class="mono">float · shape (B, 1)</td>
+      </tr>
+      <tr>
+        <td>Softmax/sigmoid before loss?</td>
+        <td><strong>No</strong> (softmax baked into CE)</td>
+        <td><strong>No</strong> (softmax baked into CE)</td>
+        <td><strong>No</strong> (sigmoid baked into BCE)</td>
+      </tr>
+      <tr>
+        <td>Prediction</td>
+        <td class="mono">logits.argmax(dim=1)</td>
+        <td class="mono">logits.argmax(dim=1)</td>
+        <td class="mono">(sigmoid(logit) &gt; 0.5).long()</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="two-panel">
+    <div class="panel">
+      <span class="panel-label good">Option A — same code path</span>
+      <p style="font-size:0.92rem; margin-bottom:0;"><strong>Flip <code>num_classes</code> from 10 to 2.</strong> Everything else — loss, label dtype, prediction — stays the same. This is the least-surprise route and the one I reach for first when the task is "just binary".</p>
+    </div>
+    <div class="panel highlight">
+      <span class="panel-label neutral">Option B — canonical binary</span>
+      <p style="font-size:0.92rem; margin-bottom:0;"><strong>One output logit, <code>BCEWithLogitsLoss</code>, threshold at 0.5.</strong> Slightly fewer parameters, gives you a single "probability of positive class" scalar, and plays nicely with threshold-tuning workflows (see the ROC slide later). Matches how binary classifiers are written in most textbooks.</p>
+    </div>
+  </div>
+
+  <div class="callout error">
+    <div class="callout-title">⚠️ Rule for both</div>
+    <p><code>CrossEntropyLoss</code> has <strong>softmax</strong> baked in. <code>BCEWithLogitsLoss</code> has <strong>sigmoid</strong> baked in. <em>Never apply them yourself before the loss</em> — you'll double-squash the logits and gradients vanish. At <strong>inference time</strong>, if you want probabilities to report to a user or plug into a threshold sweep, apply <code>softmax</code> (multi-class) or <code>sigmoid</code> (binary) on the model's raw logits then.</p>
+  </div>
+</div>
+
+<!-- ============================================================
+     SLIDE 20 — TRAINING THE CNN
+     ============================================================ -->
+<div class="slide">
+  <h2>Training the CNN</h2>
+  <p>The training loop is <strong>identical</strong> to what you wrote in Class 03 — only the model and the loss changed. The architecture is new; the training pattern is not.</p>
+
+  <div class="code-block"><span class="label">Python</span><pre>
+model <span class="op">=</span> <span class="fn">SimpleCNN</span>()
+criterion <span class="op">=</span> nn.<span class="cls">CrossEntropyLoss</span>()
+optimizer <span class="op">=</span> torch.optim.<span class="cls">Adam</span>(model.<span class="fn">parameters</span>(), <span class="param">lr</span><span class="op">=</span><span class="num">1e-3</span>)
+
+<span class="kw">for</span> epoch <span class="kw">in</span> <span class="fn">range</span>(<span class="num">10</span>):
+    model.<span class="fn">train</span>()
+    <span class="kw">for</span> X, y <span class="kw">in</span> train_loader:
+        logits <span class="op">=</span> <span class="fn">model</span>(X)                   <span class="comment"># forward</span>
+        loss   <span class="op">=</span> <span class="fn">criterion</span>(logits, y)          <span class="comment"># loss</span>
+        optimizer.<span class="fn">zero_grad</span>()                  <span class="comment"># reset grads</span>
+        loss.<span class="fn">backward</span>()                        <span class="comment"># compute grads</span>
+        optimizer.<span class="fn">step</span>()                       <span class="comment"># update weights</span>
+
+    <span class="fn">print</span>(<span class="str">f"epoch {epoch+1}: loss={loss.item():.4f}"</span>)
+</pre></div>
+
+  <table class="data-table">
+    <thead><tr><th class="num">Epoch</th><th class="num">Train acc</th><th class="num">Test acc</th><th>What's happening</th></tr></thead>
+    <tbody>
+      <tr><td class="num">1</td><td class="num mono">0.69</td><td class="num mono">0.78</td><td>Filters start as random noise; first useful edge detectors emerge</td></tr>
+      <tr><td class="num">2</td><td class="num mono">0.82</td><td class="num mono">0.84</td><td>Easy classes (Trouser, Bag, Sneaker) already solved</td></tr>
+      <tr><td class="num">3</td><td class="num mono">0.85</td><td class="num mono">0.85</td><td>Gains now concentrate on the hard torso-garment confusions</td></tr>
+    </tbody>
+  </table>
+
+  <p class="muted" style="font-size:0.88rem; margin-bottom:0;">Input shape changed from <code>(batch, features)</code> to <code>(batch, 1, 28, 28)</code>. The 5-line training loop didn't. The architecture is where the work happens.</p>
+</div>
+
+<!-- ============================================================
+     SECTION 5 — EVALUATING A CLASSIFIER
+     ============================================================ -->
+<div class="slide section-header">
+  <span class="section-number">Section 5</span>
+  <h2>Evaluating a classifier</h2>
+  <p class="subtitle">Training is done. Now we open the model up with the metrics every production classifier gets scored on — accuracy, confusion matrix, precision / recall / F1, and ROC — and finish by peeking at the filters the network actually learned.</p>
+</div>
+
+<!-- ============================================================
+     SECTION 5 · OVERVIEW — HOW WE'LL EVALUATE
+     ============================================================ -->
+<div class="slide">
+  <h2>How we'll evaluate</h2>
+  <p>Five lenses on the same trained model. Each one answers a different question — no single number tells the whole story.</p>
+
+  <table class="data-table">
+    <thead>
+      <tr><th>Metric</th><th>The question it answers</th><th>When to care</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>Accuracy</strong></td>
+        <td>How often is the top prediction right?</td>
+        <td>Balanced classes, every class equally important</td>
+      </tr>
+      <tr>
+        <td><strong>Confusion matrix</strong></td>
+        <td>Which classes does the model confuse with which?</td>
+        <td>Always — it's where debugging starts</td>
+      </tr>
+      <tr>
+        <td><strong>Precision / Recall / F1</strong></td>
+        <td>For one class: how trustworthy are the positives, and how many of them did we catch?</td>
+        <td>Imbalanced classes or asymmetric costs (fraud, safety)</td>
+      </tr>
+      <tr>
+        <td><strong>ROC / AUROC</strong></td>
+        <td>How well does the model <em>rank</em> positives above negatives, across every threshold?</td>
+        <td>Threshold needs to be chosen deliberately (risk / review cost)</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p class="muted" style="font-size:0.9rem; margin-bottom:0;">We'll walk through them in the order above — <em>single prediction → aggregate over the whole test set → class-specific metrics → threshold sweep</em>.</p>
+</div>
+
+<!-- ============================================================
+     SECTION 5 · SLIDE — FROM LOGITS TO A PREDICTION (merged)
+     ============================================================ -->
+<div class="slide">
+  <h2>From logits to a prediction</h2>
+  <p>Before we trust any aggregate metric, zoom in on <strong>one</strong> image and watch the model think out loud. The raw model output is 10 real-valued <strong>logits</strong>. <code>softmax</code> turns them into probabilities summing to 1. <code>argmax</code> picks the class with the highest probability — that's the prediction.</p>
+
+  <img class="fig" src="img_class04/one_prediction.png" alt="A Shirt image beside a horizontal bar chart showing softmax probability per class, with Shirt highlighted" style="max-width: 100%; height: auto;">
+
+  <div class="code-block"><span class="label">Python</span><pre>
+model.<span class="fn">eval</span>()
+correct, total <span class="op">=</span> <span class="num">0</span>, <span class="num">0</span>
+
+<span class="kw">with</span> torch.<span class="fn">no_grad</span>():
+    <span class="kw">for</span> X, y <span class="kw">in</span> test_loader:
+        logits <span class="op">=</span> <span class="fn">model</span>(X)                         <span class="comment"># (B, 10) — raw scores</span>
+        preds  <span class="op">=</span> torch.<span class="fn">argmax</span>(logits, <span class="param">dim</span><span class="op">=</span><span class="num">1</span>)        <span class="comment"># (B,) — class index</span>
+        correct <span class="op">+=</span> (preds <span class="op">==</span> y).<span class="fn">sum</span>().<span class="fn">item</span>()
+        total   <span class="op">+=</span> y.<span class="fn">size</span>(<span class="num">0</span>)
+
+accuracy <span class="op">=</span> correct <span class="op">/</span> total
+<span class="fn">print</span>(<span class="str">f"Test accuracy: {accuracy:.2%}"</span>)            <span class="comment"># ≈ 85%</span>
+</pre></div>
+
+  <div class="two-panel">
+    <div class="panel">
+      <h4>What the probabilities tell you</h4>
+      <p style="font-size:0.92rem; margin-bottom:0;">The model gives Shirt 50%, T-shirt 22%, Pullover 19% — <strong>correct, but unconfident</strong>. That is genuine uncertainty: these three torso garments really do look alike at 28 × 28. Accuracy collapses that into a single "correct" tick and throws the nuance away.</p>
+    </div>
+    <div class="panel">
+      <span class="panel-label neutral">Expected range</span>
+      <p style="font-size:0.92rem; margin-bottom:0;">A two-conv CNN at this scale reaches <strong>85–91%</strong> on Fashion-MNIST in 5–10 epochs on CPU. Overall accuracy is a fine first number — but it averages 95% on Trouser with 38% on Shirt. For the real story we'll need the confusion matrix next.</p>
+    </div>
+  </div>
+
+  <div class="callout info">
+    <div class="callout-title">🔍 Softmax is inference-time only</div>
+    <p>We only compute <code>softmax</code> <em>after</em> training, when we want probabilities to show the user or feed a threshold-based decision. During training, <code>CrossEntropyLoss</code> works on raw logits — it does the softmax internally. Never apply softmax yourself before the loss.</p>
+  </div>
+</div>
+
+<!-- ============================================================
+     SECTION 4 · SLIDE — MULTI-CLASS CONFUSION MATRIX
+     ============================================================ -->
+<div class="slide">
+  <h2>Multi-class confusion matrix</h2>
+  <p>We just looked at one prediction. Now aggregate every test prediction into a single picture. Accuracy is one number; a confusion matrix is 100 numbers. <strong>Row = true class, column = predicted class.</strong> The diagonal is correct; everything off-diagonal is a confusion.</p>
+
+  <img class="fig" src="img_class04/confusion_matrix.png" alt="Fashion-MNIST confusion matrix from the trained SimpleCNN, 85.3 percent accuracy" style="max-width: 720px;">
+
+  <p class="fig-caption" style="text-align:center;">What to notice: a dark diagonal means the model is mostly right. Look for <em>clusters</em> of off-diagonal weight — rows that light up outside the diagonal are the classes the model struggles with, and the columns they drift into tell you <em>what</em> it confuses them with.</p>
+
+  <div class="two-panel">
+    <div class="panel">
+      <span class="panel-label good">Strong diagonal</span>
+      <ul style="font-size:0.9rem; margin-bottom:0;">
+        <li><strong>Trouser, Bag, Sneaker, Ankle boot</strong> — distinct silhouettes, 94–98% each</li>
+        <li><strong>Sandal</strong> — a bit of Ankle-boot confusion (17 cases)</li>
+      </ul>
+    </div>
+    <div class="panel highlight">
+      <span class="panel-label bad">The real story: torso garments</span>
+      <ul style="font-size:0.9rem; margin-bottom:0;">
+        <li><strong>Shirt</strong> is the worst — only 38% correct; it gets mistaken for T-shirt (100), Coat (117), Pullover (75)</li>
+        <li><strong>Pullover ↔ Coat</strong> confuse each other (59 cases one way, 36 the other)</li>
+      </ul>
+    </div>
+  </div>
+
+  <p class="muted" style="font-size:0.88rem; margin-bottom:0;">This is the insight accuracy cannot give you. If you needed to ship this classifier, the fix is specific: more training data for torso garments, or higher resolution input (28×28 loses detail), or data augmentation — not "add more epochs".</p>
+</div>
+
+<!-- ============================================================
+     SLIDE — BINARY BREAKDOWN: TP / FP / FN / TN
+     ============================================================ -->
+<div class="slide">
+  <h2>Binary breakdown: TP, FP, FN, TN</h2>
+  <p>The multi-class matrix told us <strong>Shirt</strong> is the model's biggest weakness. Collapse it to one "vs" pair — <strong>Shirt = positive</strong>, <strong>T-shirt = negative</strong> — and the familiar 2 × 2 TP/FP/FN/TN layout appears, unlocking the four metrics every classifier has to report.</p>
+
+  <img class="fig" src="img_class04/binary_confusion.png" alt="Binary confusion matrix for Shirt vs T-shirt with Accuracy, Precision, Recall, Specificity, F1" style="max-width: 100%; height: auto;">
+
+  <div class="two-panel">
+    <div class="panel">
+      <h4>Precision vs Recall — the trade-off</h4>
+      <p style="font-size:0.92rem; margin-bottom:0;"><strong>Precision 0.90</strong> means: when the model <em>says</em> Shirt, it's almost always right. <strong>Recall 0.37</strong> means: when a Shirt actually comes in, the model only catches ~1 in 3. The model is conservative — it demands strong evidence before calling Shirt, so it misses many.</p>
+    </div>
+    <div class="panel">
+      <h4>When to care about which</h4>
+      <p style="font-size:0.92rem; margin-bottom:0;"><strong>Fraud / spam filter:</strong> optimise precision — false alarms cost users. <strong>Cancer screening / safety alerts:</strong> optimise recall — missing a true positive is catastrophic. <strong>F1</strong> balances the two when both matter equally.</p>
+    </div>
+  </div>
+
+  <div class="callout info">
+    <div class="callout-title">🔍 Accuracy vs F1 — why the gap?</div>
+    <p>Accuracy is 0.669 but F1 is 0.528. The gap opens because the <strong>negatives dominate</strong> (515 T-shirts vs 506 Shirts — almost balanced here, but imagine 95/5). Accuracy rewards getting the majority class right; F1 does not. When classes are imbalanced or you care about the rare class, track precision/recall/F1, not accuracy.</p>
+  </div>
+</div>
+
+<!-- ============================================================
+     SLIDE — ROC CURVE AND AUROC
+     ============================================================ -->
+<div class="slide">
+  <h2>ROC curve and AUROC</h2>
+  <p>Every confusion matrix assumes <strong>one</strong> decision threshold (softmax probability &gt; 0.5 → predict Shirt). But you can pick any threshold — lower it and you'll catch more Shirts (recall ↑) at the cost of more false positives (precision ↓). The ROC curve plots this trade-off across every possible threshold.</p>
+
+  <img class="fig" src="img_class04/roc_auc.png" alt="ROC curve for Shirt vs T-shirt with AUROC 0.94 and the Youden best-threshold point highlighted" style="max-width: 760px;">
+
+  <div class="two-panel">
+    <div class="panel">
+      <h4>Reading the curve</h4>
+      <ul style="font-size:0.92rem; margin-bottom:0;">
+        <li><strong>Bottom-left</strong> = strict threshold (few positives, few false alarms)</li>
+        <li><strong>Top-right</strong> = lenient threshold (everything positive, many false alarms)</li>
+        <li><strong>Top-left corner</strong> is the dream: high TPR, low FPR</li>
+        <li>The <strong>diagonal</strong> is random guessing (AUROC = 0.5)</li>
+      </ul>
+    </div>
+    <div class="panel highlight">
+      <h4>AUROC = 0.94</h4>
+      <p style="font-size:0.92rem; margin-bottom:0;">Area under the ROC curve. <strong>Threshold-independent</strong> — it measures how well the model <em>ranks</em> positives above negatives, regardless of where you cut. 0.5 = random, 1.0 = perfect. For this Shirt-vs-T-shirt head the CNN scores 0.94 — the model has the discriminating information, it's just that the default 0.5 threshold isn't the best one.</p>
+    </div>
+  </div>
+
+  <div class="callout success">
+    <div class="callout-title">💡 The best-threshold dot</div>
+    <p>The amber dot marks the threshold that maximises <code>TPR − FPR</code> (Youden's J) — that's the spot on the curve farthest from the diagonal. Adopt that threshold and recall jumps from 0.37 to 0.83 with only a modest increase in false positives. Shipping a classifier means picking this cut deliberately, not accepting the default.</p>
+  </div>
+</div>
+
+<!-- ============================================================
+     SLIDE — VISUALISING THE CNN
+     ============================================================ -->
+<div class="slide">
+  <h2>What the filters learn</h2>
+  <p>The <code>conv1</code> layer has 16 filters that were random at initialisation. After training, they become real pattern detectors. The clearest way to see this is to run one real image through the trained layer and look at all 16 output feature maps.</p>
+
+  <img class="fig" src="img_class04/feature_maps.png" alt="One Fashion-MNIST image on the left, its 16 conv1 feature maps on the right" style="max-width: 100%; height: auto;">
+
+  <p class="fig-caption" style="text-align:center;">What to notice: no two maps look alike. Some light up along the outer silhouette, some respond to internal texture, some fire only on diagonal edges. Each map is the same image scanned by a different 3 × 3 filter — and every one of those filters was discovered by gradient descent, not designed by a human.</p>
+
+  <div class="callout success">
+    <div class="callout-title">💡 The payoff</div>
+    <p>Gradient descent turned random weights into 16 distinct edge and gradient detectors — and this is just layer 1. Stack more conv layers and you get textures, parts, and eventually object-level features. This emergent feature hierarchy is the property that makes CNNs the foundation of every modern vision system — and the reason transfer learning (next class) works.</p>
+  </div>
+</div>
+
+<!-- ============================================================
+     SECTION 4 · SLIDE — GOING DEEPER (resources)
+     ============================================================ -->
+<div class="slide">
+  <h2>Going deeper — interactive resources</h2>
+  <p>CNN intuition gets a lot easier when you can <strong>touch</strong> the tensors. These two browser-based tools are the best way to build that intuition — click through them before the next class.</p>
+
+  <div class="two-panel">
+    <div class="panel highlight">
+      <h4>CNN Explainer — poloclub.github.io</h4>
+      <p style="font-size:0.92rem;">Interactive tour of a trained CNN: hover over any feature map, see the filter that produced it, watch the convolution animate on real pixels. Covers conv, ReLU, pool, flatten, softmax, and the full forward pass, all in-browser.</p>
+      <p style="margin-bottom:0;"><a href="https://poloclub.github.io/cnn-explainer/" target="_blank"><strong>poloclub.github.io/cnn-explainer</strong></a></p>
+    </div>
+    <div class="panel highlight">
+      <h4>3D CNN Visualisation — Adam Harley</h4>
+      <p style="font-size:0.92rem;">Draw a digit and watch a trained CNN process it layer by layer, rendered in 3D. Every feature map, every activation, every class vote — visible at once. The clearest demonstration of what a CNN <em>actually does</em> on one image.</p>
+      <p style="margin-bottom:0;"><a href="https://adamharley.com/nn_vis/cnn/3d.html" target="_blank"><strong>adamharley.com/nn_vis/cnn/3d.html</strong></a></p>
+    </div>
+  </div>
+
+  <div class="two-panel">
+    <div class="panel">
+      <h4>Video walkthroughs</h4>
+      <ul style="font-size:0.92rem; margin-bottom:0;">
+        <li><a href="http://introtodeeplearning.com/" target="_blank">MIT 6.S191 — Intro to Deep Learning (CNN lecture)</a></li>
+      </ul>
+    </div>
+    <div class="panel">
+      <h4>Written references</h4>
+      <ul style="font-size:0.92rem; margin-bottom:0;">
+        <li><a href="https://pytorch.org/docs/stable/generated/torch.nn.Conv2d.html" target="_blank">PyTorch docs — <code>nn.Conv2d</code></a></li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     SLIDE ENGINE (inlined)
+     ============================================================ -->
+<script>
+(function () {
+  "use strict";
+  const CONFIG = {
+    slideSelector: ".slide",
+    slideNumberClass: "slide-number",
+    scrollBehavior: "smooth",
+    katexAutoRenderOptions: {
+      delimiters: [
+        { left: "$$", right: "$$", display: true },
+        { left: "$", right: "$", display: false },
+      ],
+      throwOnError: false,
+      errorColor: "#EF4444",
+    },
+  };
+  let slides = [];
+  let currentSlideIndex = 0;
+
+  function init() {
+    slides = Array.from(document.querySelectorAll(CONFIG.slideSelector));
+    if (slides.length === 0) return;
+    autoNumberSlides();
+    renderKaTeX();
+    bindKeyboard();
+    syncSlideFromHash();
+    window.addEventListener("hashchange", syncSlideFromHash);
+  }
+  function autoNumberSlides() {
+    const total = slides.length;
+    slides.forEach(function (slide, i) {
+      if (slide.querySelector("." + CONFIG.slideNumberClass)) return;
+      var num = document.createElement("span");
+      num.className = CONFIG.slideNumberClass;
+      num.textContent = (i + 1) + " / " + total;
+      num.setAttribute("aria-hidden", "true");
+      slide.appendChild(num);
+      if (!slide.id) slide.id = "slide-" + (i + 1);
+    });
+  }
+  function renderKaTeX() {
+    if (typeof window.renderMathInElement !== "function") return;
+    slides.forEach(function (slide) { window.renderMathInElement(slide, CONFIG.katexAutoRenderOptions); });
+  }
+  function bindKeyboard() {
+    document.addEventListener("keydown", function (e) {
+      var tag = (e.target.tagName || "").toLowerCase();
+      if (tag === "input" || tag === "textarea" || tag === "select") return;
+      switch (e.key) {
+        case "ArrowRight": case "ArrowDown": case "PageDown":
+          e.preventDefault(); navigateTo(currentSlideIndex + 1); break;
+        case "ArrowLeft": case "ArrowUp": case "PageUp":
+          e.preventDefault(); navigateTo(currentSlideIndex - 1); break;
+        case "Home": e.preventDefault(); navigateTo(0); break;
+        case "End":  e.preventDefault(); navigateTo(slides.length - 1); break;
+      }
+    });
+  }
+  function navigateTo(index) {
+    if (index < 0 || index >= slides.length) return;
+    currentSlideIndex = index;
+    var slide = slides[currentSlideIndex];
+    slide.scrollIntoView({ behavior: CONFIG.scrollBehavior, block: "start" });
+    var id = slide.id || "slide-" + (index + 1);
+    if (history.replaceState) history.replaceState(null, "", "#" + id);
+  }
+  function syncSlideFromHash() {
+    var hash = window.location.hash;
+    if (!hash) { currentSlideIndex = 0; return; }
+    var target = document.getElementById(hash.slice(1));
+    if (target) {
+      var idx = slides.indexOf(target);
+      if (idx !== -1) { currentSlideIndex = idx; target.scrollIntoView({ behavior: "auto", block: "start" }); return; }
+    }
+    var num = parseInt(hash.slice(1), 10);
+    if (!isNaN(num) && num >= 1 && num <= slides.length) {
+      currentSlideIndex = num - 1;
+      slides[currentSlideIndex].scrollIntoView({ behavior: "auto", block: "start" });
+    }
+  }
+  function initScrollSpy() {
+    if (!("IntersectionObserver" in window)) return;
+    var observer = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (entry.isIntersecting) {
+          var idx = slides.indexOf(entry.target);
+          if (idx !== -1) currentSlideIndex = idx;
+        }
+      });
+    }, { root: null, rootMargin: "0px", threshold: 0.5 });
+    slides.forEach(function (slide) { observer.observe(slide); });
+  }
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", function () { init(); initScrollSpy(); });
+  } else { init(); initScrollSpy(); }
+})();
+</script>
+
+</body>
+</html>
