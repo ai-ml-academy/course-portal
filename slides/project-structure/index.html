@@ -1,0 +1,1273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Class 07 — Python Project Structure &amp; Packaging</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"
+  onload="renderMathInElement(document.body, { delimiters: [
+    { left: '$$', right: '$$', display: true },
+    { left: '$', right: '$', display: false }
+  ] });"></script>
+<style>
+/* ============================================================
+   Gen AI Engineer Course — Slide Theme (inlined)
+   ============================================================ */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+:root {
+  --navy-900: #1A3264; --navy-800: #214078; --navy-700: #2E5090; --navy-600: #3660A3;
+  --navy-500: #4272B8; --navy-400: #5A8ACB; --navy-300: #7BA4D8; --navy-200: #A3C0E4;
+  --navy-100: #C8D9EF; --navy-50:  #E8EFF7;
+
+  --slate-900: #1E1E2E; --slate-800: #2A2A3C; --slate-700: #3A3A4F; --slate-600: #4A4A62;
+  --slate-500: #6B6B82; --slate-400: #8E8EA3; --slate-300: #B0B0C2;
+  --slate-200: #D0D0DC; --slate-100: #E8E8EF; --slate-50:  #F5F5F9;
+
+  --accent:       #4BB8C9;
+  --accent-light: #7FCDD8;
+  --accent-dim:   #2A8F9E;
+
+  --info:    #36A2B5; --info-bg:    #EAF5F7;
+  --success: #5B9E7B; --success-bg: #EDF5F0;
+  --warning: #C49545; --warning-bg: #FBF4E8;
+  --error:   #D4594E; --error-bg:   #FBEEED;
+
+  --font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-code: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
+  --slide-padding: 3rem 4rem; --slide-max-width: 1100px;
+  --radius-sm: 6px; --radius-md: 10px; --radius-lg: 16px;
+  --shadow-sm: 0 1px 3px rgba(38, 69, 110, 0.06);
+  --shadow-md: 0 4px 14px rgba(38, 69, 110, 0.08);
+  --shadow-lg: 0 8px 28px rgba(38, 69, 110, 0.12);
+  --ease: cubic-bezier(.4, 0, .2, 1);
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { font-size: 19px; scroll-behavior: smooth; -webkit-font-smoothing: antialiased; }
+body { font-family: var(--font-body); color: var(--slate-800); background: var(--slate-50); line-height: 1.6; }
+
+.slide { min-height: 100vh; padding: var(--slide-padding); display: flex; flex-direction: column;
+         justify-content: center; max-width: var(--slide-max-width); margin: 0 auto; position: relative; }
+.slide-number { position: absolute; bottom: 1.2rem; right: 1.5rem; font-size: 0.75rem;
+                font-weight: 600; color: var(--slate-400); letter-spacing: 0.04em; }
+.slide + .slide { border-top: 1px solid var(--slate-100); }
+
+h1, h2, h3, h4 { color: var(--navy-700); line-height: 1.25; font-weight: 700; letter-spacing: -0.01em; }
+h1 { font-size: 2.8rem; font-weight: 800; margin-bottom: 1rem; }
+h2 { font-size: 2.15rem; margin-bottom: 0.8rem; }
+h3 { font-size: 1.6rem;  margin-bottom: 0.6rem; }
+h4 { font-size: 1.3rem;  font-weight: 600; margin-bottom: 0.5rem; }
+p  { margin-bottom: 1rem; }
+strong { font-weight: 600; color: var(--navy-700); }
+
+a { color: var(--accent-dim); text-decoration: none; border-bottom: 1px solid transparent;
+    transition: border-color 0.2s var(--ease); }
+a:hover { border-bottom-color: var(--accent-dim); }
+
+ul, ol { margin: 0.5rem 0 1rem 1.6rem; }
+li { margin-bottom: 0.35rem; }
+li::marker { color: var(--navy-400); }
+
+.subtitle { font-size: 1.3rem; color: var(--slate-500); font-weight: 400; margin-bottom: 1.5rem; }
+.muted { color: var(--slate-500); }
+
+.slide.title-slide { text-align: center; color: var(--slate-50);
+  background: linear-gradient(135deg, var(--navy-800) 0%, var(--navy-600) 100%); min-height: 100vh; }
+.slide.title-slide h1 { color: var(--slate-50); font-size: 3.4rem; margin-bottom: 0.6rem; }
+.slide.title-slide .subtitle { color: var(--navy-100); font-size: 1.4rem; }
+.slide.title-slide .meta { margin-top: 2rem; font-size: 0.9rem; color: var(--navy-200); }
+
+.slide.section-header { text-align: center; background: var(--navy-50); }
+.slide.section-header h2 { font-size: 2.4rem; color: var(--navy-700); margin-bottom: 0.6rem; }
+.slide.section-header .section-number { display: inline-block; font-size: 0.85rem;
+  font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;
+  color: var(--accent-dim); margin-bottom: 0.8rem; }
+.slide.section-header .subtitle { font-size: 1.15rem; color: var(--slate-600); max-width: 720px; margin: 0 auto; }
+
+/* -------- Code blocks -------- */
+.code-block { background: var(--slate-900); color: #E2E8F0; font-family: var(--font-code);
+  font-size: 0.85rem; line-height: 1.65; padding: 1.2rem 1.4rem; border-radius: var(--radius-md);
+  overflow-x: auto; margin: 0.9rem 0; box-shadow: var(--shadow-md); position: relative; }
+.code-block .label { position: absolute; top: 0.5rem; right: 0.8rem; font-size: 0.65rem;
+  font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em;
+  color: var(--slate-400); font-family: var(--font-body); }
+.code-block pre { font-family: var(--font-code); margin: 0; }
+.code-block .kw  { color: #C792EA; } .code-block .fn  { color: #82AAFF; }
+.code-block .str { color: #C3E88D; } .code-block .num { color: #F78C6C; }
+.code-block .comment { color: #7FCDD8; font-style: italic; }
+.code-block .op  { color: #89DDFF; } .code-block .cls { color: #E8C577; }
+.code-block .dec { color: #F07178; } .code-block .builtin { color: #89DDFF; }
+.code-block .param { color: #E2E8F0; font-style: italic; }
+.code-block .sec { color: #FFCB6B; font-weight: 600; }
+code { font-family: var(--font-code); font-size: 0.88em; background: var(--navy-50);
+  color: var(--navy-700); padding: 0.15em 0.4em; border-radius: 4px; }
+
+/* -------- Layout helpers -------- */
+.two-panel { display: grid; grid-template-columns: 1fr 1fr; gap: 1.3rem; margin: 1rem 0; }
+.three-panel { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1.3rem; margin: 1rem 0; }
+.panel { background: #fff; border: 1px solid var(--slate-200); border-radius: var(--radius-md);
+  padding: 1.2rem 1.3rem; box-shadow: var(--shadow-sm); }
+.panel h4 { margin-bottom: 0.5rem; color: var(--navy-600); font-size: 1.05rem; }
+.panel.highlight { border-color: var(--accent-dim);
+  box-shadow: 0 0 0 2px rgba(42, 143, 158, 0.12), var(--shadow-sm); }
+.panel .panel-label { display: inline-block; font-size: 0.7rem; font-weight: 700;
+  letter-spacing: 0.08em; text-transform: uppercase; padding: 0.2em 0.6em;
+  border-radius: 4px; margin-bottom: 0.5rem; }
+.panel .panel-label.bad  { background: var(--error-bg);   color: var(--error); }
+.panel .panel-label.good { background: var(--success-bg); color: var(--success); }
+.panel .panel-label.neutral { background: var(--slate-100); color: var(--slate-600); }
+
+/* -------- Tables -------- */
+.data-table { width: 100%; border-collapse: collapse; margin: 0.8rem 0; font-size: 0.92rem; }
+.data-table th { background: var(--navy-700); color: var(--slate-50); font-weight: 600;
+  text-align: left; padding: 0.6rem 0.9rem; }
+.data-table th:first-child { border-radius: var(--radius-sm) 0 0 0; }
+.data-table th:last-child  { border-radius: 0 var(--radius-sm) 0 0; }
+.data-table td { padding: 0.55rem 0.9rem; border-bottom: 1px solid var(--slate-100); vertical-align: top; }
+.data-table tr:last-child td { border-bottom: none; }
+.data-table tbody tr:hover { background: var(--navy-50); }
+.data-table .mono { font-family: var(--font-code); font-size: 0.85em; color: var(--navy-700); }
+
+/* -------- Callouts -------- */
+.callout { padding: 1rem 1.2rem; border-radius: var(--radius-md); margin: 0.9rem 0;
+  border-left: 4px solid; font-size: 0.94rem; }
+.callout-title { font-weight: 700; margin-bottom: 0.25rem; font-size: 0.88rem; letter-spacing: 0.02em; }
+.callout.info    { background: var(--info-bg);    border-color: var(--info);    }
+.callout.warning { background: var(--warning-bg); border-color: var(--warning); }
+.callout.success { background: var(--success-bg); border-color: var(--success); }
+.callout.error   { background: var(--error-bg);   border-color: var(--error);   }
+.callout.info    .callout-title { color: var(--info);    }
+.callout.warning .callout-title { color: var(--warning); }
+.callout.success .callout-title { color: var(--success); }
+.callout.error   .callout-title { color: var(--error);   }
+.callout p:last-child { margin-bottom: 0; }
+
+/* -------- Card grid -------- */
+.card-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 1.1rem; margin: 0.8rem 0; }
+.card { background: #fff; border: 1px solid var(--slate-200); border-radius: var(--radius-md);
+  padding: 1.2rem; box-shadow: var(--shadow-sm); transition: transform 0.2s var(--ease), box-shadow 0.2s var(--ease); }
+.card:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
+.card h4 { font-size: 1.05rem; margin-bottom: 0.35rem; color: var(--navy-700); }
+.card p  { font-size: 0.9rem; color: var(--slate-600); margin-bottom: 0; }
+.card .card-icon { font-size: 1.6rem; margin-bottom: 0.5rem; display: block; }
+.card .card-tag { display: inline-block; font-size: 0.65rem; font-weight: 700;
+  letter-spacing: 0.08em; text-transform: uppercase; padding: 0.15em 0.6em;
+  border-radius: 4px; margin-bottom: 0.5rem; }
+.card .card-tag.layout  { background: var(--info-bg);    color: var(--accent-dim); }
+.card .card-tag.config  { background: var(--success-bg); color: var(--success); }
+.card .card-tag.install { background: var(--warning-bg); color: var(--warning); }
+
+/* -------- Badges -------- */
+.badge { display: inline-block; font-size: 0.72rem; font-weight: 600; letter-spacing: 0.04em;
+  padding: 0.2em 0.65em; border-radius: 999px; vertical-align: middle; }
+.badge.navy    { background: var(--navy-100); color: var(--navy-700); }
+.badge.accent  { background: var(--info-bg);  color: var(--accent-dim); }
+.badge.success { background: var(--success-bg); color: var(--success); }
+.badge.warning { background: var(--warning-bg); color: var(--warning); }
+
+.text-center { text-align: center; }
+.mt-2 { margin-top: 1rem; } .mt-3 { margin-top: 1.5rem; }
+.mb-0 { margin-bottom: 0; }
+
+/* ============================================================
+   File-tree diagram (HTML/CSS)
+   ============================================================ */
+.file-tree { background: var(--slate-900); color: #E2E8F0; font-family: var(--font-code);
+  font-size: 0.88rem; line-height: 1.8; padding: 1.3rem 1.5rem; border-radius: var(--radius-md);
+  margin: 1rem 0; box-shadow: var(--shadow-md); position: relative; }
+.file-tree .label { position: absolute; top: 0.5rem; right: 0.8rem; font-size: 0.65rem;
+  font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em;
+  color: var(--slate-400); font-family: var(--font-body); }
+.file-tree .tree-row { display: grid; grid-template-columns: 1fr auto; gap: 1.5rem; align-items: baseline; }
+.file-tree .tree-path { white-space: pre; color: #E2E8F0; }
+.file-tree .tree-path .dir  { color: #82AAFF; font-weight: 600; }
+.file-tree .tree-path .pyf  { color: #C3E88D; }
+.file-tree .tree-path .tomlf{ color: #F78C6C; }
+.file-tree .tree-path .yamlf{ color: #FFCB6B; }
+.file-tree .tree-path .mdf  { color: #C792EA; }
+.file-tree .tree-path .ipynbf { color: #F07178; }
+.file-tree .tree-path .init { color: #7FCDD8; font-style: italic; }
+.file-tree .tree-note { color: #7FCDD8; font-style: italic; font-size: 0.82rem; white-space: nowrap; }
+
+/* ============================================================
+   Restructure flow — horizontal 7-step pipeline
+   ============================================================ */
+.flow-steps { display: flex; align-items: stretch; justify-content: center; gap: 0.35rem;
+  flex-wrap: wrap; margin: 1.2rem 0; }
+.flow-step { background: #fff; border: 1px solid var(--slate-200); border-radius: var(--radius-md);
+  padding: 0.7rem 0.85rem; min-width: 115px; max-width: 145px; text-align: center;
+  box-shadow: var(--shadow-sm); position: relative; }
+.flow-step .step-num { display: inline-flex; align-items: center; justify-content: center;
+  width: 1.6rem; height: 1.6rem; background: var(--navy-700); color: #fff;
+  border-radius: 50%; font-size: 0.78rem; font-weight: 700; margin-bottom: 0.35rem; }
+.flow-step .step-title { font-size: 0.82rem; font-weight: 600; color: var(--navy-700);
+  line-height: 1.25; display: block; margin-bottom: 0.2rem; }
+.flow-step .step-sub { font-size: 0.72rem; color: var(--slate-500); line-height: 1.3; }
+.flow-step.accent { border-color: var(--accent-dim); background: var(--info-bg); }
+.flow-step.accent .step-num { background: var(--accent-dim); }
+.flow-arrow { align-self: center; color: var(--slate-400); font-weight: 700; font-size: 1.1rem; }
+
+/* ============================================================
+   Notebook "trap" visual — grid of problems
+   ============================================================ */
+.trap-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 1rem; margin: 1.2rem 0; }
+.trap-card { position: relative; background: #fff; border: 1px solid var(--slate-200);
+  border-left: 4px solid var(--error); padding: 1.1rem 1.2rem 1rem 1.3rem;
+  border-radius: var(--radius-md); box-shadow: var(--shadow-sm);
+  transition: transform 0.18s var(--ease), box-shadow 0.18s var(--ease); overflow: hidden; }
+.trap-card::before { content: attr(data-num); position: absolute; top: 0.3rem; right: 0.8rem;
+  font-family: var(--font-code); font-size: 2.2rem; font-weight: 800; line-height: 1;
+  color: var(--error); opacity: 0.12; letter-spacing: -0.04em; pointer-events: none; }
+.trap-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
+.trap-card h4 { color: var(--error); font-size: 0.95rem; margin-bottom: 0.35rem;
+  font-weight: 600; position: relative; }
+.trap-card p  { font-size: 0.88rem; color: var(--slate-700); margin-bottom: 0; line-height: 1.5;
+  position: relative; }
+
+/* ============================================================
+   Decision flowchart (HTML/CSS)
+   ============================================================ */
+.decision-chart { display: flex; flex-direction: column; align-items: center; gap: 0.5rem; margin: 1.2rem 0; }
+.decision-node { background: #fff; border: 2px solid var(--navy-400); border-radius: 24px;
+  padding: 0.7rem 1.4rem; font-weight: 600; color: var(--navy-700); font-size: 0.95rem;
+  box-shadow: var(--shadow-sm); text-align: center; max-width: 520px; }
+.decision-node.start { background: var(--navy-700); color: #fff; border-color: var(--navy-800); }
+.decision-node.end-yes { background: var(--success-bg); border-color: var(--success); color: var(--success); }
+.decision-node.end-no  { background: var(--slate-100);  border-color: var(--slate-400); color: var(--slate-600); }
+.decision-branch { display: flex; gap: 2.5rem; align-items: flex-start; }
+.decision-arrow { color: var(--slate-400); font-size: 1.3rem; line-height: 1; }
+.decision-label { font-size: 0.75rem; font-weight: 700; letter-spacing: 0.08em;
+  color: var(--accent-dim); padding: 0.1rem 0.4rem; }
+
+/* ============================================================
+   Diff compare — before/after code panels
+   ============================================================ */
+.diff-compare { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin: 1rem 0; }
+.diff-compare .code-block { margin: 0; font-size: 0.78rem; line-height: 1.55; padding: 1rem 1.1rem; }
+.diff-compare .code-block pre { white-space: pre; }
+.diff-head { font-size: 0.72rem; font-weight: 700; letter-spacing: 0.08em;
+  text-transform: uppercase; padding: 0.2em 0.6em; border-radius: 4px;
+  display: inline-block; margin-bottom: 0.4rem; }
+.diff-head.before { background: var(--error-bg); color: var(--error); }
+.diff-head.after  { background: var(--success-bg); color: var(--success); }
+
+/* ============================================================
+   Project anatomy — module dependency diagram
+   ============================================================ */
+.anatomy { background: #fff; border: 1px solid var(--slate-200); border-radius: var(--radius-md);
+  padding: 1.3rem 1rem; box-shadow: var(--shadow-sm); margin: 1rem 0; }
+.anatomy-row { display: flex; align-items: center; justify-content: center; gap: 0.5rem; flex-wrap: wrap; }
+.anatomy-box { background: var(--navy-50); border: 1.5px solid var(--navy-400); border-radius: var(--radius-sm);
+  padding: 0.6rem 0.85rem; font-family: var(--font-code); font-size: 0.85rem; color: var(--navy-700);
+  min-width: 140px; text-align: center; font-weight: 600; }
+.anatomy-box.config { background: var(--warning-bg); border-color: var(--warning); color: var(--warning); }
+.anatomy-box.data { background: var(--info-bg); border-color: var(--accent-dim); color: var(--accent-dim); }
+.anatomy-box.model { background: var(--success-bg); border-color: var(--success); color: var(--success); }
+.anatomy-box.out { background: var(--navy-700); border-color: var(--navy-800); color: #fff; }
+.anatomy-arrow { color: var(--slate-400); font-weight: 700; font-size: 1.1rem; }
+.anatomy-sub { font-size: 0.72rem; color: var(--slate-500); text-align: center; display: block; margin-top: 0.25rem; font-family: var(--font-body); font-weight: 400; }
+
+/* ============================================================
+   Responsive
+   ============================================================ */
+@media (max-width: 900px) {
+  :root { --slide-padding: 2rem 1.8rem; }
+  html { font-size: 17px; }
+  h1 { font-size: 2.2rem; } h2 { font-size: 1.7rem; } h3 { font-size: 1.35rem; }
+  .two-panel, .three-panel { grid-template-columns: 1fr; }
+  .diff-compare { grid-template-columns: 1fr; }
+  .slide.title-slide h1 { font-size: 2.6rem; }
+}
+@media (max-width: 600px) {
+  :root { --slide-padding: 1.5rem 1rem; }
+  html { font-size: 15px; }
+  .card-grid { grid-template-columns: 1fr; }
+  .code-block { font-size: 0.78rem; padding: 1rem; }
+  .flow-step { min-width: 100%; }
+  .flow-arrow { transform: rotate(90deg); }
+}
+
+/* Disable font ligatures so == does not look like = */
+.code-block, .code-block *, code { font-variant-ligatures: none; font-feature-settings: "liga" 0, "calt" 0; }
+</style>
+</head>
+<body>
+
+<!-- ============================================================
+     SLIDE 1 — TITLE
+     ============================================================ -->
+<div class="slide title-slide">
+  <h1>Python Project Structure &amp; Packaging</h1>
+  <p class="subtitle">From notebook cells to a real, installable Python package</p>
+  <p class="meta">Module 4 · Gen AI Engineer Course</p>
+</div>
+
+<!-- ============================================================
+     SLIDE 2 — WHAT YOU'LL LEARN
+     ============================================================ -->
+<div class="slide">
+  <h2>What You'll Learn Today</h2>
+  <div style="border-left: 4px solid var(--accent-dim); background: var(--info-bg); padding: 0.8rem 1.1rem; margin: 0.6rem 0 1rem 0; border-radius: 0 6px 6px 0;">
+    <p style="margin: 0; font-size: 1.05rem; color: var(--navy-800); font-weight: 500;">Your notebook trains a model. Great. Now you need to reuse that preprocessing function in three scripts, run it with five different configs, and hand it to a teammate. You copy-paste. You fix a bug in one notebook and forget the other four. This class teaches the escape route.</p>
+  </div>
+
+  <div class="card-grid" style="grid-template-columns: 1fr 1fr;">
+    <div class="card">
+      <span class="card-tag layout">Layout</span>
+      <h4>The standard project layout</h4>
+      <p>Why <code>src/</code>, <code>configs/</code>, <code>data/</code>, <code>tests/</code> — and what every pro Python project has in common.</p>
+    </div>
+    <div class="card">
+      <span class="card-tag config">Metadata</span>
+      <h4>Write a <code>pyproject.toml</code></h4>
+      <p>The modern single-file replacement for <code>setup.py</code>. Name, version, dependencies, build system — all in one TOML file.</p>
+    </div>
+    <div class="card">
+      <span class="card-tag layout">Imports</span>
+      <h4>Packages &amp; imports</h4>
+      <p>What <code>__init__.py</code> actually does. Absolute vs relative imports. Why <code>python -m</code> exists.</p>
+    </div>
+    <div class="card">
+      <span class="card-tag install">Install</span>
+      <h4>Editable installs</h4>
+      <p><code>pip install -e .</code> — the one command that makes your own code importable from anywhere.</p>
+    </div>
+    <div class="card">
+      <span class="card-tag layout">Restructure</span>
+      <h4>Notebook &rarr; package</h4>
+      <p>Take the messy training notebook, extract <code>data.py</code>, <code>model.py</code>, <code>train.py</code>, and call them from a clean 10-line script.</p>
+    </div>
+    <div class="card">
+      <span class="card-tag install">Automation</span>
+      <h4>Makefile shortcuts</h4>
+      <p><code>make train</code>, <code>make lint</code>, <code>make test</code> — team-friendly commands that document your project.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     SECTION 1 — WHY STRUCTURE MATTERS
+     ============================================================ -->
+<div class="slide section-header">
+  <span class="section-number">Section 1</span>
+  <h2>Project structure</h2>
+  <div style="border-left: 4px solid var(--accent-dim); background: var(--info-bg); padding: 0.8rem 1.1rem; margin: 0.6rem 0 1rem 0; border-radius: 0 6px 6px 0;">
+    <p style="margin: 0; font-size: 1.05rem; color: var(--navy-800); font-weight: 500;">What a well-organised Python project looks like — and what goes wrong when code stays trapped in notebook cells.</p>
+  </div>
+</div>
+
+<!-- ============================================================
+     SLIDE 3 — THE NOTEBOOK TRAP
+     ============================================================ -->
+<div class="slide">
+  <h2>The Standard Python Project Layout</h2>
+  <div style="border-left: 4px solid var(--accent-dim); background: var(--info-bg); padding: 0.8rem 1.1rem; margin: 0.6rem 0 1rem 0; border-radius: 0 6px 6px 0;">
+    <p style="margin: 0; font-size: 1.05rem; color: var(--navy-800); font-weight: 500;">This layout is not a style preference — it's what <code>pip</code>, <code>pytest</code>, and every CI system on Earth expect by default. Adopt it and the whole ecosystem just works.</p>
+  </div>
+
+  <div class="file-tree"><span class="label">Project root</span>
+<div class="tree-row"><div class="tree-path">my_project/</div><div class="tree-note">&larr; project root</div></div>
+<div class="tree-row"><div class="tree-path">├── <span class="tomlf">pyproject.toml</span></div><div class="tree-note">project metadata + dependencies (PEP 621)</div></div>
+<div class="tree-row"><div class="tree-path">├── requirements.txt</div><div class="tree-note">optional lockfile — pyproject.toml alone is fine too</div></div>
+<div class="tree-row"><div class="tree-path">├── README.md</div><div class="tree-note">what this project does, how to install</div></div>
+<div class="tree-row"><div class="tree-path">├── Makefile</div><div class="tree-note">make train / make test / make lint</div></div>
+<div class="tree-row"><div class="tree-path">├── .gitignore</div><div class="tree-note">ignore data/, __pycache__, .venv, ...</div></div>
+<div class="tree-row"><div class="tree-path">├── <span class="dir">docs/</span></div><div class="tree-note">documentation</div></div>
+<div class="tree-row"><div class="tree-path">├── <span class="dir">src/</span></div><div class="tree-note">your Python source code</div></div>
+<div class="tree-row"><div class="tree-path">│   ├── <span class="dir">data_prep/</span></div><div class="tree-note">preprocessing, dataset loading, transforms</div></div>
+<div class="tree-row"><div class="tree-path">│   │   ├── <span class="init">__init__.py</span></div><div class="tree-note">marks directory as a package</div></div>
+<div class="tree-row"><div class="tree-path">│   │   └── <span class="pyf">preprocessing.py</span></div><div class="tree-note">scale_features, encode_categorical, ...</div></div>
+<div class="tree-row"><div class="tree-path">│   ├── <span class="dir">model/</span></div><div class="tree-note">model architectures</div></div>
+<div class="tree-row"><div class="tree-path">│   │   ├── <span class="init">__init__.py</span></div><div class="tree-note">public API for the model package</div></div>
+<div class="tree-row"><div class="tree-path">│   │   └── <span class="pyf">architecture.py</span></div><div class="tree-note">nn.Module subclasses, build_model(cfg)</div></div>
+<div class="tree-row"><div class="tree-path">│   ├── <span class="dir">configs/</span></div><div class="tree-note">YAML hyperparameters</div></div>
+<div class="tree-row"><div class="tree-path">│   │   └── <span class="yamlf">default.yaml</span></div><div class="tree-note">lr, batch_size, epochs, ...</div></div>
+<div class="tree-row"><div class="tree-path">│   ├── <span class="dir">utils/</span></div><div class="tree-note">shared helpers: logging, seeding, path constants</div></div>
+<div class="tree-row"><div class="tree-path">│   │   ├── <span class="init">__init__.py</span></div><div class="tree-note"></div></div>
+<div class="tree-row"><div class="tree-path">│   │   └── <span class="pyf">helpers.py</span></div><div class="tree-note">set_seed, get_logger, project_root, ...</div></div>
+<div class="tree-row"><div class="tree-path">│   └── <span class="pyf">pipeline.py</span></div><div class="tree-note">orchestration: load cfg → data → model → train</div></div>
+<div class="tree-row"><div class="tree-path">├── <span class="dir">tests/</span></div><div class="tree-note">pytest test files (mirrors src/)</div></div>
+<div class="tree-row"><div class="tree-path">├── <span class="dir">notebooks/</span></div><div class="tree-note">exploration — imports FROM src/, never the reverse</div></div>
+<div class="tree-row"><div class="tree-path">│   ├── <span class="ipynbf">01_eda.ipynb</span></div><div class="tree-note">numbered prefix keeps ordering obvious</div></div>
+<div class="tree-row"><div class="tree-path">│   └── <span class="ipynbf">02_prototype.ipynb</span></div><div class="tree-note"></div></div>
+<div class="tree-row"><div class="tree-path">└── <span class="dir">data/</span></div><div class="tree-note">datasets (gitignored — never commit)</div></div>
+  </div>
+
+  <div class="callout">
+    <div class="callout-title">🔍 About <code>src/</code> and <code>notebooks/</code></div>
+    <p><strong><code>src/</code> vs root package.</strong> Many real projects (Django, Flask, Requests) skip <code>src/</code> and put the package at the project root. Both are valid — the <code>src/</code> version forces you to <em>install</em> before you can import, which surfaces install-time bugs earlier.</p>
+    <p style="margin-top: 0.6rem;"><strong><code>notebooks/</code> lives at the project root, not inside <code>src/</code>.</strong> Notebooks are exploration scratchpads; they should <em>import from</em> <code>src/</code> (e.g. <code>from model.architecture import build_model</code>), never the reverse. Keeping them outside <code>src/</code> keeps your installable package clean and prevents notebook-only junk from shipping to users.</p>
+  </div>
+</div>
+
+<div class="slide">
+  <h2>The Notebook Trap</h2>
+  <div style="border-left: 4px solid var(--accent-dim); background: var(--info-bg); padding: 0.8rem 1.1rem; margin: 0.6rem 0 1rem 0; border-radius: 0 6px 6px 0;">
+    <p style="margin: 0; font-size: 1.05rem; color: var(--navy-800); font-weight: 500;">Notebooks are great for exploration. The moment you want to reuse, share, test, or deploy that code, six problems show up at once.</p>
+  </div>
+
+  <div class="trap-grid" style="grid-template-columns: repeat(3, 1fr);">
+    <div class="trap-card" data-num="01">
+      <h4>Can't import</h4>
+      <p>Notebooks aren't modules. Reuse = copy-paste.</p>
+    </div>
+    <div class="trap-card" data-num="02">
+      <h4>Can't run headless</h4>
+      <p>No CLI, no <code>python foo.py</code>, no cron job.</p>
+    </div>
+    <div class="trap-card" data-num="03">
+      <h4>Can't test</h4>
+      <p>pytest can't reach cells. Notebook logic = untested.</p>
+    </div>
+    <div class="trap-card" data-num="04">
+      <h4>Cells rot</h4>
+      <p>Out-of-order runs poison state. Restart, things break.</p>
+    </div>
+    <div class="trap-card" data-num="05">
+      <h4>Diffs are noise</h4>
+      <p>JSON + images + exec counts. Code review impossible.</p>
+    </div>
+    <div class="trap-card" data-num="06">
+      <h4>No configs</h4>
+      <p>Hyperparameters baked into cells. Swap one = copy the file.</p>
+    </div>
+  </div>
+</div>
+
+<div class="slide">
+  <h2>Notebook Code vs Project Code</h2>
+  <div style="border-left: 4px solid var(--accent-dim); background: var(--info-bg); padding: 0.8rem 1.1rem; margin: 0.6rem 0 1rem 0; border-radius: 0 6px 6px 0;">
+    <p style="margin: 0; font-size: 1.05rem; color: var(--navy-800); font-weight: 500;">The <em>logic</em> on both sides below is identical — load data, build a model, train it. The <em>organisation</em> is radically different. The right side is importable, configurable, testable, and version-controllable. The left side is none of those things.</p>
+  </div>
+
+  <div class="diff-compare">
+    <div>
+      <span class="diff-head before">Notebook — 20 scattered cells</span>
+      <div class="code-block"><span class="label">train.ipynb</span><pre>
+<span class="comment"># Cell 1 — imports mixed with setup</span>
+<span class="kw">import</span> torch, yaml, os, numpy
+<span class="kw">from</span> torch <span class="kw">import</span> nn
+
+<span class="comment"># Cell 3 — magic numbers buried in code</span>
+BATCH_SIZE <span class="op">=</span> <span class="num">64</span>
+LR <span class="op">=</span> <span class="num">0.001</span>
+EPOCHS <span class="op">=</span> <span class="num">10</span>
+
+<span class="comment"># Cell 7 — data loading inline</span>
+train_ds <span class="op">=</span> MyDataset(...)
+train_dl <span class="op">=</span> DataLoader(train_ds, ...)
+
+<span class="comment"># Cell 11 — model pasted from cell 9</span>
+<span class="kw">class</span> <span class="cls">Net</span>(nn.<span class="cls">Module</span>): ...
+model <span class="op">=</span> <span class="cls">Net</span>()
+
+<span class="comment"># Cell 14 — training loop</span>
+<span class="kw">for</span> epoch <span class="kw">in</span> <span class="fn">range</span>(EPOCHS):
+    <span class="kw">for</span> x, y <span class="kw">in</span> train_dl: ...
+</pre></div>
+    </div>
+
+    <div>
+      <span class="diff-head after">Project — four clean files</span>
+      <div class="code-block"><span class="label">clean run</span><pre>
+<span class="comment"># configs/train.yaml — hyperparameters live here</span>
+<span class="comment"># src/data_prep/preprocessing.py  — get_dataloaders(cfg)</span>
+<span class="comment"># src/model/architecture.py — build_model(cfg)</span>
+<span class="comment"># src/pipeline.py — train(model, loaders, cfg)</span>
+
+<span class="kw">import</span> yaml
+<span class="kw">from</span> data_prep.preprocessing  <span class="kw">import</span> get_dataloaders
+<span class="kw">from</span> model.architecture <span class="kw">import</span> build_model
+<span class="kw">from</span> pipeline <span class="kw">import</span> train
+
+cfg <span class="op">=</span> yaml.<span class="fn">safe_load</span>(<span class="fn">open</span>(<span class="str">"configs/train.yaml"</span>))
+train_dl, val_dl <span class="op">=</span> <span class="fn">get_dataloaders</span>(cfg)
+model <span class="op">=</span> <span class="fn">build_model</span>(cfg)
+<span class="fn">train</span>(model, train_dl, val_dl, cfg)
+</pre></div>
+    </div>
+  </div>
+
+  <div class="two-panel">
+    <div class="panel"><span class="panel-label bad">Notebook</span>
+      <p style="font-size: 0.92rem; margin-bottom: 0;">Scattered imports, hardcoded hyperparameters, model tangled with training, nothing importable. Change one experiment &rarr; edit cells and re-run by hand.</p>
+    </div>
+    <div class="panel"><span class="panel-label good">Project</span>
+      <p style="font-size: 0.92rem; margin-bottom: 0;">Each concern in its own file. Hyperparameters in YAML. Three function calls orchestrate the whole pipeline. Change an experiment &rarr; swap a config file.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     SLIDE 5 — WHEN TO RESTRUCTURE
+     ============================================================ -->
+<div class="slide section-header">
+  <span class="section-number">Section 2</span>
+  <h2>Packaging mechanics</h2>
+  <div style="border-left: 4px solid var(--accent-dim); background: var(--info-bg); padding: 0.8rem 1.1rem; margin: 0.6rem 0 1rem 0; border-radius: 0 6px 6px 0;">
+    <p style="margin: 0; font-size: 1.05rem; color: var(--navy-800); font-weight: 500;">The machinery underneath: <code>__init__.py</code>, imports, <code>pyproject.toml</code>, YAML configs, and the <code>pip install -e .</code> command that ties everything together.</p>
+  </div>
+</div>
+
+<!-- ============================================================
+     SLIDE 8 — WHAT IS A PYTHON PACKAGE?
+     ============================================================ -->
+<div class="slide">
+  <h2>Module vs Package</h2>
+  <div style="border-left: 4px solid var(--accent-dim); background: var(--info-bg); padding: 0.8rem 1.1rem; margin: 0.6rem 0 1rem 0; border-radius: 0 6px 6px 0;">
+    <p style="margin: 0; font-size: 1.05rem; color: var(--navy-800); font-weight: 500;">These two words sound interchangeable but they're different things. Getting them straight makes every error message, every <code>import</code>, and every tutorial easier to read.</p>
+  </div>
+
+  <div class="two-panel">
+    <div class="panel" style="border-top: 3px solid var(--info);">
+      <h4>Module — a single <code>.py</code> file</h4>
+      <p style="font-size: 0.95rem;">Any file of Python code. The filename (without <code>.py</code>) is the module name.</p>
+      <div class="code-block" style="margin: 0.5rem 0;"><span class="label">on disk</span><pre>
+my_utils.py</pre></div>
+      <div class="code-block"><span class="label">in Python</span><pre>
+<span class="kw">import</span> my_utils
+<span class="kw">from</span> my_utils <span class="kw">import</span> helper</pre></div>
+    </div>
+
+    <div class="panel" style="border-top: 3px solid var(--success);">
+      <h4>Package — a directory with <code>__init__.py</code></h4>
+      <p style="font-size: 0.95rem;">A folder marked with <code>__init__.py</code>. Can contain modules and sub-packages.</p>
+      <div class="code-block" style="margin: 0.5rem 0;"><span class="label">on disk</span><pre>
+data_prep/
+├── __init__.py
+├── preprocessing.py
+└── readers/
+    ├── __init__.py
+    └── csv.py</pre></div>
+      <div class="code-block"><span class="label">in Python</span><pre>
+<span class="kw">from</span> data_prep <span class="kw">import</span> preprocessing
+<span class="kw">from</span> data_prep.readers.csv <span class="kw">import</span> read_csv</pre></div>
+    </div>
+  </div>
+
+  <div class="callout">
+    <div class="callout-title">💡 Rule of thumb</div>
+    <p>Ends in <code>.py</code>? It's a <strong>module</strong>. Directory with <code>__init__.py</code> inside? It's a <strong>package</strong>. In your project: <code>pipeline.py</code> is a module; <code>src/data_prep/</code> is a package that contains the <code>preprocessing</code> module.</p>
+  </div>
+</div>
+
+<div class="slide">
+  <h2>What Is a Python Package?</h2>
+  <div style="border-left: 4px solid var(--accent-dim); background: var(--info-bg); padding: 0.8rem 1.1rem; margin: 0.6rem 0 1rem 0; border-radius: 0 6px 6px 0;">
+    <p style="margin: 0; font-size: 1.05rem; color: var(--navy-800); font-weight: 500;">A <strong>package</strong> is any directory that contains a file named <code>__init__.py</code>. That's the whole rule. The file can be empty — its <em>presence</em> is what matters. Python uses it to decide "is this folder importable?"</p>
+  </div>
+
+  <div class="two-panel">
+    <div class="panel" style="border-left: 3px solid var(--success);">
+      <span class="panel-label good">with <code>__init__.py</code></span>
+      <div class="code-block" style="margin: 0.5rem 0;"><span class="label">project layout</span><pre>
+src/
+└── my_project/
+    ├── <span class="init">__init__.py</span>   <span class="comment"># even empty is fine</span>
+    └── data.py</pre></div>
+      <div class="code-block"><pre>
+<span class="comment"># in Python:</span>
+<span class="kw">from</span> my_project.data <span class="kw">import</span> load   <span class="comment"># ✓ works</span></pre></div>
+    </div>
+
+    <div class="panel" style="border-left: 3px solid var(--error);">
+      <span class="panel-label bad">without <code>__init__.py</code></span>
+      <div class="code-block" style="margin: 0.5rem 0;"><span class="label">project layout</span><pre>
+src/
+└── my_project/
+    └── data.py     <span class="comment"># no __init__.py</span></pre></div>
+      <div class="code-block"><pre>
+<span class="comment"># in Python:</span>
+<span class="kw">from</span> my_project.data <span class="kw">import</span> load
+<span class="comment"># ModuleNotFoundError:</span>
+<span class="comment"># No module named 'my_project'</span></pre></div>
+    </div>
+  </div>
+
+  <p style="margin-top: 1rem;">Every library you <code>pip install</code> — NumPy, PyTorch, pandas — is a package laid out this way, often with nested sub-packages (each with its own <code>__init__.py</code>).</p>
+</div>
+
+<div class="slide">
+  <h2><code>__init__.py</code> — Two Patterns</h2>
+  <div style="border-left: 4px solid var(--accent-dim); background: var(--info-bg); padding: 0.8rem 1.1rem; margin: 0.6rem 0 1rem 0; border-radius: 0 6px 6px 0;">
+    <p style="margin: 0; font-size: 1.05rem; color: var(--navy-800); font-weight: 500;">The file turns a directory into a package. <em>What you put inside</em> decides how users import from it. Two patterns — you'll use both in the same project.</p>
+  </div>
+
+  <!-- Pattern 1 — Empty -->
+  <h4 style="color: var(--navy-700); margin-top: 0.6rem;">Pattern 1 — Empty file (just the marker)</h4>
+  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; align-items: stretch;">
+    <div class="code-block" style="margin: 0; font-size: 0.78rem;"><span class="label">src/data_prep/__init__.py</span><pre>
+<span class="comment"># (empty — 0 bytes)</span></pre></div>
+    <div class="code-block" style="margin: 0; font-size: 0.78rem;"><span class="label">what users type</span><pre>
+<span class="kw">from</span> data_prep.preprocessing
+       <span class="kw">import</span> scale_features</pre></div>
+  </div>
+  <p style="font-size: 0.92rem; color: var(--slate-700); margin: 0.4rem 0 0.9rem 0;">Full path every time. Explicit. <strong>The safe default</strong> — start here.</p>
+
+  <!-- Pattern 2 — Public API with __all__ -->
+  <h4 style="color: var(--navy-700);">Pattern 2 — Re-export the public API (with <code>__all__</code>)</h4>
+  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; align-items: stretch;">
+    <div class="code-block" style="margin: 0; font-size: 0.78rem;"><span class="label">src/model/__init__.py</span><pre>
+<span class="comment"># Re-export the blessed names:</span>
+<span class="kw">from</span> model.architecture <span class="kw">import</span> (
+    <span class="cls">Classifier</span>,
+    build_model,
+)
+
+<span class="comment"># Public API — what users rely on.</span>
+__all__ <span class="op">=</span> [<span class="str">"Classifier"</span>, <span class="str">"build_model"</span>]</pre></div>
+    <div class="code-block" style="margin: 0; font-size: 0.78rem;"><span class="label">what users type</span><pre>
+<span class="kw">from</span> model <span class="kw">import</span> <span class="cls">Classifier</span>
+
+<span class="comment"># the full path still works:</span>
+<span class="kw">from</span> model.architecture
+       <span class="kw">import</span> <span class="cls">Classifier</span></pre></div>
+  </div>
+
+  <div class="callout" style="margin-top: 0.7rem;">
+    <div class="callout-title">🎓 What <code>__all__</code> means — in plain English</div>
+    <p style="margin-bottom: 0.4rem;">Think of <code>__all__</code> as a <strong>sign on the package's front door</strong>: <em>"these are the names we promise to keep."</em></p>
+    <ul style="margin: 0 0 0 1.1rem; font-size: 0.95rem; line-height: 1.55;">
+      <li><strong>Listed in <code>__all__</code></strong> → public. Safe to use; won't disappear in a minor version.</li>
+      <li><strong>Not listed</strong> → internal. Might get renamed or deleted at any time — don't rely on it.</li>
+      <li>It also controls what <code>from model import *</code> pulls in (but <code>import *</code> is almost never used in real code).</li>
+    </ul>
+  </div>
+</div>
+
+<div class="slide">
+  <h2>Absolute vs Relative Imports</h2>
+  <div style="border-left: 4px solid var(--accent-dim); background: var(--info-bg); padding: 0.8rem 1.1rem; margin: 0.6rem 0 1rem 0; border-radius: 0 6px 6px 0;">
+    <p style="margin: 0; font-size: 1.05rem; color: var(--navy-800); font-weight: 500;">Two ways to refer to the same module. Absolute imports spell out the full path from the project root. Relative imports use dots. Both are legal; only one is recommended in most cases.</p>
+  </div>
+
+  <div class="two-panel">
+    <div>
+      <h4>Absolute (preferred)</h4>
+      <div class="code-block" style="font-size: 0.78rem;"><span class="label">src/pipeline.py</span><pre>
+<span class="kw">from</span> data_prep.preprocessing <span class="kw">import</span> get_dataloaders
+<span class="kw">from</span> model.architecture <span class="kw">import</span> build_model
+<span class="kw">from</span> utils.helpers <span class="kw">import</span> get_logger
+</pre></div>
+      <p style="font-size: 0.92rem; margin-top: 0.5rem;">Full path from the installed package root. Works from any file — scripts, notebooks, tests — no context needed. PEP 8 recommends absolute imports for public code.</p>
+    </div>
+    <div>
+      <h4>Relative (same-package only)</h4>
+      <div class="code-block" style="font-size: 0.78rem;"><span class="label">src/data_prep/loaders.py</span><pre>
+<span class="comment"># single dot = same package (data_prep/)</span>
+<span class="kw">from</span> .preprocessing <span class="kw">import</span> get_dataloaders
+<span class="kw">from</span> .dataset <span class="kw">import</span> MyDataset
+
+<span class="comment"># double dot = parent package (src/)</span>
+<span class="kw">from</span> ..utils.helpers <span class="kw">import</span> get_logger
+</pre></div>
+      <p style="font-size: 0.92rem; margin-top: 0.5rem;">Dots count directory levels: <code>.</code> = same package, <code>..</code> = parent, <code>...</code> = grandparent. Only resolves when the file is loaded <em>as part of a package</em>.</p>
+    </div>
+  </div>
+
+  <div class="callout error">
+    <div class="callout-title">⚠️ Relative imports break if you run the file by path</div>
+    <p style="margin-bottom: 0.6rem;">Relative imports need the file to be loaded <em>as part of a package</em>. When you run Python with a <strong>file path</strong>, Python treats that file as a top-level script and <code>__package__</code> is unset — so <code>from .foo import bar</code> raises <code>ImportError: attempted relative import with no known parent package</code>.</p>
+    <p style="margin-bottom: 0.6rem;"><strong>Note:</strong> this has nothing to do with <code>pip install -e .</code>. Editable install makes your package <em>importable</em> (via <code>import data_prep</code>), but running a file by path still bypasses the package system.</p>
+    <div style="display: grid; grid-template-columns: auto 1fr; gap: 0.45rem 1rem; font-size: 0.95rem; align-items: baseline;">
+      <code style="white-space: nowrap; color: var(--error);">python src/data_prep/loaders.py</code>
+      <span>❌ file-path invocation — relative imports fail.</span>
+      <code style="white-space: nowrap; color: var(--success);">python -m data_prep.loaders</code>
+      <span>✅ module invocation — <code>data_prep</code> is the parent package.</span>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     SLIDE 11 — pyproject.toml
+     ============================================================ -->
+<div class="slide">
+  <h2><code>pyproject.toml</code> — at a glance</h2>
+  <div style="border-left: 4px solid var(--accent-dim); background: var(--info-bg); padding: 0.8rem 1.1rem; margin: 0.6rem 0 1rem 0; border-radius: 0 6px 6px 0;">
+    <p style="margin: 0; font-size: 1.05rem; color: var(--navy-800); font-weight: 500;">The single configuration file for a modern Python project. Defined by PEP 621, read by every modern tool. It replaced the legacy trio of <code>setup.py</code> + <code>setup.cfg</code> + <code>MANIFEST.in</code>.</p>
+  </div>
+
+  <p>The file is organised into <em>tables</em>, each starting with a header in square brackets. The ones you'll meet most often:</p>
+
+  <div class="code-block"><span class="label">pyproject.toml — the whole file at a glance</span><pre>
+<span class="sec">[build-system]</span>                       <span class="comment"># how pip builds your package</span>
+requires <span class="op">=</span> [<span class="str">"setuptools&gt;=68"</span>]
+build-backend <span class="op">=</span> <span class="str">"setuptools.build_meta"</span>
+
+<span class="sec">[project]</span>                             <span class="comment"># metadata + runtime deps</span>
+name <span class="op">=</span> <span class="str">"my_project"</span>
+version <span class="op">=</span> <span class="str">"0.1.0"</span>
+dependencies <span class="op">=</span> [<span class="str">"numpy"</span>, <span class="str">"torch"</span>, <span class="str">"pyyaml"</span>]
+
+<span class="sec">[project.optional-dependencies]</span>       <span class="comment"># extras users opt into</span>
+dev <span class="op">=</span> [<span class="str">"pytest"</span>, <span class="str">"pytest-cov"</span>, <span class="str">"ruff"</span>]
+
+<span class="sec">[project.urls]</span>                        <span class="comment"># links shown on PyPI + `pip show`</span>
+Homepage <span class="op">=</span> <span class="str">"https://github.com/you/my_project"</span>
+
+<span class="sec">[project.scripts]</span>                     <span class="comment"># auto-creates a shell command on install</span>
+train <span class="op">=</span> <span class="str">"pipeline:main"</span>
+
+<span class="sec">[tool.setuptools.packages.find]</span>       <span class="comment"># LOOK inside src/ for packages to install</span>
+where <span class="op">=</span> [<span class="str">"src"</span>]                          <span class="comment"># (src/ itself is NOT a package)</span>
+
+<span class="sec">[tool.ruff]</span>                            <span class="comment"># ruff (linter + formatter) reads from here</span>
+line-length <span class="op">=</span> <span class="num">100</span></pre></div>
+
+  <p style="margin-top: 0.7rem;">Each bracketed section is independent — you add, remove, or rearrange freely. The next few slides unpack each of these in turn.</p>
+</div>
+
+<div class="slide">
+  <h2><code>[project]</code> — metadata &amp; runtime dependencies</h2>
+  <div style="border-left: 4px solid var(--accent-dim); background: var(--info-bg); padding: 0.8rem 1.1rem; margin: 0.6rem 0 1rem 0; border-radius: 0 6px 6px 0;">
+    <p style="margin: 0; font-size: 1.05rem; color: var(--navy-800); font-weight: 500;">The most-edited table in the file. It answers: <em>what's this project called, what version is it, what's it about, who owns it, and what does it need to run?</em> Only <code>name</code> and <code>version</code> are strictly required — everything else is optional but standard on real projects.</p>
+  </div>
+
+  <div class="code-block"><span class="label">pyproject.toml — a fuller [project] section</span><pre>
+<span class="sec">[project]</span>
+name            <span class="op">=</span> <span class="str">"my_project"</span>
+version         <span class="op">=</span> <span class="str">"0.1.0"</span>
+description     <span class="op">=</span> <span class="str">"A small, well-structured ML project."</span>
+readme          <span class="op">=</span> <span class="str">"README.md"</span>
+requires-python <span class="op">=</span> <span class="str">"&gt;=3.10"</span>
+license         <span class="op">=</span> {text <span class="op">=</span> <span class="str">"MIT"</span>}
+keywords        <span class="op">=</span> [<span class="str">"machine-learning"</span>, <span class="str">"pytorch"</span>, <span class="str">"training"</span>]
+authors         <span class="op">=</span> [{name <span class="op">=</span> <span class="str">"Your Name"</span>, email <span class="op">=</span> <span class="str">"you@example.com"</span>}]
+maintainers     <span class="op">=</span> [{name <span class="op">=</span> <span class="str">"ML Team"</span>, email <span class="op">=</span> <span class="str">"ml@example.com"</span>}]
+
+classifiers <span class="op">=</span> [                              <span class="comment"># PyPI's standard taxonomy</span>
+    <span class="str">"Development Status :: 3 - Alpha"</span>,
+    <span class="str">"License :: OSI Approved :: MIT License"</span>,
+    <span class="str">"Programming Language :: Python :: 3.10"</span>,
+    <span class="str">"Programming Language :: Python :: 3.11"</span>,
+    <span class="str">"Operating System :: OS Independent"</span>,
+]
+
+<span class="comment"># Runtime dependencies — installed by `pip install .`</span>
+dependencies <span class="op">=</span> [
+    <span class="str">"numpy&gt;=1.24"</span>,
+    <span class="str">"torch&gt;=2.0"</span>,
+    <span class="str">"pyyaml&gt;=6.0"</span>,
+    <span class="str">"scikit-learn&gt;=1.3"</span>,
+]
+
+<span class="sec">[project.urls]</span>                             <span class="comment"># shown on PyPI + `pip show`</span>
+Homepage      <span class="op">=</span> <span class="str">"https://github.com/you/my_project"</span>
+Repository    <span class="op">=</span> <span class="str">"https://github.com/you/my_project"</span>
+Documentation <span class="op">=</span> <span class="str">"https://my-project.readthedocs.io"</span>
+Issues        <span class="op">=</span> <span class="str">"https://github.com/you/my_project/issues"</span>
+
+<span class="sec">[project.scripts]</span>                           <span class="comment"># auto-creates shell commands</span>
+<span class="comment"># After `pip install .`, typing `train` in ANY shell runs pipeline.main().</span>
+<span class="comment"># Different from a Makefile target — Makefile aliases only work inside the</span>
+<span class="comment"># repo and are for devs; these are real commands that ship with the package.</span>
+train    <span class="op">=</span> <span class="str">"pipeline:main"</span>
+evaluate <span class="op">=</span> <span class="str">"eval:main"</span></pre></div>
+
+  <div class="three-panel">
+    <div class="panel" style="border-top: 3px solid var(--error); min-width: 0;">
+      <span class="panel-label" style="background: var(--error-bg); color: var(--error);">required</span>
+      <h4>The only two keys you <em>must</em> set</h4>
+      <ul style="margin-bottom: 0; font-size: 0.92rem;">
+        <li><code>name</code> — the install-safe project name.</li>
+        <li><code>version</code> — any PEP 440 string.</li>
+      </ul>
+    </div>
+    <div class="panel" style="border-top: 3px solid var(--info); min-width: 0;">
+      <span class="panel-label" style="background: var(--info-bg); color: var(--info);">standard</span>
+      <h4>Keys you'll always add</h4>
+      <ul style="margin-bottom: 0; font-size: 0.92rem;">
+        <li><code>description</code>, <code>readme</code>, <code>authors</code> — show up on PyPI and <code>pip show</code>.</li>
+        <li><code>requires-python</code> — stops install on the wrong interpreter.</li>
+        <li><code>license</code> — legal clarity; required for PyPI listings.</li>
+        <li><code>dependencies</code> — what <code>pip install .</code> pulls in.</li>
+      </ul>
+    </div>
+    <div class="panel" style="border-top: 3px solid var(--warning); min-width: 0;">
+      <span class="panel-label" style="background: var(--warning-bg); color: var(--warning);">optional extras</span>
+      <h4>Blocks that pay off</h4>
+      <ul style="margin-bottom: 0; font-size: 0.92rem;">
+        <li><code>classifiers</code>, <code>keywords</code> — discoverability on PyPI.</li>
+        <li><code>[project.urls]</code> — links on the project page + <code>pip show</code>.</li>
+        <li><code>[project.scripts]</code> — turns a function into a real CLI command after install.</li>
+        <li><code>maintainers</code> — separate from <code>authors</code> once original author stops shipping.</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<div class="slide">
+  <h2><code>[project.optional-dependencies]</code> — extras</h2>
+  <div style="border-left: 4px solid var(--accent-dim); background: var(--info-bg); padding: 0.8rem 1.1rem; margin: 0.6rem 0 1rem 0; border-radius: 0 6px 6px 0;">
+    <p style="margin: 0; font-size: 1.05rem; color: var(--navy-800); font-weight: 500;">Dependencies your code doesn't <em>need</em> to run, but users might want in certain situations — testing tools, docs builders, GPU variants. Grouped into named <strong>extras</strong> that users opt into by name.</p>
+  </div>
+
+  <div class="two-panel">
+    <div>
+      <div class="code-block" style="font-size: 0.78rem;"><span class="label">pyproject.toml</span><pre>
+<span class="sec">[project]</span>
+dependencies <span class="op">=</span> [<span class="str">"torch"</span>, <span class="str">"numpy"</span>]  <span class="comment"># runtime</span>
+
+<span class="sec">[project.optional-dependencies]</span>
+<span class="comment"># group_name = [deps]</span>
+dev  <span class="op">=</span> [<span class="str">"pytest"</span>, <span class="str">"pytest-cov"</span>, <span class="str">"ruff"</span>]
+docs <span class="op">=</span> [<span class="str">"sphinx"</span>, <span class="str">"myst-parser"</span>]
+gpu  <span class="op">=</span> [<span class="str">"torch[cuda]"</span>]
+
+<span class="comment"># self-ref bundles every extra:</span>
+all  <span class="op">=</span> [<span class="str">"my_project[dev,docs,gpu]"</span>]</pre></div>
+    </div>
+    <div>
+      <div class="code-block" style="font-size: 0.78rem;"><span class="label">install with extras</span><pre>
+<span class="comment"># Runtime only:</span>
+$ pip install <span class="str">"."</span>
+
+<span class="comment"># Runtime + dev tools:</span>
+$ pip install <span class="str">".[dev]"</span>
+
+<span class="comment"># Multiple groups at once:</span>
+$ pip install <span class="str">".[dev,docs]"</span>
+
+<span class="comment"># Every extra (via `all` group):</span>
+$ pip install <span class="str">".[all]"</span>
+
+<span class="comment"># From a PyPI-published package:</span>
+$ pip install <span class="str">"my_project[dev]"</span></pre></div>
+    </div>
+  </div>
+
+  <div class="callout">
+    <div class="callout-title">💡 Common group names</div>
+    <p><code>dev</code> (pytest + linters), <code>docs</code> (Sphinx), <code>gpu</code> (CUDA-flavoured deps), <code>all</code> (everything). The names are arbitrary — pick whatever matches your project's shape.</p>
+  </div>
+</div>
+
+<div class="slide">
+  <h2><code>[build-system]</code> &amp; <code>[tool.*]</code> — the rest</h2>
+  <div style="border-left: 4px solid var(--accent-dim); background: var(--info-bg); padding: 0.8rem 1.1rem; margin: 0.6rem 0 1rem 0; border-radius: 0 6px 6px 0;">
+    <p style="margin: 0; font-size: 1.05rem; color: var(--navy-800); font-weight: 500;">Two more tables you'll see in almost every file. One tells <code>pip</code> <em>how</em> to turn your source into an installable package; the other is a shared home for every linter, formatter, and test runner's config.</p>
+  </div>
+
+  <div class="two-panel">
+    <div class="panel" style="border-top: 3px solid var(--warning);">
+      <span class="panel-label">build-system</span>
+      <h4>How <code>pip install .</code> packages your source</h4>
+      <div class="code-block" style="margin: 0.5rem 0; font-size: 0.78rem;"><pre>
+<span class="sec">[build-system]</span>
+requires <span class="op">=</span> [<span class="str">"setuptools&gt;=68"</span>]
+build-backend <span class="op">=</span> <span class="str">"setuptools.build_meta"</span>
+
+<span class="comment"># Alternatives:</span>
+<span class="comment">#   "hatchling.build"   — modern, fast</span>
+<span class="comment">#   "poetry.core.masonry.api"</span>
+<span class="comment">#   "maturin"           — Rust extensions</span></pre></div>
+      <p style="font-size: 0.92rem; margin: 0;"><strong>What it does:</strong> when you run <code>pip install .</code>, pip doesn't natively know how to turn your source tree into a <code>.whl</code>. It reads <code>requires</code>, installs those into a fresh isolated build env, then calls the <code>build-backend</code> to do the actual packaging — gather files, write metadata, emit the wheel. Pick <code>setuptools</code> unless you have a reason not to; set it once, forget it.</p>
+    </div>
+
+    <div class="panel" style="border-top: 3px solid var(--info);">
+      <span class="panel-label">tool.*</span>
+      <h4>One file for every tool's config</h4>
+      <div class="code-block" style="margin: 0.5rem 0; font-size: 0.78rem;"><pre>
+<span class="comment"># setuptools reads this during install:</span>
+<span class="sec">[tool.setuptools.packages.find]</span>
+where <span class="op">=</span> [<span class="str">"src"</span>]
+
+<span class="comment"># pytest reads this when `pytest` runs:</span>
+<span class="sec">[tool.pytest.ini_options]</span>
+testpaths <span class="op">=</span> [<span class="str">"tests"</span>]
+addopts <span class="op">=</span> <span class="str">"-v --strict-markers"</span>
+
+<span class="comment"># ruff reads this when `ruff check` runs:</span>
+<span class="sec">[tool.ruff]</span>
+line-length <span class="op">=</span> <span class="num">100</span>
+
+<span class="comment"># mypy reads this when `mypy src/` runs:</span>
+<span class="sec">[tool.mypy]</span>
+strict <span class="op">=</span> <span class="kw">true</span></pre></div>
+      <p style="font-size: 0.92rem; margin: 0;"><strong>What it does:</strong> each tool looks for its own <code>[tool.&lt;its-name&gt;]</code> table and reads its config from there. Before pyproject.toml, every tool needed its own file — <code>pytest.ini</code>, <code>.ruffrc</code>, <code>mypy.ini</code>, <code>setup.cfg</code>, <code>.coveragerc</code>. Now they all share one file that travels with your project.</p>
+    </div>
+  </div>
+</div>
+
+<div class="slide">
+  <h2><code>pip install -e .</code> — The Editable Install</h2>
+  <div style="border-left: 4px solid var(--accent-dim); background: var(--info-bg); padding: 0.8rem 1.1rem; margin: 0.6rem 0 1rem 0; border-radius: 0 6px 6px 0;">
+    <p style="margin: 0; font-size: 1.05rem; color: var(--navy-800); font-weight: 500;">This is the one command that makes your own package importable from anywhere on your machine. Run it once from the project root; your code becomes <code>import</code>-able from any Python script or notebook, and edits take effect immediately.</p>
+  </div>
+
+  <div class="two-panel">
+    <div class="panel" style="background: var(--warning-bg); border-top: 3px solid var(--warning);">
+      <span class="panel-label" style="background: var(--warning); color: #fff;"><code style="background: transparent; color: #fff; padding: 0;">pip install .</code></span>
+      <h4 style="margin-top: 0.3rem;">Regular install — <em>copies</em> your source</h4>
+      <ol style="font-size: 0.95rem; margin: 0.5rem 0 0.7rem 1.2rem; line-height: 1.55;">
+        <li>Reads <code>pyproject.toml</code> + <code>[build-system]</code>.</li>
+        <li>Builds your package into a wheel (<code>.whl</code>).</li>
+        <li><strong>Copies</strong> the files into the env's <code>site-packages/</code>.</li>
+        <li>Installs all declared dependencies.</li>
+      </ol>
+      <div style="background: rgba(196, 149, 69, 0.18); border-left: 3px solid var(--warning); padding: 0.6rem 0.85rem; border-radius: var(--radius-sm); font-size: 0.9rem;">
+        <strong>Edit a source file?</strong> The copy in <code>site-packages/</code> is now stale — you have to reinstall to see the change.
+      </div>
+    </div>
+
+    <div class="panel" style="background: var(--success-bg); border-top: 3px solid var(--success);">
+      <span class="panel-label" style="background: var(--success); color: #fff;"><code style="background: transparent; color: #fff; padding: 0;">pip install -e .</code></span>
+      <h4 style="margin-top: 0.3rem;">Editable install — <em>points to</em> your source</h4>
+      <ol style="font-size: 0.95rem; margin: 0.5rem 0 0.7rem 1.2rem; line-height: 1.55;">
+        <li>Reads <code>pyproject.toml</code> + <code>[build-system]</code>.</li>
+        <li>Registers the package metadata (no wheel copy of your code).</li>
+        <li>Writes a <strong>pointer file</strong> in <code>site-packages/</code> that redirects imports back to your source directory.</li>
+        <li>Installs all declared dependencies.</li>
+      </ol>
+      <div style="background: rgba(91, 158, 123, 0.18); border-left: 3px solid var(--success); padding: 0.6rem 0.85rem; border-radius: var(--radius-sm); font-size: 0.9rem;">
+        <strong>Edit a source file?</strong> Python picks it up on the next <code>import</code>. No reinstall needed.
+      </div>
+    </div>
+  </div>
+
+  <div class="code-block"><span class="label">shell — run once, from the project root</span><pre>
+$ <span class="fn">cd</span> my_project/
+
+<span class="comment"># Install the package in editable mode:</span>
+$ pip install -e <span class="str">"."</span>
+
+<span class="comment"># Include the dev extras (pytest, ruff, etc.):</span>
+$ pip install -e <span class="str">".[dev]"</span>
+
+<span class="comment"># Verify — the location should be inside your project, NOT site-packages:</span>
+$ pip show my_project
+Name: my_project
+Version: 0.1.0
+Location: /Users/you/projects/my_project/src
+Editable project location: /Users/you/projects/my_project
+</pre></div>
+
+  <div class="callout">
+    <div class="callout-title">💡 What <code>".[dev]"</code> means</div>
+    <p>The <code>[dev]</code> part says "also install the <strong>optional extras</strong> named <code>dev</code> from <code>pyproject.toml</code>." Look at your <code>[project.optional-dependencies]</code> section — that's where <code>dev = ["pytest", "pytest-cov", "ruff"]</code> is defined. Square brackets = optional group.</p>
+  </div>
+</div>
+
+<div class="slide">
+  <h2>Putting It All Together</h2>
+  <div style="border-left: 4px solid var(--accent-dim); background: var(--info-bg); padding: 0.8rem 1.1rem; margin: 0.6rem 0 1rem 0; border-radius: 0 6px 6px 0;">
+    <p style="margin: 0; font-size: 1.05rem; color: var(--navy-800); font-weight: 500;">The messy 100-line notebook is now a thin orchestration script that reads like a summary. All the logic lives in importable modules; the notebook just wires them together.</p>
+  </div>
+
+  <div class="code-block"><span class="label">notebooks/run_training.ipynb</span><pre>
+<span class="kw">import</span> yaml
+<span class="kw">from</span> data_prep.preprocessing  <span class="kw">import</span> get_dataloaders
+<span class="kw">from</span> model.architecture <span class="kw">import</span> build_model
+<span class="kw">from</span> pipeline <span class="kw">import</span> train
+
+<span class="comment"># 1. Load config</span>
+cfg <span class="op">=</span> yaml.<span class="fn">safe_load</span>(<span class="fn">open</span>(<span class="str">"configs/train.yaml"</span>))
+
+<span class="comment"># 2. Build data, model, and run training</span>
+train_dl, val_dl <span class="op">=</span> <span class="fn">get_dataloaders</span>(cfg)
+model   <span class="op">=</span> <span class="fn">build_model</span>(cfg)
+history <span class="op">=</span> <span class="fn">train</span>(model, train_dl, val_dl, cfg)
+
+<span class="comment"># 3. Inspect</span>
+<span class="fn">print</span>(<span class="str">"Final val accuracy:"</span>, history[<span class="str">"val_acc"</span>][<span class="op">-</span><span class="num">1</span>])
+</pre></div>
+
+  <div class="three-panel">
+    <div class="panel" style="border-top: 3px solid var(--success); min-width: 0;">
+      <span class="panel-label" style="background: var(--success-bg); color: var(--success);">Reusable</span>
+      <p style="font-size: 0.9rem; margin-bottom: 0;">Any script, notebook, or test file can <code>from model.architecture import ...</code> and get the same functions. No copy-paste anywhere.</p>
+    </div>
+    <div class="panel" style="border-top: 3px solid var(--warning); min-width: 0;">
+      <span class="panel-label" style="background: var(--warning-bg); color: var(--warning);">Configurable</span>
+      <p style="font-size: 0.9rem; margin-bottom: 0;">Swap <code>configs/train.yaml</code> for <code>configs/large.yaml</code> and re-run — no code change. Git tracks every experiment as a diffable file.</p>
+    </div>
+    <div class="panel" style="border-top: 3px solid var(--accent-dim); min-width: 0;">
+      <span class="panel-label" style="background: #E6F4F6; color: var(--accent-dim);">Testable</span>
+      <p style="font-size: 0.9rem; margin-bottom: 0;">Each function can be unit-tested in isolation with pytest (next class). Notebook-level testing was never possible; function-level testing is trivial.</p>
+    </div>
+  </div>
+
+  <div class="callout success">
+    <div class="callout-title">🎓 The payoff</div>
+    <p>~100 lines of notebook became ~10 lines of orchestration. The remaining logic didn't disappear — it was <em>promoted</em> into modules that can now be reused, tested, versioned, and deployed. This exact pattern scales from a class assignment to a production codebase.</p>
+  </div>
+</div>
+
+<!-- ============================================================
+     SLIDE 20 — MAKEFILE
+     ============================================================ -->
+<div class="slide">
+  <h2>Makefile — Self-documenting Commands</h2>
+  <div style="border-left: 4px solid var(--accent-dim); background: var(--info-bg); padding: 0.8rem 1.1rem; margin: 0.6rem 0 1rem 0; border-radius: 0 6px 6px 0;">
+    <p style="margin: 0; font-size: 1.05rem; color: var(--navy-800); font-weight: 500;">A <code>Makefile</code> at the project root gives every common operation a short name. New teammates don't need to memorise flags; they type <code>make train</code> and it works. The file itself doubles as documentation.</p>
+  </div>
+
+  <div class="code-block"><span class="label">Makefile</span><pre>
+<span class="dec">.PHONY</span>: install train evaluate lint test clean
+
+<span class="fn">install</span>:
+	pip install -e <span class="str">".[dev]"</span>
+
+<span class="fn">train</span>:
+	python -m pipeline <span class="op">--</span>config configs/train.yaml
+
+<span class="fn">evaluate</span>:
+	python -m pipeline <span class="op">--</span>checkpoint outputs/best.pt
+
+<span class="fn">lint</span>:
+	ruff check src/ tests/
+
+<span class="fn">test</span>:
+	pytest tests/ <span class="op">-</span>v
+
+<span class="fn">clean</span>:
+	rm <span class="op">-</span>rf __pycache__ <span class="op">*</span>.egg<span class="op">-</span>info build/ dist/
+	find . <span class="op">-</span>type d <span class="op">-</span>name __pycache__ <span class="op">-</span>delete
+</pre></div>
+
+  <div class="code-block"><span class="label">shell</span><pre>
+$ make install
+$ make train
+$ make test
+</pre></div>
+
+  <div class="two-panel">
+    <div class="panel" style="border-top: 3px solid var(--success); min-width: 0;">
+      <span class="panel-label" style="background: var(--success-bg); color: var(--success);">why</span>
+      <h4>Why Makefile?</h4>
+      <p style="font-size: 0.92rem; margin-bottom: 0;">Pre-installed on every Unix system. No extra tooling. The <code>Makefile</code> is short, version-controlled, and searchable — <code>grep train Makefile</code> tells you exactly what <code>make train</code> does.</p>
+    </div>
+    <div class="panel" style="border-top: 3px solid var(--warning); min-width: 0;">
+      <span class="panel-label" style="background: var(--warning-bg); color: var(--warning);">windows</span>
+      <h4>On Windows / alternatives</h4>
+      <p style="font-size: 0.92rem; margin-bottom: 0;">Use WSL, Git Bash, or swap the <code>Makefile</code> for a <code>scripts/</code> folder with <code>.ps1</code> / <code>.sh</code> files. Or try <a href="https://github.com/casey/just" target="_blank"><strong>just</strong></a> — a modern cross-platform command runner with friendlier syntax.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     SLIDE 21 — SUMMARY + RESOURCES
+     ============================================================ -->
+<div class="slide">
+  <h2>YAML Configs — Separate What From How</h2>
+  <div style="border-left: 4px solid var(--accent-dim); background: var(--info-bg); padding: 0.8rem 1.1rem; margin: 0.6rem 0 1rem 0; border-radius: 0 6px 6px 0;">
+    <p style="margin: 0; font-size: 1.05rem; color: var(--navy-800); font-weight: 500;">YAML is a <strong>key–value format</strong>. When you load it in Python, you get back a regular <code>dict</code>. That's the whole idea — write your hyperparameters as text, load them as a dictionary, read them by key from your code.</p>
+  </div>
+
+  <div class="two-panel">
+    <div>
+      <div class="code-block"><span class="label">configs/train.yaml</span><pre>
+<span class="comment"># key: value — like a dictionary</span>
+<span class="sec">learning_rate</span>: <span class="num">0.001</span>
+<span class="sec">batch_size</span>:    <span class="num">64</span>
+<span class="sec">epochs</span>:        <span class="num">10</span>
+
+<span class="comment"># Nesting works — inner dicts:</span>
+<span class="sec">model</span>:
+  <span class="sec">hidden</span>:      <span class="num">128</span>
+  <span class="sec">num_classes</span>: <span class="num">10</span>
+  <span class="sec">dropout</span>:     <span class="num">0.2</span>
+</pre></div>
+    </div>
+    <div>
+      <div class="code-block"><span class="label">loading the config in Python</span><pre>
+<span class="kw">import</span> yaml
+
+<span class="kw">with</span> <span class="fn">open</span>(<span class="str">"configs/train.yaml"</span>) <span class="kw">as</span> f:
+    cfg <span class="op">=</span> yaml.<span class="fn">safe_load</span>(f)
+
+<span class="comment"># cfg is just a Python dict:</span>
+<span class="fn">print</span>(<span class="builtin">type</span>(cfg))
+<span class="comment"># &lt;class 'dict'&gt;</span>
+
+<span class="fn">print</span>(cfg[<span class="str">"learning_rate"</span>])   <span class="comment"># 0.001</span>
+<span class="fn">print</span>(cfg[<span class="str">"model"</span>][<span class="str">"hidden"</span>])  <span class="comment"># 128</span>
+</pre></div>
+    </div>
+  </div>
+
+  <div class="two-panel">
+    <div class="panel" style="border-top: 3px solid var(--success); min-width: 0;">
+      <span class="panel-label" style="background: var(--success-bg); color: var(--success);">Why configs?</span>
+      <p style="font-size: 0.92rem; margin-bottom: 0;">Every hyperparameter you might change lives in <strong>one file</strong>, separate from the code that uses it. Keep <code>configs/small.yaml</code> and <code>configs/large.yaml</code> side by side — same code, different experiments, just a CLI flag between them.</p>
+    </div>
+    <div class="panel" style="border-top: 3px solid var(--warning); min-width: 0;">
+      <span class="panel-label" style="background: var(--warning-bg); color: var(--warning);">Safety</span>
+      <p style="font-size: 0.92rem; margin-bottom: 0;">Always use <code>yaml.safe_load</code>. The plain <code>yaml.load</code> can execute arbitrary Python embedded in the file — same API, zero risk with <code>safe_</code>.</p>
+    </div>
+  </div>
+</div>
+
+<div class="slide">
+  <h2>Summary &amp; Going Deeper</h2>
+  <div style="border-left: 4px solid var(--accent-dim); background: var(--info-bg); padding: 0.8rem 1.1rem; margin: 0.6rem 0 1rem 0; border-radius: 0 6px 6px 0;">
+    <p style="margin: 0; font-size: 1.05rem; color: var(--navy-800); font-weight: 500;">Every project you build from now on starts with this structure — layout, <code>pyproject.toml</code>, editable install, YAML configs, Makefile. It's the baseline for everything that follows (testing, CI, model serving).</p>
+  </div>
+
+  <div class="card-grid">
+    <div class="card" style="border-top: 3px solid var(--success); min-width: 0;">
+      <span class="card-tag" style="background: var(--success-bg); color: var(--success);">1 · Layout</span>
+      <h4>Standard project structure</h4>
+      <p><code>src/</code>, <code>configs/</code>, <code>data/</code>, <code>tests/</code>, <code>pyproject.toml</code>, <code>Makefile</code>. Not arbitrary — what pip &amp; pytest expect.</p>
+    </div>
+    <div class="card" style="border-top: 3px solid var(--success); min-width: 0;">
+      <span class="card-tag" style="background: var(--success-bg); color: var(--success);">2 · Metadata</span>
+      <h4><code>pyproject.toml</code></h4>
+      <p>One TOML file for name, version, dependencies, and build system. PEP 621. Replaces <code>setup.py</code>.</p>
+    </div>
+    <div class="card" style="border-top: 3px solid var(--success); min-width: 0;">
+      <span class="card-tag" style="background: var(--success-bg); color: var(--success);">3 · Packages</span>
+      <h4><code>__init__.py</code> + imports</h4>
+      <p>Empty file makes a directory importable. Prefer absolute imports. Run modules with <code>python -m pkg.mod</code>.</p>
+    </div>
+    <div class="card" style="border-top: 3px solid var(--success); min-width: 0;">
+      <span class="card-tag" style="background: var(--success-bg); color: var(--success);">4 · Install</span>
+      <h4><code>pip install -e .</code></h4>
+      <p>Editable mode — pip links to source, edits are live. Run once from project root; it just works.</p>
+    </div>
+    <div class="card" style="border-top: 3px solid var(--success); min-width: 0;">
+      <span class="card-tag" style="background: var(--success-bg); color: var(--success);">5 · Config</span>
+      <h4>YAML experiments</h4>
+      <p>Hyperparameters in <code>configs/*.yaml</code>. Swap files to swap experiments. Diffable, trackable, safe.</p>
+    </div>
+    <div class="card" style="border-top: 3px solid var(--success); min-width: 0;">
+      <span class="card-tag" style="background: var(--success-bg); color: var(--success);">6 · Extract</span>
+      <h4>Notebook &rarr; package</h4>
+      <p>Seven-step process: identify, create, move, import, <code>pyproject.toml</code>, install, verify. Mechanical and repeatable.</p>
+    </div>
+  </div>
+
+  <h3 class="mt-3">Going deeper — curated resources</h3>
+
+  <div class="two-panel">
+    <div class="panel" style="border-top: 3px solid var(--success); min-width: 0;">
+      <span class="panel-label" style="background: var(--success-bg); color: var(--success);">official</span>
+      <h4>Official &amp; canonical</h4>
+      <ul style="font-size: 0.92rem; margin-bottom: 0;">
+        <li><a href="https://packaging.python.org/en/latest/tutorials/packaging-projects/" target="_blank">Python Packaging User Guide — <em>Packaging Python Projects</em></a> · end-to-end tutorial from the PSF</li>
+        <li><a href="https://peps.python.org/pep-0621/" target="_blank">PEP 621 — <em>Storing project metadata in pyproject.toml</em></a> · the spec itself</li>
+        <li><a href="https://pip.pypa.io/en/stable/topics/local-project-installs/" target="_blank">pip docs — <em>Local project installs &amp; editable mode</em></a> · what <code>-e</code> actually does</li>
+      </ul>
+    </div>
+    <div class="panel" style="border-top: 3px solid var(--success); min-width: 0;">
+      <span class="panel-label" style="background: var(--success-bg); color: var(--success);">deep dives</span>
+      <h4>Deep-dives &amp; video</h4>
+      <ul style="font-size: 0.92rem; margin-bottom: 0;">
+        <li><a href="https://cjolowicz.github.io/posts/hypermodern-python-01-setup/" target="_blank">Claudio Jolowicz — <em>Hypermodern Python</em></a> · the reference guide to modern Python tooling</li>
+        <li><a href="https://realpython.com/python-application-layouts/" target="_blank">Real Python — <em>Python Application Layouts</em></a> · layout patterns for apps vs libraries</li>
+        <li><a href="https://www.youtube.com/watch?v=v6tALyc4C10" target="_blank">📺 mCoding — <em>Modern Python packaging with pyproject.toml</em></a> · 12-min walkthrough</li>
+      </ul>
+    </div>
+  </div>
+
+</div>
+
+<!-- ============================================================
+     SLIDE ENGINE (inlined)
+     ============================================================ -->
+<script>
+(function () {
+  "use strict";
+  const CONFIG = {
+    slideSelector: ".slide",
+    slideNumberClass: "slide-number",
+    scrollBehavior: "smooth",
+    katexAutoRenderOptions: {
+      delimiters: [
+        { left: "$$", right: "$$", display: true },
+        { left: "$", right: "$", display: false },
+      ],
+      throwOnError: false,
+      errorColor: "#EF4444",
+    },
+  };
+  let slides = [];
+  let currentSlideIndex = 0;
+
+  function init() {
+    slides = Array.from(document.querySelectorAll(CONFIG.slideSelector));
+    if (slides.length === 0) return;
+    autoNumberSlides();
+    renderKaTeX();
+    bindKeyboard();
+    syncSlideFromHash();
+    window.addEventListener("hashchange", syncSlideFromHash);
+  }
+  function autoNumberSlides() {
+    const total = slides.length;
+    slides.forEach(function (slide, i) {
+      if (slide.querySelector("." + CONFIG.slideNumberClass)) return;
+      var num = document.createElement("span");
+      num.className = CONFIG.slideNumberClass;
+      num.textContent = (i + 1) + " / " + total;
+      num.setAttribute("aria-hidden", "true");
+      slide.appendChild(num);
+      if (!slide.id) slide.id = "slide-" + (i + 1);
+    });
+  }
+  function renderKaTeX() {
+    if (typeof window.renderMathInElement !== "function") return;
+    slides.forEach(function (slide) { window.renderMathInElement(slide, CONFIG.katexAutoRenderOptions); });
+  }
+  function bindKeyboard() {
+    document.addEventListener("keydown", function (e) {
+      var tag = (e.target.tagName || "").toLowerCase();
+      if (tag === "input" || tag === "textarea" || tag === "select") return;
+      switch (e.key) {
+        case "ArrowRight": case "ArrowDown": case "PageDown":
+          e.preventDefault(); navigateTo(currentSlideIndex + 1); break;
+        case "ArrowLeft": case "ArrowUp": case "PageUp":
+          e.preventDefault(); navigateTo(currentSlideIndex - 1); break;
+        case "Home": e.preventDefault(); navigateTo(0); break;
+        case "End":  e.preventDefault(); navigateTo(slides.length - 1); break;
+      }
+    });
+  }
+  function navigateTo(index) {
+    if (index < 0 || index >= slides.length) return;
+    currentSlideIndex = index;
+    var slide = slides[currentSlideIndex];
+    slide.scrollIntoView({ behavior: CONFIG.scrollBehavior, block: "start" });
+    var id = slide.id || "slide-" + (index + 1);
+    if (history.replaceState) history.replaceState(null, "", "#" + id);
+  }
+  function syncSlideFromHash() {
+    var hash = window.location.hash;
+    if (!hash) { currentSlideIndex = 0; return; }
+    var target = document.getElementById(hash.slice(1));
+    if (target) {
+      var idx = slides.indexOf(target);
+      if (idx !== -1) { currentSlideIndex = idx; target.scrollIntoView({ behavior: "auto", block: "start" }); return; }
+    }
+    var num = parseInt(hash.slice(1), 10);
+    if (!isNaN(num) && num >= 1 && num <= slides.length) {
+      currentSlideIndex = num - 1;
+      slides[currentSlideIndex].scrollIntoView({ behavior: "auto", block: "start" });
+    }
+  }
+  function initScrollSpy() {
+    if (!("IntersectionObserver" in window)) return;
+    var observer = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (entry.isIntersecting) {
+          var idx = slides.indexOf(entry.target);
+          if (idx !== -1) currentSlideIndex = idx;
+        }
+      });
+    }, { root: null, rootMargin: "0px", threshold: 0.5 });
+    slides.forEach(function (slide) { observer.observe(slide); });
+  }
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", function () { init(); initScrollSpy(); });
+  } else { init(); initScrollSpy(); }
+})();
+</script>
+
+</body>
+</html>
