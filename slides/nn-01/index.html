@@ -1,0 +1,1546 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Class 02 — Neural Network Foundations and PyTorch Basics</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+<style>
+/* ============================================================
+   Gen AI Engineer Course — Slide Theme (inlined)
+   ============================================================ */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+:root {
+  --navy-900: #1A3264;
+  --navy-800: #214078;
+  --navy-700: #2E5090;
+  --navy-600: #3660A3;
+  --navy-500: #4272B8;
+  --navy-400: #5A8ACB;
+  --navy-300: #7BA4D8;
+  --navy-200: #A3C0E4;
+  --navy-100: #C8D9EF;
+  --navy-50:  #E8EFF7;
+
+  --slate-900: #1E1E2E;
+  --slate-800: #2A2A3C;
+  --slate-700: #3A3A4F;
+  --slate-600: #4A4A62;
+  --slate-500: #6B6B82;
+  --slate-400: #8E8EA3;
+  --slate-300: #B0B0C2;
+  --slate-200: #D0D0DC;
+  --slate-100: #E8E8EF;
+  --slate-50:  #F5F5F9;
+
+  --info:    #36A2B5;
+  --success: #5B9E7B;
+  --warning: #C49545;
+  --error:   #D4594E;
+
+  --info-bg:    #EAF5F7;
+  --success-bg: #EDF5F0;
+  --warning-bg: #FBF4E8;
+  --error-bg:   #FBEEED;
+
+  --accent:       #4BB8C9;
+  --accent-light: #7FCDD8;
+  --accent-dim:   #2A8F9E;
+
+  --font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
+               Oxygen, Ubuntu, Cantarell, sans-serif;
+  --font-code: 'JetBrains Mono', 'Fira Code', 'Cascadia Code',
+               'Source Code Pro', 'Consolas', monospace;
+
+  --slide-padding: 3rem 4rem;
+  --slide-max-width: 1100px;
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+
+  --shadow-sm: 0 1px 3px rgba(0,0,0,.08);
+  --shadow-md: 0 4px 12px rgba(0,0,0,.10);
+  --shadow-lg: 0 8px 30px rgba(0,0,0,.14);
+
+  --ease: cubic-bezier(.4, 0, .2, 1);
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html {
+  font-size: 19px;
+  scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  font-family: var(--font-body);
+  color: var(--slate-800);
+  background: var(--slate-50);
+  line-height: 1.6;
+}
+
+.slide {
+  min-height: 100vh;
+  padding: var(--slide-padding);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  max-width: var(--slide-max-width);
+  margin: 0 auto;
+  position: relative;
+}
+
+.slide-number {
+  position: absolute;
+  bottom: 1.2rem;
+  right: 1.5rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--slate-400);
+  letter-spacing: 0.04em;
+}
+
+.slide + .slide {
+  border-top: 1px solid var(--slate-100);
+}
+
+h1, h2, h3, h4, h5, h6 {
+  color: var(--navy-700);
+  line-height: 1.25;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+h1 { font-size: 2.8rem; font-weight: 800; margin-bottom: 1rem; }
+h2 { font-size: 2.15rem; margin-bottom: 0.8rem; }
+h3 { font-size: 1.6rem;  margin-bottom: 0.6rem; }
+h4 { font-size: 1.3rem;  font-weight: 600; margin-bottom: 0.5rem; }
+
+p  { margin-bottom: 1rem; }
+strong { font-weight: 600; color: var(--navy-700); }
+
+a {
+  color: var(--accent-dim);
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+  transition: border-color 0.2s var(--ease);
+}
+a:hover { border-bottom-color: var(--accent-dim); }
+
+ul, ol {
+  margin: 0.5rem 0 1rem 1.6rem;
+}
+li { margin-bottom: 0.35rem; }
+li::marker { color: var(--navy-400); }
+
+.subtitle {
+  font-size: 1.3rem;
+  color: var(--slate-500);
+  font-weight: 400;
+  margin-bottom: 1.5rem;
+}
+
+.muted { color: var(--slate-400); }
+
+.slide.title-slide {
+  text-align: center;
+  background: linear-gradient(135deg, var(--navy-800) 0%, var(--navy-600) 100%);
+  color: #fff;
+  min-height: 100vh;
+}
+
+.slide.title-slide h1 {
+  color: #fff;
+  font-size: 3.4rem;
+  margin-bottom: 0.6rem;
+}
+
+.slide.title-slide .subtitle {
+  color: var(--navy-100);
+  font-size: 1.4rem;
+}
+
+.slide.title-slide .meta {
+  margin-top: 2rem;
+  font-size: 0.9rem;
+  color: var(--navy-200);
+}
+
+.slide.section-header {
+  text-align: center;
+  background: var(--navy-50);
+}
+
+.slide.section-header h2 {
+  font-size: 2.5rem;
+  color: var(--navy-700);
+}
+
+.slide.section-header .section-number {
+  display: inline-block;
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--accent-dim);
+  margin-bottom: 0.6rem;
+}
+
+.code-block {
+  background: var(--slate-900);
+  color: #E2E8F0;
+  font-family: var(--font-code);
+  font-size: 0.88rem;
+  line-height: 1.7;
+  padding: 1.4rem 1.6rem;
+  border-radius: var(--radius-md);
+  overflow-x: auto;
+  margin: 1rem 0;
+  box-shadow: var(--shadow-md);
+  position: relative;
+}
+
+.code-block .label {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.8rem;
+  font-size: 0.65rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--slate-500);
+  font-family: var(--font-body);
+}
+
+.code-block .kw      { color: #C792EA; }
+.code-block .fn      { color: #82AAFF; }
+.code-block .str     { color: #C3E88D; }
+.code-block .num     { color: #F78C6C; }
+.code-block .comment { color: #546E7A; font-style: italic; }
+.code-block .op      { color: #89DDFF; }
+.code-block .cls     { color: #E8C577; }
+.code-block .dec     { color: #F07178; }
+.code-block .builtin { color: #89DDFF; }
+.code-block .param   { color: #E2E8F0; font-style: italic; }
+
+.code-light {
+  background: var(--slate-50);
+  color: var(--slate-800);
+  font-family: var(--font-code);
+  font-size: 0.88rem;
+  line-height: 1.7;
+  padding: 1.4rem 1.6rem;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--slate-200);
+  overflow-x: auto;
+  margin: 1rem 0;
+}
+
+code {
+  font-family: var(--font-code);
+  font-size: 0.88em;
+  background: var(--navy-50);
+  color: var(--navy-700);
+  padding: 0.15em 0.4em;
+  border-radius: 4px;
+}
+
+.two-panel {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+  margin: 1rem 0;
+}
+
+.three-panel {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 1.5rem;
+  margin: 1rem 0;
+}
+
+.panel {
+  background: #fff;
+  border: 1px solid var(--slate-200);
+  border-radius: var(--radius-md);
+  padding: 1.4rem;
+  box-shadow: var(--shadow-sm);
+}
+
+.panel h4 {
+  margin-bottom: 0.6rem;
+  color: var(--navy-600);
+  font-size: 1.05rem;
+}
+
+.panel.highlight {
+  border-color: var(--accent-dim);
+  box-shadow: 0 0 0 2px rgba(42, 143, 158, 0.12), var(--shadow-sm);
+}
+
+.panel .panel-label {
+  display: inline-block;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 0.2em 0.6em;
+  border-radius: 4px;
+  margin-bottom: 0.6rem;
+}
+
+.panel .panel-label.bad     { background: var(--error-bg);   color: var(--error); }
+.panel .panel-label.good    { background: var(--success-bg); color: var(--success); }
+.panel .panel-label.neutral { background: var(--slate-100);  color: var(--slate-600); }
+
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1rem 0;
+  font-size: 0.92rem;
+}
+
+.data-table th {
+  background: var(--navy-700);
+  color: #fff;
+  font-weight: 600;
+  text-align: left;
+  padding: 0.7rem 1rem;
+}
+
+.data-table th:first-child { border-radius: var(--radius-sm) 0 0 0; }
+.data-table th:last-child  { border-radius: 0 var(--radius-sm) 0 0; }
+
+.data-table td {
+  padding: 0.6rem 1rem;
+  border-bottom: 1px solid var(--slate-100);
+  vertical-align: top;
+}
+
+.data-table tr:last-child td { border-bottom: none; }
+
+.data-table tbody tr:hover {
+  background: var(--navy-50);
+}
+
+.data-table .mono {
+  font-family: var(--font-code);
+  font-size: 0.85em;
+}
+
+.step-list {
+  list-style: none;
+  counter-reset: step-counter;
+  margin: 1rem 0;
+  padding: 0;
+}
+
+.step-list li {
+  counter-increment: step-counter;
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  padding: 1rem 0;
+  border-bottom: 1px solid var(--slate-100);
+}
+
+.step-list li:last-child { border-bottom: none; }
+
+.step-list li::before {
+  content: counter(step-counter);
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  background: var(--navy-700);
+  color: #fff;
+  font-weight: 700;
+  font-size: 0.85rem;
+  border-radius: 50%;
+  margin-top: 0.1rem;
+}
+
+.step-list li .step-title {
+  font-weight: 600;
+  color: var(--navy-700);
+  display: block;
+  margin-bottom: 0.2rem;
+}
+
+.callout {
+  padding: 1.2rem 1.4rem;
+  border-radius: var(--radius-md);
+  margin: 1rem 0;
+  border-left: 4px solid;
+  font-size: 0.95rem;
+}
+
+.callout-title {
+  font-weight: 700;
+  margin-bottom: 0.3rem;
+  font-size: 0.9rem;
+  letter-spacing: 0.02em;
+}
+
+.callout.info    { background: var(--info-bg);    border-color: var(--info);    }
+.callout.warning { background: var(--warning-bg); border-color: var(--warning); }
+.callout.success { background: var(--success-bg); border-color: var(--success); }
+.callout.error   { background: var(--error-bg);   border-color: var(--error);   }
+
+.callout.info    .callout-title { color: var(--info);    }
+.callout.warning .callout-title { color: var(--warning); }
+.callout.success .callout-title { color: var(--success); }
+.callout.error   .callout-title { color: var(--error);   }
+
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 1.2rem;
+  margin: 1rem 0;
+}
+
+.card {
+  background: #fff;
+  border: 1px solid var(--slate-200);
+  border-radius: var(--radius-md);
+  padding: 1.4rem;
+  box-shadow: var(--shadow-sm);
+  transition: transform 0.2s var(--ease), box-shadow 0.2s var(--ease);
+}
+
+.card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+.card h4 {
+  font-size: 1.05rem;
+  margin-bottom: 0.4rem;
+  color: var(--navy-700);
+}
+
+.card p {
+  font-size: 0.9rem;
+  color: var(--slate-600);
+  margin-bottom: 0;
+}
+
+.card .card-icon {
+  font-size: 1.6rem;
+  margin-bottom: 0.6rem;
+  display: block;
+}
+
+.formula-box {
+  background: var(--navy-50);
+  border: 1px solid var(--navy-200);
+  border-radius: var(--radius-md);
+  padding: 1.2rem 1.6rem;
+  margin: 1rem 0;
+  text-align: center;
+}
+
+.formula-box .formula-label {
+  display: block;
+  font-size: 0.78rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--navy-400);
+  margin-bottom: 0.5rem;
+}
+
+.badge {
+  display: inline-block;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  padding: 0.2em 0.65em;
+  border-radius: 999px;
+  vertical-align: middle;
+}
+
+.badge.navy    { background: var(--navy-100); color: var(--navy-700); }
+.badge.accent  { background: var(--info-bg);  color: var(--accent-dim); }
+.badge.success { background: var(--success-bg); color: var(--success); }
+.badge.warning { background: var(--warning-bg); color: var(--warning); }
+.badge.error   { background: var(--error-bg);   color: var(--error); }
+
+.text-center { text-align: center; }
+.text-right  { text-align: right; }
+.mt-0 { margin-top: 0; }
+.mt-1 { margin-top: 0.5rem; }
+.mt-2 { margin-top: 1rem; }
+.mt-3 { margin-top: 1.5rem; }
+.mt-4 { margin-top: 2rem; }
+.mb-0 { margin-bottom: 0; }
+.mb-1 { margin-bottom: 0.5rem; }
+.mb-2 { margin-bottom: 1rem; }
+.mb-3 { margin-bottom: 1.5rem; }
+.gap-sm { gap: 0.5rem; }
+.gap-md { gap: 1rem; }
+.gap-lg { gap: 2rem; }
+
+.flex       { display: flex; }
+.flex-col   { flex-direction: column; }
+.items-center { align-items: center; }
+.justify-center { justify-content: center; }
+.justify-between { justify-content: space-between; }
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  border: 0;
+}
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.animate-in {
+  animation: fadeInUp 0.4s var(--ease) both;
+}
+
+@media (max-width: 900px) {
+  :root {
+    --slide-padding: 2rem 2rem;
+  }
+
+  html { font-size: 17px; }
+
+  h1 { font-size: 2.2rem; }
+  h2 { font-size: 1.7rem; }
+  h3 { font-size: 1.35rem; }
+
+  .two-panel,
+  .three-panel {
+    grid-template-columns: 1fr;
+  }
+
+  .slide.title-slide h1 {
+    font-size: 2.6rem;
+  }
+}
+
+@media (max-width: 600px) {
+  :root {
+    --slide-padding: 1.5rem 1.2rem;
+  }
+
+  html { font-size: 15px; }
+
+  .card-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .code-block,
+  .code-light {
+    font-size: 0.8rem;
+    padding: 1rem;
+  }
+
+  .step-list li {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+}
+
+@media print {
+  .slide {
+    min-height: auto;
+    page-break-after: always;
+    padding: 1.5cm;
+  }
+
+  .slide:last-child {
+    page-break-after: avoid;
+  }
+
+  body {
+    background: #fff;
+    color: #000;
+    font-size: 12pt;
+  }
+
+  h1, h2, h3, h4, h5, h6 { color: #000; }
+
+  .code-block {
+    background: #f5f5f5;
+    color: #333;
+    border: 1px solid #ccc;
+    box-shadow: none;
+  }
+
+  .slide.title-slide {
+    background: #fff;
+    color: #000;
+  }
+  .slide.title-slide h1 { color: #000; }
+  .slide.title-slide .subtitle { color: #555; }
+
+  .card { box-shadow: none; border: 1px solid #ccc; }
+  .panel { box-shadow: none; }
+
+  .slide-number { display: none; }
+
+  a { color: #000; border-bottom: none; }
+}
+
+/* ============================================================
+   Deck-specific styles
+   ============================================================ */
+
+/* Training cycle flow */
+.training-cycle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  margin: 1.5rem 0;
+  flex-wrap: wrap;
+}
+
+.training-cycle .cycle-step {
+  background: #fff;
+  border: 2px solid var(--navy-300);
+  border-radius: var(--radius-md);
+  padding: 1rem 1.2rem;
+  text-align: center;
+  min-width: 140px;
+  box-shadow: var(--shadow-sm);
+}
+
+.training-cycle .cycle-step h4 {
+  font-size: 0.9rem;
+  margin-bottom: 0.3rem;
+  color: var(--navy-700);
+}
+
+.training-cycle .cycle-step p {
+  font-size: 0.78rem;
+  color: var(--slate-600);
+  margin-bottom: 0;
+  line-height: 1.4;
+}
+
+.training-cycle .cycle-step.step-primary {
+  background: var(--navy-700);
+  border-color: var(--navy-800);
+}
+
+.training-cycle .cycle-step.step-primary h4,
+.training-cycle .cycle-step.step-primary p {
+  color: #fff;
+}
+
+.training-cycle .cycle-arrow {
+  font-size: 1.6rem;
+  color: var(--navy-400);
+  font-weight: 700;
+  padding: 0 0.4rem;
+  flex-shrink: 0;
+}
+
+.training-cycle .cycle-repeat {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--accent-dim);
+  padding: 0 0.4rem;
+}
+
+/* Backprop two-row layout */
+.backprop-flow {
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+  margin: 1rem 0;
+}
+
+.backprop-row {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 1rem 1.4rem;
+  border-radius: var(--radius-md);
+}
+
+.backprop-row.forward {
+  background: var(--info-bg);
+  border: 1px solid var(--info);
+}
+
+.backprop-row.backward {
+  background: var(--warning-bg);
+  border: 1px solid var(--warning);
+}
+
+.backprop-row .bp-label {
+  font-weight: 700;
+  font-size: 0.85rem;
+  min-width: 80px;
+}
+
+.backprop-row.forward .bp-label { color: var(--info); }
+.backprop-row.backward .bp-label { color: var(--warning); }
+
+.backprop-row .bp-box {
+  background: #fff;
+  border-radius: var(--radius-sm);
+  padding: 0.4rem 0.8rem;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--slate-700);
+  box-shadow: var(--shadow-sm);
+}
+
+.backprop-row .bp-arrow {
+  font-size: 1.2rem;
+  color: var(--slate-400);
+}
+
+/* Tensor dimension cards */
+.tensor-cards {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1rem;
+  margin: 1rem 0;
+}
+
+.tensor-card {
+  background: #fff;
+  border: 1px solid var(--slate-200);
+  border-radius: var(--radius-md);
+  padding: 1.2rem;
+  text-align: center;
+  box-shadow: var(--shadow-sm);
+}
+
+.tensor-card .tensor-dim {
+  font-size: 2rem;
+  font-weight: 800;
+  color: var(--navy-700);
+  margin-bottom: 0.3rem;
+}
+
+.tensor-card .tensor-name {
+  font-weight: 600;
+  color: var(--navy-600);
+  font-size: 0.95rem;
+  margin-bottom: 0.3rem;
+}
+
+.tensor-card .tensor-shape {
+  font-family: var(--font-code);
+  font-size: 0.82rem;
+  color: var(--accent-dim);
+  background: var(--info-bg);
+  padding: 0.2em 0.5em;
+  border-radius: 4px;
+  display: inline-block;
+}
+
+@media (max-width: 700px) {
+  .tensor-cards {
+    grid-template-columns: 1fr 1fr;
+  }
+  .training-cycle {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  .training-cycle .cycle-arrow {
+    transform: rotate(90deg);
+  }
+}
+</style>
+</head>
+<body>
+
+<!-- ============================================================
+     SLIDE 1 — Title
+     ============================================================ -->
+<section class="slide title-slide" id="slide-1">
+  <h1>Neural Network Foundations<br>and PyTorch Basics</h1>
+  <p class="subtitle">Module 1 — Neural Networks with PyTorch</p>
+  <p class="meta">Class 02</p>
+</section>
+
+<!-- ============================================================
+     SLIDE 2 — Learning Goals
+     ============================================================ -->
+<section class="slide" id="slide-2">
+  <h2>What You'll Learn</h2>
+  <div class="card-grid" style="grid-template-columns: repeat(2, 1fr);">
+    <div class="card">
+      <span class="card-icon">🧠</span>
+      <h4>What a Neural Network Is</h4>
+      <p>Neurons, layers, weights, activations — the building blocks inside the black box</p>
+    </div>
+    <div class="card">
+      <span class="card-icon">🔄</span>
+      <h4>How It Learns</h4>
+      <p>The training loop that powers every AI model — from a simple classifier to GPT</p>
+    </div>
+    <div class="card">
+      <span class="card-icon">🔥</span>
+      <h4>Why PyTorch</h4>
+      <p>The toolkit that turns the math into working code — tensors, autograd, and GPU acceleration</p>
+    </div>
+    <div class="card">
+      <span class="card-icon">📐</span>
+      <h4>Hands-on Fluency</h4>
+      <p>Tensor operations, automatic gradients, and the 5 sacred lines that train any model</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     SLIDE 3 — Section Header: Part 1
+     ============================================================ -->
+<section class="slide section-header" id="slide-3">
+  <div>
+    <span class="section-number">Part 1</span>
+    <h2>What Is a Neural Network?</h2>
+    <p class="subtitle">From single neurons to layered architectures</p>
+  </div>
+</section>
+
+<!-- ============================================================
+     SLIDE 4 — What Is a Neural Network?
+     ============================================================ -->
+<section class="slide" id="slide-4">
+  <h2>What Is a Neural Network?</h2>
+  <p>A neural network is a <strong>learnable function</strong> — it takes inputs, produces outputs, and discovers the mapping between them from data. Instead of writing rules by hand, you let the network find patterns by adjusting its internal parameters.</p>
+  <img src="img_class02/nn_fully_connected.png" style="max-width:100%; border-radius: var(--radius-md);" alt="Fully connected neural network: 3 inputs, two hidden layers of 4 neurons each, 2 outputs">
+  <p class="muted" style="font-size:0.85rem; margin-top:0.5rem;">Data flows left to right through layers of neurons. Each connection carries a learnable weight. The network transforms raw inputs into meaningful predictions.</p>
+</section>
+
+<!-- ============================================================
+     SLIDE 5 — From Perceptron to MLP
+     ============================================================ -->
+<section class="slide" id="slide-5">
+  <h2>From Perceptron to MLP</h2>
+  <p>A single neuron (perceptron) can only learn <strong>linear boundaries</strong> — straight lines through data. By stacking neurons into layers and adding activation functions, you get a <strong>Multi-Layer Perceptron (MLP)</strong> that can learn complex, nonlinear patterns.</p>
+  <img src="img_class02/perceptron_to_mlp.png" style="max-width:100%; border-radius: var(--radius-md);" alt="Perceptron (linear only) vs MLP (complex patterns)">
+  <div class="callout info">
+    <div class="callout-title">Key Insight</div>
+    Depth (more layers) + nonlinearity (activation functions) = the ability to approximate any function. This is why we build <em>networks</em>, not just single neurons.
+  </div>
+</section>
+
+<!-- ============================================================
+     SLIDE 6 — Anatomy of a Neuron
+     ============================================================ -->
+<section class="slide" id="slide-6">
+  <h2>Anatomy of a Neuron</h2>
+  <img src="img_class02/neuron_anatomy.png" style="max-width:100%; border-radius: var(--radius-md);" alt="Neuron anatomy: inputs X1..Xn, weights W1..Wn, summation with bias, activation function, output">
+  <div class="formula-box mt-2">
+    <span class="formula-label">The Neuron Equation</span>
+    $$y_{\text{pred}} = f\left(\sum_i W_i \cdot X_i + b\right)$$
+  </div>
+  <div class="three-panel mt-2">
+    <div class="panel">
+      <h4>Inputs &amp; Weights</h4>
+      <p style="font-size:0.88rem; margin-bottom:0;">Each input $X_i$ is multiplied by a learnable weight $W_i$. Weights control how much each input matters.</p>
+    </div>
+    <div class="panel">
+      <h4>Bias &amp; Summation</h4>
+      <p style="font-size:0.88rem; margin-bottom:0;">All weighted inputs are summed, then a bias $b$ is added. The bias shifts the decision boundary.</p>
+    </div>
+    <div class="panel">
+      <h4>Activation $f$</h4>
+      <p style="font-size:0.88rem; margin-bottom:0;">The activation function introduces nonlinearity — without it, the neuron is just a linear equation.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     SLIDE 7 — Common Activation Functions
+     ============================================================ -->
+<section class="slide" id="slide-7">
+  <h2>Common Activation Functions</h2>
+  <img src="img_class02/activation_functions.png" style="max-width:100%; border-radius: var(--radius-md);" alt="Sigmoid, ReLU, and Softmax activation functions with curves and formulas">
+  <div class="three-panel mt-2">
+    <div class="panel">
+      <h4>Sigmoid</h4>
+      <div class="formula-box" style="margin:0.5rem 0;">
+        $$\sigma(z) = \frac{1}{1 + e^{-z}}$$
+      </div>
+      <p style="font-size:0.85rem; margin-bottom:0;"><strong>Output:</strong> (0, 1)<br><strong>Use:</strong> Probabilities, binary output</p>
+    </div>
+    <div class="panel highlight">
+      <h4>ReLU</h4>
+      <div class="formula-box" style="margin:0.5rem 0;">
+        $$\text{ReLU}(z) = \max(0, z)$$
+      </div>
+      <p style="font-size:0.85rem; margin-bottom:0;"><strong>Output:</strong> [0, +&infin;)<br><strong>Use:</strong> Hidden layers (default choice)</p>
+    </div>
+    <div class="panel">
+      <h4>Softmax</h4>
+      <div class="formula-box" style="margin:0.5rem 0;">
+        $$\text{softmax}(z_i) = \frac{e^{z_i}}{\sum_j e^{z_j}}$$
+      </div>
+      <p style="font-size:0.85rem; margin-bottom:0;"><strong>Output:</strong> Sums to 1<br><strong>Use:</strong> Multiclass output layer</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     SLIDE 8 — Why Activation Functions Matter
+     ============================================================ -->
+<section class="slide" id="slide-8">
+  <h2>Why Activation Functions Matter</h2>
+  <img src="img_class02/activation_effect.png" style="max-width:100%; border-radius: var(--radius-md);" alt="Linear model fails on y=x^2; ReLU piecewise linear approximation succeeds">
+  <div class="callout warning mt-2">
+    <div class="callout-title">The Linear Collapse Problem</div>
+    Without activation functions, stacking layers is pointless — multiple linear layers mathematically collapse into a single linear transformation. ReLU creates <strong>piecewise linear segments</strong> that can approximate any curved function.
+  </div>
+</section>
+
+<!-- ============================================================
+     SLIDE 9 — Parameters vs Hyperparameters
+     ============================================================ -->
+<section class="slide" id="slide-9">
+  <h2>Parameters vs Hyperparameters</h2>
+  <div class="two-panel">
+    <div class="panel">
+      <span class="panel-label good">Learned During Training</span>
+      <h4>Parameters</h4>
+      <ul>
+        <li><strong>Weights</strong> — connection strengths between neurons</li>
+        <li><strong>Biases</strong> — shift terms in each neuron</li>
+      </ul>
+      <p style="font-size:0.88rem; color:var(--slate-500); margin-bottom:0;">The model discovers these by learning from data. You never set them manually.</p>
+    </div>
+    <div class="panel">
+      <span class="panel-label neutral">Set By You</span>
+      <h4>Hyperparameters</h4>
+      <ul>
+        <li><strong>Learning rate</strong> — step size for updates</li>
+        <li><strong>Batch size</strong> — samples per iteration</li>
+        <li><strong>Number of layers</strong> — network depth</li>
+        <li><strong>Hidden size</strong> — neurons per layer</li>
+        <li><strong>Activation choice</strong> — ReLU, sigmoid, etc.</li>
+        <li><strong>Optimizer</strong> — SGD, Adam, etc.</li>
+      </ul>
+    </div>
+  </div>
+  <div class="callout info mt-2">
+    <div class="callout-title">Analogy</div>
+    <strong>Parameters</strong> = the answers the model finds. <strong>Hyperparameters</strong> = the settings you choose for the learning process.
+  </div>
+</section>
+
+<!-- ============================================================
+     SLIDE 10 — Section Header: Part 2
+     ============================================================ -->
+<section class="slide section-header" id="slide-10">
+  <div>
+    <span class="section-number">Part 2</span>
+    <h2>How a Neural Network Learns</h2>
+    <p class="subtitle">The training loop, loss functions, and gradient descent</p>
+  </div>
+</section>
+
+<!-- ============================================================
+     SLIDE — The Training Loop
+     ============================================================ -->
+<section class="slide" id="slide-training-loop">
+  <h2>The Training Loop</h2>
+  <p>Every neural network learns by repeating this cycle. Here's the concept — and the code that implements it:</p>
+  <div class="two-panel">
+    <div class="panel">
+      <div class="code-block"><span class="label">Python</span><pre>
+<span class="kw">for</span> epoch <span class="kw">in</span> <span class="fn">range</span>(num_epochs):
+  <span class="kw">for</span> batch <span class="kw">in</span> dataloader:
+
+    <span class="comment"># ① Forward pass</span>
+    pred <span class="op">=</span> <span class="fn">model</span>(inputs)
+
+    <span class="comment"># ② Compute loss</span>
+    loss <span class="op">=</span> <span class="fn">criterion</span>(pred, targets)
+
+    <span class="comment"># ③ Backward pass</span>
+    loss.<span class="fn">backward</span>()
+
+    <span class="comment"># ④ Update weights</span>
+    optimizer.<span class="fn">step</span>()
+    optimizer.<span class="fn">zero_grad</span>()
+</pre></div>
+    </div>
+    <div class="panel" style="display:flex; align-items:center; justify-content:center;">
+      <img src="img_class02/training_cycle.png" style="max-width:100%; border-radius: var(--radius-md);" alt="Training cycle diagram">
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     SLIDE 11 — Loss Functions
+     ============================================================ -->
+<section class="slide" id="slide-11">
+  <h2>Loss Functions</h2>
+  <p>A loss function is a <strong>"wrongness meter"</strong> — it takes the prediction and the true target and outputs a single number measuring how far off you are. The network's entire goal is to minimize this number.</p>
+  <img src="img_class02/loss_functions.png" style="max-width:100%; border-radius: var(--radius-md);" alt="Three loss functions: MSE for regression, CrossEntropy for multiclass, BCE for binary">
+  <div class="three-panel mt-2">
+    <div class="panel">
+      <h4>MSELoss</h4>
+      <p style="font-size:0.88rem; margin-bottom:0.3rem;"><strong>"How far off?"</strong></p>
+      <p style="font-size:0.85rem; margin-bottom:0.3rem;">$$L = \frac{1}{n}\sum_{i}(y_i - \hat{y}_i)^2$$</p>
+      <p style="font-size:0.85rem; color:var(--slate-500); margin-bottom:0;">Regression — continuous values</p>
+    </div>
+    <div class="panel">
+      <h4>CrossEntropyLoss</h4>
+      <p style="font-size:0.88rem; margin-bottom:0.3rem;"><strong>"How confused?"</strong></p>
+      <p style="font-size:0.85rem; margin-bottom:0.3rem;">$$L = -\sum_{c} y_c \log(\hat{y}_c)$$</p>
+      <p style="font-size:0.85rem; color:var(--slate-500); margin-bottom:0;">Multiclass — cat vs dog vs bird</p>
+    </div>
+    <div class="panel">
+      <h4>BCEWithLogitsLoss</h4>
+      <p style="font-size:0.88rem; margin-bottom:0.3rem;"><strong>"Yes or no?"</strong></p>
+      <p style="font-size:0.85rem; margin-bottom:0.3rem;">$$L = -[y\log(\hat{y}) + (1-y)\log(1-\hat{y})]$$</p>
+      <p style="font-size:0.85rem; color:var(--slate-500); margin-bottom:0;">Binary — spam/not, fraud/not</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     SLIDE 12 — The Training Cycle
+     ============================================================ -->
+<section class="slide" id="slide-12">
+  <h2>Gradient Descent</h2>
+  <p>The gradient tells you which direction increases the loss. You step in the <strong>opposite direction</strong> to reduce it. Repeat until the loss is minimized.</p>
+  <img src="img_class02/gradient_descent.png" style="max-width:100%; border-radius: var(--radius-md);" alt="Gradient descent on f(x)=x^2">
+  <div class="formula-box mt-2">
+    <span class="formula-label">Weight Update Rule</span>
+    $$w \leftarrow w - \text{lr} \cdot \nabla L$$
+  </div>
+</section>
+
+<!-- ============================================================
+     SLIDE 13 — Learning Rate
+     ============================================================ -->
+<section class="slide" id="slide-13">
+  <h2>Learning Rate</h2>
+  <p>The learning rate controls how big each step is during gradient descent.</p>
+  <img src="img_class02/learning_rate.png" style="max-width:100%; border-radius: var(--radius-md);" alt="Three panels: too slow, just right, oscillates">
+  <div class="callout warning mt-2">
+    <div class="callout-title">The Most Critical Hyperparameter</div>
+    <strong>Too small:</strong> Training takes forever, may get stuck. <strong>Too large:</strong> Overshoots the minimum, loss oscillates or diverges. <strong>Rule of thumb:</strong> Start with <code>0.001</code> when using the Adam optimizer.
+  </div>
+</section>
+
+<!-- ============================================================
+     SLIDE 15 — Section Header: Part 3
+     ============================================================ -->
+<section class="slide section-header" id="slide-19">
+  <div>
+    <span class="section-number">Part 3</span>
+    <h2>Why PyTorch?</h2>
+    <p class="subtitle">The framework that makes neural networks practical</p>
+  </div>
+</section>
+
+<!-- ============================================================
+     SLIDE 16 — What PyTorch Offers
+     ============================================================ -->
+<section class="slide" id="slide-21b">
+  <h2>What PyTorch Gives You</h2>
+  <p>PyTorch is not just "another array library." It's a complete toolkit for building and training neural networks.</p>
+  <div class="card-grid">
+    <div class="card">
+      <div class="card-icon">🔢</div>
+      <h4>torch.Tensor</h4>
+      <p>Multi-dimensional arrays that run on GPU</p>
+    </div>
+    <div class="card">
+      <div class="card-icon">📐</div>
+      <h4>torch.autograd</h4>
+      <p>Automatic gradient computation — no manual calculus</p>
+    </div>
+    <div class="card">
+      <div class="card-icon">🧱</div>
+      <h4>torch.nn</h4>
+      <p>Pre-built layers: Linear, Conv2d, ReLU, Dropout, BatchNorm</p>
+    </div>
+    <div class="card">
+      <div class="card-icon">⚡</div>
+      <h4>torch.optim</h4>
+      <p>Optimizers: SGD, Adam, AdamW, learning rate schedulers</p>
+    </div>
+    <div class="card">
+      <div class="card-icon">📦</div>
+      <h4>torch.utils.data</h4>
+      <p>Dataset and DataLoader for batching, shuffling, parallel loading</p>
+    </div>
+    <div class="card">
+      <div class="card-icon">🖼️</div>
+      <h4>torchvision</h4>
+      <p>Image datasets (MNIST, CIFAR), transforms, pretrained models (ResNet)</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     SLIDE 17 — PyTorch vs NumPy
+     ============================================================ -->
+<section class="slide" id="slide-21">
+  <h2>PyTorch vs NumPy</h2>
+  <p>Think of PyTorch as <strong>"NumPy with deep learning superpowers."</strong> The API feels familiar, but PyTorch adds the three things you need for neural networks.</p>
+  <table class="data-table">
+    <thead>
+      <tr>
+        <th>Feature</th>
+        <th>NumPy</th>
+        <th>PyTorch</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Data structure</td>
+        <td class="mono">ndarray</td>
+        <td class="mono">tensor</td>
+      </tr>
+      <tr>
+        <td>GPU support</td>
+        <td>No</td>
+        <td><strong>Yes</strong> — <code>.to("cuda")</code></td>
+      </tr>
+      <tr>
+        <td>Automatic gradients</td>
+        <td>Manual calculus</td>
+        <td><strong>Autograd</strong> — <code>.backward()</code></td>
+      </tr>
+      <tr>
+        <td>NN layers</td>
+        <td>No</td>
+        <td><strong>nn.Module</strong> — Linear, Conv2d, etc.</td>
+      </tr>
+      <tr>
+        <td>Optimizers</td>
+        <td>No</td>
+        <td><strong>torch.optim</strong> — SGD, Adam, etc.</td>
+      </tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- ============================================================
+     SLIDE 22 — What Is a Tensor?
+     ============================================================ -->
+<section class="slide" id="slide-22">
+  <h2>What Is a Tensor?</h2>
+  <p>A tensor is the core data structure in PyTorch — a multi-dimensional array. Everything flows through tensors: inputs, weights, gradients, and predictions.</p>
+  <img src="img_class02/tensor_dimensions.png" style="max-width:100%; border-radius: var(--radius-md);" alt="Tensor dimensions: scalar, vector, matrix, 3D tensor">
+</section>
+
+<!-- ============================================================
+     SLIDE — Essential Tensor Operations
+     ============================================================ -->
+<section class="slide" id="slide-tensor-ops">
+  <h2>Essential Tensor Operations</h2>
+  <p>These operations appear in every PyTorch project. Fluency here prevents 90% of debugging later.</p>
+  <h3>Creating &amp; Inspecting</h3>
+  <div class="code-block"><span class="label">Python</span><pre>
+x <span class="op">=</span> torch.<span class="fn">tensor</span>([<span class="num">1.0</span>, <span class="num">2.0</span>, <span class="num">3.0</span>])  <span class="comment"># create a tensor</span>
+x.shape  <span class="comment"># torch.Size([3])</span>
+x.dtype  <span class="comment"># torch.float32</span>
+
+zeros <span class="op">=</span> torch.<span class="fn">zeros</span>(<span class="num">3</span>, <span class="num">4</span>)  <span class="comment"># 3×4 matrix of zeros</span>
+ones <span class="op">=</span> torch.<span class="fn">ones</span>(<span class="num">2</span>, <span class="num">3</span>)  <span class="comment"># 2×3 matrix of ones</span>
+rand <span class="op">=</span> torch.<span class="fn">randn</span>(<span class="num">5</span>, <span class="num">5</span>)  <span class="comment"># 5×5 from normal distribution</span>
+</pre></div>
+  <h3>Reshaping &amp; Indexing</h3>
+  <div class="code-block"><span class="label">Python</span><pre>
+x <span class="op">=</span> torch.<span class="fn">randn</span>(<span class="num">6</span>)
+x.<span class="fn">reshape</span>(<span class="num">2</span>, <span class="num">3</span>)  <span class="comment"># 6 → 2×3</span>
+x.<span class="fn">view</span>(<span class="num">2</span>, <span class="num">3</span>)  <span class="comment"># same as reshape (requires contiguous memory)</span>
+x.<span class="fn">unsqueeze</span>(<span class="num">0</span>)  <span class="comment"># add batch dim: (6,) → (1, 6)</span>
+x.<span class="fn">squeeze</span>()  <span class="comment"># remove size-1 dims</span>
+
+A <span class="op">=</span> torch.<span class="fn">randn</span>(<span class="num">3</span>, <span class="num">4</span>)
+A[:, <span class="num">0</span>]  <span class="comment"># first column</span>
+A[<span class="num">1</span>, :]  <span class="comment"># second row</span>
+</pre></div>
+</section>
+
+<!-- ============================================================
+     SLIDE — Tensor Math
+     ============================================================ -->
+<section class="slide" id="slide-tensor-math">
+  <h2>Tensor Math</h2>
+  <h3>Element-wise Operations</h3>
+  <div class="code-block"><span class="label">Python</span><pre>
+a <span class="op">=</span> torch.<span class="fn">tensor</span>([<span class="num">1.0</span>, <span class="num">2.0</span>, <span class="num">3.0</span>])
+b <span class="op">=</span> torch.<span class="fn">tensor</span>([<span class="num">4.0</span>, <span class="num">5.0</span>, <span class="num">6.0</span>])
+
+a <span class="op">+</span> b  <span class="comment"># [5, 7, 9] — addition</span>
+a <span class="op">*</span> b  <span class="comment"># [4, 10, 18] — element-wise multiply</span>
+a <span class="op">**</span> <span class="num">2</span>  <span class="comment"># [1, 4, 9] — element-wise power</span>
+</pre></div>
+  <h3>Dot Product &amp; Matrix Operations</h3>
+  <div class="code-block"><span class="label">Python</span><pre>
+torch.<span class="fn">dot</span>(a, b)  <span class="comment"># 32.0 — dot product (1*4 + 2*5 + 3*6)</span>
+
+m1 <span class="op">=</span> torch.<span class="fn">randn</span>(<span class="num">2</span>, <span class="num">3</span>)
+m2 <span class="op">=</span> torch.<span class="fn">randn</span>(<span class="num">3</span>, <span class="num">4</span>)
+m1 <span class="op">@</span> m2  <span class="comment"># matrix multiply: (2,3) @ (3,4) → (2,4)</span>
+m1.T  <span class="comment"># transpose: (2,3) → (3,2)</span>
+m1.<span class="fn">sum</span>(dim<span class="op">=</span><span class="num">1</span>)  <span class="comment"># sum along columns</span>
+</pre></div>
+  <div class="callout info mt-2">
+    <div class="callout-title">Matrix Multiply = The Core NN Operation</div>
+    <code>@</code> is shorthand for <code>torch.matmul()</code>. Every <code>nn.Linear</code> layer is a matrix multiply + bias: $y = Wx + b$.
+  </div>
+</section>
+
+<!-- ============================================================
+     SLIDE 23 — Tensor Shapes
+     ============================================================ -->
+<section class="slide" id="slide-23">
+  <h2>Tensor Shapes Matter</h2>
+  <p>The <strong>first dimension is always the batch size</strong> — how many samples you process at once.</p>
+  <table class="data-table" style="table-layout:auto;">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th style="white-space:nowrap;">Shape</th>
+        <th style="white-space:nowrap;">Example</th>
+        <th>Meaning</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Tabular</td>
+        <td class="mono">(batch, features)</td>
+        <td class="mono">(32, 10)</td>
+        <td>32 samples, 10 features each</td>
+      </tr>
+      <tr>
+        <td>Image</td>
+        <td class="mono">(batch, C, H, W)</td>
+        <td class="mono">(32, 3, 224, 224)</td>
+        <td>32 RGB images, 224×224 pixels</td>
+      </tr>
+      <tr>
+        <td>Text</td>
+        <td class="mono" style="white-space:nowrap;">(batch, seq_len, embed)</td>
+        <td class="mono" style="white-space:nowrap;">(16, 128, 768)</td>
+        <td>16 sentences, 128 tokens, 768-dim embeddings</td>
+      </tr>
+      <tr>
+        <td>Single sample</td>
+        <td class="mono">(1, features)</td>
+        <td class="mono">(1, 10)</td>
+        <td>Use <code>unsqueeze(0)</code> to add batch dim</td>
+      </tr>
+    </tbody>
+  </table>
+  <div class="callout warning mt-2">
+    <div class="callout-title">Common Mistake: Shape Mismatch</div>
+    Model expects <code>(batch, 10)</code> but you pass <code>(10,)</code> → error. Always check <code>.shape</code> and use <code>unsqueeze</code>, <code>reshape</code>, or <code>view</code> to fix.
+  </div>
+</section>
+
+<!-- ============================================================
+     SLIDE 24 — PyTorch Workflow
+     ============================================================ -->
+<!-- ============================================================
+     SLIDE 25 — Autograd + Model Preview
+     ============================================================ -->
+<section class="slide" id="slide-25">
+  <h2>Autograd + Model Preview</h2>
+  <h3>Autograd in Action</h3>
+  <div class="code-block"><span class="label">Python</span><pre>
+<span class="kw">import</span> torch
+
+x <span class="op">=</span> torch.<span class="fn">tensor</span>(<span class="num">2.0</span>, requires_grad<span class="op">=</span><span class="num">True</span>)  <span class="comment"># track operations on this tensor</span>
+y <span class="op">=</span> x<span class="op">**</span><span class="num">2</span>  <span class="comment"># define function y = x²</span>
+y.<span class="fn">backward</span>()  <span class="comment"># walk the computation graph in reverse → compute all gradients</span>
+<span class="fn">print</span>(x.grad)  <span class="comment"># tensor(4.) — dy/dx = 2x = 4 ✓</span>
+</pre></div>
+  <div class="callout info mt-1">
+    <div class="callout-title">How This Works</div>
+    <code>requires_grad=True</code> tells PyTorch to record every operation on this tensor, building a <strong>computation graph</strong>. When you call <code>.backward()</code>, PyTorch walks this graph in reverse to compute all gradients — that's backpropagation.
+  </div>
+  <h3>nn.Sequential Model</h3>
+  <p style="font-size:0.9rem; color:var(--slate-600); margin-bottom:0.5rem;">Stack layers in order — data flows through each one top to bottom. The quickest way to build a simple model.</p>
+  <div class="code-block"><span class="label">Python</span><pre>
+<span class="kw">import</span> torch.nn <span class="kw">as</span> nn
+
+model <span class="op">=</span> nn.<span class="cls">Sequential</span>(
+    nn.<span class="cls">Linear</span>(<span class="num">10</span>, <span class="num">32</span>),  <span class="comment"># 10 inputs → 32 hidden</span>
+    nn.<span class="cls">ReLU</span>(),  <span class="comment"># activation function</span>
+    nn.<span class="cls">Linear</span>(<span class="num">32</span>, <span class="num">1</span>),  <span class="comment"># 32 hidden → 1 output</span>
+)
+
+x <span class="op">=</span> torch.<span class="fn">randn</span>(<span class="num">4</span>, <span class="num">10</span>)  <span class="comment"># batch of 4, 10 features each</span>
+out <span class="op">=</span> <span class="fn">model</span>(x)  <span class="comment"># shape: (4, 1)</span>
+</pre></div>
+</section>
+
+<!-- ============================================================
+     SLIDE — The 5 Sacred Lines
+     ============================================================ -->
+<section class="slide" id="slide-5lines">
+  <h2>The 5 Sacred Lines</h2>
+  <p>The training loop from Part 2 — here's exactly how you write it in PyTorch:</p>
+  <img src="img_class02/training_5lines.png" style="max-width:100%; border-radius: var(--radius-md);" alt="The 5 sacred lines of PyTorch training">
+  <div class="callout success mt-2">
+    <div class="callout-title">Memorize This Pattern</div>
+    Forward → loss → zero_grad → backward → step. You'll write this loop hundreds of times. In Class 03, you'll implement it end to end.
+  </div>
+</section>
+
+<!-- ============================================================
+     SLIDE — Key Takeaways
+     ============================================================ -->
+<section class="slide" id="slide-29">
+  <h2>Key Takeaways</h2>
+  <div class="card-grid" style="grid-template-columns: repeat(3, 1fr);">
+    <div class="card">
+      <span class="card-icon">🧠</span>
+      <h4>Layered Functions</h4>
+      <p>Neural networks are layered functions that learn input-output mappings from data</p>
+    </div>
+    <div class="card">
+      <span class="card-icon">🔢</span>
+      <h4>Neuron Equation</h4>
+      <p>Each neuron computes: weighted sum + bias + activation function</p>
+    </div>
+    <div class="card">
+      <span class="card-icon">📉</span>
+      <h4>Loss Measures Wrongness</h4>
+      <p>MSE for regression, CrossEntropy for multiclass, BCE for binary — pick the right one for the task</p>
+    </div>
+    <div class="card">
+      <span class="card-icon">🔄</span>
+      <h4>Learning = Gradient Descent</h4>
+      <p>Forward pass &rarr; loss &rarr; backprop &rarr; update weights. This cycle is how every network learns.</p>
+    </div>
+    <div class="card">
+      <span class="card-icon">⚡</span>
+      <h4>PyTorch Automates It</h4>
+      <p>Autograd computes gradients, GPU accelerates math, nn.Module organizes layers</p>
+    </div>
+    <div class="card">
+      <span class="card-icon">🎛️</span>
+      <h4>Your Choices Matter</h4>
+      <p>Hyperparameters (learning rate, layers, batch size) are YOUR decisions; parameters are learned</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     SLIDE 27 — Resources + Looking Ahead
+     ============================================================ -->
+<section class="slide" id="slide-27">
+  <h2>Resources + Looking Ahead</h2>
+  <h3>3Blue1Brown — Neural Networks Series</h3>
+  <div class="card-grid" style="grid-template-columns: repeat(2, 1fr);">
+    <div class="card">
+      <h4>Ch 1: What Is a Neural Network?</h4>
+      <p><a href="https://www.youtube.com/watch?v=aircAruvnKk" target="_blank">youtube.com/watch?v=aircAruvnKk</a></p>
+    </div>
+    <div class="card">
+      <h4>Ch 2: How Neural Networks Learn</h4>
+      <p><a href="https://www.youtube.com/watch?v=IHZwWFHWa-w" target="_blank">youtube.com/watch?v=IHZwWFHWa-w</a></p>
+    </div>
+    <div class="card">
+      <h4>Ch 3: Backpropagation</h4>
+      <p><a href="https://www.youtube.com/watch?v=Ilg3gGewQ5U" target="_blank">youtube.com/watch?v=Ilg3gGewQ5U</a></p>
+    </div>
+  </div>
+  <div class="callout info mt-3">
+    <div class="callout-title">Looking Ahead — Class 03</div>
+    Next class you'll <strong>build your own model class</strong>, train it on real data, and use <strong>pretrained models</strong> like ResNet. The foundations from today — neurons, layers, loss, gradients, and the PyTorch workflow — are the vocabulary for everything ahead.
+  </div>
+</section>
+
+<!-- ============================================================
+     Slide Engine (inlined)
+     ============================================================ -->
+<script>
+/* ============================================================
+   Gen AI Engineer Course — Slide Engine
+   Navigation, KaTeX rendering, presenter notes, auto-numbering.
+   ============================================================ */
+
+(function () {
+  "use strict";
+
+  var CONFIG = {
+    slideSelector: ".slide",
+    slideNumberClass: "slide-number",
+    notesToggleKey: "n",
+    scrollBehavior: "smooth",
+    katexAutoRenderOptions: {
+      delimiters: [
+        { left: "$$", right: "$$", display: true },
+        { left: "$", right: "$", display: false },
+        { left: "\\(", right: "\\)", display: false },
+        { left: "\\[", right: "\\]", display: true },
+      ],
+      throwOnError: false,
+      errorColor: "#EF4444",
+    },
+  };
+
+  var slides = [];
+  var currentSlideIndex = 0;
+
+  function init() {
+    slides = Array.from(document.querySelectorAll(CONFIG.slideSelector));
+    if (slides.length === 0) return;
+    autoNumberSlides();
+    renderKaTeX();
+    bindKeyboard();
+    syncSlideFromHash();
+    window.addEventListener("hashchange", syncSlideFromHash);
+  }
+
+  function autoNumberSlides() {
+    var total = slides.length;
+    slides.forEach(function (slide, i) {
+      if (slide.querySelector("." + CONFIG.slideNumberClass)) return;
+      var num = document.createElement("span");
+      num.className = CONFIG.slideNumberClass;
+      num.textContent = (i + 1) + " / " + total;
+      num.setAttribute("aria-hidden", "true");
+      slide.appendChild(num);
+      if (!slide.id) {
+        slide.id = "slide-" + (i + 1);
+      }
+    });
+  }
+
+  function renderKaTeX() {
+    if (
+      typeof renderMathInElement !== "function" &&
+      typeof window.renderMathInElement !== "function"
+    ) {
+      console.info(
+        "[slide-engine] KaTeX auto-render not found. " +
+        "Include katex.min.js + auto-render.min.js for math rendering."
+      );
+      return;
+    }
+    var render = window.renderMathInElement;
+    slides.forEach(function (slide) {
+      render(slide, CONFIG.katexAutoRenderOptions);
+    });
+  }
+
+  function bindKeyboard() {
+    document.addEventListener("keydown", function (e) {
+      var tag = (e.target.tagName || "").toLowerCase();
+      if (tag === "input" || tag === "textarea" || tag === "select") return;
+      switch (e.key) {
+        case "ArrowRight":
+        case "ArrowDown":
+        case "PageDown":
+          e.preventDefault();
+          navigateTo(currentSlideIndex + 1);
+          break;
+        case "ArrowLeft":
+        case "ArrowUp":
+        case "PageUp":
+          e.preventDefault();
+          navigateTo(currentSlideIndex - 1);
+          break;
+        case "Home":
+          e.preventDefault();
+          navigateTo(0);
+          break;
+        case "End":
+          e.preventDefault();
+          navigateTo(slides.length - 1);
+          break;
+        default:
+          break;
+      }
+    });
+  }
+
+  function navigateTo(index) {
+    if (index < 0 || index >= slides.length) return;
+    currentSlideIndex = index;
+    var slide = slides[currentSlideIndex];
+    slide.scrollIntoView({ behavior: CONFIG.scrollBehavior, block: "start" });
+    var id = slide.id || "slide-" + (index + 1);
+    if (history.replaceState) {
+      history.replaceState(null, "", "#" + id);
+    }
+  }
+
+  function syncSlideFromHash() {
+    var hash = window.location.hash;
+    if (!hash) {
+      currentSlideIndex = 0;
+      return;
+    }
+    var target = document.getElementById(hash.slice(1));
+    if (target) {
+      var idx = slides.indexOf(target);
+      if (idx !== -1) {
+        currentSlideIndex = idx;
+        target.scrollIntoView({ behavior: "auto", block: "start" });
+        return;
+      }
+    }
+    var num = parseInt(hash.slice(1), 10);
+    if (!isNaN(num) && num >= 1 && num <= slides.length) {
+      currentSlideIndex = num - 1;
+      slides[currentSlideIndex].scrollIntoView({ behavior: "auto", block: "start" });
+    }
+  }
+
+  function initScrollSpy() {
+    if (!("IntersectionObserver" in window)) return;
+    var observer = new IntersectionObserver(
+      function (entries) {
+        entries.forEach(function (entry) {
+          if (entry.isIntersecting) {
+            var idx = slides.indexOf(entry.target);
+            if (idx !== -1) {
+              currentSlideIndex = idx;
+            }
+          }
+        });
+      },
+      { root: null, rootMargin: "0px", threshold: 0.5 }
+    );
+    slides.forEach(function (slide) {
+      observer.observe(slide);
+    });
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", function () {
+      init();
+      initScrollSpy();
+    });
+  } else {
+    init();
+    initScrollSpy();
+  }
+})();
+</script>
+</body>
+</html>
