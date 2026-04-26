@@ -636,38 +636,45 @@
 <div class="slide">
   <div class="slide-number">15 / 24</div>
   <h2>Merge vs Rebase</h2>
-  <p style="font-size:1.05em; margin-bottom:10px;">
-    Both combine branches. The difference is <strong>how the history looks after</strong>.
-  </p>
+  <div style="background:#F0F7FF; border-left:4px solid var(--teal); padding:12px 18px; margin:8px 0 14px 0; border-radius:6px;">
+    <p style="margin:0; font-size:1.05em;">
+      <strong>The scenario:</strong> Your PR is open. While reviewers read it, three other PRs landed on <code>main</code>.
+      GitHub flags <strong>"This branch is out of date with the base branch."</strong> Two ways to update your feature branch — and the choice changes what your reviewer sees.
+    </p>
+  </div>
   <div class="two-panel" style="gap:20px;">
-    <div class="panel" style="background:var(--blue-light); border:2px solid var(--blue); padding:20px;">
-      <h3 style="text-align:center; font-size:1.1em;"><code>git merge feature</code></h3>
-      <div id="graph-merge-demo" style="display:flex; justify-content:center; margin:6px 0;"></div>
-      <p style="font-size:0.9em; line-height:1.6; margin-top:6px;">
-        Takes all commits from <code>feature</code> and joins them into <code>main</code> with a <strong>merge commit</strong>.
-        Both branches' history is visible. The branch "happened" and you can see where it split and rejoined.
+    <div class="panel" style="background:var(--blue-light); border:2px solid var(--blue); padding:18px;">
+      <h3 style="text-align:center; font-size:1.05em; margin-bottom:2px;"><code>git pull origin main</code></h3>
+      <p style="font-size:0.82em; color:var(--gray-mid); text-align:center; margin:0 0 8px 0;">(default: fetch + merge)</p>
+      <div id="graph-merge-demo" style="display:flex; justify-content:center; margin:4px 0;"></div>
+      <p style="font-size:0.9em; line-height:1.55; margin-top:4px;">
+        Brings <code>main</code> into your branch with a <strong>merge commit</strong>. Your PR now shows your commit + their commits + an extra merge commit reviewers didn't ask for.
       </p>
-      <div style="font-size:0.92em; line-height:1.8; margin-top:8px;">
-        ✅ Full history preserved<br>
-        ✅ Safe — never rewrites commits<br>
-        ⚠️ Creates extra merge commits
+      <div style="font-size:0.9em; line-height:1.7; margin-top:6px;">
+        ✅ Safe — works on shared branches<br>
+        ✅ Never rewrites commit hashes<br>
+        ⚠️ Adds a merge commit to your PR
       </div>
     </div>
-    <div class="panel" style="background:var(--green-light); border:2px solid var(--green); padding:20px;">
-      <h3 style="text-align:center; font-size:1.1em;"><code>git rebase main</code></h3>
-      <div id="graph-rebase-demo" style="display:flex; justify-content:center; margin:6px 0;"></div>
-      <p style="font-size:0.9em; line-height:1.6; margin-top:6px;">
-        Takes your feature commits, <strong>detaches</strong> them, and <strong>replays them one by one</strong> on top of the latest <code>main</code>.
-        It looks like you wrote them after main's latest commit — no branching visible.
+    <div class="panel" style="background:var(--green-light); border:2px solid var(--green); padding:18px;">
+      <h3 style="text-align:center; font-size:1.05em; margin-bottom:2px;"><code>git pull --rebase origin main</code></h3>
+      <p style="font-size:0.82em; color:var(--gray-mid); text-align:center; margin:0 0 8px 0;">(replay your commits on top)</p>
+      <div id="graph-rebase-demo" style="display:flex; justify-content:center; margin:4px 0;"></div>
+      <p style="font-size:0.9em; line-height:1.55; margin-top:4px;">
+        Lifts your commits off, replays main's new commits underneath, then re-applies yours <strong>with new hashes</strong>. PR shows just your commit against the latest <code>main</code>.
       </p>
-      <div style="font-size:0.92em; line-height:1.8; margin-top:8px;">
-        ✅ Clean, linear history<br>
-        ✅ No merge commits<br>
-        ⚠️ Rewrites commit hashes
+      <div style="font-size:0.9em; line-height:1.7; margin-top:6px;">
+        ✅ Clean, linear PR history<br>
+        ✅ Easier review<br>
+        ⚠️ Rewrites your commit hashes
       </div>
     </div>
   </div>
-  <p class="bottom-text">⚠️ Golden rule: <strong>never rebase commits that have already been pushed and shared</strong> — it rewrites history that others depend on.</p>
+  <p class="bottom-text" style="margin-top:10px;">
+    ⚠️ <strong>Golden rule:</strong> never rebase a branch others have already pulled — the orphaned old hashes break their syncs.
+    <span style="color:var(--gray-mid);">·</span>
+    <em>Also useful:</em> <code>git rebase -i</code> to squash messy WIP commits before opening a PR.
+  </p>
 </div>
 
 <!-- ==================== SLIDE 16: Fetch / Merge / Pull (was slide 13, moved after the merge family) ==================== -->
