@@ -559,46 +559,9 @@
   <p class="section-blurb">Sync with remotes, branch off for parallel work, merge it back, resolve conflicts when they appear, ship via Pull Requests.</p>
 </div>
 
-<!-- ==================== SLIDE 13: Fetch / Merge / Pull (was slide 16) ==================== -->
+<!-- ==================== SLIDE 13: Branches — Concept + Commands (merged old 10+11) ==================== -->
 <div class="slide">
   <div class="slide-number">13 / 24</div>
-  <h2>Getting Remote Changes: Fetch, Merge &amp; Pull</h2>
-  <p style="font-size:1.1em; margin-bottom:10px;">A <strong>safe way</strong> (two steps) and a <strong>shortcut</strong> (one step).</p>
-  <div class="two-panel" style="gap:20px;">
-    <div class="panel" style="background:var(--blue-light); border:2px solid var(--blue); padding:20px;">
-      <h3>Safe: fetch → review → merge</h3>
-      <div class="terminal" style="max-width:100%; font-size:0.9em;">
-        <span class="prompt">$</span> <span class="cmd">git fetch origin</span><br>
-        <span class="out"># Downloaded, code untouched</span><br><br>
-        <span class="prompt">$</span> <span class="cmd">git log origin/main --oneline</span><br>
-        <span class="out"># See what's new</span><br><br>
-        <span class="prompt">$</span> <span class="cmd">git merge origin/main</span><br>
-        <span class="out"># Now apply it</span>
-      </div>
-    </div>
-    <div class="panel" style="background:var(--purple-light); border:2px solid var(--purple); padding:20px;">
-      <h3>Shortcut: pull</h3>
-      <div class="terminal" style="max-width:100%; font-size:0.9em;">
-        <span class="prompt">$</span> <span class="cmd">git pull origin main</span><br>
-        <span class="out"># fetch + merge in one</span>
-      </div>
-      <div style="background:white; border-radius:12px; padding:16px 20px; margin-top:14px; border:2px solid var(--purple); text-align:center;">
-        <div style="font-family:monospace; font-size:1.1em; letter-spacing:0.5px;">
-          <span style="color:var(--purple); font-weight:800;">git pull</span>
-          <span style="color:var(--gray-mid); font-weight:400; padding:0 8px;">=</span>
-          <span style="color:var(--pink); font-weight:700;">git fetch</span>
-          <span style="color:var(--gray-mid); font-weight:400; padding:0 6px;">+</span>
-          <span style="color:var(--blue); font-weight:700;">git merge</span>
-        </div>
-        <p style="font-size:0.85em; color:var(--gray-mid); margin-top:6px;">Convenient, but no chance to review before merging.</p>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- ==================== SLIDE 14: Branches — Concept + Commands (merged old 10+11) ==================== -->
-<div class="slide">
-  <div class="slide-number">14 / 24</div>
   <h2>Branches: Concept &amp; Commands</h2>
   <p style="font-size:1.05em; margin-bottom:8px;">A branch is a <strong>parallel version</strong> of your project — work on a feature without touching stable code, then merge it back.</p>
   <div id="graph-branches" style="display:flex; justify-content:center; margin:6px 0;"></div>
@@ -645,9 +608,9 @@
   </p>
 </div>
 
-<!-- ==================== SLIDE 15: Merging (was slide 12) ==================== -->
+<!-- ==================== SLIDE 14: Merging ==================== -->
 <div class="slide">
-  <div class="slide-number">15 / 24</div>
+  <div class="slide-number">14 / 24</div>
   <h2>Merging</h2>
   <p style="font-size:1.1em; margin-bottom:10px;">
     Merging brings changes from one branch into another. Switch to the target (usually <code>main</code>),
@@ -669,9 +632,9 @@
   <p class="footer-text">A <strong>merge commit</strong> ties both histories together — it has two parents. Don't forget to push and delete the remote branch.</p>
 </div>
 
-<!-- ==================== SLIDE 16: Merge vs Rebase (was slide 14, moved up before Conflicts) ==================== -->
+<!-- ==================== SLIDE 15: Merge vs Rebase ==================== -->
 <div class="slide">
-  <div class="slide-number">16 / 24</div>
+  <div class="slide-number">15 / 24</div>
   <h2>Merge vs Rebase</h2>
   <p style="font-size:1.05em; margin-bottom:10px;">
     Both combine branches. The difference is <strong>how the history looks after</strong>.
@@ -707,32 +670,46 @@
   <p class="bottom-text">⚠️ Golden rule: <strong>never rebase commits that have already been pushed and shared</strong> — it rewrites history that others depend on.</p>
 </div>
 
-<!-- ==================== SLIDE 17: Merge Conflicts (was slide 13, moved after rebase) ==================== -->
+<!-- ==================== SLIDE 16: Fetch / Merge / Pull (was slide 13, moved after the merge family) ==================== -->
 <div class="slide">
-  <div class="slide-number">17 / 24</div>
-  <h2>Merge Conflicts</h2>
-  <p style="font-size:1.1em; margin-bottom:10px;">When two branches change the <strong>same line</strong>, Git asks you to decide.</p>
-  <div class="conflict-block" style="max-width:560px; margin:0 auto;">
-    <span class="conflict-marker">&lt;&lt;&lt;&lt;&lt;&lt;&lt; HEAD (your branch)</span><br>
-    <span class="conflict-yours">score = total / count if count > 0 else 0</span><br>
-    <span class="conflict-marker">=======</span><br>
-    <span class="conflict-theirs">score = total / max(count, 1)</span><br>
-    <span class="conflict-marker">&gt;&gt;&gt;&gt;&gt;&gt;&gt; feature-branch (incoming)</span>
+  <div class="slide-number">16 / 24</div>
+  <h2>Getting Remote Changes: Fetch, Merge &amp; Pull</h2>
+  <p style="font-size:1.1em; margin-bottom:10px;">A <strong>safe way</strong> (two steps) and a <strong>shortcut</strong> (one step).</p>
+  <div class="two-panel" style="gap:20px;">
+    <div class="panel" style="background:var(--blue-light); border:2px solid var(--blue); padding:20px;">
+      <h3>Safe: fetch → review → merge</h3>
+      <div class="terminal" style="max-width:100%; font-size:0.9em;">
+        <span class="prompt">$</span> <span class="cmd">git fetch origin</span><br>
+        <span class="out"># Downloaded, code untouched</span><br><br>
+        <span class="prompt">$</span> <span class="cmd">git log origin/main --oneline</span><br>
+        <span class="out"># See what's new</span><br><br>
+        <span class="prompt">$</span> <span class="cmd">git merge origin/main</span><br>
+        <span class="out"># Now apply it</span>
+      </div>
+    </div>
+    <div class="panel" style="background:var(--purple-light); border:2px solid var(--purple); padding:20px;">
+      <h3>Shortcut: pull</h3>
+      <div class="terminal" style="max-width:100%; font-size:0.9em;">
+        <span class="prompt">$</span> <span class="cmd">git pull origin main</span><br>
+        <span class="out"># fetch + merge in one</span>
+      </div>
+      <div style="background:white; border-radius:12px; padding:16px 20px; margin-top:14px; border:2px solid var(--purple); text-align:center;">
+        <div style="font-family:monospace; font-size:1.1em; letter-spacing:0.5px;">
+          <span style="color:var(--purple); font-weight:800;">git pull</span>
+          <span style="color:var(--gray-mid); font-weight:400; padding:0 8px;">=</span>
+          <span style="color:var(--pink); font-weight:700;">git fetch</span>
+          <span style="color:var(--gray-mid); font-weight:400; padding:0 6px;">+</span>
+          <span style="color:var(--blue); font-weight:700;">git merge</span>
+        </div>
+        <p style="font-size:0.85em; color:var(--gray-mid); margin-top:6px;">Convenient, but no chance to review before merging.</p>
+      </div>
+    </div>
   </div>
-  <p style="font-size:1em; font-weight:600; color:var(--blue-dark); margin:14px 0 8px 0;">How to resolve:</p>
-  <ol class="step-list">
-    <li>Open the file and find the <code>&lt;&lt;&lt;&lt;</code> / <code>====</code> / <code>&gt;&gt;&gt;&gt;</code> markers</li>
-    <li>Decide: keep yours, keep theirs, or write a combination</li>
-    <li>Delete all the conflict markers — leave only the final code</li>
-    <li><code>git add file.py</code> — mark as resolved</li>
-    <li><code>git commit</code> — completes the merge (Git auto-generates a merge message)</li>
-    <li><code>git push</code> — share the resolved merge with the team</li>
-  </ol>
 </div>
 
-<!-- ==================== SLIDE 18: Team Workflow + Open Source (merged old 17+18, Issues folded in) ==================== -->
+<!-- ==================== SLIDE 17: Team Workflow + Open Source (merged old 17+18, Issues folded in) ==================== -->
 <div class="slide">
-  <div class="slide-number">18 / 24</div>
+  <div class="slide-number">17 / 24</div>
   <h2>Team Workflow &amp; Open Source</h2>
   <p style="font-size:1.05em; margin-bottom:10px;">Everyone works on their own branch. Changes go through <strong>Pull Requests</strong> — reviewed before merging.</p>
   <div class="two-panel" style="gap:18px; align-items:flex-start;">
@@ -766,17 +743,17 @@
   </div>
 </div>
 
-<!-- ==================== SLIDE 19: Section 4 — Hygiene & Recovery ==================== -->
+<!-- ==================== SLIDE 18: Section 4 — Discipline & Recovery ==================== -->
 <div class="slide section-header">
-  <div class="slide-number">19 / 24</div>
+  <div class="slide-number">18 / 24</div>
   <span class="section-number">Section 4</span>
-  <h2>Hygiene &amp; Recovery</h2>
-  <p class="section-blurb">Keep the repo clean, follow the rules that prevent disasters, and recover gracefully when things still go wrong.</p>
+  <h2>Discipline &amp; Recovery</h2>
+  <p class="section-blurb">Set the rules that prevent disasters — then keep cool heads and the right commands for when things still go wrong.</p>
 </div>
 
-<!-- ==================== SLIDE 20: .gitignore ==================== -->
+<!-- ==================== SLIDE 19: .gitignore ==================== -->
 <div class="slide">
-  <div class="slide-number">20 / 24</div>
+  <div class="slide-number">19 / 24</div>
   <h2>.gitignore</h2>
   <p style="font-size:1.1em; margin-bottom:10px;">Track code, not secrets or junk.</p>
   <div style="display:flex; gap:28px; align-items:flex-start;">
@@ -806,9 +783,9 @@
   <p class="footer-text">⚠️ Already committed? <code>git rm --cached file</code> to stop tracking.</p>
 </div>
 
-<!-- ==================== SLIDE 21: Best Practices (was slide 22, moved before Recovery) ==================== -->
+<!-- ==================== SLIDE 20: Best Practices ==================== -->
 <div class="slide">
-  <div class="slide-number">21 / 24</div>
+  <div class="slide-number">20 / 24</div>
   <h2>Git Best Practices</h2>
   <p style="font-size:1.1em; margin-bottom:12px;">Rules that prevent 95% of Git disasters.</p>
   <div class="two-panel" style="gap:20px;">
@@ -833,6 +810,29 @@
       </div>
     </div>
   </div>
+</div>
+
+<!-- ==================== SLIDE 21: Merge Conflicts (was slide 17, moved into Section 4) ==================== -->
+<div class="slide">
+  <div class="slide-number">21 / 24</div>
+  <h2>Merge Conflicts</h2>
+  <p style="font-size:1.1em; margin-bottom:10px;">When two branches change the <strong>same line</strong>, Git asks you to decide.</p>
+  <div class="conflict-block" style="max-width:560px; margin:0 auto;">
+    <span class="conflict-marker">&lt;&lt;&lt;&lt;&lt;&lt;&lt; HEAD (your branch)</span><br>
+    <span class="conflict-yours">score = total / count if count > 0 else 0</span><br>
+    <span class="conflict-marker">=======</span><br>
+    <span class="conflict-theirs">score = total / max(count, 1)</span><br>
+    <span class="conflict-marker">&gt;&gt;&gt;&gt;&gt;&gt;&gt; feature-branch (incoming)</span>
+  </div>
+  <p style="font-size:1em; font-weight:600; color:var(--blue-dark); margin:14px 0 8px 0;">How to resolve:</p>
+  <ol class="step-list">
+    <li>Open the file and find the <code>&lt;&lt;&lt;&lt;</code> / <code>====</code> / <code>&gt;&gt;&gt;&gt;</code> markers</li>
+    <li>Decide: keep yours, keep theirs, or write a combination</li>
+    <li>Delete all the conflict markers — leave only the final code</li>
+    <li><code>git add file.py</code> — mark as resolved</li>
+    <li><code>git commit</code> — completes the merge (Git auto-generates a merge message)</li>
+    <li><code>git push</code> — share the resolved merge with the team</li>
+  </ol>
 </div>
 
 <!-- ==================== SLIDE 22: Recovering from Mistakes (merged old 21 + 23) ==================== -->
