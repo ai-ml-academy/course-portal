@@ -162,9 +162,78 @@
   <p class="section-blurb">What Git is, the vocabulary you'll use constantly, and the four-zone mental model that makes every command sensible.</p>
 </div>
 
-<!-- ==================== SLIDE 3: What Git Actually Gives You ==================== -->
+<!-- ==================== SLIDE 3: Git vs Hosting Platforms ==================== -->
 <div class="slide">
   <div class="slide-number">3 / 23</div>
+  <style>
+    .gh-panel { background:white; border:1px solid #E5E7EB; border-radius:12px; padding:22px; box-shadow:0 1px 2px rgba(0,0,0,0.03); }
+    .gh-panel.git { border-top:4px solid #1B2A4A; }
+    .gh-panel.host { border-top:4px solid #2A8F9E; }
+    .gh-h3 { font-size:1.25em; margin:0; }
+    .gh-h3.git { color:#1B2A4A; }
+    .gh-h3.host { color:#2A8F9E; }
+    .gh-chips { display:flex; flex-wrap:wrap; gap:10px; margin:10px 0 14px 0; }
+    .gh-chip { display:inline-flex; align-items:center; gap:9px; padding:8px 16px 8px 12px; background:#F8FAFC; border:1px solid #E5E7EB; border-radius:24px; }
+    .gh-chip svg { display:block; flex-shrink:0; }
+    .gh-chip span { font-weight:700; color:#1B2A4A; font-size:0.95em; letter-spacing:0.01em; }
+  </style>
+  <h2>What is Git? What are GitHub, GitLab, Bitbucket?</h2>
+  <p style="font-size:1.1em; margin-bottom:14px;">These are <strong>not the same thing</strong>. Git is the tool. The others are places that host Git repositories.</p>
+  <div class="two-panel" style="gap:20px;">
+    <!-- LEFT: Git -->
+    <div class="gh-panel git">
+      <div style="display:flex; align-items:center; gap:14px; margin-bottom:8px;">
+        <svg viewBox="0 0 24 24" width="44" height="44" fill="#1B2A4A" aria-hidden="true">
+          <path d="M23.546 10.93L13.067.452c-.604-.603-1.582-.603-2.188 0L8.708 2.627l2.76 2.76c.645-.215 1.379-.07 1.889.441.516.515.658 1.258.438 1.9l2.658 2.66c.645-.223 1.387-.078 1.9.435.721.72.721 1.884 0 2.604-.719.719-1.881.719-2.6 0-.539-.541-.674-1.337-.404-1.996L12.86 8.955v6.525c.176.086.342.203.488.348.713.721.713 1.883 0 2.6-.719.721-1.889.721-2.609 0-.719-.719-.719-1.879 0-2.598.182-.18.387-.316.605-.406V8.835c-.217-.091-.424-.222-.6-.401-.545-.545-.676-1.342-.396-2.009L7.636 3.7.45 10.881c-.6.605-.6 1.584 0 2.189l10.48 10.477c.604.604 1.582.604 2.186 0l10.43-10.43c.605-.603.605-1.582 0-2.187"/>
+        </svg>
+        <h3 class="gh-h3 git">Git</h3>
+      </div>
+      <p style="font-size:0.92em; color:#475569; margin:0 0 10px 0;">The version-control tool itself.</p>
+      <ul class="bullet-list" style="margin:8px 0 0 0;">
+        <li>• A <strong>tool</strong> on your computer</li>
+        <li>• Tracks changes to files</li>
+        <li>• Works <strong>completely offline</strong></li>
+        <li>• Free and open source</li>
+      </ul>
+    </div>
+    <!-- RIGHT: Hosting platforms -->
+    <div class="gh-panel host">
+      <h3 class="gh-h3 host" style="margin-bottom:6px;">Hosting platforms</h3>
+      <p style="font-size:0.92em; color:#475569; margin:0 0 6px 0;">Websites that host Git repositories and add a UI on top.</p>
+      <div class="gh-chips">
+        <div class="gh-chip">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="#1B2A4A" aria-hidden="true">
+            <path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/>
+          </svg>
+          <span>GitHub</span>
+        </div>
+        <div class="gh-chip">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="#1B2A4A" aria-hidden="true">
+            <path d="m23.6004 9.5927-.0337-.0862L20.3.9814a.851.851 0 0 0-.3362-.405.875.875 0 0 0-.9997.0539.875.875 0 0 0-.29.4399l-2.2055 6.748H7.5375l-2.2057-6.748a.857.857 0 0 0-.29-.4412.875.875 0 0 0-.9997-.0537.859.859 0 0 0-.3362.4049L.4332 9.5015l-.0325.0862a6.0657 6.0657 0 0 0 2.0119 7.0105l.0113.0087.03.0213 4.976 3.7264 2.462 1.8633 1.4995 1.1321a1.0085 1.0085 0 0 0 1.2197 0l1.4995-1.1321 2.4619-1.8633 5.006-3.7489.0125-.01a6.0682 6.0682 0 0 0 2.0094-7.003z"/>
+          </svg>
+          <span>GitLab</span>
+        </div>
+        <div class="gh-chip">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="#1B2A4A" aria-hidden="true">
+            <path d="M.778 1.213a.768.768 0 00-.768.892l3.263 19.81c.084.5.515.868 1.022.873H19.95a.772.772 0 00.77-.646l3.27-20.03a.768.768 0 00-.768-.891zM14.52 15.53H9.522L8.17 8.466h7.561z"/>
+          </svg>
+          <span>Bitbucket</span>
+        </div>
+      </div>
+      <ul class="bullet-list" style="margin:8px 0 0 0;">
+        <li>• Add code review, issues, CI/CD</li>
+        <li>• Need <strong>internet</strong></li>
+        <li>• Same Git underneath — different UI &amp; features</li>
+        <li>• GitHub calls them <strong>Pull Requests</strong>; GitLab calls them <strong>Merge Requests</strong> — same thing</li>
+      </ul>
+    </div>
+  </div>
+  <p class="bottom-text">"Git is the engine. GitHub, GitLab, and Bitbucket are different garages where you park and share."</p>
+</div>
+
+<!-- ==================== SLIDE 4: What Git Actually Gives You ==================== -->
+<div class="slide">
+  <div class="slide-number">4 / 23</div>
   <style>
     .s3-canvas { background:#FBFBFD; border:1px solid #E5E7EB; border-radius:10px; padding:14px 18px; margin:6px 0 14px 0; }
     .s3-cards { display:grid; grid-template-columns:repeat(3, 1fr); gap:14px; margin-top:6px; }
@@ -245,75 +314,6 @@
       <p class="s3-card-d">Branch off to experiment; merge back only when it's ready. Main stays releasable.</p>
     </div>
   </div>
-</div>
-
-<!-- ==================== SLIDE 4: Git vs Hosting Platforms ==================== -->
-<div class="slide">
-  <div class="slide-number">4 / 23</div>
-  <style>
-    .gh-panel { background:white; border:1px solid #E5E7EB; border-radius:12px; padding:22px; box-shadow:0 1px 2px rgba(0,0,0,0.03); }
-    .gh-panel.git { border-top:4px solid #1B2A4A; }
-    .gh-panel.host { border-top:4px solid #2A8F9E; }
-    .gh-h3 { font-size:1.25em; margin:0; }
-    .gh-h3.git { color:#1B2A4A; }
-    .gh-h3.host { color:#2A8F9E; }
-    .gh-chips { display:flex; flex-wrap:wrap; gap:10px; margin:10px 0 14px 0; }
-    .gh-chip { display:inline-flex; align-items:center; gap:9px; padding:8px 16px 8px 12px; background:#F8FAFC; border:1px solid #E5E7EB; border-radius:24px; }
-    .gh-chip svg { display:block; flex-shrink:0; }
-    .gh-chip span { font-weight:700; color:#1B2A4A; font-size:0.95em; letter-spacing:0.01em; }
-  </style>
-  <h2>What is Git? What are GitHub, GitLab, Bitbucket?</h2>
-  <p style="font-size:1.1em; margin-bottom:14px;">These are <strong>not the same thing</strong>. Git is the tool. The others are places that host Git repositories.</p>
-  <div class="two-panel" style="gap:20px;">
-    <!-- LEFT: Git -->
-    <div class="gh-panel git">
-      <div style="display:flex; align-items:center; gap:14px; margin-bottom:8px;">
-        <svg viewBox="0 0 24 24" width="44" height="44" fill="#1B2A4A" aria-hidden="true">
-          <path d="M23.546 10.93L13.067.452c-.604-.603-1.582-.603-2.188 0L8.708 2.627l2.76 2.76c.645-.215 1.379-.07 1.889.441.516.515.658 1.258.438 1.9l2.658 2.66c.645-.223 1.387-.078 1.9.435.721.72.721 1.884 0 2.604-.719.719-1.881.719-2.6 0-.539-.541-.674-1.337-.404-1.996L12.86 8.955v6.525c.176.086.342.203.488.348.713.721.713 1.883 0 2.6-.719.721-1.889.721-2.609 0-.719-.719-.719-1.879 0-2.598.182-.18.387-.316.605-.406V8.835c-.217-.091-.424-.222-.6-.401-.545-.545-.676-1.342-.396-2.009L7.636 3.7.45 10.881c-.6.605-.6 1.584 0 2.189l10.48 10.477c.604.604 1.582.604 2.186 0l10.43-10.43c.605-.603.605-1.582 0-2.187"/>
-        </svg>
-        <h3 class="gh-h3 git">Git</h3>
-      </div>
-      <p style="font-size:0.92em; color:#475569; margin:0 0 10px 0;">The version-control tool itself.</p>
-      <ul class="bullet-list" style="margin:8px 0 0 0;">
-        <li>• A <strong>tool</strong> on your computer</li>
-        <li>• Tracks changes to files</li>
-        <li>• Works <strong>completely offline</strong></li>
-        <li>• Free and open source</li>
-      </ul>
-    </div>
-    <!-- RIGHT: Hosting platforms -->
-    <div class="gh-panel host">
-      <h3 class="gh-h3 host" style="margin-bottom:6px;">Hosting platforms</h3>
-      <p style="font-size:0.92em; color:#475569; margin:0 0 6px 0;">Websites that host Git repositories and add a UI on top.</p>
-      <div class="gh-chips">
-        <div class="gh-chip">
-          <svg viewBox="0 0 24 24" width="22" height="22" fill="#1B2A4A" aria-hidden="true">
-            <path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/>
-          </svg>
-          <span>GitHub</span>
-        </div>
-        <div class="gh-chip">
-          <svg viewBox="0 0 24 24" width="22" height="22" fill="#1B2A4A" aria-hidden="true">
-            <path d="m23.6004 9.5927-.0337-.0862L20.3.9814a.851.851 0 0 0-.3362-.405.875.875 0 0 0-.9997.0539.875.875 0 0 0-.29.4399l-2.2055 6.748H7.5375l-2.2057-6.748a.857.857 0 0 0-.29-.4412.875.875 0 0 0-.9997-.0537.859.859 0 0 0-.3362.4049L.4332 9.5015l-.0325.0862a6.0657 6.0657 0 0 0 2.0119 7.0105l.0113.0087.03.0213 4.976 3.7264 2.462 1.8633 1.4995 1.1321a1.0085 1.0085 0 0 0 1.2197 0l1.4995-1.1321 2.4619-1.8633 5.006-3.7489.0125-.01a6.0682 6.0682 0 0 0 2.0094-7.003z"/>
-          </svg>
-          <span>GitLab</span>
-        </div>
-        <div class="gh-chip">
-          <svg viewBox="0 0 24 24" width="22" height="22" fill="#1B2A4A" aria-hidden="true">
-            <path d="M.778 1.213a.768.768 0 00-.768.892l3.263 19.81c.084.5.515.868 1.022.873H19.95a.772.772 0 00.77-.646l3.27-20.03a.768.768 0 00-.768-.891zM14.52 15.53H9.522L8.17 8.466h7.561z"/>
-          </svg>
-          <span>Bitbucket</span>
-        </div>
-      </div>
-      <ul class="bullet-list" style="margin:8px 0 0 0;">
-        <li>• Add code review, issues, CI/CD</li>
-        <li>• Need <strong>internet</strong></li>
-        <li>• Same Git underneath — different UI &amp; features</li>
-        <li>• GitHub calls them <strong>Pull Requests</strong>; GitLab calls them <strong>Merge Requests</strong> — same thing</li>
-      </ul>
-    </div>
-  </div>
-  <p class="bottom-text">"Git is the engine. GitHub, GitLab, and Bitbucket are different garages where you park and share."</p>
 </div>
 
 <!-- ==================== SLIDE 5: Installing & Setup ==================== -->
