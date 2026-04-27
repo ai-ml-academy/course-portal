@@ -149,14 +149,14 @@
 
 <!-- ==================== SLIDE 1: Title ==================== -->
 <div class="slide title-slide">
-  <div class="slide-number">1 / 24</div>
+  <div class="slide-number">1 / 23</div>
   <h1>Git &amp; Version Control</h1>
   <p class="subtitle">From your first commit to confident collaboration</p>
 </div>
 
 <!-- ==================== SLIDE 2: Section 1 — Foundations ==================== -->
 <div class="slide section-header">
-  <div class="slide-number">2 / 24</div>
+  <div class="slide-number">2 / 23</div>
   <span class="section-number">Section 1</span>
   <h2>Foundations</h2>
   <p class="section-blurb">What Git is, the vocabulary you'll use constantly, and the four-zone mental model that makes every command sensible.</p>
@@ -164,7 +164,7 @@
 
 <!-- ==================== SLIDE 3: Why Version Control? ==================== -->
 <div class="slide">
-  <div class="slide-number">3 / 24</div>
+  <div class="slide-number">3 / 23</div>
   <h2>Why Version Control?</h2>
   <p style="font-size:1.1em; margin-bottom:14px;">
     Every project without version control eventually turns into chaos. Version control tracks
@@ -213,7 +213,7 @@
 
 <!-- ==================== SLIDE 4: Git vs Hosting Platforms ==================== -->
 <div class="slide">
-  <div class="slide-number">4 / 24</div>
+  <div class="slide-number">4 / 23</div>
   <style>
     .gh-panel { background:white; border:1px solid #E5E7EB; border-radius:12px; padding:22px; box-shadow:0 1px 2px rgba(0,0,0,0.03); }
     .gh-panel.git { border-top:4px solid #1B2A4A; }
@@ -221,12 +221,10 @@
     .gh-h3 { font-size:1.25em; margin:0; }
     .gh-h3.git { color:#1B2A4A; }
     .gh-h3.host { color:#2A8F9E; }
-    .gh-logos { display:flex; gap:18px; justify-content:space-around; align-items:flex-end; margin:12px 0 14px 0; padding:14px 8px; background:#F8FAFC; border-radius:10px; border:1px solid #E5E7EB; }
-    .gh-logo { display:flex; flex-direction:column; align-items:center; gap:6px; }
-    .gh-logo svg { display:block; }
-    .gh-logo-name { font-size:0.85em; font-weight:700; color:#1B2A4A; letter-spacing:0.02em; }
-    .gh-callout { background:#F1F5F9; border-left:4px solid #2A8F9E; border-radius:6px; padding:12px 18px; margin-top:14px; }
-    .gh-callout p { font-size:0.95em; color:#1B2A4A; margin:0; }
+    .gh-chips { display:flex; flex-wrap:wrap; gap:10px; margin:10px 0 14px 0; }
+    .gh-chip { display:inline-flex; align-items:center; gap:9px; padding:8px 16px 8px 12px; background:#F8FAFC; border:1px solid #E5E7EB; border-radius:24px; }
+    .gh-chip svg { display:block; flex-shrink:0; }
+    .gh-chip span { font-weight:700; color:#1B2A4A; font-size:0.95em; letter-spacing:0.01em; }
   </style>
   <h2>What is Git? What are GitHub, GitLab, Bitbucket?</h2>
   <p style="font-size:1.1em; margin-bottom:14px;">These are <strong>not the same thing</strong>. Git is the tool. The others are places that host Git repositories.</p>
@@ -251,78 +249,40 @@
     <div class="gh-panel host">
       <h3 class="gh-h3 host" style="margin-bottom:6px;">Hosting platforms</h3>
       <p style="font-size:0.92em; color:#475569; margin:0 0 6px 0;">Websites that host Git repositories and add a UI on top.</p>
-      <div class="gh-logos">
-        <div class="gh-logo">
-          <svg viewBox="0 0 24 24" width="40" height="40" fill="#1B2A4A" aria-hidden="true">
+      <div class="gh-chips">
+        <div class="gh-chip">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="#1B2A4A" aria-hidden="true">
             <path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/>
           </svg>
-          <div class="gh-logo-name">GitHub</div>
+          <span>GitHub</span>
         </div>
-        <div class="gh-logo">
-          <svg viewBox="0 0 24 24" width="40" height="40" fill="#1B2A4A" aria-hidden="true">
+        <div class="gh-chip">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="#1B2A4A" aria-hidden="true">
             <path d="m23.6004 9.5927-.0337-.0862L20.3.9814a.851.851 0 0 0-.3362-.405.875.875 0 0 0-.9997.0539.875.875 0 0 0-.29.4399l-2.2055 6.748H7.5375l-2.2057-6.748a.857.857 0 0 0-.29-.4412.875.875 0 0 0-.9997-.0537.859.859 0 0 0-.3362.4049L.4332 9.5015l-.0325.0862a6.0657 6.0657 0 0 0 2.0119 7.0105l.0113.0087.03.0213 4.976 3.7264 2.462 1.8633 1.4995 1.1321a1.0085 1.0085 0 0 0 1.2197 0l1.4995-1.1321 2.4619-1.8633 5.006-3.7489.0125-.01a6.0682 6.0682 0 0 0 2.0094-7.003z"/>
           </svg>
-          <div class="gh-logo-name">GitLab</div>
+          <span>GitLab</span>
         </div>
-        <div class="gh-logo">
-          <svg viewBox="0 0 24 24" width="40" height="40" fill="#1B2A4A" aria-hidden="true">
+        <div class="gh-chip">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="#1B2A4A" aria-hidden="true">
             <path d="M.778 1.213a.768.768 0 00-.768.892l3.263 19.81c.084.5.515.868 1.022.873H19.95a.772.772 0 00.77-.646l3.27-20.03a.768.768 0 00-.768-.891zM14.52 15.53H9.522L8.17 8.466h7.561z"/>
           </svg>
-          <div class="gh-logo-name">Bitbucket</div>
+          <span>Bitbucket</span>
         </div>
       </div>
       <ul class="bullet-list" style="margin:8px 0 0 0;">
         <li>• Add code review, issues, CI/CD</li>
         <li>• Need <strong>internet</strong></li>
         <li>• Same Git underneath — different UI &amp; features</li>
+        <li>• GitHub calls them <strong>Pull Requests</strong>; GitLab calls them <strong>Merge Requests</strong> — same thing</li>
       </ul>
     </div>
-  </div>
-  <div class="gh-callout">
-    <p>
-      <strong>Same concept, different names.</strong> GitHub calls them <strong>Pull Requests</strong>; GitLab calls them <strong>Merge Requests</strong>. Both mean: "review my branch, then merge it."
-    </p>
   </div>
   <p class="bottom-text">"Git is the engine. GitHub, GitLab, and Bitbucket are different garages where you park and share."</p>
 </div>
 
-<!-- ==================== SLIDE 5: Key Terms (moved up from old slide 15) ==================== -->
+<!-- ==================== SLIDE 5: Installing & Setup ==================== -->
 <div class="slide">
-  <div class="slide-number">5 / 24</div>
-  <h2>Key Terms</h2>
-  <p style="font-size:1.1em; margin-bottom:10px;">These come up constantly.</p>
-  <table class="vocab-table">
-    <tr><th>Term</th><th>What it is</th><th>Example</th></tr>
-    <tr><td><strong>remote</strong></td><td>Any repo not on your machine</td><td>A repo on GitHub</td></tr>
-    <tr><td><strong>origin</strong></td><td>Default name for the remote you cloned/pushed to</td><td><code>github.com/you/repo</code></td></tr>
-    <tr><td><strong>upstream</strong></td><td>A remote you track for updates — often the original repo in a fork, but can be any remote branch</td><td><code>github.com/original/repo</code></td></tr>
-    <tr><td><strong>HEAD</strong></td><td>"You are here" — points to current branch/commit</td><td>On <code>main</code> → HEAD → main</td></tr>
-    <tr><td><strong>main</strong></td><td>Default stable branch (formerly <code>master</code>)</td><td>Production-ready code</td></tr>
-  </table>
-  <div class="terminal" style="max-width:700px; margin:12px auto;">
-    <span class="prompt">$</span> <span class="cmd">git remote -v</span> <span class="out"># -v = --verbose (same thing)</span><br>
-    <span class="out">origin&nbsp;&nbsp;&nbsp;https://github.com/you/repo.git</span><br>
-    <span class="out">upstream&nbsp;https://github.com/original/repo.git</span>
-  </div>
-  <div style="background:#F0F7FF; border:2px solid var(--blue); border-radius:12px; padding:14px 18px; margin-top:10px;">
-    <p style="font-size:0.95em; color:var(--blue-dark); margin:0 0 6px 0;">
-      <strong>Upstream tracking with <code>-u</code></strong> — links your local branch to a remote branch so you don't have to type the full command every time.
-    </p>
-    <div class="terminal" style="font-size:0.85em; margin:6px 0;">
-      <span class="out"># First push: set up tracking</span><br>
-      <span class="prompt">$</span> <span class="cmd">git push -u origin feature-branch</span><br><br>
-      <span class="out"># Now these just work (no need to specify remote/branch):</span><br>
-      <span class="prompt">$</span> <span class="cmd">git push</span><br>
-      <span class="prompt">$</span> <span class="cmd">git pull</span><br><br>
-      <span class="out"># See what each branch tracks:</span><br>
-      <span class="prompt">$</span> <span class="cmd">git branch -vv</span>
-    </div>
-  </div>
-</div>
-
-<!-- ==================== SLIDE 6: Installing & Setup ==================== -->
-<div class="slide">
-  <div class="slide-number">6 / 24</div>
+  <div class="slide-number">5 / 23</div>
   <h2>Installing &amp; Setup</h2>
   <p style="font-size:1.1em; margin-bottom:10px;">Install once, configure once. Every commit carries this identity.</p>
   <div class="terminal" style="max-width:620px; margin:12px auto;">
@@ -339,9 +299,9 @@
   </ul>
 </div>
 
-<!-- ==================== SLIDE 7: Git Architecture (UNCHANGED) ==================== -->
+<!-- ==================== SLIDE 6: Git Architecture (UNCHANGED) ==================== -->
 <div class="slide">
-  <div class="slide-number">7 / 24</div>
+  <div class="slide-number">6 / 23</div>
   <h2>Git Architecture</h2>
   <p style="font-size:1.1em; margin-bottom:12px;">
     <strong>The most important diagram in Git.</strong> Four zones. Every command moves data between them.
@@ -468,17 +428,17 @@
   </div>
 </div>
 
-<!-- ==================== SLIDE 8: Section 2 — Daily Workflow ==================== -->
+<!-- ==================== SLIDE 7: Section 2 — Daily Workflow ==================== -->
 <div class="slide section-header">
-  <div class="slide-number">8 / 24</div>
+  <div class="slide-number">7 / 23</div>
   <span class="section-number">Section 2</span>
   <h2>Daily Workflow</h2>
   <p class="section-blurb">Make a commit, see it in the log, then learn how to write messages worth reading. The loop you'll run dozens of times a day.</p>
 </div>
 
-<!-- ==================== SLIDE 9: First Repo + Daily Cycle (merged old 6+7) ==================== -->
+<!-- ==================== SLIDE 8: First Repo + Daily Cycle (merged old 6+7) ==================== -->
 <div class="slide">
-  <div class="slide-number">9 / 24</div>
+  <div class="slide-number">8 / 23</div>
   <h2>Your First Repo &amp; the Daily Cycle</h2>
   <p style="font-size:1.05em; margin-bottom:10px;">Two ways to start a repo, then the four-command loop you'll run forever after.</p>
   <div class="two-panel" style="gap:20px;">
@@ -519,9 +479,9 @@
   </ul>
 </div>
 
-<!-- ==================== SLIDE 10: Viewing History (was slide 9, moved before Commit Messages) ==================== -->
+<!-- ==================== SLIDE 9: Viewing History (was slide 9, moved before Commit Messages) ==================== -->
 <div class="slide">
-  <div class="slide-number">10 / 24</div>
+  <div class="slide-number">9 / 23</div>
   <h2>Viewing History: log &amp; diff</h2>
   <p style="font-size:1.1em; margin-bottom:10px;"><code>log</code> = what happened. <code>diff</code> = what changed.</p>
   <div class="terminal" style="max-width:660px; margin:10px auto;">
@@ -561,9 +521,9 @@
   </div>
 </div>
 
-<!-- ==================== SLIDE 11: Commit Messages (was slide 8) ==================== -->
+<!-- ==================== SLIDE 10: Commit Messages (was slide 8) ==================== -->
 <div class="slide">
-  <div class="slide-number">11 / 24</div>
+  <div class="slide-number">10 / 23</div>
   <h2>Commit Messages</h2>
   <p style="font-size:1.1em; margin-bottom:10px;">Your commit messages are how future-you and your teammates understand what happened and why.</p>
   <div class="two-panel" style="gap:20px;">
@@ -588,17 +548,17 @@
   </ul>
 </div>
 
-<!-- ==================== SLIDE 12: Section 3 — Collaborating ==================== -->
+<!-- ==================== SLIDE 11: Section 3 — Collaborating ==================== -->
 <div class="slide section-header">
-  <div class="slide-number">12 / 24</div>
+  <div class="slide-number">11 / 23</div>
   <span class="section-number">Section 3</span>
   <h2>Collaborating</h2>
   <p class="section-blurb">Sync with remotes, branch off for parallel work, merge it back, resolve conflicts when they appear, ship via Pull Requests.</p>
 </div>
 
-<!-- ==================== SLIDE 13: Branches — Concept + Commands (merged old 10+11) ==================== -->
+<!-- ==================== SLIDE 12: Branches — Concept + Commands (merged old 10+11) ==================== -->
 <div class="slide">
-  <div class="slide-number">13 / 24</div>
+  <div class="slide-number">12 / 23</div>
   <h2>Branches: Concept &amp; Commands</h2>
   <p style="font-size:1.05em; margin-bottom:8px;">A branch is a <strong>parallel version</strong> of your project — work on a feature without touching stable code, then merge it back.</p>
   <div id="graph-branches" style="display:flex; justify-content:center; margin:6px 0;"></div>
@@ -645,9 +605,9 @@
   </p>
 </div>
 
-<!-- ==================== SLIDE 14: Merging ==================== -->
+<!-- ==================== SLIDE 13: Merging ==================== -->
 <div class="slide">
-  <div class="slide-number">14 / 24</div>
+  <div class="slide-number">13 / 23</div>
   <h2>Merging</h2>
   <p style="font-size:1.1em; margin-bottom:10px;">
     Merging brings changes from one branch into another. Switch to the target (usually <code>main</code>),
@@ -669,9 +629,9 @@
   <p class="footer-text">A <strong>merge commit</strong> ties both histories together — it has two parents. Don't forget to push and delete the remote branch.</p>
 </div>
 
-<!-- ==================== SLIDE 15: Merge vs Rebase ==================== -->
+<!-- ==================== SLIDE 14: Merge vs Rebase ==================== -->
 <div class="slide">
-  <div class="slide-number">15 / 24</div>
+  <div class="slide-number">14 / 23</div>
   <style>
     /* slide-15 commit-graph styles (scoped) */
     .gg-canvas { background:#FBFBFD; border:1px solid #E5E7EB; border-radius:8px; padding:12px 14px; margin:4px 0 8px 0; }
@@ -716,36 +676,60 @@
       </div>
       <div class="mvr-stagelabel">Before</div>
       <div class="gg-canvas">
-        <div class="gg-row">
-          <div class="gg-node">A</div><div class="gg-line"></div>
-          <div class="gg-node">B</div><div class="gg-line"></div>
-          <div class="gg-node">C</div>
-          <div class="gg-tag">main</div>
-        </div>
-        <div class="gg-row"><div class="gg-line diag-down"></div></div>
-        <div class="gg-row" style="padding-left:131px;">
-          <div class="gg-node feat">D</div><div class="gg-line feat"></div>
-          <div class="gg-node feat">E</div>
-          <div class="gg-tag feat">feature</div>
-        </div>
+        <svg viewBox="0 0 400 110" width="100%" preserveAspectRatio="xMidYMid meet" style="display:block;">
+          <line x1="54" y1="30" x2="81" y2="30" stroke="#1B2A4A" stroke-width="3"/>
+          <line x1="109" y1="30" x2="136" y2="30" stroke="#1B2A4A" stroke-width="3"/>
+          <path d="M150,44 Q150,80 206,80" fill="none" stroke="#2A8F9E" stroke-width="3"/>
+          <line x1="234" y1="80" x2="261" y2="80" stroke="#2A8F9E" stroke-width="3"/>
+          <circle cx="40" cy="30" r="14" fill="white" stroke="#1B2A4A" stroke-width="2.5"/>
+          <text x="40" y="35" text-anchor="middle" font-family="'JetBrains Mono', monospace" font-weight="700" font-size="13" fill="#1B2A4A">A</text>
+          <circle cx="95" cy="30" r="14" fill="white" stroke="#1B2A4A" stroke-width="2.5"/>
+          <text x="95" y="35" text-anchor="middle" font-family="'JetBrains Mono', monospace" font-weight="700" font-size="13" fill="#1B2A4A">B</text>
+          <circle cx="150" cy="30" r="14" fill="white" stroke="#1B2A4A" stroke-width="2.5"/>
+          <text x="150" y="35" text-anchor="middle" font-family="'JetBrains Mono', monospace" font-weight="700" font-size="13" fill="#1B2A4A">C</text>
+          <rect x="170" y="22" width="44" height="16" rx="8" ry="8" fill="#1B2A4A"/>
+          <text x="192" y="34" text-anchor="middle" font-family="-apple-system, sans-serif" font-weight="700" font-size="9" fill="white" letter-spacing="0.5">MAIN</text>
+          <circle cx="220" cy="80" r="14" fill="white" stroke="#2A8F9E" stroke-width="2.5"/>
+          <text x="220" y="85" text-anchor="middle" font-family="'JetBrains Mono', monospace" font-weight="700" font-size="13" fill="#2A8F9E">D</text>
+          <circle cx="275" cy="80" r="14" fill="white" stroke="#2A8F9E" stroke-width="2.5"/>
+          <text x="275" y="85" text-anchor="middle" font-family="'JetBrains Mono', monospace" font-weight="700" font-size="13" fill="#2A8F9E">E</text>
+          <rect x="295" y="72" width="60" height="16" rx="8" ry="8" fill="#2A8F9E"/>
+          <text x="325" y="84" text-anchor="middle" font-family="-apple-system, sans-serif" font-weight="700" font-size="9" fill="white" letter-spacing="0.5">FEATURE</text>
+        </svg>
       </div>
       <div class="mvr-stagelabel">After</div>
       <div class="gg-canvas">
-        <div class="gg-row">
-          <div class="gg-node">A</div><div class="gg-line"></div>
-          <div class="gg-node">B</div><div class="gg-line"></div>
-          <div class="gg-node">C</div><div class="gg-line"></div>
-          <div class="gg-line"></div>
-          <div class="gg-line"></div>
-          <div class="gg-node merge"><span>M</span></div>
-          <div class="gg-tag">main</div>
-        </div>
-        <div class="gg-row" style="padding-left:131px;">
-          <div class="gg-node feat">D</div><div class="gg-line feat"></div>
-          <div class="gg-node feat">E</div>
-          <div class="gg-line diag-up"></div>
-          <div class="gg-tag feat">feature</div>
-        </div>
+        <svg viewBox="0 0 420 130" width="100%" preserveAspectRatio="xMidYMid meet" style="display:block;">
+          <!-- main row lines -->
+          <line x1="54" y1="30" x2="81" y2="30" stroke="#1B2A4A" stroke-width="3"/>
+          <line x1="109" y1="30" x2="136" y2="30" stroke="#1B2A4A" stroke-width="3"/>
+          <line x1="164" y1="30" x2="285" y2="30" stroke="#1B2A4A" stroke-width="3"/>
+          <!-- branch curves: down from C, up into M's bottom corner -->
+          <path d="M150,44 Q150,80 206,80" fill="none" stroke="#2A8F9E" stroke-width="3"/>
+          <line x1="234" y1="80" x2="261" y2="80" stroke="#2A8F9E" stroke-width="3"/>
+          <path d="M289,80 Q305,80 305,50" fill="none" stroke="#2A8F9E" stroke-width="3"/>
+          <!-- main nodes -->
+          <circle cx="40" cy="30" r="14" fill="white" stroke="#1B2A4A" stroke-width="2.5"/>
+          <text x="40" y="35" text-anchor="middle" font-family="'JetBrains Mono', monospace" font-weight="700" font-size="13" fill="#1B2A4A">A</text>
+          <circle cx="95" cy="30" r="14" fill="white" stroke="#1B2A4A" stroke-width="2.5"/>
+          <text x="95" y="35" text-anchor="middle" font-family="'JetBrains Mono', monospace" font-weight="700" font-size="13" fill="#1B2A4A">B</text>
+          <circle cx="150" cy="30" r="14" fill="white" stroke="#1B2A4A" stroke-width="2.5"/>
+          <text x="150" y="35" text-anchor="middle" font-family="'JetBrains Mono', monospace" font-weight="700" font-size="13" fill="#1B2A4A">C</text>
+          <!-- merge commit M (rotated diamond) -->
+          <rect x="291" y="16" width="28" height="28" fill="white" stroke="#1B2A4A" stroke-width="2.5" transform="rotate(45 305 30)"/>
+          <text x="305" y="34" text-anchor="middle" font-family="'JetBrains Mono', monospace" font-weight="700" font-size="11" fill="#1B2A4A">M</text>
+          <!-- main tag right of M -->
+          <rect x="330" y="22" width="44" height="16" rx="8" ry="8" fill="#1B2A4A"/>
+          <text x="352" y="34" text-anchor="middle" font-family="-apple-system, sans-serif" font-weight="700" font-size="9" fill="white" letter-spacing="0.5">MAIN</text>
+          <!-- feature nodes -->
+          <circle cx="220" cy="80" r="14" fill="white" stroke="#2A8F9E" stroke-width="2.5"/>
+          <text x="220" y="85" text-anchor="middle" font-family="'JetBrains Mono', monospace" font-weight="700" font-size="13" fill="#2A8F9E">D</text>
+          <circle cx="275" cy="80" r="14" fill="white" stroke="#2A8F9E" stroke-width="2.5"/>
+          <text x="275" y="85" text-anchor="middle" font-family="'JetBrains Mono', monospace" font-weight="700" font-size="13" fill="#2A8F9E">E</text>
+          <!-- feature tag below D-E (out of the way of the up-curve) -->
+          <rect x="217" y="100" width="60" height="16" rx="8" ry="8" fill="#2A8F9E"/>
+          <text x="247" y="112" text-anchor="middle" font-family="-apple-system, sans-serif" font-weight="700" font-size="9" fill="white" letter-spacing="0.5">FEATURE</text>
+        </svg>
       </div>
       <div style="font-size:0.85em; line-height:1.6; margin-top:6px;">
         ✅ Safe — never rewrites commits<br>
@@ -761,39 +745,61 @@
       </div>
       <div class="mvr-stagelabel">Before</div>
       <div class="gg-canvas">
-        <div class="gg-row">
-          <div class="gg-node">A</div><div class="gg-line"></div>
-          <div class="gg-node">B</div><div class="gg-line"></div>
-          <div class="gg-node">C</div>
-          <div class="gg-tag">main</div>
-        </div>
-        <div class="gg-row"><div class="gg-line diag-down"></div></div>
-        <div class="gg-row" style="padding-left:131px;">
-          <div class="gg-node feat">D</div><div class="gg-line feat"></div>
-          <div class="gg-node feat">E</div>
-          <div class="gg-tag feat">feature</div>
-        </div>
+        <svg viewBox="0 0 400 110" width="100%" preserveAspectRatio="xMidYMid meet" style="display:block;">
+          <line x1="54" y1="30" x2="81" y2="30" stroke="#1B2A4A" stroke-width="3"/>
+          <line x1="109" y1="30" x2="136" y2="30" stroke="#1B2A4A" stroke-width="3"/>
+          <path d="M150,44 Q150,80 206,80" fill="none" stroke="#2A8F9E" stroke-width="3"/>
+          <line x1="234" y1="80" x2="261" y2="80" stroke="#2A8F9E" stroke-width="3"/>
+          <circle cx="40" cy="30" r="14" fill="white" stroke="#1B2A4A" stroke-width="2.5"/>
+          <text x="40" y="35" text-anchor="middle" font-family="'JetBrains Mono', monospace" font-weight="700" font-size="13" fill="#1B2A4A">A</text>
+          <circle cx="95" cy="30" r="14" fill="white" stroke="#1B2A4A" stroke-width="2.5"/>
+          <text x="95" y="35" text-anchor="middle" font-family="'JetBrains Mono', monospace" font-weight="700" font-size="13" fill="#1B2A4A">B</text>
+          <circle cx="150" cy="30" r="14" fill="white" stroke="#1B2A4A" stroke-width="2.5"/>
+          <text x="150" y="35" text-anchor="middle" font-family="'JetBrains Mono', monospace" font-weight="700" font-size="13" fill="#1B2A4A">C</text>
+          <rect x="170" y="22" width="44" height="16" rx="8" ry="8" fill="#1B2A4A"/>
+          <text x="192" y="34" text-anchor="middle" font-family="-apple-system, sans-serif" font-weight="700" font-size="9" fill="white" letter-spacing="0.5">MAIN</text>
+          <circle cx="220" cy="80" r="14" fill="white" stroke="#2A8F9E" stroke-width="2.5"/>
+          <text x="220" y="85" text-anchor="middle" font-family="'JetBrains Mono', monospace" font-weight="700" font-size="13" fill="#2A8F9E">D</text>
+          <circle cx="275" cy="80" r="14" fill="white" stroke="#2A8F9E" stroke-width="2.5"/>
+          <text x="275" y="85" text-anchor="middle" font-family="'JetBrains Mono', monospace" font-weight="700" font-size="13" fill="#2A8F9E">E</text>
+          <rect x="295" y="72" width="60" height="16" rx="8" ry="8" fill="#2A8F9E"/>
+          <text x="325" y="84" text-anchor="middle" font-family="-apple-system, sans-serif" font-weight="700" font-size="9" fill="white" letter-spacing="0.5">FEATURE</text>
+        </svg>
       </div>
-      <div class="mvr-stagelabel">After</div>
+      <div class="mvr-stagelabel">After (rebased + fast-forwarded)</div>
       <div class="gg-canvas">
-        <div class="gg-row">
-          <div class="gg-node">A</div><div class="gg-line"></div>
-          <div class="gg-node">B</div><div class="gg-line"></div>
-          <div class="gg-node">C</div>
-          <div class="gg-tag" style="margin-right:10px;">main</div>
-          <div class="gg-line feat"></div>
-          <div class="gg-node feat">D′</div><div class="gg-line feat"></div>
-          <div class="gg-node feat">E′</div>
-          <div class="gg-tag feat">feature</div>
-        </div>
-        <div class="gg-orphan">
-          <div class="gg-orphan-label">Orphaned (no longer reachable from any branch)</div>
-          <div class="gg-row">
-            <div class="gg-node lost">D</div><div class="gg-line lost"></div>
-            <div class="gg-node lost">E</div>
-            <div class="gg-tag lost">old hashes — gone</div>
-          </div>
-        </div>
+        <svg viewBox="0 0 360 50" width="100%" preserveAspectRatio="xMidYMid meet" style="display:block;">
+          <!-- linear connections -->
+          <line x1="54" y1="25" x2="71" y2="25" stroke="#1B2A4A" stroke-width="3"/>
+          <line x1="99" y1="25" x2="116" y2="25" stroke="#1B2A4A" stroke-width="3"/>
+          <line x1="144" y1="25" x2="166" y2="25" stroke="#2A8F9E" stroke-width="3"/>
+          <line x1="194" y1="25" x2="216" y2="25" stroke="#2A8F9E" stroke-width="3"/>
+          <!-- nodes A B C in navy, D' E' in teal (rebased commits) -->
+          <circle cx="40" cy="25" r="14" fill="white" stroke="#1B2A4A" stroke-width="2.5"/>
+          <text x="40" y="30" text-anchor="middle" font-family="'JetBrains Mono', monospace" font-weight="700" font-size="13" fill="#1B2A4A">A</text>
+          <circle cx="85" cy="25" r="14" fill="white" stroke="#1B2A4A" stroke-width="2.5"/>
+          <text x="85" y="30" text-anchor="middle" font-family="'JetBrains Mono', monospace" font-weight="700" font-size="13" fill="#1B2A4A">B</text>
+          <circle cx="130" cy="25" r="14" fill="white" stroke="#1B2A4A" stroke-width="2.5"/>
+          <text x="130" y="30" text-anchor="middle" font-family="'JetBrains Mono', monospace" font-weight="700" font-size="13" fill="#1B2A4A">C</text>
+          <circle cx="180" cy="25" r="14" fill="white" stroke="#2A8F9E" stroke-width="2.5"/>
+          <text x="180" y="30" text-anchor="middle" font-family="'JetBrains Mono', monospace" font-weight="700" font-size="12" fill="#2A8F9E">D′</text>
+          <circle cx="230" cy="25" r="14" fill="white" stroke="#2A8F9E" stroke-width="2.5"/>
+          <text x="230" y="30" text-anchor="middle" font-family="'JetBrains Mono', monospace" font-weight="700" font-size="12" fill="#2A8F9E">E′</text>
+          <!-- single main tag at end -->
+          <rect x="252" y="17" width="44" height="16" rx="8" ry="8" fill="#1B2A4A"/>
+          <text x="274" y="29" text-anchor="middle" font-family="-apple-system, sans-serif" font-weight="700" font-size="9" fill="white" letter-spacing="0.5">MAIN</text>
+        </svg>
+      </div>
+      <div class="gg-orphan">
+        <div class="gg-orphan-label">Orphaned (no longer reachable from any branch)</div>
+        <svg viewBox="0 0 360 30" width="100%" preserveAspectRatio="xMidYMid meet" style="display:block;">
+          <line x1="51" y1="15" x2="69" y2="15" stroke="#94A3B8" stroke-width="2" stroke-dasharray="4 3"/>
+          <circle cx="40" cy="15" r="11" fill="white" stroke="#94A3B8" stroke-width="2" stroke-dasharray="3 2"/>
+          <text x="40" y="19" text-anchor="middle" font-family="'JetBrains Mono', monospace" font-weight="700" font-size="11" fill="#94A3B8">D</text>
+          <circle cx="80" cy="15" r="11" fill="white" stroke="#94A3B8" stroke-width="2" stroke-dasharray="3 2"/>
+          <text x="80" y="19" text-anchor="middle" font-family="'JetBrains Mono', monospace" font-weight="700" font-size="11" fill="#94A3B8">E</text>
+          <text x="100" y="19" text-anchor="start" font-family="-apple-system, sans-serif" font-style="italic" font-size="10" fill="#94A3B8">old hashes — garbage-collected</text>
+        </svg>
       </div>
       <div style="font-size:0.85em; line-height:1.6; margin-top:6px;">
         ✅ Linear, clean PR history<br>
@@ -808,15 +814,44 @@
   </p>
 </div>
 
-<!-- ==================== SLIDE 16: Fetch / Merge / Pull (was slide 13, moved after the merge family) ==================== -->
+<!-- ==================== SLIDE 15: Fetch / Merge / Pull + Remote Vocabulary ==================== -->
 <div class="slide">
-  <div class="slide-number">16 / 24</div>
+  <div class="slide-number">15 / 23</div>
+  <style>
+    .vocab-strip { display:grid; grid-template-columns:repeat(4, 1fr); gap:10px; margin:6px 0 14px 0; }
+    .vocab-card { background:white; border:1px solid #E5E7EB; border-radius:8px; padding:8px 12px; box-shadow:0 1px 2px rgba(0,0,0,0.03); }
+    .vocab-card.remote { border-top:3px solid #2A8F9E; }
+    .vocab-card.head { border-top:3px solid #1B2A4A; }
+    .vocab-term { font-family:'JetBrains Mono', monospace; font-weight:700; font-size:0.95em; }
+    .vocab-term.remote { color:#2A8F9E; }
+    .vocab-term.head { color:#1B2A4A; }
+    .vocab-def { font-size:0.82em; color:#475569; margin-top:3px; line-height:1.35; }
+  </style>
   <h2>Getting Remote Changes: Fetch, Merge &amp; Pull</h2>
-  <p style="font-size:1.1em; margin-bottom:10px;">A <strong>safe way</strong> (two steps) and a <strong>shortcut</strong> (one step).</p>
+  <p style="font-size:1em; margin:0 0 4px 0;">First, the words you'll see in every remote command:</p>
+  <div class="vocab-strip">
+    <div class="vocab-card remote">
+      <div class="vocab-term remote">remote</div>
+      <div class="vocab-def">Any repo not on your machine — usually on GitHub.</div>
+    </div>
+    <div class="vocab-card remote">
+      <div class="vocab-term remote">origin</div>
+      <div class="vocab-def">Default name for the remote you cloned/pushed to.</div>
+    </div>
+    <div class="vocab-card remote">
+      <div class="vocab-term remote">upstream</div>
+      <div class="vocab-def">A remote you track for updates — often the original in a fork.</div>
+    </div>
+    <div class="vocab-card head">
+      <div class="vocab-term head">HEAD</div>
+      <div class="vocab-def">"You are here" — pointer to the current branch/commit.</div>
+    </div>
+  </div>
+  <p style="font-size:1em; margin:0 0 8px 0;"><strong>Two ways to bring in remote changes:</strong> a safe two-step path, or a one-line shortcut.</p>
   <div class="two-panel" style="gap:20px;">
-    <div class="panel" style="background:var(--blue-light); border:2px solid var(--blue); padding:20px;">
-      <h3>Safe: fetch → review → merge</h3>
-      <div class="terminal" style="max-width:100%; font-size:0.9em;">
+    <div class="panel" style="background:var(--blue-light); border:2px solid var(--blue); padding:18px;">
+      <h3 style="margin-top:0;">Safe: fetch → review → merge</h3>
+      <div class="terminal" style="max-width:100%; font-size:0.88em;">
         <span class="prompt">$</span> <span class="cmd">git fetch origin</span><br>
         <span class="out"># Downloaded, code untouched</span><br><br>
         <span class="prompt">$</span> <span class="cmd">git log origin/main --oneline</span><br>
@@ -825,29 +860,31 @@
         <span class="out"># Now apply it</span>
       </div>
     </div>
-    <div class="panel" style="background:var(--purple-light); border:2px solid var(--purple); padding:20px;">
-      <h3>Shortcut: pull</h3>
-      <div class="terminal" style="max-width:100%; font-size:0.9em;">
+    <div class="panel" style="background:var(--purple-light); border:2px solid var(--purple); padding:18px;">
+      <h3 style="margin-top:0;">Shortcut: pull</h3>
+      <div class="terminal" style="max-width:100%; font-size:0.88em;">
         <span class="prompt">$</span> <span class="cmd">git pull origin main</span><br>
         <span class="out"># fetch + merge in one</span>
       </div>
-      <div style="background:white; border-radius:12px; padding:16px 20px; margin-top:14px; border:2px solid var(--purple); text-align:center;">
-        <div style="font-family:monospace; font-size:1.1em; letter-spacing:0.5px;">
+      <div style="background:white; border-radius:10px; padding:12px 16px; margin-top:12px; border:2px solid var(--purple); text-align:center;">
+        <div style="font-family:monospace; font-size:1.05em; letter-spacing:0.5px;">
           <span style="color:var(--purple); font-weight:800;">git pull</span>
           <span style="color:var(--gray-mid); font-weight:400; padding:0 8px;">=</span>
           <span style="color:var(--pink); font-weight:700;">git fetch</span>
           <span style="color:var(--gray-mid); font-weight:400; padding:0 6px;">+</span>
           <span style="color:var(--blue); font-weight:700;">git merge</span>
         </div>
-        <p style="font-size:0.85em; color:var(--gray-mid); margin-top:6px;">Convenient, but no chance to review before merging.</p>
       </div>
     </div>
   </div>
+  <div style="background:#F1F5F9; border-left:4px solid #2A8F9E; border-radius:6px; padding:10px 14px; margin-top:12px; font-size:0.9em;">
+    <strong>First push of a new branch?</strong> Use <code>git push -u origin feature-branch</code> — the <code>-u</code> sets <strong>upstream tracking</strong>, so future <code>git push</code> / <code>git pull</code> work without arguments.
+  </div>
 </div>
 
-<!-- ==================== SLIDE 17: Team Workflow + Open Source (merged old 17+18, Issues folded in) ==================== -->
+<!-- ==================== SLIDE 16: Team Workflow + Open Source (merged old 17+18, Issues folded in) ==================== -->
 <div class="slide">
-  <div class="slide-number">17 / 24</div>
+  <div class="slide-number">16 / 23</div>
   <h2>Team Workflow &amp; Open Source</h2>
   <p style="font-size:1.05em; margin-bottom:10px;">Everyone works on their own branch. Changes go through <strong>Pull Requests</strong> — reviewed before merging.</p>
   <div class="two-panel" style="gap:18px; align-items:flex-start;">
@@ -881,17 +918,17 @@
   </div>
 </div>
 
-<!-- ==================== SLIDE 18: Section 4 — Discipline & Recovery ==================== -->
+<!-- ==================== SLIDE 17: Section 4 — Discipline & Recovery ==================== -->
 <div class="slide section-header">
-  <div class="slide-number">18 / 24</div>
+  <div class="slide-number">17 / 23</div>
   <span class="section-number">Section 4</span>
   <h2>Discipline &amp; Recovery</h2>
   <p class="section-blurb">Set the rules that prevent disasters — then keep cool heads and the right commands for when things still go wrong.</p>
 </div>
 
-<!-- ==================== SLIDE 19: .gitignore ==================== -->
+<!-- ==================== SLIDE 18: .gitignore ==================== -->
 <div class="slide">
-  <div class="slide-number">19 / 24</div>
+  <div class="slide-number">18 / 23</div>
   <h2>.gitignore</h2>
   <p style="font-size:1.1em; margin-bottom:10px;">Track code, not secrets or junk.</p>
   <div style="display:flex; gap:28px; align-items:flex-start;">
@@ -921,9 +958,9 @@
   <p class="footer-text">⚠️ Already committed? <code>git rm --cached file</code> to stop tracking.</p>
 </div>
 
-<!-- ==================== SLIDE 20: Best Practices ==================== -->
+<!-- ==================== SLIDE 19: Best Practices ==================== -->
 <div class="slide">
-  <div class="slide-number">20 / 24</div>
+  <div class="slide-number">19 / 23</div>
   <h2>Git Best Practices</h2>
   <p style="font-size:1.1em; margin-bottom:12px;">Rules that prevent 95% of Git disasters.</p>
   <div class="two-panel" style="gap:20px;">
@@ -950,9 +987,9 @@
   </div>
 </div>
 
-<!-- ==================== SLIDE 21: Merge Conflicts (was slide 17, moved into Section 4) ==================== -->
+<!-- ==================== SLIDE 20: Merge Conflicts (was slide 17, moved into Section 4) ==================== -->
 <div class="slide">
-  <div class="slide-number">21 / 24</div>
+  <div class="slide-number">20 / 23</div>
   <h2>Merge Conflicts</h2>
   <p style="font-size:1.1em; margin-bottom:10px;">When two branches change the <strong>same line</strong>, Git asks you to decide.</p>
   <div class="conflict-block" style="max-width:560px; margin:0 auto;">
@@ -973,9 +1010,9 @@
   </ol>
 </div>
 
-<!-- ==================== SLIDE 22: Recovering from Mistakes (merged old 21 + 23) ==================== -->
+<!-- ==================== SLIDE 21: Recovering from Mistakes (merged old 21 + 23) ==================== -->
 <div class="slide">
-  <div class="slide-number">22 / 24</div>
+  <div class="slide-number">21 / 23</div>
   <h2>Recovering from Mistakes</h2>
   <p style="font-size:1em; margin-bottom:8px;"><strong>Pick by where the change lives.</strong> Walk down the ladder: while it's still local, the <code>reset</code> family undoes things. Once it's pushed, only <code>revert</code> is safe.</p>
   <table class="vocab-table" style="font-size:0.88em; margin:6px 0 8px 0;">
@@ -1027,9 +1064,9 @@
   </div>
 </div>
 
-<!-- ==================== SLIDE 23: Practice ==================== -->
+<!-- ==================== SLIDE 22: Practice ==================== -->
 <div class="slide">
-  <div class="slide-number">23 / 24</div>
+  <div class="slide-number">22 / 23</div>
   <h2>Practice: Full Workflow</h2>
   <p style="font-size:1.1em; margin-bottom:10px;">Type every command on your machine.</p>
   <div class="terminal" style="max-width:680px; margin:10px auto; font-size:0.92em;">
@@ -1055,9 +1092,9 @@
   </div>
 </div>
 
-<!-- ==================== SLIDE 24: Cheat Sheet ==================== -->
+<!-- ==================== SLIDE 23: Cheat Sheet ==================== -->
 <div class="slide">
-  <div class="slide-number">24 / 24</div>
+  <div class="slide-number">23 / 23</div>
   <style>
     .cheat-sec { margin-bottom: 16px; }
     .cheat-sec h3 { font-size: 1em; font-weight: 800; letter-spacing: 0.06em; color: #1F2937; text-transform: uppercase; margin: 0; }
