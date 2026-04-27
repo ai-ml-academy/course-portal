@@ -316,28 +316,9 @@
   </div>
 </div>
 
-<!-- ==================== SLIDE 5: Installing & Setup ==================== -->
+<!-- ==================== SLIDE 5: Git Architecture (UNCHANGED) ==================== -->
 <div class="slide">
   <div class="slide-number">5 / 23</div>
-  <h2>Installing &amp; Setup</h2>
-  <p style="font-size:1.1em; margin-bottom:10px;">Install once, configure once. Every commit carries this identity.</p>
-  <div class="terminal" style="max-width:620px; margin:12px auto;">
-    <span class="prompt">$</span> <span class="cmd">git config --global user.name "Your Name"</span><br>
-    <span class="prompt">$</span> <span class="cmd">git config --global user.email "you@example.com"</span><br><br>
-    <span class="prompt">$</span> <span class="cmd">git config --list</span><br>
-    <span class="out">user.name=Your Name</span><br>
-    <span class="out">user.email=you@example.com</span>
-  </div>
-  <ul class="bullet-list">
-    <li>• <strong>Windows:</strong> Download from git-scm.com (includes Git Bash)</li>
-    <li>• <strong>Mac:</strong> Run <code>git --version</code> in Terminal</li>
-    <li>• <strong>Linux:</strong> <code>sudo apt install git</code></li>
-  </ul>
-</div>
-
-<!-- ==================== SLIDE 6: Git Architecture (UNCHANGED) ==================== -->
-<div class="slide">
-  <div class="slide-number">6 / 23</div>
   <h2>Git Architecture</h2>
   <p style="font-size:1.1em; margin-bottom:12px;">
     <strong>The most important diagram in Git.</strong> Four zones. Every command moves data between them.
@@ -472,12 +453,31 @@
   </div>
 </div>
 
-<!-- ==================== SLIDE 7: Section 2 — Daily Workflow ==================== -->
+<!-- ==================== SLIDE 6: Section 2 — Daily Workflow ==================== -->
 <div class="slide section-header">
-  <div class="slide-number">7 / 23</div>
+  <div class="slide-number">6 / 23</div>
   <span class="section-number">Section 2</span>
   <h2>Daily Workflow</h2>
   <p class="section-blurb">Make a commit, see it in the log, then learn how to write messages worth reading. The loop you'll run dozens of times a day.</p>
+</div>
+
+<!-- ==================== SLIDE 7: Installing & Setup ==================== -->
+<div class="slide">
+  <div class="slide-number">7 / 23</div>
+  <h2>Installing &amp; Setup</h2>
+  <p style="font-size:1.1em; margin-bottom:10px;">Install once, configure once. Every commit carries this identity.</p>
+  <div class="terminal" style="max-width:620px; margin:12px auto;">
+    <span class="prompt">$</span> <span class="cmd">git config --global user.name "Your Name"</span><br>
+    <span class="prompt">$</span> <span class="cmd">git config --global user.email "you@example.com"</span><br><br>
+    <span class="prompt">$</span> <span class="cmd">git config --list</span><br>
+    <span class="out">user.name=Your Name</span><br>
+    <span class="out">user.email=you@example.com</span>
+  </div>
+  <ul class="bullet-list">
+    <li>• <strong>Windows:</strong> Download from git-scm.com (includes Git Bash)</li>
+    <li>• <strong>Mac:</strong> Run <code>git --version</code> in Terminal</li>
+    <li>• <strong>Linux:</strong> <code>sudo apt install git</code></li>
+  </ul>
 </div>
 
 <!-- ==================== SLIDE 8: First Repo + Daily Cycle (merged old 6+7) ==================== -->
