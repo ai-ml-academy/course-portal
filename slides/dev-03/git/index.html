@@ -635,60 +635,139 @@
 <!-- ==================== SLIDE 15: Merge vs Rebase ==================== -->
 <div class="slide">
   <div class="slide-number">15 / 24</div>
-  <h2>Merge vs Rebase</h2>
-  <div style="background:#F0F7FF; border-left:4px solid var(--teal); padding:10px 16px; margin:6px 0 12px 0; border-radius:6px;">
-    <p style="margin:0; font-size:1em;">
+  <style>
+    /* slide-15 commit-graph styles (scoped) */
+    .gg-canvas { background:#FBFBFD; border:1px solid #E5E7EB; border-radius:8px; padding:12px 14px; margin:4px 0 8px 0; }
+    .gg-row { display:flex; align-items:center; padding:2px 0; }
+    .gg-node { width:30px; height:30px; border-radius:50%; border:2.5px solid #1B2A4A; background:white; color:#1B2A4A; display:flex; align-items:center; justify-content:center; font-family:'JetBrains Mono','SF Mono',Menlo,monospace; font-weight:700; font-size:0.8em; flex-shrink:0; }
+    .gg-node.feat { border-color:#2A8F9E; color:#2A8F9E; }
+    .gg-node.merge { border-radius:5px; transform:rotate(45deg); width:24px; height:24px; }
+    .gg-node.merge > span { display:inline-block; transform:rotate(-45deg); }
+    .gg-node.lost { border-style:dashed; border-color:#94A3B8; color:#94A3B8; }
+    .gg-line { width:18px; height:3px; background:#1B2A4A; flex-shrink:0; }
+    .gg-line.feat { background:#2A8F9E; }
+    .gg-line.diag-down { background:transparent; width:18px; height:14px; border-left:3px solid #2A8F9E; border-bottom:3px solid #2A8F9E; border-radius:0 0 0 10px; flex-shrink:0; margin-left:113px; align-self:flex-start; }
+    .gg-line.diag-up { background:transparent; width:18px; height:14px; border-right:3px solid #2A8F9E; border-top:3px solid #2A8F9E; border-radius:0 10px 0 0; flex-shrink:0; align-self:flex-end; }
+    .gg-line.lost { width:18px; height:0; border-top:2px dashed #94A3B8; background:transparent; }
+    .gg-tag { margin-left:10px; padding:2px 9px; border-radius:11px; background:#1B2A4A; color:white; font-size:0.7em; font-weight:700; letter-spacing:0.05em; font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; flex-shrink:0; }
+    .gg-tag.feat { background:#2A8F9E; }
+    .gg-tag.lost { background:#94A3B8; font-style:italic; }
+    .gg-orphan { margin-top:6px; padding:8px 10px 6px 10px; background:#F1F5F9; border:1px dashed #94A3B8; border-radius:6px; }
+    .gg-orphan-label { font-size:0.72em; color:#64748B; font-weight:600; letter-spacing:0.04em; text-transform:uppercase; margin-bottom:4px; }
+    /* panel restyling */
+    .mvr-panel { background:white; border:1px solid #E5E7EB; border-radius:10px; padding:14px 16px; box-shadow:0 1px 2px rgba(0,0,0,0.03); }
+    .mvr-panel.merge { border-top:4px solid #1B2A4A; }
+    .mvr-panel.rebase { border-top:4px solid #2A8F9E; }
+    .mvr-h3 { text-align:center; font-size:1.05em; margin:0 0 8px 0; }
+    .mvr-h3.merge { color:#1B2A4A; }
+    .mvr-h3.rebase { color:#2A8F9E; }
+    .mvr-stagelabel { font-size:0.72em; color:#94A3B8; margin:6px 0 2px 0; font-weight:700; letter-spacing:0.06em; text-transform:uppercase; }
+  </style>
+  <h2 style="margin-bottom:4px;">Merge vs Rebase</h2>
+  <div style="background:#F0F5FB; border-left:4px solid #2A8F9E; padding:10px 16px; margin:0 0 12px 0; border-radius:6px;">
+    <p style="margin:0; font-size:0.98em;">
       <strong>The scenario:</strong> two branches diverged. Combine them with <code>git merge</code> or <code>git rebase</code> — <strong>same final code, different commit history</strong>.
     </p>
   </div>
   <div class="two-panel" style="gap:18px;">
     <!-- LEFT: MERGE -->
-    <div class="panel" style="background:var(--blue-light); border:2px solid var(--blue); padding:14px 16px;">
-      <h3 style="text-align:center; font-size:1.05em; margin:0 0 8px 0; color:var(--blue-dark);">Combine with merge</h3>
+    <div class="mvr-panel merge">
+      <h3 class="mvr-h3 merge">Combine with merge</h3>
       <div class="terminal" style="font-size:0.85em; padding:8px 12px; margin:0 0 10px 0;">
         <span class="prompt">$</span> <span class="cmd">git switch main</span><br>
         <span class="prompt">$</span> <span class="cmd">git merge feature</span>
       </div>
-      <div style="font-size:0.78em; color:var(--gray-mid); margin:2px 0; font-weight:600;">Before:</div>
-      <pre style="background:white; padding:10px 14px; margin:0 0 8px 0; border-radius:6px; border:1px solid #D1D5DB; font-family:'JetBrains Mono','SF Mono',Menlo,monospace; font-size:0.95em; line-height:1.5; color:#374151;"><span style="color:#1F2937; font-weight:700;">A─B─C</span>        ← <span style="color:#1F2937; font-weight:700;">main</span>
-     ╲
-      <span style="color:#DC2626; font-weight:700;">D─E</span>    ← <span style="color:#DC2626; font-weight:700;">feature</span></pre>
-      <div style="font-size:0.78em; color:var(--gray-mid); margin:2px 0; font-weight:600;">After:</div>
-      <pre style="background:white; padding:10px 14px; margin:0 0 8px 0; border-radius:6px; border:1px solid #D1D5DB; font-family:'JetBrains Mono','SF Mono',Menlo,monospace; font-size:0.95em; line-height:1.5; color:#374151;"><span style="color:#1F2937; font-weight:700;">A─B─C─────<span style="display:inline-block; transform:rotate(45deg); border:2px solid #1F2937; width:14px; height:14px; vertical-align:middle; margin:0 2px;"></span></span>  ← <span style="color:#1F2937; font-weight:700;">main</span>
-     ╲   ╱
-      <span style="color:#DC2626; font-weight:700;">D─E</span>      ← <span style="color:#DC2626; font-weight:700;">feature</span></pre>
-      <div style="font-size:0.85em; line-height:1.6;">
+      <div class="mvr-stagelabel">Before</div>
+      <div class="gg-canvas">
+        <div class="gg-row">
+          <div class="gg-node">A</div><div class="gg-line"></div>
+          <div class="gg-node">B</div><div class="gg-line"></div>
+          <div class="gg-node">C</div>
+          <div class="gg-tag">main</div>
+        </div>
+        <div class="gg-row"><div class="gg-line diag-down"></div></div>
+        <div class="gg-row" style="padding-left:131px;">
+          <div class="gg-node feat">D</div><div class="gg-line feat"></div>
+          <div class="gg-node feat">E</div>
+          <div class="gg-tag feat">feature</div>
+        </div>
+      </div>
+      <div class="mvr-stagelabel">After</div>
+      <div class="gg-canvas">
+        <div class="gg-row">
+          <div class="gg-node">A</div><div class="gg-line"></div>
+          <div class="gg-node">B</div><div class="gg-line"></div>
+          <div class="gg-node">C</div><div class="gg-line"></div>
+          <div class="gg-line"></div>
+          <div class="gg-line"></div>
+          <div class="gg-node merge"><span>M</span></div>
+          <div class="gg-tag">main</div>
+        </div>
+        <div class="gg-row" style="padding-left:131px;">
+          <div class="gg-node feat">D</div><div class="gg-line feat"></div>
+          <div class="gg-node feat">E</div>
+          <div class="gg-line diag-up"></div>
+          <div class="gg-tag feat">feature</div>
+        </div>
+      </div>
+      <div style="font-size:0.85em; line-height:1.6; margin-top:6px;">
         ✅ Safe — never rewrites commits<br>
-        ⚠️ Adds a merge commit (the diamond)
+        ⚠️ Adds a merge commit (the navy diamond)
       </div>
     </div>
     <!-- RIGHT: REBASE -->
-    <div class="panel" style="background:var(--green-light); border:2px solid var(--green); padding:14px 16px;">
-      <h3 style="text-align:center; font-size:1.05em; margin:0 0 8px 0; color:var(--green-dark);">Combine with rebase</h3>
+    <div class="mvr-panel rebase">
+      <h3 class="mvr-h3 rebase">Combine with rebase</h3>
       <div class="terminal" style="font-size:0.85em; padding:8px 12px; margin:0 0 10px 0;">
         <span class="prompt">$</span> <span class="cmd">git switch feature</span><br>
         <span class="prompt">$</span> <span class="cmd">git rebase main</span>
       </div>
-      <div style="font-size:0.78em; color:var(--gray-mid); margin:2px 0; font-weight:600;">Before:</div>
-      <pre style="background:white; padding:10px 14px; margin:0 0 8px 0; border-radius:6px; border:1px solid #D1D5DB; font-family:'JetBrains Mono','SF Mono',Menlo,monospace; font-size:0.95em; line-height:1.5; color:#374151;"><span style="color:#1F2937; font-weight:700;">A─B─C</span>        ← <span style="color:#1F2937; font-weight:700;">main</span>
-     ╲
-      <span style="color:#DC2626; font-weight:700;">D─E</span>    ← <span style="color:#DC2626; font-weight:700;">feature</span></pre>
-      <div style="font-size:0.78em; color:var(--gray-mid); margin:2px 0; font-weight:600;">After:</div>
-      <pre style="background:white; padding:10px 14px; margin:0 0 8px 0; border-radius:6px; border:1px solid #D1D5DB; font-family:'JetBrains Mono','SF Mono',Menlo,monospace; font-size:0.95em; line-height:1.5; color:#374151;"><span style="color:#1F2937; font-weight:700;">A─B─C</span>─<span style="color:#DC2626; font-weight:700;">D'─E'</span>  ← <span style="color:#DC2626; font-weight:700;">feature</span>
-     ↑
-    <span style="color:#1F2937; font-weight:700;">main</span>
-
-<span style="color:#DC2626; opacity:0.45; text-decoration:line-through;">D─E</span>  <span style="color:#9CA3AF; font-size:0.85em;">(orphaned, new hashes)</span></pre>
-      <div style="font-size:0.85em; line-height:1.6;">
-        ✅ Linear, clean history<br>
-        ⚠️ Rewrites commit hashes (D→D', E→E')
+      <div class="mvr-stagelabel">Before</div>
+      <div class="gg-canvas">
+        <div class="gg-row">
+          <div class="gg-node">A</div><div class="gg-line"></div>
+          <div class="gg-node">B</div><div class="gg-line"></div>
+          <div class="gg-node">C</div>
+          <div class="gg-tag">main</div>
+        </div>
+        <div class="gg-row"><div class="gg-line diag-down"></div></div>
+        <div class="gg-row" style="padding-left:131px;">
+          <div class="gg-node feat">D</div><div class="gg-line feat"></div>
+          <div class="gg-node feat">E</div>
+          <div class="gg-tag feat">feature</div>
+        </div>
+      </div>
+      <div class="mvr-stagelabel">After</div>
+      <div class="gg-canvas">
+        <div class="gg-row">
+          <div class="gg-node">A</div><div class="gg-line"></div>
+          <div class="gg-node">B</div><div class="gg-line"></div>
+          <div class="gg-node">C</div>
+          <div class="gg-tag" style="margin-right:10px;">main</div>
+          <div class="gg-line feat"></div>
+          <div class="gg-node feat">D′</div><div class="gg-line feat"></div>
+          <div class="gg-node feat">E′</div>
+          <div class="gg-tag feat">feature</div>
+        </div>
+        <div class="gg-orphan">
+          <div class="gg-orphan-label">Orphaned (no longer reachable from any branch)</div>
+          <div class="gg-row">
+            <div class="gg-node lost">D</div><div class="gg-line lost"></div>
+            <div class="gg-node lost">E</div>
+            <div class="gg-tag lost">old hashes — gone</div>
+          </div>
+        </div>
+      </div>
+      <div style="font-size:0.85em; line-height:1.6; margin-top:6px;">
+        ✅ Linear, clean PR history<br>
+        ⚠️ Rewrites commit hashes (D→D′, E→E′)
       </div>
     </div>
   </div>
-  <p class="bottom-text" style="margin-top:8px; font-size:0.92em;">
+  <p class="bottom-text" style="margin-top:10px; font-size:0.9em;">
     ⚠️ <strong>Golden rule:</strong> never rebase a branch others have already pulled.
-    <span style="color:var(--gray-mid);">·</span>
-    <em>Also useful:</em> <code>git rebase -i main</code> to squash WIP commits before opening a PR.
+    <span style="color:#94A3B8;">·</span>
+    <em>Also useful:</em> <code>git rebase -i main</code> to squash WIP commits before a PR.
   </p>
 </div>
 
