@@ -867,7 +867,8 @@
       <div class="terminal" style="font-size:0.76em; margin:0; padding:10px 14px;">
         <span class="prompt">$</span> <span class="cmd">git rm --cached .env</span><br>
         <span class="prompt">$</span> <span class="cmd">echo ".env" &gt;&gt; .gitignore</span><br>
-        <span class="prompt">$</span> <span class="cmd">git commit -am "remove secret"</span><br>
+        <span class="prompt">$</span> <span class="cmd">git add .gitignore</span><br>
+        <span class="prompt">$</span> <span class="cmd">git commit -m "remove secret"</span><br>
         <span class="prompt">$</span> <span class="cmd">git push origin main</span>
       </div>
     </div>
@@ -879,7 +880,8 @@
         <span class="prompt">$</span> <span class="cmd">git stash</span><br>
         <span class="prompt">$</span> <span class="cmd">git switch -c correct-branch</span><br>
         <span class="prompt">$</span> <span class="cmd">git stash pop</span><br>
-        <span class="prompt">$</span> <span class="cmd">git commit -am "msg"</span>
+        <span class="prompt">$</span> <span class="cmd">git add &lt;files&gt;</span><br>
+        <span class="prompt">$</span> <span class="cmd">git commit -m "msg"</span>
       </div>
     </div>
     <div style="flex:1; background:#F8FAFB; border:2px solid var(--teal); border-radius:12px; padding:12px 16px;">
