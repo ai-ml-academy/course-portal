@@ -838,7 +838,7 @@
     <li>Delete all the conflict markers — leave only the final code</li>
     <li><code>git add file.py</code> — mark as resolved</li>
     <li><code>git commit</code> — completes the merge (Git auto-generates a merge message)</li>
-    <li><code>git push</code> — share the resolved merge with the team</li>
+    <li><code>git push origin &lt;branch&gt;</code> — share the resolved merge with the team</li>
   </ol>
 </div>
 
@@ -864,7 +864,7 @@
         <span class="prompt">$</span> <span class="cmd">git rm --cached .env</span><br>
         <span class="prompt">$</span> <span class="cmd">echo ".env" &gt;&gt; .gitignore</span><br>
         <span class="prompt">$</span> <span class="cmd">git commit -am "remove secret"</span><br>
-        <span class="prompt">$</span> <span class="cmd">git push</span>
+        <span class="prompt">$</span> <span class="cmd">git push origin main</span>
       </div>
     </div>
     <div style="flex:1; background:#F0F7FF; border:2px solid var(--blue); border-radius:12px; padding:12px 16px;">
@@ -884,7 +884,7 @@
       <div class="terminal" style="font-size:0.76em; margin:0; padding:10px 14px;">
         <span class="prompt">$</span> <span class="cmd">git log --oneline</span><br>
         <span class="prompt">$</span> <span class="cmd">git revert a1b2c3d</span><br>
-        <span class="prompt">$</span> <span class="cmd">git push</span>
+        <span class="prompt">$</span> <span class="cmd">git push origin main</span>
       </div>
     </div>
   </div>
