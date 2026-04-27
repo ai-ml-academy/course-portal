@@ -162,51 +162,87 @@
   <p class="section-blurb">What Git is, the vocabulary you'll use constantly, and the four-zone mental model that makes every command sensible.</p>
 </div>
 
-<!-- ==================== SLIDE 3: Why Version Control? ==================== -->
+<!-- ==================== SLIDE 3: What Git Actually Gives You ==================== -->
 <div class="slide">
   <div class="slide-number">3 / 23</div>
-  <h2>Why Version Control?</h2>
-  <p style="font-size:1.1em; margin-bottom:14px;">
-    Every project without version control eventually turns into chaos. Version control tracks
-    <strong>every change</strong>, <strong>who made it</strong>, and <strong>when</strong>.
-  </p>
-  <div class="two-panel" style="gap:24px;">
-    <div style="flex:1; border-radius:16px; padding:24px; background:#F8F8F8; border:2px solid #94A3B8;">
-      <h3 style="font-size:1.15em; margin-bottom:14px; color:var(--gray-mid);">❌ Without version control</h3>
-      <div style="font-family:monospace; font-size:0.95em; line-height:2; padding:16px 20px; background:white; border-radius:12px; border:1px solid #E5E7EB;">
-        📄 report.py<br>
-        📄 report_v2.py<br>
-        📄 report_v2_final.py<br>
-        📄 report_v2_final_FIXED.py<br>
-        📄 report_USE_THIS_ONE.py
-      </div>
-      <ul class="bullet-list" style="margin-top:12px; font-size:0.95em;">
-        <li>• Can't undo mistakes</li>
-        <li>• Who changed what?</li>
-        <li>• When did it break?</li>
-      </ul>
+  <style>
+    .s3-canvas { background:#FBFBFD; border:1px solid #E5E7EB; border-radius:10px; padding:14px 18px; margin:6px 0 14px 0; }
+    .s3-cards { display:grid; grid-template-columns:repeat(3, 1fr); gap:14px; margin-top:6px; }
+    .s3-card { background:white; border:1px solid #E5E7EB; border-radius:10px; padding:14px 16px; box-shadow:0 1px 2px rgba(0,0,0,0.03); }
+    .s3-card.rewind { border-top:4px solid #1B2A4A; }
+    .s3-card.who    { border-top:4px solid #2A8F9E; }
+    .s3-card.branch { border-top:4px solid #1B2A4A; }
+    .s3-card-h { font-weight:700; font-size:1.02em; margin:0 0 6px 0; display:flex; align-items:center; gap:8px; }
+    .s3-card-h.rewind { color:#1B2A4A; }
+    .s3-card-h.who    { color:#2A8F9E; }
+    .s3-card-h.branch { color:#1B2A4A; }
+    .s3-card-d { font-size:0.92em; color:#475569; margin:0; line-height:1.5; }
+    .s3-card-d code { background:#F1F5F9; padding:1px 6px; border-radius:4px; font-size:0.92em; color:#1B2A4A; font-family:'JetBrains Mono', monospace; }
+  </style>
+  <h2 style="margin-bottom:6px;">What Git Actually Gives You</h2>
+  <div style="background:#F0F5FB; border-left:4px solid #2A8F9E; padding:10px 16px; margin:0 0 10px 0; border-radius:6px;">
+    <p style="margin:0; font-size:1em;">
+      Your project's full history as a <strong>tree you can rewind, branch off, and merge back</strong>.
+    </p>
+  </div>
+  <div class="s3-canvas">
+    <svg viewBox="0 0 800 200" width="100%" preserveAspectRatio="xMidYMid meet" style="display:block;">
+      <!-- main commit labels (above) -->
+      <text x="60"  y="40" text-anchor="middle" font-family="-apple-system, sans-serif" font-size="11" fill="#475569">alex · initial</text>
+      <text x="170" y="40" text-anchor="middle" font-family="-apple-system, sans-serif" font-size="11" fill="#475569">alex · load data</text>
+      <text x="280" y="40" text-anchor="middle" font-family="-apple-system, sans-serif" font-size="11" fill="#475569">alex · rename col</text>
+      <text x="490" y="40" text-anchor="middle" font-family="-apple-system, sans-serif" font-size="11" font-style="italic" fill="#475569">merge feature/plotly</text>
+      <text x="620" y="40" text-anchor="middle" font-family="-apple-system, sans-serif" font-size="11" fill="#475569">alex · fix typo</text>
+      <!-- main row lines (A-B, B-C, C-->M-left, M-right-->F) -->
+      <line x1="74"  y1="70" x2="156" y2="70" stroke="#1B2A4A" stroke-width="3"/>
+      <line x1="184" y1="70" x2="266" y2="70" stroke="#1B2A4A" stroke-width="3"/>
+      <line x1="294" y1="70" x2="470" y2="70" stroke="#1B2A4A" stroke-width="3"/>
+      <line x1="510" y1="70" x2="606" y2="70" stroke="#1B2A4A" stroke-width="3"/>
+      <!-- branch curves: down from C, up into M's bottom corner -->
+      <path d="M280,84 Q280,126 340,126" fill="none" stroke="#2A8F9E" stroke-width="3"/>
+      <path d="M450,126 Q450,90 490,90"  fill="none" stroke="#2A8F9E" stroke-width="3"/>
+      <!-- feature row line D-E -->
+      <line x1="354" y1="140" x2="436" y2="140" stroke="#2A8F9E" stroke-width="3"/>
+      <!-- main nodes -->
+      <circle cx="60"  cy="70" r="14" fill="white" stroke="#1B2A4A" stroke-width="2.5"/>
+      <text   x="60"   y="75" text-anchor="middle" font-family="'JetBrains Mono', monospace" font-weight="700" font-size="13" fill="#1B2A4A">A</text>
+      <circle cx="170" cy="70" r="14" fill="white" stroke="#1B2A4A" stroke-width="2.5"/>
+      <text   x="170"  y="75" text-anchor="middle" font-family="'JetBrains Mono', monospace" font-weight="700" font-size="13" fill="#1B2A4A">B</text>
+      <circle cx="280" cy="70" r="14" fill="white" stroke="#1B2A4A" stroke-width="2.5"/>
+      <text   x="280"  y="75" text-anchor="middle" font-family="'JetBrains Mono', monospace" font-weight="700" font-size="13" fill="#1B2A4A">C</text>
+      <!-- merge commit M (rotated diamond) -->
+      <rect x="476" y="56" width="28" height="28" fill="white" stroke="#1B2A4A" stroke-width="2.5" transform="rotate(45 490 70)"/>
+      <text x="490" y="74" text-anchor="middle" font-family="'JetBrains Mono', monospace" font-weight="700" font-size="11" fill="#1B2A4A">M</text>
+      <circle cx="620" cy="70" r="14" fill="white" stroke="#1B2A4A" stroke-width="2.5"/>
+      <text   x="620"  y="75" text-anchor="middle" font-family="'JetBrains Mono', monospace" font-weight="700" font-size="13" fill="#1B2A4A">F</text>
+      <!-- main tag right of F -->
+      <rect x="650" y="62" width="50" height="16" rx="8" ry="8" fill="#1B2A4A"/>
+      <text x="675" y="74" text-anchor="middle" font-family="-apple-system, sans-serif" font-weight="700" font-size="9" fill="white" letter-spacing="0.5">MAIN</text>
+      <!-- feature nodes -->
+      <circle cx="340" cy="140" r="14" fill="white" stroke="#2A8F9E" stroke-width="2.5"/>
+      <text   x="340"  y="145" text-anchor="middle" font-family="'JetBrains Mono', monospace" font-weight="700" font-size="13" fill="#2A8F9E">D</text>
+      <circle cx="450" cy="140" r="14" fill="white" stroke="#2A8F9E" stroke-width="2.5"/>
+      <text   x="450"  y="145" text-anchor="middle" font-family="'JetBrains Mono', monospace" font-weight="700" font-size="13" fill="#2A8F9E">E</text>
+      <!-- feature tag right of E -->
+      <rect x="475" y="132" width="68" height="16" rx="8" ry="8" fill="#2A8F9E"/>
+      <text x="509" y="144" text-anchor="middle" font-family="-apple-system, sans-serif" font-weight="700" font-size="9" fill="white" letter-spacing="0.5">FEATURE</text>
+      <!-- feature commit labels below row -->
+      <text x="340" y="172" text-anchor="middle" font-family="-apple-system, sans-serif" font-size="11" fill="#475569">jess · try plotly</text>
+      <text x="450" y="172" text-anchor="middle" font-family="-apple-system, sans-serif" font-size="11" fill="#475569">jess · tweak axes</text>
+    </svg>
+  </div>
+  <div class="s3-cards">
+    <div class="s3-card rewind">
+      <h3 class="s3-card-h rewind">⏪ Rewind</h3>
+      <p class="s3-card-d"><code>git checkout &lt;hash&gt;</code> jumps to any past state of your project — exactly as it was that moment.</p>
     </div>
-    <div style="flex:1; border-radius:16px; padding:24px; background:#F0F7FF; border:2px solid var(--blue);">
-      <h3 style="font-size:1.15em; margin-bottom:14px; color:var(--blue-dark);">✅ With Git</h3>
-      <div style="padding:16px 20px; background:white; border-radius:12px; border:1px solid var(--blue-light);">
-        <div style="display:flex; align-items:center; gap:12px; padding:6px 0; font-size:0.95em;">
-          <span style="font-size:1.3em;">📄</span> <span style="font-weight:600;">report.py</span> <span style="color:var(--gray-mid); font-size:0.85em;">— one file, full history</span>
-        </div>
-        <div style="display:flex; align-items:center; gap:12px; padding:6px 0; font-size:0.95em;">
-          <span style="font-size:1.3em;">📋</span> <span>47 commits · 3 branches</span>
-        </div>
-        <div style="display:flex; align-items:center; gap:12px; padding:6px 0; font-size:0.95em;">
-          <span style="font-size:1.3em;">👥</span> <span>3 contributors tracked</span>
-        </div>
-        <div style="display:flex; align-items:center; gap:12px; padding:6px 0; font-size:0.95em;">
-          <span style="font-size:1.3em;">⏪</span> <span>Revert to any point in time</span>
-        </div>
-      </div>
-      <ul class="bullet-list" style="margin-top:12px; font-size:0.95em;">
-        <li>• Every change tracked forever</li>
-        <li>• Safe collaboration</li>
-        <li>• Experiment freely</li>
-      </ul>
+    <div class="s3-card who">
+      <h3 class="s3-card-h who">👤 See who &amp; why</h3>
+      <p class="s3-card-d">Every commit carries <strong>who</strong> changed it, <strong>when</strong>, and <strong>why</strong> (the message).</p>
+    </div>
+    <div class="s3-card branch">
+      <h3 class="s3-card-h branch">🌿 Branch without breaking main</h3>
+      <p class="s3-card-d">Branch off to experiment; merge back only when it's ready. Main stays releasable.</p>
     </div>
   </div>
 </div>
@@ -1171,7 +1207,7 @@
     </div>
   </div>
   <p style="text-align:center; font-size:0.88em; margin-top:16px; color:var(--gray-mid);">
-    📚 Full reference: <a href="https://git-scm.com/cheat-sheet" target="_blank" rel="noopener" style="color:var(--blue); text-decoration:underline; font-weight:600;">git-scm.com/cheat-sheet</a> — official, PDF, 12 languages
+    📚 Full reference: <a href="https://git-scm.com/cheat-sheet" target="_blank" rel="noopener" style="color:var(--blue); text-decoration:underline; font-weight:600;">git-scm.com/cheat-sheet</a>
   </p>
 </div>
 
