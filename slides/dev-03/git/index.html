@@ -929,12 +929,12 @@
   <div class="slide-number">24 / 24</div>
   <h2>Cheat Sheet</h2>
   <div class="recap-grid">
-    <div class="recap-card" style="background:#F8F8F8; border-color:#9CA3AF;"><h4>📦 Setup</h4><div class="cmds">git init<br>git clone URL<br>git config --global ...</div></div>
-    <div class="recap-card" style="background:#F8F8F8; border-color:#9CA3AF;"><h4>📋 Daily</h4><div class="cmds">git status<br>git add file<br>git commit -m "msg"<br>git push origin main</div></div>
-    <div class="recap-card" style="background:#F8F8F8; border-color:#9CA3AF;"><h4>🌳 Branching</h4><div class="cmds">git branch<br>git switch -c name<br>git merge branch<br>git rebase main</div></div>
-    <div class="recap-card" style="background:#F8F8F8; border-color:#9CA3AF;"><h4>☁️ Remotes</h4><div class="cmds">git remote -v<br>git fetch origin<br>git merge origin/main<br>git pull origin main</div></div>
-    <div class="recap-card" style="background:#F8F8F8; border-color:#9CA3AF;"><h4>⏪ Undo</h4><div class="cmds">git stash / pop<br>git revert &lt;hash&gt;<br>git reset --soft HEAD~1</div></div>
-    <div class="recap-card" style="background:#F8F8F8; border-color:#9CA3AF;"><h4>🔍 Inspect</h4><div class="cmds">git log --oneline<br>git diff<br>git diff --staged<br>git branch -a</div></div>
+    <div class="recap-card" style="background:#F8F8F8; border-color:#9CA3AF;"><h4>📦 Setup</h4><div class="cmds">git init<br>git clone &lt;url&gt;<br>git remote add origin &lt;url&gt;<br>git config --global user.name "..."<br>git config --global user.email "..."</div></div>
+    <div class="recap-card" style="background:#F8F8F8; border-color:#9CA3AF;"><h4>📋 Daily cycle</h4><div class="cmds">git status<br>git add &lt;file&gt;<br>git diff (--staged)<br>git commit -m "msg"<br>git push origin main</div></div>
+    <div class="recap-card" style="background:#F8F8F8; border-color:#9CA3AF;"><h4>🌳 Branching</h4><div class="cmds">git branch<br>git switch -c &lt;name&gt;<br>git merge &lt;branch&gt;<br>git branch -d &lt;branch&gt;<br>git push origin --delete &lt;branch&gt;</div></div>
+    <div class="recap-card" style="background:#F8F8F8; border-color:#9CA3AF;"><h4>☁️ Sync with remote</h4><div class="cmds">git remote -v<br>git fetch origin<br>git pull origin main<br>git pull --rebase origin main<br>git push -u origin &lt;branch&gt;</div></div>
+    <div class="recap-card" style="background:#F8F8F8; border-color:#9CA3AF;"><h4>⏪ Undo (top→bottom = local→pushed)</h4><div class="cmds">git restore &lt;file&gt;<br>git restore --staged &lt;file&gt;<br>git reset --soft HEAD~1<br>git reset --hard HEAD~1<br>git revert &lt;hash&gt;<br>git rm --cached &lt;file&gt;<br>git stash / git stash pop</div></div>
+    <div class="recap-card" style="background:#F8F8F8; border-color:#9CA3AF;"><h4>🔍 Inspect</h4><div class="cmds">git log --oneline<br>git log --graph --all<br>git show &lt;hash&gt;<br>git blame &lt;file&gt;<br>git branch -a</div></div>
   </div>
   <div style="margin-top:24px; text-align:center;">
     <p style="font-size:1.35em; color:var(--blue-dark); font-weight:700;">You now know Git. Go build, break things, and recover like a pro.</p>
