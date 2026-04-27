@@ -854,11 +854,11 @@
     <tr><td>Committed, not pushed — <strong>keep</strong> the work</td><td><code>git reset --soft HEAD~1</code></td><td>Un-commits; files re-staged</td></tr>
     <tr><td>Committed, not pushed — <strong>drop</strong> the work</td><td><code>git reset --hard HEAD~1</code></td><td>Un-commits AND erases edits</td></tr>
     <tr style="background:#F0F7FF;"><td><strong>Already pushed</strong></td><td><code>git revert &lt;hash&gt;</code></td><td>New commit reverses the old. <strong>Never rewrites history.</strong></td></tr>
+    <tr><td>Stop tracking a committed file <span style="color:var(--gray-mid); font-size:0.9em;">(secrets, big data files)</span></td><td><code>git rm --cached &lt;file&gt;</code></td><td>Removes from git's index. File stays on disk.</td></tr>
   </table>
   <p style="font-size:0.85em; color:var(--gray-mid); margin:0 0 12px 0; line-height:1.55;">
     <strong>Also useful:</strong>
-    <code>git stash</code> / <code>git stash pop</code> — park work in progress, bring it back later.
-    <code>git rm --cached &lt;file&gt;</code> — stop tracking a committed file (it stays on disk).
+    <code>git stash</code> / <code>git stash pop</code> — park work in progress and bring it back later (different from undo: nothing is being reverted, just temporarily set aside).
   </p>
   <div class="two-panel" style="gap:14px; align-items:stretch;">
     <div style="flex:1; background:#F8F8F8; border:2px solid #94A3B8; border-radius:12px; padding:12px 16px;">
