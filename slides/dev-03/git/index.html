@@ -942,21 +942,84 @@
 <!-- ==================== SLIDE 24: Cheat Sheet ==================== -->
 <div class="slide">
   <div class="slide-number">24 / 24</div>
-  <h2>Cheat Sheet</h2>
-  <div class="recap-grid">
-    <div class="recap-card" style="background:#F8F8F8; border-color:#9CA3AF;"><h4>📦 Setup</h4><div class="cmds"><code>git init</code> — start a new repo in this folder<br><code>git clone &lt;url&gt;</code> — copy a remote repo locally<br><code>git remote add origin &lt;url&gt;</code> — link this repo to a remote<br><code>git config --global user.name "..."</code> — name on every commit<br><code>git config --global user.email "..."</code> — email on every commit</div></div>
-    <div class="recap-card" style="background:#F8F8F8; border-color:#9CA3AF;"><h4>📋 Daily cycle</h4><div class="cmds"><code>git status</code> — what's changed, staged, untracked<br><code>git add &lt;file&gt;</code> — stage this file for the next commit<br><code>git diff</code> — preview unstaged changes<br><code>git diff --staged</code> — preview what will be committed<br><code>git commit -m "msg"</code> — save staged changes with a message<br><code>git push origin main</code> — send your commits to the remote</div></div>
-    <div class="recap-card" style="background:#F8F8F8; border-color:#9CA3AF;"><h4>🌳 Branching</h4><div class="cmds"><code>git branch</code> — list branches (current is starred)<br><code>git switch &lt;name&gt;</code> — switch to an existing branch<br><code>git switch -c &lt;name&gt;</code> — create + switch in one step<br><code>git merge &lt;branch&gt;</code> — bring another branch into this one<br><code>git branch -d &lt;branch&gt;</code> — delete a local branch (after merge)<br><code>git push origin --delete &lt;branch&gt;</code> — delete the remote branch too</div></div>
-    <div class="recap-card" style="background:#F8F8F8; border-color:#9CA3AF;"><h4>☁️ Sync with remote</h4><div class="cmds"><code>git remote -v</code> — list remotes this repo knows about<br><code>git fetch origin</code> — download remote changes, don't apply yet<br><code>git pull origin main</code> — fetch + merge in one step<br><code>git pull --rebase origin main</code> — fetch + replay your commits on top<br><code>git push -u origin &lt;branch&gt;</code> — first push; sets upstream tracking</div></div>
-    <div class="recap-card" style="background:#F8F8F8; border-color:#9CA3AF;"><h4>⏪ Undo (top→bottom = local→pushed)</h4><div class="cmds"><code>git restore &lt;file&gt;</code> — discard unstaged edits to a file<br><code>git restore --staged &lt;file&gt;</code> — un-stage but keep edits<br><code>git reset --soft HEAD~1</code> — un-commit; files re-staged<br><code>git reset --hard HEAD~1</code> — un-commit AND erase edits<br><code>git revert &lt;hash&gt;</code> — new commit that undoes a pushed one<br><code>git rm --cached &lt;file&gt;</code> — stop tracking; file stays on disk<br><code>git stash</code> / <code>git stash pop</code> — park work-in-progress, bring back later</div></div>
-    <div class="recap-card" style="background:#F8F8F8; border-color:#9CA3AF;"><h4>🔍 Inspect</h4><div class="cmds"><code>git log --oneline</code> — one line per commit<br><code>git log --graph --all</code> — show all branches as a tree<br><code>git show &lt;hash&gt;</code> — view one commit's diff<br><code>git blame &lt;file&gt;</code> — who last touched each line<br><code>git branch -a</code> — all branches, local + remote</div></div>
+  <style>
+    .cheat-sec { margin-bottom: 16px; }
+    .cheat-sec h3 { font-size: 1em; font-weight: 800; letter-spacing: 0.06em; color: #1F2937; text-transform: uppercase; margin: 0; }
+    .cheat-sec .sub { font-size: 0.82em; color: var(--gray-mid); margin: 1px 0 7px 0; font-style: italic; }
+    .cheat-row { padding: 4px 0 6px 0; border-bottom: 1px solid #E5E7EB; }
+    .cheat-row:last-child { border-bottom: none; padding-bottom: 0; }
+    .cheat-row .ccmd { background: #EDEFF3; padding: 4px 11px; border-radius: 3px; font-family: 'JetBrains Mono','SF Mono',Menlo,Consolas,monospace; font-weight: 700; font-size: 0.83em; color: #1F2937; white-space: nowrap; overflow-x: auto; font-feature-settings: "liga" 0, "calt" 0; }
+    .cheat-row .cdesc { font-size: 0.78em; color: #4B5563; padding: 3px 11px 0 11px; line-height: 1.4; }
+  </style>
+  <h2 style="margin-bottom:2px;">Git Cheat Sheet</h2>
+  <p style="color:var(--gray-mid); font-size:0.9em; margin:0 0 14px 0;">Bookmark this slide — every command you'll use, with what each one does.</p>
+  <div style="display:flex; gap:24px;">
+    <!-- LEFT COLUMN -->
+    <div style="flex:1; min-width:0;">
+      <div class="cheat-sec">
+        <h3>📦 Setup</h3>
+        <p class="sub">Configure git and start a repo</p>
+        <div class="cheat-row"><div class="ccmd">git init</div><div class="cdesc">Start a new repo in this folder</div></div>
+        <div class="cheat-row"><div class="ccmd">git clone &lt;url&gt;</div><div class="cdesc">Copy a remote repo to your machine</div></div>
+        <div class="cheat-row"><div class="ccmd">git remote add origin &lt;url&gt;</div><div class="cdesc">Link this repo to a remote (name it <code>origin</code>)</div></div>
+        <div class="cheat-row"><div class="ccmd">git config --global user.name "[name]"</div><div class="cdesc">Set the name stamped on every commit you make</div></div>
+        <div class="cheat-row"><div class="ccmd">git config --global user.email "[email]"</div><div class="cdesc">Set the email stamped on every commit</div></div>
+      </div>
+      <div class="cheat-sec">
+        <h3>📋 Daily cycle</h3>
+        <p class="sub">Stage, commit, share — every single day</p>
+        <div class="cheat-row"><div class="ccmd">git status</div><div class="cdesc">See what's changed, staged, and untracked right now</div></div>
+        <div class="cheat-row"><div class="ccmd">git add &lt;file&gt;</div><div class="cdesc">Stage this file for the next commit</div></div>
+        <div class="cheat-row"><div class="ccmd">git diff --staged</div><div class="cdesc">Preview exactly what the next commit will contain</div></div>
+        <div class="cheat-row"><div class="ccmd">git commit -m "[message]"</div><div class="cdesc">Save the staged changes with a short why-message</div></div>
+        <div class="cheat-row"><div class="ccmd">git push origin main</div><div class="cdesc">Send your local commits to the remote</div></div>
+      </div>
+      <div class="cheat-sec">
+        <h3>🌳 Branching</h3>
+        <p class="sub">Create, switch, merge, delete</p>
+        <div class="cheat-row"><div class="ccmd">git branch</div><div class="cdesc">List local branches; the current one is starred</div></div>
+        <div class="cheat-row"><div class="ccmd">git switch -c &lt;name&gt;</div><div class="cdesc">Create a new branch and switch to it in one step</div></div>
+        <div class="cheat-row"><div class="ccmd">git merge &lt;branch&gt;</div><div class="cdesc">Bring another branch into the current one</div></div>
+        <div class="cheat-row"><div class="ccmd">git branch -d &lt;branch&gt;</div><div class="cdesc">Delete a local branch (after it's been merged)</div></div>
+        <div class="cheat-row"><div class="ccmd">git push origin --delete &lt;branch&gt;</div><div class="cdesc">Delete the same branch on the remote too</div></div>
+      </div>
+    </div>
+    <!-- RIGHT COLUMN -->
+    <div style="flex:1; min-width:0;">
+      <div class="cheat-sec">
+        <h3>☁️ Sync with remote</h3>
+        <p class="sub">Bring remote changes in; send local out</p>
+        <div class="cheat-row"><div class="ccmd">git remote -v</div><div class="cdesc">Show the URLs this repo can fetch from and push to</div></div>
+        <div class="cheat-row"><div class="ccmd">git fetch origin</div><div class="cdesc">Download remote changes; don't apply them yet</div></div>
+        <div class="cheat-row"><div class="ccmd">git pull origin main</div><div class="cdesc">Fetch + merge into the current branch in one step</div></div>
+        <div class="cheat-row"><div class="ccmd">git pull --rebase origin main</div><div class="cdesc">Fetch + replay your commits on top of the new main</div></div>
+        <div class="cheat-row"><div class="ccmd">git push -u origin &lt;branch&gt;</div><div class="cdesc">First push of a new branch; sets upstream tracking</div></div>
+      </div>
+      <div class="cheat-sec">
+        <h3>⏪ Undo <span style="font-size:0.75em; font-weight:600; letter-spacing:0; text-transform:none; color:var(--gray-mid);">(top → bottom = local → pushed)</span></h3>
+        <p class="sub">Pick the right tool for where the bad change lives</p>
+        <div class="cheat-row"><div class="ccmd">git restore &lt;file&gt;</div><div class="cdesc">Discard unstaged edits to a file. ⚠️ Permanent</div></div>
+        <div class="cheat-row"><div class="ccmd">git restore --staged &lt;file&gt;</div><div class="cdesc">Un-stage a file but keep the edits in your working dir</div></div>
+        <div class="cheat-row"><div class="ccmd">git reset --soft HEAD~1</div><div class="cdesc">Un-commit the last commit; files stay staged</div></div>
+        <div class="cheat-row"><div class="ccmd">git reset --hard HEAD~1</div><div class="cdesc">Un-commit AND erase the edits. ⚠️ Permanent</div></div>
+        <div class="cheat-row"><div class="ccmd">git revert &lt;hash&gt;</div><div class="cdesc">New commit that undoes a pushed one — never rewrites history</div></div>
+        <div class="cheat-row"><div class="ccmd">git rm --cached &lt;file&gt;</div><div class="cdesc">Stop tracking a file; it stays on disk</div></div>
+        <div class="cheat-row"><div class="ccmd">git stash / git stash pop</div><div class="cdesc">Park work-in-progress, retrieve it later</div></div>
+      </div>
+      <div class="cheat-sec">
+        <h3>🔍 Inspect</h3>
+        <p class="sub">Read history; see what changed</p>
+        <div class="cheat-row"><div class="ccmd">git log --oneline</div><div class="cdesc">Compact commit history — one line per commit</div></div>
+        <div class="cheat-row"><div class="ccmd">git log --graph --all</div><div class="cdesc">Show all branches as an ASCII tree</div></div>
+        <div class="cheat-row"><div class="ccmd">git show &lt;hash&gt;</div><div class="cdesc">View the diff of a single commit</div></div>
+        <div class="cheat-row"><div class="ccmd">git blame &lt;file&gt;</div><div class="cdesc">See who last touched each line of a file</div></div>
+        <div class="cheat-row"><div class="ccmd">git branch -a</div><div class="cdesc">List all branches — both local and remote</div></div>
+      </div>
+    </div>
   </div>
-  <div style="margin-top:18px; text-align:center; font-size:0.95em; color:var(--gray-mid);">
-    📚 <strong>Bookmark this:</strong> <a href="https://git-scm.com/cheat-sheet" target="_blank" rel="noopener" style="color:var(--blue); text-decoration:underline;">git-scm.com/cheat-sheet</a> — the official Git cheat sheet (PDF, 12 languages)
-  </div>
-  <div style="margin-top:14px; text-align:center;">
-    <p style="font-size:1.25em; color:var(--blue-dark); font-weight:700; margin:0;">You now know Git. Go build, break things, and recover like a pro.</p>
-  </div>
+  <p style="text-align:center; font-size:0.88em; margin-top:16px; color:var(--gray-mid);">
+    📚 Full reference: <a href="https://git-scm.com/cheat-sheet" target="_blank" rel="noopener" style="color:var(--blue); text-decoration:underline; font-weight:600;">git-scm.com/cheat-sheet</a> — official, PDF, 12 languages
+  </p>
 </div>
 
 <script>
