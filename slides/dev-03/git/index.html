@@ -346,6 +346,10 @@
   <div class="seq-diagram">
     <!-- Boxes -->
     <div class="seq-boxes">
+      <!-- .git/ enclosure framing the two middle stages (Staging Area + Local Repository) -->
+      <div aria-hidden="true" style="position:absolute; top:-10px; bottom:-10px; left:24%; width:52%; border:2px dashed #94A3B8; border-radius:14px; background:rgba(148,163,184,0.05); z-index:-1; pointer-events:none;">
+        <span style="position:absolute; top:-11px; left:18px; background:white; padding:0 8px; font-family:'JetBrains Mono', monospace; font-size:0.75em; font-weight:700; color:#475569; letter-spacing:0.04em;">📁 .git/</span>
+      </div>
       <div class="seq-box" style="background:#ECFDF5; border-color:#6EE7B7;">
         <div class="icon">📂</div>
         <div class="name" style="color:#047857;">Working Directory</div>
@@ -448,7 +452,11 @@
   </div>
 
   <!-- Zone descriptions -->
-  <div style="display:flex; justify-content:space-between; gap:12px; margin-top:10px; font-size:0.78em; color:var(--text-dark); line-height:1.4;">
+  <div style="display:flex; justify-content:space-between; gap:12px; margin-top:18px; font-size:0.78em; color:var(--text-dark); line-height:1.4; position:relative;">
+    <!-- .git/ enclosure mirroring the top row, framing the middle two zone descriptions -->
+    <div aria-hidden="true" style="position:absolute; top:-10px; bottom:-8px; left:24%; width:52%; border:2px dashed #94A3B8; border-radius:14px; background:rgba(148,163,184,0.05); z-index:-1; pointer-events:none;">
+      <span style="position:absolute; top:-11px; left:18px; background:white; padding:0 8px; font-family:'JetBrains Mono', monospace; font-size:0.75em; font-weight:700; color:#475569; letter-spacing:0.04em;">📁 .git/</span>
+    </div>
     <div style="width:22%; padding:8px; background:rgba(4,120,87,0.04); border-radius:8px;">
       <strong style="color:#047857;">Your local machine.</strong> The actual folder where your project files live. You edit files here normally. Git sees these changes as "untracked" or "modified" until you explicitly stage them.
     </div>
