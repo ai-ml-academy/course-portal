@@ -636,44 +636,59 @@
 <div class="slide">
   <div class="slide-number">15 / 24</div>
   <h2>Merge vs Rebase</h2>
-  <div style="background:#F0F7FF; border-left:4px solid var(--teal); padding:12px 18px; margin:8px 0 14px 0; border-radius:6px;">
-    <p style="margin:0; font-size:1.05em;">
-      <strong>The scenario:</strong> Your PR is open. While reviewers read it, three other PRs landed on <code>main</code>.
-      GitHub flags <strong>"This branch is out of date with the base branch."</strong> Two ways to update your feature branch — and the choice changes what your reviewer sees.
+  <div style="background:#F0F7FF; border-left:4px solid var(--teal); padding:10px 16px; margin:6px 0 12px 0; border-radius:6px;">
+    <p style="margin:0; font-size:1em;">
+      <strong>The scenario:</strong> two branches diverged. Combine them with <code>git merge</code> or <code>git rebase</code> — <strong>same final code, different commit history</strong>.
     </p>
   </div>
-  <div class="two-panel" style="gap:20px;">
-    <div class="panel" style="background:var(--blue-light); border:2px solid var(--blue); padding:18px;">
-      <h3 style="text-align:center; font-size:1.05em; margin-bottom:2px;"><code>git pull origin main</code></h3>
-      <p style="font-size:0.82em; color:var(--gray-mid); text-align:center; margin:0 0 8px 0;">(default: fetch + merge)</p>
-      <div id="graph-merge-demo" style="display:flex; justify-content:center; margin:4px 0;"></div>
-      <p style="font-size:0.9em; line-height:1.55; margin-top:4px;">
-        Brings <code>main</code> into your branch with a <strong>merge commit</strong>. Your PR now shows your commit + their commits + an extra merge commit reviewers didn't ask for.
-      </p>
-      <div style="font-size:0.9em; line-height:1.7; margin-top:6px;">
-        ✅ Safe — works on shared branches<br>
-        ✅ Never rewrites commit hashes<br>
-        ⚠️ Adds a merge commit to your PR
+  <div class="two-panel" style="gap:18px;">
+    <!-- LEFT: MERGE -->
+    <div class="panel" style="background:var(--blue-light); border:2px solid var(--blue); padding:14px 16px;">
+      <h3 style="text-align:center; font-size:1.05em; margin:0 0 8px 0; color:var(--blue-dark);">Combine with merge</h3>
+      <div class="terminal" style="font-size:0.85em; padding:8px 12px; margin:0 0 10px 0;">
+        <span class="prompt">$</span> <span class="cmd">git switch main</span><br>
+        <span class="prompt">$</span> <span class="cmd">git merge feature</span>
+      </div>
+      <div style="font-size:0.78em; color:var(--gray-mid); margin:2px 0; font-weight:600;">Before:</div>
+      <pre style="background:white; padding:10px 14px; margin:0 0 8px 0; border-radius:6px; border:1px solid #D1D5DB; font-family:'JetBrains Mono','SF Mono',Menlo,monospace; font-size:0.95em; line-height:1.5; color:#374151;"><span style="color:#1F2937; font-weight:700;">A─B─C</span>        ← <span style="color:#1F2937; font-weight:700;">main</span>
+     ╲
+      <span style="color:#DC2626; font-weight:700;">D─E</span>    ← <span style="color:#DC2626; font-weight:700;">feature</span></pre>
+      <div style="font-size:0.78em; color:var(--gray-mid); margin:2px 0; font-weight:600;">After:</div>
+      <pre style="background:white; padding:10px 14px; margin:0 0 8px 0; border-radius:6px; border:1px solid #D1D5DB; font-family:'JetBrains Mono','SF Mono',Menlo,monospace; font-size:0.95em; line-height:1.5; color:#374151;"><span style="color:#1F2937; font-weight:700;">A─B─C─────<span style="display:inline-block; transform:rotate(45deg); border:2px solid #1F2937; width:14px; height:14px; vertical-align:middle; margin:0 2px;"></span></span>  ← <span style="color:#1F2937; font-weight:700;">main</span>
+     ╲   ╱
+      <span style="color:#DC2626; font-weight:700;">D─E</span>      ← <span style="color:#DC2626; font-weight:700;">feature</span></pre>
+      <div style="font-size:0.85em; line-height:1.6;">
+        ✅ Safe — never rewrites commits<br>
+        ⚠️ Adds a merge commit (the diamond)
       </div>
     </div>
-    <div class="panel" style="background:var(--green-light); border:2px solid var(--green); padding:18px;">
-      <h3 style="text-align:center; font-size:1.05em; margin-bottom:2px;"><code>git pull --rebase origin main</code></h3>
-      <p style="font-size:0.82em; color:var(--gray-mid); text-align:center; margin:0 0 8px 0;">(replay your commits on top)</p>
-      <div id="graph-rebase-demo" style="display:flex; justify-content:center; margin:4px 0;"></div>
-      <p style="font-size:0.9em; line-height:1.55; margin-top:4px;">
-        Lifts your commits off, replays main's new commits underneath, then re-applies yours <strong>with new hashes</strong>. PR shows just your commit against the latest <code>main</code>.
-      </p>
-      <div style="font-size:0.9em; line-height:1.7; margin-top:6px;">
-        ✅ Clean, linear PR history<br>
-        ✅ Easier review<br>
-        ⚠️ Rewrites your commit hashes
+    <!-- RIGHT: REBASE -->
+    <div class="panel" style="background:var(--green-light); border:2px solid var(--green); padding:14px 16px;">
+      <h3 style="text-align:center; font-size:1.05em; margin:0 0 8px 0; color:var(--green-dark);">Combine with rebase</h3>
+      <div class="terminal" style="font-size:0.85em; padding:8px 12px; margin:0 0 10px 0;">
+        <span class="prompt">$</span> <span class="cmd">git switch feature</span><br>
+        <span class="prompt">$</span> <span class="cmd">git rebase main</span>
+      </div>
+      <div style="font-size:0.78em; color:var(--gray-mid); margin:2px 0; font-weight:600;">Before:</div>
+      <pre style="background:white; padding:10px 14px; margin:0 0 8px 0; border-radius:6px; border:1px solid #D1D5DB; font-family:'JetBrains Mono','SF Mono',Menlo,monospace; font-size:0.95em; line-height:1.5; color:#374151;"><span style="color:#1F2937; font-weight:700;">A─B─C</span>        ← <span style="color:#1F2937; font-weight:700;">main</span>
+     ╲
+      <span style="color:#DC2626; font-weight:700;">D─E</span>    ← <span style="color:#DC2626; font-weight:700;">feature</span></pre>
+      <div style="font-size:0.78em; color:var(--gray-mid); margin:2px 0; font-weight:600;">After:</div>
+      <pre style="background:white; padding:10px 14px; margin:0 0 8px 0; border-radius:6px; border:1px solid #D1D5DB; font-family:'JetBrains Mono','SF Mono',Menlo,monospace; font-size:0.95em; line-height:1.5; color:#374151;"><span style="color:#1F2937; font-weight:700;">A─B─C</span>─<span style="color:#DC2626; font-weight:700;">D'─E'</span>  ← <span style="color:#DC2626; font-weight:700;">feature</span>
+     ↑
+    <span style="color:#1F2937; font-weight:700;">main</span>
+
+<span style="color:#DC2626; opacity:0.45; text-decoration:line-through;">D─E</span>  <span style="color:#9CA3AF; font-size:0.85em;">(orphaned, new hashes)</span></pre>
+      <div style="font-size:0.85em; line-height:1.6;">
+        ✅ Linear, clean history<br>
+        ⚠️ Rewrites commit hashes (D→D', E→E')
       </div>
     </div>
   </div>
-  <p class="bottom-text" style="margin-top:10px;">
-    ⚠️ <strong>Golden rule:</strong> never rebase a branch others have already pulled — the orphaned old hashes break their syncs.
+  <p class="bottom-text" style="margin-top:8px; font-size:0.92em;">
+    ⚠️ <strong>Golden rule:</strong> never rebase a branch others have already pulled.
     <span style="color:var(--gray-mid);">·</span>
-    <em>Also useful:</em> <code>git rebase -i</code> to squash messy WIP commits before opening a PR.
+    <em>Also useful:</em> <code>git rebase -i main</code> to squash WIP commits before opening a PR.
   </p>
 </div>
 
