@@ -846,16 +846,20 @@
 <div class="slide">
   <div class="slide-number">22 / 24</div>
   <h2>Recovering from Mistakes</h2>
-  <p style="font-size:1em; margin-bottom:8px;">Pick the right safety net for the situation — then for the gnarly cases, here are the playbooks.</p>
-  <table class="vocab-table" style="font-size:0.88em; margin:6px 0 14px 0;">
-    <tr><th>Situation</th><th>Command</th><th>What happens</th></tr>
-    <tr><td>Save work temporarily</td><td><code>git stash</code></td><td>Tucks away. <code>git stash pop</code> brings back</td></tr>
-    <tr><td>Undo a pushed commit (safe)</td><td><code>git revert &lt;hash&gt;</code></td><td>New commit that reverses the old one</td></tr>
-    <tr><td>Un-commit (not pushed yet)</td><td><code>git reset --soft HEAD~1</code></td><td>Moves back to staging. Files unchanged</td></tr>
-    <tr><td>Unstage a file (keep changes)</td><td><code>git restore --staged file</code></td><td>Removes from staging, file stays modified</td></tr>
-    <tr><td>Discard changes in a file</td><td><code>git restore file</code></td><td>Reverts file to last commit. ⚠️ Permanent</td></tr>
-    <tr><td>Untrack a committed file</td><td><code>git rm --cached file</code></td><td>Stops tracking but keeps file on disk</td></tr>
+  <p style="font-size:1em; margin-bottom:8px;"><strong>Pick by where the change lives.</strong> Walk down the ladder: while it's still local, the <code>reset</code> family undoes things. Once it's pushed, only <code>revert</code> is safe.</p>
+  <table class="vocab-table" style="font-size:0.88em; margin:6px 0 8px 0;">
+    <tr><th>Where the change is</th><th>Command</th><th>What it does</th></tr>
+    <tr><td>Edited, not staged yet</td><td><code>git restore &lt;file&gt;</code></td><td>Reverts file to last commit. ⚠️ Permanent</td></tr>
+    <tr><td>Staged, not committed</td><td><code>git restore --staged &lt;file&gt;</code></td><td>Un-stages; edits stay in working dir</td></tr>
+    <tr><td>Committed, not pushed — <strong>keep</strong> the work</td><td><code>git reset --soft HEAD~1</code></td><td>Un-commits; files re-staged</td></tr>
+    <tr><td>Committed, not pushed — <strong>drop</strong> the work</td><td><code>git reset --hard HEAD~1</code></td><td>Un-commits AND erases edits</td></tr>
+    <tr style="background:#F0F7FF;"><td><strong>Already pushed</strong></td><td><code>git revert &lt;hash&gt;</code></td><td>New commit reverses the old. <strong>Never rewrites history.</strong></td></tr>
   </table>
+  <p style="font-size:0.85em; color:var(--gray-mid); margin:0 0 12px 0; line-height:1.55;">
+    <strong>Also useful:</strong>
+    <code>git stash</code> / <code>git stash pop</code> — park work in progress, bring it back later.
+    <code>git rm --cached &lt;file&gt;</code> — stop tracking a committed file (it stays on disk).
+  </p>
   <div class="two-panel" style="gap:14px; align-items:stretch;">
     <div style="flex:1; background:#F8F8F8; border:2px solid #94A3B8; border-radius:12px; padding:12px 16px;">
       <p style="font-weight:700; font-size:0.95em; color:var(--text-dark); margin:0 0 4px 0;">🚨 Pushed a secret</p>
