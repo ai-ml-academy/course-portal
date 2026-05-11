@@ -1,0 +1,1102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Class 01 — LLM Fundamentals</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+<style>
+/* ============================================================
+   Gen AI Engineer Course — Slide Theme (inlined)
+   ============================================================ */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+:root {
+  --navy-900: #1A3264; --navy-800: #214078; --navy-700: #2E5090;
+  --navy-600: #3660A3; --navy-500: #4272B8; --navy-400: #5A8ACB;
+  --navy-300: #7BA4D8; --navy-200: #A3C0E4; --navy-100: #C8D9EF; --navy-50: #E8EFF7;
+  --slate-900: #1E1E2E; --slate-800: #2A2A3C; --slate-700: #3A3A4F;
+  --slate-600: #4A4A62; --slate-500: #6B6B82; --slate-400: #8E8EA3;
+  --slate-300: #B0B0C2; --slate-200: #D0D0DC; --slate-100: #E8E8EF; --slate-50: #F5F5F9;
+  --info: #36A2B5; --success: #5B9E7B; --warning: #C49545; --error: #D4594E;
+  --info-bg: #EAF5F7; --success-bg: #EDF5F0; --warning-bg: #FBF4E8; --error-bg: #FBEEED;
+  --accent: #4BB8C9; --accent-light: #7FCDD8; --accent-dim: #2A8F9E;
+  --font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-code: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
+  --slide-padding: 3rem 4rem;
+  --slide-max-width: 1150px;
+  --radius-sm: 6px; --radius-md: 10px; --radius-lg: 16px;
+  --shadow-sm: 0 1px 3px rgba(0,0,0,.08);
+  --shadow-md: 0 4px 12px rgba(0,0,0,.10);
+  --shadow-lg: 0 8px 30px rgba(0,0,0,.14);
+  --ease: cubic-bezier(.4, 0, .2, 1);
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { font-size: 19px; scroll-behavior: smooth; -webkit-font-smoothing: antialiased; }
+body { font-family: var(--font-body); color: var(--slate-800); background: var(--slate-50); line-height: 1.6; }
+
+.slide {
+  min-height: 100vh;
+  padding: var(--slide-padding);
+  display: flex; flex-direction: column; justify-content: center;
+  max-width: var(--slide-max-width);
+  margin: 0 auto;
+  position: relative;
+}
+.slide-number {
+  position: absolute; bottom: 1.2rem; right: 1.5rem;
+  font-size: 0.75rem; font-weight: 600; color: var(--slate-400); letter-spacing: 0.04em;
+}
+.slide + .slide { border-top: 1px solid var(--slate-100); }
+
+h1, h2, h3, h4 { color: var(--navy-700); line-height: 1.25; font-weight: 700; letter-spacing: -0.01em; }
+h1 { font-size: 2.8rem; font-weight: 800; margin-bottom: 1rem; }
+h2 { font-size: 2.15rem; margin-bottom: 0.8rem; }
+h3 { font-size: 1.6rem; margin-bottom: 0.6rem; }
+h4 { font-size: 1.3rem; font-weight: 600; margin-bottom: 0.5rem; }
+p { margin-bottom: 1rem; font-size: 1.1rem; }
+strong { font-weight: 600; color: var(--navy-700); }
+a { color: var(--accent-dim); text-decoration: none; border-bottom: 1px solid transparent; transition: border-color 0.2s var(--ease); }
+a:hover { border-bottom-color: var(--accent-dim); }
+ul, ol { margin: 0.5rem 0 1rem 1.6rem; }
+li { margin-bottom: 0.4rem; font-size: 1.1rem; }
+li::marker { color: var(--navy-400); }
+
+.subtitle { font-size: 1.3rem; color: var(--slate-500); font-weight: 400; margin-bottom: 1.5rem; }
+.muted { color: var(--slate-400); }
+
+/* Intro banner (S10e) */
+.intro-banner {
+  border-left: 4px solid var(--accent-dim);
+  background: var(--info-bg);
+  padding: 0.9rem 1.2rem;
+  font-size: 1.05rem;
+  font-weight: 500;
+  color: var(--navy-800);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  margin: 1rem 0 1.4rem 0;
+}
+
+/* Key-phrase pill (S10f) */
+.pill {
+  background: var(--warning-bg);
+  padding: 0 0.3em;
+  border-radius: 3px;
+  font-weight: 600;
+  color: var(--navy-700);
+}
+
+/* Slide figure — generated PNG */
+.slide-figure {
+  display: block;
+  margin: 0.6rem auto 1.2rem;
+  max-width: 100%;
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-md);
+  background: white;
+}
+.slide-figure.tight { box-shadow: none; }
+.figure-caption {
+  text-align: center;
+  font-size: 0.92rem;
+  color: var(--slate-500);
+  font-style: italic;
+  margin-top: -0.5rem;
+  margin-bottom: 0.6rem;
+}
+
+/* Title slide */
+.slide.title-slide {
+  text-align: center;
+  background: linear-gradient(135deg, var(--navy-800) 0%, var(--navy-600) 100%);
+  color: #fff;
+}
+.slide.title-slide h1 { color: #fff; font-size: 3.4rem; margin-bottom: 0.6rem; }
+.slide.title-slide .subtitle { color: var(--navy-100); font-size: 1.4rem; }
+
+/* Code blocks (S08 — soft-dark bg) */
+.code-block {
+  background: var(--slate-800);
+  color: #E2E8F0;
+  font-family: var(--font-code);
+  font-size: 0.92rem;
+  line-height: 1.65;
+  padding: 1.3rem 1.5rem;
+  border-radius: var(--radius-md);
+  overflow-x: auto;
+  margin: 1rem 0;
+  box-shadow: var(--shadow-md);
+  position: relative;
+}
+.code-block .label {
+  position: absolute; top: 0.5rem; right: 0.8rem;
+  font-size: 0.65rem; font-weight: 600; text-transform: uppercase;
+  letter-spacing: 0.08em; color: var(--slate-400); font-family: var(--font-body);
+}
+.code-block .kw      { color: #C792EA; }
+.code-block .fn      { color: #82AAFF; }
+.code-block .str     { color: #C3E88D; }
+.code-block .num     { color: #F78C6C; }
+.code-block .comment { color: #50FA7B; font-style: italic; }
+.code-block .op      { color: #89DDFF; }
+.code-block .cls     { color: #E8C577; }
+.code-block .dec     { color: #F07178; }
+.code-block .builtin { color: #89DDFF; }
+.code-block .param   { color: #E2E8F0; font-style: italic; }
+
+/* S09 — disable ligatures */
+.code-block, .code-block *, code {
+  font-variant-ligatures: none;
+  font-feature-settings: "liga" 0, "calt" 0;
+}
+
+code {
+  font-family: var(--font-code); font-size: 0.88em;
+  background: var(--navy-50); color: var(--navy-700);
+  padding: 0.15em 0.4em; border-radius: 4px;
+}
+
+/* Panels — S10a min-width:0 */
+.two-panel { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin: 1rem 0; }
+.three-panel { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1.2rem; margin: 1rem 0; }
+.two-panel > *, .three-panel > * { min-width: 0; }
+
+.panel {
+  background: #fff;
+  border: 1px solid var(--slate-200);
+  border-radius: var(--radius-md);
+  padding: 1.3rem;
+  box-shadow: var(--shadow-sm);
+}
+.panel h4 { margin-bottom: 0.5rem; color: var(--navy-700); font-size: 1.05rem; }
+.panel.bordered-success { border-top: 3px solid var(--success); }
+.panel.bordered-warning { border-top: 3px solid var(--warning); }
+.panel.bordered-info    { border-top: 3px solid var(--info); }
+.panel.bordered-navy    { border-top: 3px solid var(--navy-600); }
+.panel.bordered-error   { border-top: 3px solid var(--error); }
+
+/* Data table */
+.data-table {
+  width: 100%; border-collapse: collapse; margin: 1rem 0; font-size: 0.95rem;
+}
+.data-table th {
+  background: var(--navy-700); color: #fff; font-weight: 600;
+  text-align: left; padding: 0.7rem 1rem;
+}
+.data-table th:first-child { border-radius: var(--radius-sm) 0 0 0; }
+.data-table th:last-child  { border-radius: 0 var(--radius-sm) 0 0; }
+.data-table td {
+  padding: 0.6rem 1rem; border-bottom: 1px solid var(--slate-100); vertical-align: top;
+}
+.data-table tr:last-child td { border-bottom: none; }
+.data-table tbody tr:nth-child(even) { background: var(--slate-50); }
+.data-table .mono { font-family: var(--font-code); font-size: 0.85em; }
+
+/* Callouts */
+.callout {
+  padding: 1.1rem 1.3rem;
+  border-radius: var(--radius-md);
+  margin: 1rem 0;
+  border-left: 4px solid;
+  font-size: 0.97rem;
+}
+.callout-title { font-weight: 700; margin-bottom: 0.3rem; font-size: 0.92rem; letter-spacing: 0.02em; }
+.callout.info    { background: var(--info-bg);    border-color: var(--info); }
+.callout.warning { background: var(--warning-bg); border-color: var(--warning); }
+.callout.success { background: var(--success-bg); border-color: var(--success); }
+.callout.error   { background: var(--error-bg);   border-color: var(--error); }
+.callout.info .callout-title    { color: var(--info); }
+.callout.warning .callout-title { color: var(--warning); }
+.callout.success .callout-title { color: var(--success); }
+.callout.error .callout-title   { color: var(--error); }
+
+/* Card grid */
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1.1rem;
+  margin: 1rem 0;
+}
+.card {
+  background: #fff;
+  border: 1px solid var(--slate-200);
+  border-radius: var(--radius-md);
+  padding: 1.2rem;
+  box-shadow: var(--shadow-sm);
+}
+.card h4 { font-size: 1.05rem; margin-bottom: 0.4rem; color: var(--navy-700); }
+.card p  { font-size: 0.92rem; color: var(--slate-600); margin-bottom: 0; }
+
+.card-tag {
+  display: inline-block;
+  font-size: 0.65rem; font-weight: 700; letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 0.18em 0.55em;
+  border-radius: 4px;
+  margin-bottom: 0.5rem;
+}
+.card-tag.teal   { background: var(--info-bg);    color: var(--accent-dim); }
+.card-tag.green  { background: var(--success-bg); color: var(--success); }
+.card-tag.amber  { background: var(--warning-bg); color: var(--warning); }
+.card-tag.navy   { background: var(--navy-50);    color: var(--navy-700); }
+
+.summary-grid .card { border-top: 3px solid var(--success); }
+
+/* Failure-mode cards — symptom title + cause + fix */
+.failure-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+  margin: 1rem 0;
+}
+.failure-grid > * { min-width: 0; }
+.failure-card {
+  background: #fff;
+  border: 1px solid var(--slate-200);
+  border-left: 4px solid var(--error);
+  border-radius: var(--radius-md);
+  padding: 0.95rem 1.1rem;
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  gap: 0.85rem;
+  align-items: flex-start;
+}
+.failure-card .glyph {
+  flex-shrink: 0;
+  width: 2.2rem;
+  height: 2.2rem;
+  border-radius: 50%;
+  background: var(--error-bg);
+  color: var(--error);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 1.05rem;
+  font-family: var(--font-code);
+}
+.failure-card h4 {
+  font-size: 0.98rem;
+  margin: 0.05rem 0 0.35rem 0;
+  color: var(--navy-700);
+}
+.failure-card .meta { font-size: 0.86rem; color: var(--slate-600); line-height: 1.45; }
+.failure-card .meta .lbl {
+  display: inline-block;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  padding: 0.05em 0.4em;
+  border-radius: 3px;
+  margin-right: 0.4em;
+  vertical-align: 0.05em;
+}
+.failure-card .meta .lbl.cause { background: var(--warning-bg); color: var(--warning); }
+.failure-card .meta .lbl.fix   { background: var(--success-bg); color: var(--success); }
+.failure-card .meta .line { display: block; margin: 0.2em 0; }
+
+/* Context window stacked-bar visualisation */
+.ctx-viz {
+  background: white;
+  border: 1px solid var(--slate-200);
+  border-radius: var(--radius-md);
+  padding: 1.5rem 1.6rem 1.2rem;
+  margin: 1rem 0;
+  box-shadow: var(--shadow-sm);
+}
+.ctx-viz .label-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.85rem;
+  color: var(--slate-500);
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  margin-bottom: 0.5rem;
+}
+.ctx-viz .bar {
+  display: flex;
+  height: 2.2rem;
+  border-radius: 6px;
+  overflow: hidden;
+  border: 1.5px solid var(--slate-300);
+  background: var(--slate-50);
+  position: relative;
+}
+.ctx-viz .seg {
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.78rem;
+  color: white;
+  font-weight: 600;
+  border-right: 1px solid rgba(255,255,255,0.45);
+  white-space: nowrap;
+  overflow: hidden;
+}
+.ctx-viz .seg:last-child { border-right: none; }
+.ctx-viz .seg.sys  { background: var(--navy-700); }
+.ctx-viz .seg.hist { background: var(--info); }
+.ctx-viz .seg.ret  { background: var(--success); }
+.ctx-viz .seg.tool { background: var(--warning); }
+.ctx-viz .seg.user { background: var(--accent-dim); }
+.ctx-viz .seg.free { background: transparent; color: var(--slate-500); border-right: none;
+                     font-style: italic; }
+.ctx-viz .limit-marker {
+  position: absolute;
+  right: -1px; top: -10px; bottom: -10px;
+  border-right: 2px dashed var(--error);
+}
+.ctx-viz .legend {
+  display: flex; flex-wrap: wrap; gap: 1.1rem; margin-top: 0.9rem;
+  font-size: 0.88rem; color: var(--slate-600);
+}
+.ctx-viz .legend .item { display: inline-flex; align-items: center; gap: 0.35rem; }
+.ctx-viz .legend .sw {
+  display: inline-block; width: 0.85rem; height: 0.85rem; border-radius: 3px;
+}
+.ctx-viz .legend .sw.sys  { background: var(--navy-700); }
+.ctx-viz .legend .sw.hist { background: var(--info); }
+.ctx-viz .legend .sw.ret  { background: var(--success); }
+.ctx-viz .legend .sw.tool { background: var(--warning); }
+.ctx-viz .legend .sw.user { background: var(--accent-dim); }
+.ctx-viz .caption-row {
+  margin-top: 0.9rem;
+  display: flex; justify-content: space-between;
+  font-size: 0.8rem; color: var(--slate-500);
+}
+.ctx-viz .caption-row .limit { color: var(--error); font-weight: 700; }
+
+/* App architecture — concrete file diagram */
+.arch-diagram {
+  background: white;
+  border: 1px solid var(--slate-200);
+  border-radius: var(--radius-md);
+  padding: 1.5rem;
+  margin: 1rem 0;
+  box-shadow: var(--shadow-sm);
+}
+.arch-row {
+  display: flex; align-items: center; gap: 1rem;
+  padding: 0.55rem 0.7rem;
+  margin: 0.3rem 0;
+  border-radius: var(--radius-sm);
+}
+.arch-row .file {
+  font-family: var(--font-code);
+  font-size: 0.95rem;
+  font-weight: 600;
+  min-width: 200px;
+}
+.arch-row .desc { font-size: 0.95rem; color: var(--slate-600); flex: 1; }
+.arch-row.navy   { background: var(--navy-50);    color: var(--navy-800); }
+.arch-row.navy   .file { color: var(--navy-700); }
+.arch-row.teal   { background: var(--info-bg);    color: var(--accent-dim); }
+.arch-row.teal   .file { color: var(--accent-dim); }
+.arch-row.green  { background: var(--success-bg); color: var(--success); }
+.arch-row.green  .file { color: var(--success); }
+.arch-row.amber  { background: var(--warning-bg); color: var(--warning); }
+.arch-row.amber  .file { color: var(--warning); }
+.arch-row .arrow { color: var(--slate-400); font-size: 1.05rem; }
+
+/* Token visualisation */
+.token-viz {
+  background: white;
+  border: 1px solid var(--slate-200);
+  border-radius: var(--radius-md);
+  padding: 1.4rem 1.6rem;
+  margin: 1rem 0;
+  box-shadow: var(--shadow-sm);
+}
+.token-viz .phrase {
+  font-family: var(--font-code);
+  font-size: 1.15rem;
+  color: var(--navy-800);
+  text-align: center;
+  margin-bottom: 0.4rem;
+  font-weight: 500;
+}
+.token-viz .arrow-row {
+  text-align: center;
+  font-size: 0.8rem;
+  color: var(--slate-400);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin: 0.7rem 0 0.6rem;
+  font-weight: 600;
+}
+.token-viz .arrow-row .gear {
+  display: inline-block; padding: 0 0.4em; color: var(--accent-dim);
+}
+.token-row {
+  display: flex; flex-wrap: wrap; justify-content: center;
+  gap: 0.35rem;
+  font-family: var(--font-code); font-size: 0.95rem;
+}
+.token-row.char-row { font-size: 0.85rem; }
+.token-row .chip {
+  padding: 0.32em 0.6em;
+  border-radius: 5px;
+  border: 1px solid;
+  background: white;
+  display: inline-block;
+}
+.token-row .chip.c0 { background: var(--info-bg);    border-color: var(--info);       color: var(--accent-dim); }
+.token-row .chip.c1 { background: var(--success-bg); border-color: var(--success);    color: var(--success); }
+.token-row .chip.c2 { background: var(--warning-bg); border-color: var(--warning);    color: var(--warning); }
+.token-row .chip.c3 { background: var(--navy-50);    border-color: var(--navy-300);   color: var(--navy-700); }
+.token-row .chip.cs { background: var(--slate-100);  border-color: var(--slate-300);  color: var(--slate-600); }
+.token-counts {
+  display: flex; justify-content: center; align-items: center;
+  gap: 1.2rem; margin-top: 0.9rem;
+  font-size: 0.95rem;
+}
+.token-counts .count {
+  font-family: var(--font-code);
+  font-weight: 600;
+  color: var(--slate-700);
+}
+.token-counts .count.high  { color: var(--error); }
+.token-counts .count.low   { color: var(--success); }
+.token-counts .arrow { color: var(--slate-400); font-size: 1.1rem; }
+
+/* Resources */
+.resources li { font-size: 1.05rem; margin-bottom: 0.6rem; }
+.resources .label {
+  display: inline-block;
+  font-size: 0.7rem; font-weight: 700;
+  padding: 0.15em 0.5em; border-radius: 3px;
+  margin-right: 0.5em; letter-spacing: 0.05em;
+}
+.resources .label.video { background: var(--error-bg); color: var(--error); }
+.resources .label.docs  { background: var(--info-bg);  color: var(--accent-dim); }
+.resources .label.read  { background: var(--success-bg); color: var(--success); }
+
+@media (max-width: 900px) {
+  :root { --slide-padding: 2rem 2rem; }
+  html { font-size: 17px; }
+  .two-panel, .three-panel { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<!-- ===================================================================
+     SLIDE 1 — TITLE
+     =================================================================== -->
+<section class="slide title-slide">
+  <h1>LLM Fundamentals</h1>
+  <p class="subtitle">Stateless calls, stateful chats, and the loop that powers every LLM app</p>
+</section>
+
+<!-- ===================================================================
+     SLIDE 2 — HOW LLMs ARE MADE
+     =================================================================== -->
+<section class="slide">
+  <h2>How an LLM is made</h2>
+  <div class="intro-banner">
+    A quick anchor before we start using LLMs. Modern chat models come out of a multi-stage training pipeline, and they fall into two architecture families. We won't go deep — just enough perspective on the thing your app is calling.
+  </div>
+
+  <img src="img_class01/llm_training_stages.png" alt="Top: three training stages — Pretraining (trillions of tokens from the open web) arrow Base model (predicts next token, not a chatbot) arrow Chat model (SFT + RLHF, follows instructions). Bottom: two architecture cards — Encoder-Decoder (BART, T5, FLAN; translation, summarisation) and Decoder-only (GPT, Llama, Claude, Gemma; chat, completion, what we use)." class="slide-figure">
+
+  <p style="font-size:1.02rem; color:var(--slate-600);">
+    Everything in this course uses <strong>decoder-only</strong> chat models. The training stages are out of scope — you call the finished model through an API.
+  </p>
+</section>
+
+<!-- ===================================================================
+     SLIDE 3 — LIFECYCLE
+     =================================================================== -->
+<section class="slide">
+  <h2>From model to product</h2>
+  <div class="intro-banner">
+    The model has its own lifecycle, and the app you build on top of it has its own. They meet at the <span class="pill">API</span> — the only contract that crosses between them.
+  </div>
+
+  <img src="img_class01/lifecycle.png" alt="Two zones: model lifecycle (greyed) with stages Pretrain → Align → Serve, and application lifecycle (teal) with stages Prompt → Build → Evaluate, joined by an API pill between them" class="slide-figure">
+
+  <p style="font-size:1.02rem; color:var(--slate-600);">
+    Everything to the right of the API is what this course teaches — real application engineering. The left side is its own engineering discipline that lives in model labs and infrastructure teams.
+  </p>
+</section>
+
+<!-- ===================================================================
+     SLIDE 4 — WHAT IS AN LLM? (real diagram)
+     =================================================================== -->
+<section class="slide">
+  <h2>What an LLM actually does</h2>
+  <div class="intro-banner">
+    Strip away the hype: an LLM is a <span class="pill">learned function</span> that turns a token sequence into a probability distribution over the next token. We sample one token, append it, and repeat.
+  </div>
+
+  <img src="img_class01/llm_blackbox.png" alt="Diagram: input tokens The cat sat on the flow into a Large Language Model with embed, attention, softmax layers and a next-token probability bar chart; one token is sampled (the tall amber bar) and emitted as the generated text" class="slide-figure">
+
+  <div class="two-panel" style="margin-top:0.4rem;">
+    <div class="panel bordered-navy">
+      <h4>What this gives us</h4>
+      <p>Explanation, classification, extraction, summarisation, code assistance — anything you can frame as <em>"continue this text"</em>.</p>
+    </div>
+    <div class="panel bordered-success">
+      <h4>What it does not give us</h4>
+      <p>Persistent memory, real-time facts, or tool use. Those are app-level features — the model itself just predicts the next token.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ===================================================================
+     SLIDE — TOKENS
+     =================================================================== -->
+<section class="slide">
+  <h2>Tokens</h2>
+  <div class="intro-banner">
+    Before the model reads your prompt, a tokenizer chops it into <span class="pill">tokens</span>. There are two flavours to know about — modern LLMs use the second one.
+  </div>
+
+  <div class="token-viz">
+    <div class="phrase">"GenAI engineers build LLM applications."</div>
+
+    <div class="arrow-row">character-level tokenization<span class="gear">▾</span></div>
+    <div class="token-row char-row">
+      <span class="chip cs">G</span><span class="chip cs">e</span><span class="chip cs">n</span><span class="chip cs">A</span><span class="chip cs">I</span>
+      <span class="chip cs">·</span>
+      <span class="chip cs">e</span><span class="chip cs">n</span><span class="chip cs">g</span><span class="chip cs">i</span><span class="chip cs">n</span><span class="chip cs">e</span><span class="chip cs">e</span><span class="chip cs">r</span><span class="chip cs">s</span>
+      <span class="chip cs">·</span>
+      <span class="chip cs">b</span><span class="chip cs">u</span><span class="chip cs">i</span><span class="chip cs">l</span><span class="chip cs">d</span>
+      <span class="chip cs">·</span>
+      <span class="chip cs">L</span><span class="chip cs">L</span><span class="chip cs">M</span>
+      <span class="chip cs">·</span>
+      <span class="chip cs">a</span><span class="chip cs">p</span><span class="chip cs">p</span><span class="chip cs">l</span><span class="chip cs">i</span><span class="chip cs">c</span><span class="chip cs">a</span><span class="chip cs">t</span><span class="chip cs">i</span><span class="chip cs">o</span><span class="chip cs">n</span><span class="chip cs">s</span>
+      <span class="chip cs">.</span>
+    </div>
+
+    <div class="arrow-row">subword-level tokenization &nbsp;·&nbsp; what modern LLMs use<span class="gear">▾</span></div>
+    <div class="token-row">
+      <span class="chip c0">Gen</span>
+      <span class="chip c1">AI</span>
+      <span class="chip c2">&nbsp;engineers</span>
+      <span class="chip c3">&nbsp;build</span>
+      <span class="chip c0">&nbsp;LL</span>
+      <span class="chip c1">M</span>
+      <span class="chip c2">&nbsp;applications</span>
+      <span class="chip c3">.</span>
+    </div>
+
+    <div class="token-counts">
+      <span class="count high">40 character-tokens</span>
+      <span class="arrow">→</span>
+      <span class="count low">8 subword-tokens</span>
+    </div>
+  </div>
+
+  <div class="callout info" style="margin-top:0.6rem;">
+    <div class="callout-title">WHY THIS MATTERS</div>
+    Token count decides whether a prompt <em>fits</em> the model's context window — and what each call costs in money and latency. Subword tokenization (BPE, WordPiece, SentencePiece) is the standard because it gives a good balance: common words stay one token, rare words split into a few pieces.
+  </div>
+</section>
+
+<!-- ===================================================================
+     SLIDE 8 — CONTEXT WINDOW
+     =================================================================== -->
+<section class="slide">
+  <h2>The context window is a budget</h2>
+  <div class="intro-banner">
+    A model can only see a fixed number of tokens per call — its context window. System prompt, history, retrieval, tool results, and your new user message all share that budget.
+  </div>
+
+  <div class="ctx-viz">
+    <div class="label-row">
+      <span>0 tokens</span>
+      <span style="color:var(--error);">8 192-token limit →</span>
+    </div>
+    <div class="bar">
+      <div class="seg sys"  style="flex: 0 0 10%;">system</div>
+      <div class="seg hist" style="flex: 0 0 22%;">chat history</div>
+      <div class="seg ret"  style="flex: 0 0 22%;">retrieved context</div>
+      <div class="seg tool" style="flex: 0 0 6%;">tools</div>
+      <div class="seg user" style="flex: 0 0 8%;">user msg</div>
+      <div class="seg free" style="flex: 1 1 auto;">unused — headroom for the reply</div>
+      <div class="limit-marker"></div>
+    </div>
+    <div class="legend">
+      <span class="item"><span class="sw sys"></span>system &nbsp;<code>~820 t</code></span>
+      <span class="item"><span class="sw hist"></span>history &nbsp;<code>~1 800 t</code></span>
+      <span class="item"><span class="sw ret"></span>retrieved &nbsp;<code>~1 800 t</code></span>
+      <span class="item"><span class="sw tool"></span>tools &nbsp;<code>~480 t</code></span>
+      <span class="item"><span class="sw user"></span>user msg &nbsp;<code>~640 t</code></span>
+    </div>
+    <div class="caption-row">
+      <span>used: ~5 540 tokens of input</span>
+      <span class="limit">limit: 8 192 tokens (model-specific)</span>
+    </div>
+  </div>
+
+  <div class="callout warning">
+    <div class="callout-title">THE MODEL HAS NO MEMORY</div>
+    If you don't put it in this bar, the model doesn't know it. Forgetting this rule is the #1 source of "why doesn't it remember what I just said?" bugs.
+  </div>
+</section>
+
+<!-- ===================================================================
+     SLIDE — MESSAGE ROLES (after context window)
+     =================================================================== -->
+<section class="slide">
+  <h2>The chat-completion message format</h2>
+  <div class="intro-banner">
+    Every chat completion request is a list of role-tagged messages. Each role tells the model how to treat that turn — get the roles wrong and the model behaves wrong, even with identical words.
+  </div>
+
+  <div class="code-block" style="font-size:0.86rem;">
+<span class="comment"># A typical multi-turn request body sent to /v1/chat/completions</span><br>
+messages <span class="op">=</span> [<br>
+&nbsp;&nbsp;{<span class="str">"role"</span>: <span class="str">"system"</span>,    <span class="str">"content"</span>: <span class="str">"You are a careful SQL reviewer. Reply in JSON."</span>},<br>
+&nbsp;&nbsp;{<span class="str">"role"</span>: <span class="str">"user"</span>,      <span class="str">"content"</span>: <span class="str">"Find customers who churned last month."</span>},<br>
+&nbsp;&nbsp;{<span class="str">"role"</span>: <span class="str">"assistant"</span>, <span class="str">"content"</span>: <span class="str">"SELECT * FROM customers WHERE churned_at &gt; '2026-04-01'"</span>},<br>
+&nbsp;&nbsp;{<span class="str">"role"</span>: <span class="str">"tool"</span>,      <span class="str">"content"</span>: <span class="str">'{"rows": 42, "error": null}'</span>},<br>
+&nbsp;&nbsp;{<span class="str">"role"</span>: <span class="str">"user"</span>,      <span class="str">"content"</span>: <span class="str">"Looks right. Now format the result as JSON."</span>},<br>
+]
+  </div>
+
+  <div class="two-panel" style="margin-top:0.6rem;">
+    <div class="panel bordered-info">
+      <h4 style="color:var(--info);"><code>system</code> · <code>user</code></h4>
+      <p style="font-size:0.95rem; color:var(--slate-600);"><strong>system</strong> sets persona, tone, output format — the job description for this whole conversation. <strong>user</strong> is the actual request the model should respond to.</p>
+    </div>
+    <div class="panel bordered-success">
+      <h4 style="color:var(--success);"><code>assistant</code> · <code>tool</code></h4>
+      <p style="font-size:0.95rem; color:var(--slate-600);"><strong>assistant</strong> is what the model said in a prior turn, sent back so it remembers. <strong>tool</strong> carries the result of a function the model asked you to run.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ===================================================================
+     SLIDE — STATELESS CALL
+     =================================================================== -->
+<section class="slide">
+  <h2>Pattern 1 — Stateless call</h2>
+  <div class="intro-banner">
+    The simplest LLM pattern: one prompt in, one answer out. No history. Fast, cheap, predictable — and good for surprisingly many real tasks.
+  </div>
+
+  <div class="two-panel">
+    <div class="panel bordered-info">
+      <h4>Request</h4>
+      <div class="code-block" style="margin:0.4rem 0; font-size:0.86rem;">
+[<br>
+&nbsp;&nbsp;{<span class="str">"role"</span>: <span class="str">"user"</span>,<br>
+&nbsp;&nbsp;&nbsp;<span class="str">"content"</span>: <span class="str">"Classify: 'My package never arrived'"</span>}<br>
+]
+      </div>
+    </div>
+    <div class="panel bordered-success">
+      <h4>Reply</h4>
+      <div class="code-block" style="margin:0.4rem 0; font-size:0.86rem;">
+<span class="str">"shipping_issue"</span>
+      </div>
+    </div>
+  </div>
+
+  <h4 style="margin-top:0.6rem;">When stateless is the right pattern</h4>
+  <table class="data-table">
+    <thead>
+      <tr><th style="width:22%">Use case</th><th>Concrete example</th></tr>
+    </thead>
+    <tbody>
+      <tr><td><strong>Classification</strong></td><td>Tag a support ticket as billing / bug / sales / shipping.</td></tr>
+      <tr><td><strong>Extraction</strong></td><td>Pull a date, amount, and vendor from a free-text invoice.</td></tr>
+      <tr><td><strong>Summarisation</strong></td><td>Compress a 30-minute meeting transcript into five bullets.</td></tr>
+      <tr><td><strong>One-off Q&amp;A</strong></td><td>"What does this error message mean?" — no follow-up needed.</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- ===================================================================
+     SLIDE 10 — STATEFUL CHATBOT
+     =================================================================== -->
+<section class="slide">
+  <h2>Pattern 2 — Stateful chatbot</h2>
+  <div class="intro-banner">
+    A chatbot is just a stateless call <span class="pill">repeated in a loop</span>. You store messages on the app side, then resend the relevant ones every turn.
+  </div>
+
+  <div class="code-block">
+<span class="kw">def</span> <span class="fn">chat</span>(<span class="param">user_msg</span>):<br>
+&nbsp;&nbsp;history.<span class="fn">append</span>({<span class="str">"role"</span>: <span class="str">"user"</span>, <span class="str">"content"</span>: user_msg})<br>
+&nbsp;&nbsp;reply <span class="op">=</span> llm.<span class="fn">complete</span>(messages<span class="op">=</span>history)   <span class="comment"># send the WHOLE history</span><br>
+&nbsp;&nbsp;history.<span class="fn">append</span>({<span class="str">"role"</span>: <span class="str">"assistant"</span>, <span class="str">"content"</span>: reply})<br>
+&nbsp;&nbsp;<span class="kw">return</span> reply
+  </div>
+
+  <p style="font-size:1.02rem; color:var(--slate-600);">The illusion of memory comes from your app, not the model. The model is still stateless — it just gets fed more context each turn.</p>
+</section>
+
+<!-- ===================================================================
+     SLIDE 11 — MEMORY STRATEGIES (with data plot)
+     =================================================================== -->
+<section class="slide">
+  <h2>Memory strategies</h2>
+  <div class="intro-banner">
+    Sending every message back forever is expensive and eventually breaks the context window. Real chatbots trim, summarise, or offload. Pick a strategy based on how much continuity you need.
+  </div>
+
+  <table class="data-table">
+    <thead>
+      <tr><th>Strategy</th><th>What it does</th><th>Best for</th></tr>
+    </thead>
+    <tbody>
+      <tr><td><strong>Full history</strong></td><td>Resend everything every turn.</td><td>Short demos, evaluation runs.</td></tr>
+      <tr><td><strong>Last-N messages</strong></td><td>Keep system + most recent N turns (plus an anchor).</td><td>Most production chatbots.</td></tr>
+      <tr><td><strong>Summary + recent</strong></td><td>Compress old turns; keep latest few raw.</td><td>Long sessions, coaching bots.</td></tr>
+      <tr><td><strong>External memory</strong></td><td>Store facts in a DB; retrieve on demand.</td><td>Personal assistants across sessions.</td></tr>
+    </tbody>
+  </table>
+
+  <div class="callout info">
+    <div class="callout-title">THE TRADEOFF</div>
+    More history → better continuity, higher token cost. Less history → cheaper, but you may lose what the user said three turns ago. There is no free option — pick the smallest window that keeps the bot coherent for your use case.
+  </div>
+</section>
+
+<!-- ===================================================================
+     SLIDE 12 — TEMPERATURE (real distribution plot)
+     =================================================================== -->
+<section class="slide">
+  <h2>Temperature reshapes the next-token distribution</h2>
+  <div class="intro-banner">
+    Temperature scales the model's logits before sampling. <strong>Low</strong> sharpens the distribution onto the most likely token; <strong>high</strong> flattens it so other tokens get a real chance.
+  </div>
+
+  <img src="img_class01/temperature_distributions.png" alt="Three bar charts showing the same prompt's next-token probabilities at temperature 0.0 (one bar at 'the' near 1.0), 0.4 (sharp peak at 'the' around 0.58 with smaller bars for 'a' and 'this'), and 1.0 (gradual distribution with 'the' at 0.38 and several other candidates visible)" class="slide-figure">
+
+  <div class="two-panel" style="margin-top:0.5rem;">
+    <div class="panel bordered-success">
+      <h4>Low temperature (0.0–0.2)</h4>
+      <p>Almost deterministic. Use for: <strong>JSON extraction, classification, SQL, math</strong>. Anything where you want the same answer twice.</p>
+    </div>
+    <div class="panel bordered-warning">
+      <h4>High temperature (0.7–1.0)</h4>
+      <p>Genuinely varied. Use for: <strong>brainstorming, creative writing, idea generation</strong>. Expect different answers each call.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ===================================================================
+     SLIDE 13 — OTHER GENERATION PARAMETERS
+     =================================================================== -->
+<section class="slide">
+  <h2>Other generation parameters</h2>
+  <div class="intro-banner">
+    Temperature is the famous one. These three round out the toolkit and matter as soon as you build real apps.
+  </div>
+
+  <table class="data-table">
+    <thead>
+      <tr><th>Parameter</th><th>What it controls</th><th>When to tune it</th></tr>
+    </thead>
+    <tbody>
+      <tr><td class="mono">max_tokens</td><td>Hard ceiling on the reply length.</td><td>Cap cost; force concise answers; prevent runaway generation.</td></tr>
+      <tr><td class="mono">top_p</td><td>Nucleus sampling — only consider tokens in the top <em>p</em> probability mass.</td><td>Alternative to temperature. Use one or the other, not both.</td></tr>
+      <tr><td class="mono">stop</td><td>List of strings that abort generation when produced.</td><td>End at <code>"\nUser:"</code> in agentic loops, or at <code>"```"</code> in code blocks.</td></tr>
+    </tbody>
+  </table>
+
+  <div class="callout success">
+    <div class="callout-title">DEFAULT PROFILE WE USE IN THIS COURSE</div>
+    <code>temperature=0.2</code>, <code>max_tokens=600</code>, no <code>top_p</code> override, <code>stop=None</code>. Predictable, bounded, easy to reason about.
+  </div>
+</section>
+
+<!-- ===================================================================
+     SLIDE 14 — PROMPT ENGINEERING
+     =================================================================== -->
+<section class="slide">
+  <h2>Prompt engineering</h2>
+  <div class="intro-banner">
+    A weak prompt and a strong prompt feed the same model — the strong one gets dramatically better answers because it removes ambiguity.
+  </div>
+
+  <div class="two-panel">
+    <div class="panel bordered-error">
+      <h4 style="color:var(--error);">Weak prompt</h4>
+      <div class="code-block" style="margin:0.5rem 0; font-size:0.88rem;">
+Explain retrieval-augmented generation.
+      </div>
+      <p style="font-size:0.95rem; color:var(--slate-600);">The model has to guess: who's the audience? how long? bullets or prose? with code? It picks something average and you're disappointed.</p>
+    </div>
+    <div class="panel bordered-success">
+      <h4 style="color:var(--success);">Strong prompt</h4>
+      <div class="code-block" style="margin:0.5rem 0; font-size:0.88rem; white-space:pre-wrap;">Explain retrieval-augmented generation to a beginner. Use 5 bullet points. Give one example using a course document assistant. Avoid advanced math.</div>
+      <p style="font-size:0.95rem; color:var(--slate-600);">Six new constraints: audience, format, length, example domain, scope limit. The model has almost no room to pick wrong.</p>
+    </div>
+  </div>
+
+  <h4 style="margin-top:0.8rem;">The 6 levers</h4>
+  <p style="font-size:1.02rem;">
+    <strong>Role</strong> · <strong>Task</strong> · <strong>Constraints</strong> · <strong>Output format</strong> · <strong>Examples</strong> · <strong>Context</strong>. If a prompt is underperforming, check which lever you forgot to pull.
+  </p>
+</section>
+
+<!-- ===================================================================
+     SLIDE 15 — PROMPT TEMPLATES
+     =================================================================== -->
+<section class="slide">
+  <h2>Prompt templates</h2>
+  <div class="intro-banner">
+    Hardcoded prompt strings are unmaintainable. A template separates the reusable structure from the per-request variables, the same way SQL parameters separate query shape from data.
+  </div>
+
+  <div class="code-block">
+<span class="comment"># app/prompts.py</span><br>
+TUTOR_TEMPLATE <span class="op">=</span> <span class="str">"""You are a {role}.<br>
+Explain {topic} for a {level} learner.<br>
+Use {n_bullets} bullet points. Avoid jargon."""</span><br>
+<br>
+<span class="kw">def</span> <span class="fn">build_tutor_prompt</span>(<span class="param">topic</span>, <span class="param">level</span>):<br>
+&nbsp;&nbsp;<span class="kw">return</span> TUTOR_TEMPLATE.<span class="fn">format</span>(<br>
+&nbsp;&nbsp;&nbsp;&nbsp;role<span class="op">=</span><span class="str">"patient Python tutor"</span>,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;topic<span class="op">=</span>topic,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;level<span class="op">=</span>level,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;n_bullets<span class="op">=</span><span class="num">5</span>,<br>
+&nbsp;&nbsp;)
+  </div>
+
+  <p style="font-size:1.02rem; color:var(--slate-600);">When you change the wording, you change it in one place. When you A/B test prompts, you swap one constant. Templates become the basis for evaluation — same structure, varied inputs.</p>
+</section>
+
+<!-- ===================================================================
+     SLIDE 16 — STRUCTURED OUTPUT
+     =================================================================== -->
+<section class="slide">
+  <h2>Structured output</h2>
+  <div class="intro-banner">
+    Free-text replies are great for humans, useless for the next program in the pipeline. When the consumer is code, ask for <span class="pill">JSON</span> and validate it.
+  </div>
+
+  <div class="two-panel">
+    <div class="panel bordered-info">
+      <h4>What the model returns</h4>
+      <div class="code-block" style="margin:0.5rem 0; font-size:0.88rem;">
+{<br>
+&nbsp;&nbsp;<span class="str">"intent"</span>: <span class="str">"explain_concept"</span>,<br>
+&nbsp;&nbsp;<span class="str">"topic"</span>: <span class="str">"tokens"</span>,<br>
+&nbsp;&nbsp;<span class="str">"difficulty"</span>: <span class="str">"beginner"</span><br>
+}
+      </div>
+    </div>
+    <div class="panel bordered-warning">
+      <h4>What the app does next</h4>
+      <div class="code-block" style="margin:0.5rem 0; font-size:0.88rem;">
+<span class="kw">import</span> json<br>
+<span class="kw">try</span>:<br>
+&nbsp;&nbsp;data <span class="op">=</span> json.<span class="fn">loads</span>(reply)<br>
+<span class="kw">except</span> <span class="cls">ValueError</span>:<br>
+&nbsp;&nbsp;<span class="comment"># retry / fallback</span><br>
+&nbsp;&nbsp;<span class="kw">...</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="callout error">
+    <div class="callout-title">DESIGN FOR PARSE FAILURES</div>
+    Even with <code>temperature=0</code>, the model occasionally returns prose around the JSON, or invalid JSON. Always wrap <code>json.loads()</code> in a <code>try</code> and have a fallback — a single retry usually fixes it.
+  </div>
+</section>
+
+<!-- ===================================================================
+     SLIDE 17 — COMMON FAILURE MODES
+     =================================================================== -->
+<section class="slide">
+  <h2>Common failure modes</h2>
+  <div class="intro-banner">
+    Almost every "the LLM is broken" report traces back to one of these six patterns. Recognising the symptom is half the debugging.
+  </div>
+
+  <div class="failure-grid">
+    <div class="failure-card">
+      <div class="glyph">?!</div>
+      <div>
+        <h4>Generic, off-target answer</h4>
+        <div class="meta">
+          <span class="line"><span class="lbl cause">cause</span>Vague prompt — the model is guessing the audience and format.</span>
+          <span class="line"><span class="lbl fix">fix</span>Pull more of the six levers: role, constraints, output format, an example.</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="failure-card">
+      <div class="glyph">{ }</div>
+      <div>
+        <h4>JSON fails to parse</h4>
+        <div class="meta">
+          <span class="line"><span class="lbl cause">cause</span>Temperature too high, or the prompt didn't show a JSON example.</span>
+          <span class="line"><span class="lbl fix">fix</span>Drop temperature to 0. Include a one-line valid JSON example in the system prompt.</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="failure-card">
+      <div class="glyph">⚠</div>
+      <div>
+        <h4>Confident wrong facts</h4>
+        <div class="meta">
+          <span class="line"><span class="lbl cause">cause</span>Hallucination — the model is filling gaps from its training distribution.</span>
+          <span class="line"><span class="lbl fix">fix</span>Ground the answer in retrieved data instead of relying on the model's memory.</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="failure-card">
+      <div class="glyph">$$</div>
+      <div>
+        <h4>Slow or costly responses</h4>
+        <div class="meta">
+          <span class="line"><span class="lbl cause">cause</span>Sending too much context — long history, oversized retrieved passages.</span>
+          <span class="line"><span class="lbl fix">fix</span>Trim history with last-N; retrieve fewer, more relevant passages.</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="failure-card">
+      <div class="glyph">↩</div>
+      <div>
+        <h4>Loses earlier context</h4>
+        <div class="meta">
+          <span class="line"><span class="lbl cause">cause</span>History exceeded the context window, or was trimmed too aggressively.</span>
+          <span class="line"><span class="lbl fix">fix</span>Switch to summary memory or always keep an anchor (first user message).</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="failure-card">
+      <div class="glyph">≠</div>
+      <div>
+        <h4>Style drifts across calls</h4>
+        <div class="meta">
+          <span class="line"><span class="lbl cause">cause</span>Different code paths each send a slightly different system prompt.</span>
+          <span class="line"><span class="lbl fix">fix</span>Centralise prompts in <code>prompts.py</code>; use templates, not inline strings.</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================================================================
+     SLIDE — WHAT YOU'LL BUILD
+     =================================================================== -->
+<section class="slide">
+  <h2>What you'll build today</h2>
+  <div class="intro-banner">
+    Six runnable modes — each maps to one concept from this deck. By the end of class you have a CLI that demonstrates every fundamental we covered.
+  </div>
+
+  <div class="two-panel" style="grid-template-columns: 1fr 1fr 1fr;">
+    <div class="card"><span class="card-tag teal">--mode stateless</span><h4>Stateless prompt</h4><p>One prompt, one answer. The single-call pattern in code.</p></div>
+    <div class="card"><span class="card-tag amber">--mode chat</span><h4>Stateful chatbot</h4><p>REPL with last-N memory, prints per-turn token cost.</p></div>
+    <div class="card"><span class="card-tag green">--mode temperature-demo</span><h4>Temperature experiment</h4><p>Same prompt at 0.0, 0.5, 0.9 — watch variance climb.</p></div>
+
+    <div class="card"><span class="card-tag navy">--mode prompt-compare</span><h4>System vs user prompt</h4><p>One user message, two different system prompts.</p></div>
+    <div class="card"><span class="card-tag teal">--mode structured-output</span><h4>Structured JSON</h4><p>Returns a parseable dict, validated on the way out.</p></div>
+    <div class="card"><span class="card-tag green">--mode tokens</span><h4>Token growth demo</h4><p>Full-history vs last-N tokens over 6 turns.</p></div>
+  </div>
+</section>
+
+<!-- ===================================================================
+     SLIDE 20 — RESOURCES & RECAP
+     =================================================================== -->
+<section class="slide">
+  <h2>Recap &amp; resources</h2>
+  <div class="intro-banner">
+    You now have the mental model every other class builds on. Take 20 minutes with one of these resources before next session — pick the one that fills your weakest spot.
+  </div>
+
+  <h4>What you learned</h4>
+  <div class="summary-grid" style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap: 1.1rem; margin: 1rem 0;">
+    <div class="card"><h4>Messages, not strings</h4><p>Chat models read role-tagged message lists.</p></div>
+    <div class="card"><h4>Stateless underneath</h4><p>Memory is your app's job, not the model's.</p></div>
+    <div class="card"><h4>Tokens = budget</h4><p>Every prompt fights for context-window space.</p></div>
+    <div class="card"><h4>Temperature = stability</h4><p>Low for JSON and facts; high for ideation.</p></div>
+    <div class="card"><h4>Templates over strings</h4><p>Separate prompt structure from per-call variables.</p></div>
+    <div class="card"><h4>JSON for code consumers</h4><p>Always validate; design for parse failures.</p></div>
+  </div>
+
+  <h4 style="margin-top:1.2rem;">Curated resources</h4>
+  <ul class="resources">
+    <li><span class="label video">VIDEO</span> Andrej Karpathy — <a href="https://www.youtube.com/watch?v=zjkBMFhNj_g" target="_blank">Intro to Large Language Models (1h)</a>. The single best mental-model talk on what an LLM actually is.</li>
+    <li><span class="label video">VIDEO</span> 3Blue1Brown — <a href="https://www.youtube.com/watch?v=wjZofJX0v4M" target="_blank">But what is a GPT?</a> Visual intuition for attention and next-token prediction.</li>
+    <li><span class="label docs">DOCS</span> <a href="https://platform.openai.com/docs/guides/text-generation" target="_blank">OpenAI — Text generation guide</a>. The reference for the chat-message format we use all course.</li>
+  </ul>
+</section>
+
+<script>
+(function () {
+  "use strict";
+  const CONFIG = {
+    slideSelector: ".slide",
+    slideNumberClass: "slide-number",
+    katexAutoRenderOptions: {
+      delimiters: [
+        { left: "$$", right: "$$", display: true },
+        { left: "$", right: "$", display: false },
+      ],
+      throwOnError: false,
+      errorColor: "#EF4444",
+    },
+  };
+  let slides = [];
+  let currentSlideIndex = 0;
+
+  function init() {
+    slides = Array.from(document.querySelectorAll(CONFIG.slideSelector));
+    if (slides.length === 0) return;
+    autoNumberSlides();
+    renderKaTeX();
+    bindKeyboard();
+  }
+  function autoNumberSlides() {
+    const total = slides.length;
+    slides.forEach(function (slide, i) {
+      if (slide.querySelector("." + CONFIG.slideNumberClass)) return;
+      var num = document.createElement("span");
+      num.className = CONFIG.slideNumberClass;
+      num.textContent = (i + 1) + " / " + total;
+      slide.appendChild(num);
+      if (!slide.id) slide.id = "slide-" + (i + 1);
+    });
+  }
+  function renderKaTeX() {
+    if (typeof window.renderMathInElement !== "function") return;
+    slides.forEach(function (slide) {
+      window.renderMathInElement(slide, CONFIG.katexAutoRenderOptions);
+    });
+  }
+  function bindKeyboard() {
+    document.addEventListener("keydown", function (e) {
+      var tag = (e.target.tagName || "").toLowerCase();
+      if (tag === "input" || tag === "textarea") return;
+      switch (e.key) {
+        case "ArrowRight": case "ArrowDown": case "PageDown":
+          e.preventDefault(); navigateTo(currentSlideIndex + 1); break;
+        case "ArrowLeft": case "ArrowUp": case "PageUp":
+          e.preventDefault(); navigateTo(currentSlideIndex - 1); break;
+        case "Home": e.preventDefault(); navigateTo(0); break;
+        case "End":  e.preventDefault(); navigateTo(slides.length - 1); break;
+      }
+    });
+  }
+  function navigateTo(index) {
+    if (index < 0 || index >= slides.length) return;
+    currentSlideIndex = index;
+    slides[index].scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", init);
+  } else {
+    init();
+  }
+})();
+</script>
+</body>
+</html>
