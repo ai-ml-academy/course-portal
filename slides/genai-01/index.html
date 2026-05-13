@@ -565,10 +565,10 @@ code {
 </section>
 
 <!-- ===================================================================
-     TOKENS
+     TOKENIZATION
      =================================================================== -->
 <section class="slide">
-  <h2>Tokens</h2>
+  <h2>Tokenization</h2>
   <div class="intro-banner">
     Before the model reads your prompt, a tokenizer chops it into <span class="pill">tokens</span>. There are two flavours to know about — modern LLMs use the second one.
   </div>
@@ -613,6 +613,12 @@ code {
     <div class="callout-title">WHY THIS MATTERS</div>
     Token count decides whether a prompt <em>fits</em> the model's context window — and what each call costs in money and latency. Subword tokenization (BPE, WordPiece, SentencePiece) is the standard because it gives a good balance: common words stay one token, rare words split into a few pieces.
   </div>
+
+  <p style="margin-top:0.8rem; text-align:center; font-size:0.98rem; color:var(--slate-700);">
+    <span style="display:inline-block; background:var(--info-bg); color:var(--accent-dim); font-size:0.72rem; font-weight:700; letter-spacing:0.08em; padding:0.18em 0.55em; border-radius:4px; margin-right:0.4em; vertical-align:middle;">TRY IT</span>
+    <a href="https://tiktokenizer.vercel.app/" target="_blank" rel="noopener" style="color:var(--accent-dim); font-weight:600;">tiktokenizer.vercel.app</a>
+    &nbsp;—&nbsp; paste any text and see how different models split it into tokens in real time.
+  </p>
 </section>
 
 <!-- ===================================================================
