@@ -1,0 +1,1192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Local LLMs with Ollama</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+<style>
+/* ============================================================
+   Gen AI Engineer Course — Slide Theme (inlined)
+   ============================================================ */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+:root {
+  --navy-900: #1A3264; --navy-800: #214078; --navy-700: #2E5090;
+  --navy-600: #3660A3; --navy-500: #4272B8; --navy-400: #5A8ACB;
+  --navy-300: #7BA4D8; --navy-200: #A3C0E4; --navy-100: #C8D9EF; --navy-50: #E8EFF7;
+  --slate-900: #1E1E2E; --slate-800: #2A2A3C; --slate-700: #3A3A4F;
+  --slate-600: #4A4A62; --slate-500: #6B6B82; --slate-400: #8E8EA3;
+  --slate-300: #B0B0C2; --slate-200: #D0D0DC; --slate-100: #E8E8EF; --slate-50: #F5F5F9;
+  --info: #36A2B5; --success: #5B9E7B; --warning: #C49545; --error: #D4594E;
+  --info-bg: #EAF5F7; --success-bg: #EDF5F0; --warning-bg: #FBF4E8; --error-bg: #FBEEED;
+  --accent: #4BB8C9; --accent-light: #7FCDD8; --accent-dim: #2A8F9E;
+  --font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-code: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
+  --slide-padding: 3rem 4rem;
+  --slide-max-width: 1150px;
+  --radius-sm: 6px; --radius-md: 10px; --radius-lg: 16px;
+  --shadow-sm: 0 1px 3px rgba(0,0,0,.08);
+  --shadow-md: 0 4px 12px rgba(0,0,0,.10);
+  --shadow-lg: 0 8px 30px rgba(0,0,0,.14);
+  --ease: cubic-bezier(.4, 0, .2, 1);
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { font-size: 19px; scroll-behavior: smooth; -webkit-font-smoothing: antialiased; }
+body { font-family: var(--font-body); color: var(--slate-800); background: var(--slate-50); line-height: 1.6; }
+
+.slide {
+  min-height: 100vh;
+  padding: var(--slide-padding);
+  display: flex; flex-direction: column; justify-content: center;
+  max-width: var(--slide-max-width);
+  margin: 0 auto;
+  position: relative;
+}
+.slide-number {
+  position: absolute; bottom: 1.2rem; right: 1.5rem;
+  font-size: 0.75rem; font-weight: 600; color: var(--slate-400); letter-spacing: 0.04em;
+}
+.slide + .slide { border-top: 1px solid var(--slate-100); }
+
+h1, h2, h3, h4 { color: var(--navy-700); line-height: 1.25; font-weight: 700; letter-spacing: -0.01em; }
+h1 { font-size: 2.8rem; font-weight: 800; margin-bottom: 1rem; }
+h2 { font-size: 2.15rem; margin-bottom: 0.8rem; }
+h3 { font-size: 1.6rem; margin-bottom: 0.6rem; }
+h4 { font-size: 1.3rem; font-weight: 600; margin-bottom: 0.5rem; }
+p { margin-bottom: 1rem; font-size: 1.1rem; }
+strong { font-weight: 600; color: var(--navy-700); }
+a { color: var(--accent-dim); text-decoration: none; border-bottom: 1px solid transparent; transition: border-color 0.2s var(--ease); }
+a:hover { border-bottom-color: var(--accent-dim); }
+ul, ol { margin: 0.5rem 0 1rem 1.6rem; }
+li { margin-bottom: 0.4rem; font-size: 1.1rem; }
+li::marker { color: var(--navy-400); }
+
+.subtitle { font-size: 1.3rem; color: var(--slate-500); font-weight: 400; margin-bottom: 1.5rem; }
+.muted { color: var(--slate-400); }
+
+/* Intro banner (S10e) */
+.intro-banner {
+  border-left: 4px solid var(--accent-dim);
+  background: var(--info-bg);
+  padding: 0.9rem 1.2rem;
+  font-size: 1.05rem;
+  font-weight: 500;
+  color: var(--navy-800);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  margin: 1rem 0 1.4rem 0;
+}
+
+/* Key-phrase pill (S10f) */
+.pill {
+  background: var(--warning-bg);
+  padding: 0 0.3em;
+  border-radius: 3px;
+  font-weight: 600;
+  color: var(--navy-700);
+}
+
+/* Slide figure — generated PNG */
+.slide-figure {
+  display: block;
+  margin: 0.6rem auto 1.0rem;
+  max-width: 100%;
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-md);
+  background: white;
+}
+
+/* Title slide */
+.slide.title-slide {
+  text-align: center;
+  background: linear-gradient(135deg, var(--navy-800) 0%, var(--navy-600) 100%);
+  color: #fff;
+}
+.slide.title-slide h1 { color: #fff; font-size: 3.4rem; margin-bottom: 0.6rem; }
+.slide.title-slide .subtitle { color: var(--navy-100); font-size: 1.4rem; }
+
+/* Code blocks (S08 — soft-dark bg) */
+.code-block {
+  background: var(--slate-800);
+  color: #E2E8F0;
+  font-family: var(--font-code);
+  font-size: 0.92rem;
+  line-height: 1.65;
+  padding: 1.3rem 1.5rem;
+  border-radius: var(--radius-md);
+  overflow-x: auto;
+  margin: 1rem 0;
+  box-shadow: var(--shadow-md);
+  position: relative;
+}
+.code-block .label {
+  position: absolute; top: 0.5rem; right: 0.8rem;
+  font-size: 0.65rem; font-weight: 600; text-transform: uppercase;
+  letter-spacing: 0.08em; color: var(--slate-400); font-family: var(--font-body);
+}
+.code-block .kw      { color: #C792EA; }
+.code-block .fn      { color: #82AAFF; }
+.code-block .str     { color: #C3E88D; }
+.code-block .num     { color: #F78C6C; }
+.code-block .comment { color: #50FA7B; font-style: italic; }
+.code-block .op      { color: #89DDFF; }
+.code-block .cls     { color: #E8C577; }
+.code-block .dec     { color: #F07178; }
+.code-block .builtin { color: #89DDFF; }
+.code-block .param   { color: #E2E8F0; font-style: italic; }
+
+/* S09 — disable ligatures */
+.code-block, .code-block *, code {
+  font-variant-ligatures: none;
+  font-feature-settings: "liga" 0, "calt" 0;
+}
+
+code {
+  font-family: var(--font-code); font-size: 0.88em;
+  background: var(--navy-50); color: var(--navy-700);
+  padding: 0.15em 0.4em; border-radius: 4px;
+}
+
+/* Panels — S10a min-width:0 */
+.two-panel { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin: 1rem 0; }
+.three-panel { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1.2rem; margin: 1rem 0; }
+.two-panel > *, .three-panel > * { min-width: 0; }
+
+.panel {
+  background: #fff;
+  border: 1px solid var(--slate-200);
+  border-radius: var(--radius-md);
+  padding: 1.3rem;
+  box-shadow: var(--shadow-sm);
+}
+.panel h4 { margin-bottom: 0.5rem; color: var(--navy-700); font-size: 1.05rem; }
+.panel.bordered-success { border-top: 3px solid var(--success); }
+.panel.bordered-warning { border-top: 3px solid var(--warning); }
+.panel.bordered-info    { border-top: 3px solid var(--info); }
+.panel.bordered-navy    { border-top: 3px solid var(--navy-600); }
+.panel.bordered-error   { border-top: 3px solid var(--error); }
+.panel.bordered-teal    { border-top: 3px solid var(--accent-dim); }
+
+/* Panel label chips */
+.panel-label {
+  display: inline-block;
+  font-size: 0.7rem; font-weight: 700; letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 0.18em 0.55em;
+  border-radius: 4px;
+  margin-bottom: 0.5rem;
+}
+.panel-label.teal   { background: var(--info-bg);    color: var(--accent-dim); }
+.panel-label.amber  { background: var(--warning-bg); color: var(--warning); }
+.panel-label.navy   { background: var(--navy-50);    color: var(--navy-700); }
+
+/* Data table */
+.data-table {
+  width: 100%; border-collapse: collapse; margin: 1rem 0; font-size: 0.95rem;
+}
+.data-table th {
+  background: var(--navy-700); color: #fff; font-weight: 600;
+  text-align: left; padding: 0.7rem 1rem;
+}
+.data-table th:first-child { border-radius: var(--radius-sm) 0 0 0; }
+.data-table th:last-child  { border-radius: 0 var(--radius-sm) 0 0; }
+.data-table td {
+  padding: 0.6rem 1rem; border-bottom: 1px solid var(--slate-100); vertical-align: top;
+}
+.data-table tr:last-child td { border-bottom: none; }
+.data-table tbody tr:nth-child(even) { background: var(--slate-50); }
+.data-table .mono { font-family: var(--font-code); font-size: 0.9em; }
+
+/* Callouts */
+.callout {
+  padding: 1.1rem 1.3rem;
+  border-radius: var(--radius-md);
+  margin: 1rem 0;
+  border-left: 4px solid;
+  font-size: 0.97rem;
+}
+.callout-title { font-weight: 700; margin-bottom: 0.3rem; font-size: 0.92rem; letter-spacing: 0.02em; }
+.callout.info    { background: var(--info-bg);    border-color: var(--info); }
+.callout.warning { background: var(--warning-bg); border-color: var(--warning); }
+.callout.success { background: var(--success-bg); border-color: var(--success); }
+.callout.error   { background: var(--error-bg);   border-color: var(--error); }
+.callout.info .callout-title    { color: var(--info); }
+.callout.warning .callout-title { color: var(--warning); }
+.callout.success .callout-title { color: var(--success); }
+.callout.error .callout-title   { color: var(--error); }
+
+/* Card grid */
+.card {
+  background: #fff;
+  border: 1px solid var(--slate-200);
+  border-radius: var(--radius-md);
+  padding: 1.2rem;
+  box-shadow: var(--shadow-sm);
+}
+.card h4 { font-size: 1.05rem; margin-bottom: 0.4rem; color: var(--navy-700); }
+.card p  { font-size: 0.92rem; color: var(--slate-600); margin-bottom: 0; }
+
+.card-tag {
+  display: inline-block;
+  font-size: 0.65rem; font-weight: 700; letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 0.18em 0.55em;
+  border-radius: 4px;
+  margin-bottom: 0.5rem;
+}
+.card-tag.teal   { background: var(--info-bg);    color: var(--accent-dim); }
+.card-tag.green  { background: var(--success-bg); color: var(--success); }
+.card-tag.amber  { background: var(--warning-bg); color: var(--warning); }
+.card-tag.navy   { background: var(--navy-50);    color: var(--navy-700); }
+
+.summary-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1.1rem; margin: 1rem 0; }
+.summary-grid > * { min-width: 0; }
+.summary-grid .card { border-top: 3px solid var(--success); }
+
+/* Failure-mode cards */
+.failure-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+  margin: 1rem 0;
+}
+.failure-grid > * { min-width: 0; }
+.failure-card {
+  background: #fff;
+  border: 1px solid var(--slate-200);
+  border-left: 4px solid var(--error);
+  border-radius: var(--radius-md);
+  padding: 0.95rem 1.1rem;
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  gap: 0.85rem;
+  align-items: flex-start;
+}
+.failure-card .glyph {
+  flex-shrink: 0;
+  width: 2.2rem;
+  height: 2.2rem;
+  border-radius: 50%;
+  background: var(--error-bg);
+  color: var(--error);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 1.05rem;
+  font-family: var(--font-code);
+}
+.failure-card h4 {
+  font-size: 0.98rem;
+  margin: 0.05rem 0 0.35rem 0;
+  color: var(--navy-700);
+}
+.failure-card .meta { font-size: 0.86rem; color: var(--slate-600); line-height: 1.45; }
+.failure-card .meta .lbl {
+  display: inline-block;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  padding: 0.05em 0.4em;
+  border-radius: 3px;
+  margin-right: 0.4em;
+  vertical-align: 0.05em;
+}
+.failure-card .meta .lbl.cause { background: var(--warning-bg); color: var(--warning); }
+.failure-card .meta .lbl.fix   { background: var(--success-bg); color: var(--success); }
+.failure-card .meta .line { display: block; margin: 0.2em 0; }
+
+/* App architecture diagram */
+.arch-diagram {
+  background: white;
+  border: 1px solid var(--slate-200);
+  border-radius: var(--radius-md);
+  padding: 1.4rem 1.5rem;
+  margin: 1rem 0;
+  box-shadow: var(--shadow-sm);
+}
+.arch-row {
+  display: flex; align-items: center; gap: 1rem;
+  padding: 0.5rem 0.7rem;
+  margin: 0.25rem 0;
+  border-radius: var(--radius-sm);
+}
+.arch-row .file {
+  font-family: var(--font-code);
+  font-size: 0.95rem;
+  font-weight: 600;
+  min-width: 220px;
+}
+.arch-row .desc { font-size: 0.95rem; color: var(--slate-600); flex: 1; }
+.arch-row.navy   { background: var(--navy-50);    color: var(--navy-800); }
+.arch-row.navy   .file { color: var(--navy-700); }
+.arch-row.teal   { background: var(--info-bg);    color: var(--accent-dim); }
+.arch-row.teal   .file { color: var(--accent-dim); }
+.arch-row.green  { background: var(--success-bg); color: var(--success); }
+.arch-row.green  .file { color: var(--success); }
+.arch-row.amber  { background: var(--warning-bg); color: var(--warning); }
+.arch-row.amber  .file { color: var(--warning); }
+
+.arch-section-label {
+  display: inline-block;
+  font-size: 0.72rem; font-weight: 700;
+  letter-spacing: 0.08em; text-transform: uppercase;
+  color: var(--slate-500);
+  margin: 0.8rem 0 0.3rem 0.4rem;
+}
+
+/* Diagnostic step-list (for "inspect retrieval" slide) */
+.diag-flow {
+  display: flex; align-items: stretch; gap: 0;
+  margin: 1rem 0;
+}
+.diag-flow .step {
+  flex: 1;
+  background: white;
+  border: 1px solid var(--slate-200);
+  border-radius: var(--radius-md);
+  padding: 0.9rem 1rem;
+  margin: 0 0.4rem;
+  box-shadow: var(--shadow-sm);
+  position: relative;
+}
+.diag-flow .step h4 { font-size: 0.95rem; margin-bottom: 0.3rem; color: var(--navy-700); }
+.diag-flow .step p  { font-size: 0.86rem; color: var(--slate-600); margin: 0; }
+.diag-flow .step.q1 { border-top: 3px solid var(--accent-dim); }
+.diag-flow .step.q2 { border-top: 3px solid var(--warning); }
+.diag-flow .step.q3 { border-top: 3px solid var(--success); }
+.diag-flow .arrow {
+  display: flex; align-items: center; justify-content: center;
+  color: var(--slate-400);
+  font-size: 1.5rem; font-weight: 700;
+}
+
+/* Resources */
+.resources li { font-size: 1.05rem; margin-bottom: 0.6rem; }
+.resources .label {
+  display: inline-block;
+  font-size: 0.7rem; font-weight: 700;
+  padding: 0.15em 0.5em; border-radius: 3px;
+  margin-right: 0.5em; letter-spacing: 0.05em;
+}
+.resources .label.video { background: var(--error-bg); color: var(--error); }
+.resources .label.docs  { background: var(--info-bg);  color: var(--accent-dim); }
+.resources .label.read  { background: var(--success-bg); color: var(--success); }
+
+@media (max-width: 900px) {
+  :root { --slide-padding: 2rem 2rem; }
+  html { font-size: 17px; }
+  .two-panel, .three-panel, .summary-grid, .failure-grid { grid-template-columns: 1fr; }
+  .diag-flow { flex-direction: column; }
+  .diag-flow .arrow { transform: rotate(90deg); padding: 0.5rem 0; }
+}
+</style>
+
+<style>
+/* Terminal-style block for showing CLI sessions */
+.terminal {
+  background: #1A1A26;
+  color: #E2E8F0;
+  font-family: var(--font-code);
+  font-size: 0.88rem;
+  line-height: 1.55;
+  padding: 1.1rem 1.3rem;
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-md);
+  margin: 0.8rem 0;
+  white-space: pre-wrap;
+  position: relative;
+}
+.terminal::before {
+  content: "● ● ●";
+  position: absolute;
+  top: 0.4rem; left: 0.7rem;
+  font-size: 0.55rem;
+  letter-spacing: 0.2em;
+  color: #4A4A62;
+}
+.terminal .prompt { color: #82AAFF; font-weight: 600; }
+.terminal .user-input { color: #C3E88D; }
+.terminal .response { color: #B0B0C2; }
+.terminal .comment { color: #50FA7B; font-style: italic; }
+.terminal .label-tag {
+  position: absolute; top: 0.4rem; right: 0.8rem;
+  font-size: 0.62rem; font-weight: 600; text-transform: uppercase;
+  letter-spacing: 0.08em; color: var(--slate-400);
+  font-family: var(--font-body);
+}
+
+/* Tool brand icons for slide 3 */
+.tool-icon {
+  width: 44px; height: 44px;
+  display: block; margin-bottom: 0.6rem;
+}
+
+/* Layered architecture diagram (slide 4) */
+.ollama-arch {
+  margin: 0.8rem auto 0.4rem;
+  max-width: 760px;
+  background: var(--slate-50);
+  border: 1.5px dashed var(--accent-dim);
+  border-radius: var(--radius-md);
+  padding: 1.5rem 1.2rem 1.2rem;
+  position: relative;
+}
+.ollama-arch::before {
+  content: "YOUR MACHINE";
+  position: absolute;
+  top: -0.7rem; left: 1.2rem;
+  background: var(--slate-50);
+  padding: 0 0.6rem;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  color: var(--accent-dim);
+}
+.arch-layer {
+  display: flex;
+  justify-content: center;
+  gap: 1.2rem;
+}
+.arch-card {
+  background: #fff;
+  border: 1px solid var(--slate-200);
+  border-radius: var(--radius-md);
+  padding: 0.8rem 1.1rem;
+  text-align: center;
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.3rem;
+  min-width: 200px;
+}
+.arch-card.wide   { min-width: 420px; }
+.arch-card.daemon { border-top: 3px solid var(--info); }
+.arch-card.disk   { border-top: 3px solid var(--warning); }
+.arch-card .icon { color: var(--navy-600); }
+.arch-card.daemon .icon { color: var(--info); }
+.arch-card.disk   .icon { color: var(--warning); }
+.arch-card .name {
+  font-weight: 600;
+  color: var(--navy-700);
+  font-size: 1.0rem;
+}
+.arch-card .hint {
+  font-family: var(--font-code);
+  font-size: 0.78rem;
+  color: var(--slate-500);
+}
+.arch-conn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 0.3rem 0;
+}
+.arch-conn .label {
+  font-size: 0.78rem;
+  color: var(--slate-500);
+  font-family: var(--font-code);
+  background: var(--slate-50);
+  padding: 0.05rem 0.5rem;
+  border-radius: 3px;
+  margin-bottom: 0.1rem;
+}
+.arch-conn .arrow {
+  color: var(--slate-400);
+  font-size: 1.4rem;
+  line-height: 1;
+}
+
+/* Cheatsheet two-column table */
+.cheat {
+  display: grid;
+  grid-template-columns: 1fr 1.4fr;
+  gap: 0 1.2rem;
+  margin: 1rem 0;
+  font-size: 0.94rem;
+}
+.cheat .row {
+  display: contents;
+}
+.cheat .cmd {
+  font-family: var(--font-code);
+  background: var(--slate-800);
+  color: #E2E8F0;
+  padding: 0.4rem 0.6rem;
+  border-radius: var(--radius-sm);
+  margin-bottom: 0.4rem;
+  font-size: 0.85rem;
+}
+.cheat .desc {
+  color: var(--slate-600);
+  padding: 0.45rem 0;
+  margin-bottom: 0.4rem;
+  border-bottom: 1px solid var(--slate-100);
+}
+
+/* Comparison cards used on "what is a local LLM" */
+.compare-pair {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.2rem;
+  margin: 1rem 0;
+}
+.compare-card {
+  background: #fff;
+  border: 1px solid var(--slate-200);
+  border-radius: var(--radius-md);
+  padding: 1.1rem;
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  flex-direction: column;
+}
+.compare-card h4 { margin-bottom: 0.5rem; font-size: 1.1rem; }
+.compare-card.cloud { border-top: 3px solid var(--slate-500); }
+.compare-card.local { border-top: 3px solid var(--success); }
+.compare-card ul {
+  margin: 0.3rem 0 0 0.9rem;
+  font-size: 0.82rem;
+  color: var(--slate-600);
+}
+.compare-card ul li { margin-bottom: 0.15rem; line-height: 1.35; }
+.compare-card ul li strong { color: var(--navy-700); }
+
+/* Zone-based flow diagrams */
+.cloud-flow, .local-flow {
+  display: flex;
+  align-items: stretch;
+  gap: 0;
+  margin: 0.4rem 0 0.7rem;
+  min-height: 100px;
+}
+.zone {
+  flex: 1;
+  background: var(--slate-50);
+  border: 1.5px solid var(--slate-200);
+  border-radius: var(--radius-sm);
+  padding: 1.1rem 0.5rem 0.6rem;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  gap: 0.2rem;
+}
+.zone-tag {
+  position: absolute;
+  top: -0.6rem; left: 0.6rem;
+  background: #fff;
+  padding: 0.05rem 0.5rem;
+  font-size: 0.62rem; font-weight: 700;
+  letter-spacing: 0.1em; text-transform: uppercase;
+  color: var(--slate-500);
+  border-radius: 3px;
+}
+.zone.local-zone {
+  background: var(--success-bg);
+  border: 2px solid var(--success);
+}
+.zone.local-zone .zone-tag {
+  background: var(--success);
+  color: #fff;
+}
+.zone.provider-zone .zone-tag {
+  color: var(--error);
+}
+.cross-arrow {
+  width: 70px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.15rem;
+}
+.cross-arrow .conn-line {
+  width: 100%;
+  border-top: 2px dashed var(--error);
+  position: relative;
+}
+.cross-arrow .conn-line::after {
+  content: "";
+  position: absolute;
+  right: -2px; top: -5px;
+  border-left: 7px solid var(--error);
+  border-top: 5px solid transparent;
+  border-bottom: 5px solid transparent;
+}
+.cross-arrow .cross-label {
+  font-size: 0.65rem;
+  font-weight: 600;
+  color: var(--error);
+  letter-spacing: 0.04em;
+}
+.flow-step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.2rem;
+}
+.flow-step .icon { color: var(--navy-700); }
+.flow-step .lbl {
+  font-size: 0.7rem;
+  color: var(--slate-600);
+  text-align: center;
+  line-height: 1.15;
+  max-width: 80px;
+}
+.zone.local-zone .flow-step .icon { color: var(--success); }
+.zone.local-zone .flow-step .lbl { color: var(--slate-700); font-weight: 600; }
+.zone.provider-zone .flow-step .icon { color: var(--error); }
+.inline-arrow {
+  color: var(--slate-400);
+  font-size: 1.1rem;
+  font-weight: 700;
+  align-self: center;
+  padding: 0 0.1rem;
+}
+.zone.local-zone .inline-arrow { color: var(--success); }
+
+/* Full-width install rows — compact horizontal cards */
+.install-rows { display: flex; flex-direction: column; gap: 0.5rem; margin: 0.8rem 0; }
+.install-row {
+  display: grid;
+  grid-template-columns: 80px 1fr auto;
+  gap: 1rem;
+  align-items: center;
+  background: #fff;
+  border: 1px solid var(--slate-200);
+  border-left: 4px solid var(--accent-dim);
+  border-radius: var(--radius-sm);
+  padding: 0.55rem 0.9rem;
+  box-shadow: var(--shadow-sm);
+}
+.install-row.linux   { border-left-color: var(--navy-600); }
+.install-row.windows { border-left-color: var(--warning); }
+.install-row .meta { font-size: 0.93rem; color: var(--slate-600); line-height: 1.4; }
+.install-row pre.code-block {
+  margin: 0;
+  font-size: 0.82rem;
+  padding: 0.4rem 0.7rem;
+  box-shadow: none;
+  white-space: pre;
+  max-width: 480px;
+}
+.install-row pre.code-block a {
+  color: #82AAFF;
+  border-bottom: 1px dashed rgba(130, 170, 255, 0.4);
+}
+.install-row pre.code-block a:hover {
+  color: #A8C5FF;
+  border-bottom-color: #A8C5FF;
+}
+</style>
+
+</head>
+<body>
+
+<section class="slide title-slide">
+  <h1>Local LLMs with Ollama</h1>
+  <p class="subtitle">Pull a model, chat in the terminal, call it from Python — all on your laptop</p>
+</section>
+
+<!-- ===================================================================
+     SLIDE 2 — WHAT IS A LOCAL LLM
+     =================================================================== -->
+<section class="slide">
+  <h2>What is a local LLM</h2>
+  <div class="intro-banner">
+    A <span class="pill">local LLM</span> runs on your machine. The model weights sit in <code>~/.ollama/models</code>, inference uses your CPU or GPU, and the only thing that leaves your laptop is whatever you choose to share. No API key. No per-token bill. Works on a plane.
+  </div>
+
+  <div class="compare-pair">
+    <div class="compare-card cloud">
+      <h4>Cloud LLM — your data goes out</h4>
+      <div class="cloud-flow">
+        <div class="zone">
+          <span class="zone-tag">your machine</span>
+          <div class="flow-step">
+            <svg class="icon" width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="4" width="18" height="12" rx="1.5"/>
+              <line x1="2" y1="20" x2="22" y2="20"/>
+            </svg>
+            <span class="lbl">your code</span>
+          </div>
+        </div>
+        <div class="cross-arrow">
+          <span class="cross-label">HTTPS</span>
+          <div class="conn-line"></div>
+          <span class="cross-label" style="color:var(--slate-500);">internet</span>
+        </div>
+        <div class="zone provider-zone">
+          <span class="zone-tag">provider</span>
+          <div class="flow-step">
+            <svg class="icon" width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M7 15a4 4 0 0 1 .5-7.95A6 6 0 0 1 19 9a4 4 0 0 1-1 7.9"/>
+              <line x1="7" y1="15" x2="18" y2="15"/>
+            </svg>
+            <span class="lbl">data center</span>
+          </div>
+          <div class="flow-step">
+            <svg class="icon" width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="4" width="18" height="6" rx="1.5"/>
+              <rect x="3" y="14" width="18" height="6" rx="1.5"/>
+              <circle cx="7" cy="7"  r="0.9" fill="currentColor"/>
+              <circle cx="7" cy="17" r="0.9" fill="currentColor"/>
+            </svg>
+            <span class="lbl">GPUs + model</span>
+          </div>
+        </div>
+      </div>
+      <ul>
+        <li><strong>Network</strong> — every input leaves the machine</li>
+        <li><strong>Cost</strong> — pay per token, every call</li>
+        <li><strong>Control</strong> — vendor owns versions and deprecations</li>
+      </ul>
+    </div>
+
+    <div class="compare-card local">
+      <h4>Local LLM — nothing leaves the box</h4>
+      <div class="local-flow">
+        <div class="zone local-zone">
+          <span class="zone-tag">your machine — everything inside</span>
+          <div class="flow-step">
+            <svg class="icon" width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="4" width="18" height="12" rx="1.5"/>
+              <line x1="2" y1="20" x2="22" y2="20"/>
+            </svg>
+            <span class="lbl">your code</span>
+          </div>
+          <span class="inline-arrow">→</span>
+          <div class="flow-step">
+            <svg class="icon" width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="3"/>
+              <path d="M12 2v3 M12 19v3 M2 12h3 M19 12h3 M5 5l2 2 M17 17l2 2 M5 19l2-2 M17 7l2-2"/>
+            </svg>
+            <span class="lbl">Ollama :11434</span>
+          </div>
+          <span class="inline-arrow">→</span>
+          <div class="flow-step">
+            <svg class="icon" width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+              <ellipse cx="12" cy="5" rx="8" ry="2.5"/>
+              <path d="M4 5v6c0 1.4 3.6 2.5 8 2.5s8-1.1 8-2.5V5"/>
+              <path d="M4 11v6c0 1.4 3.6 2.5 8 2.5s8-1.1 8-2.5v-6"/>
+            </svg>
+            <span class="lbl">model on disk</span>
+          </div>
+        </div>
+      </div>
+      <ul>
+        <li><strong>Network</strong> — nothing leaves the box, works offline</li>
+        <li><strong>Cost</strong> — zero tokens, just electricity</li>
+        <li><strong>Control</strong> — you pin the version forever</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="callout info" style="margin-top:0.4rem;">
+    <div class="callout-title">THE HONEST TRADEOFF</div>
+    A 7B local model won't out-reason GPT-5 on tricky tasks — frontier cloud models are larger, smarter, and pricier for a reason. But for learning, prototyping, and most production RAG, a local 3B–8B is plenty. Build local first; reach for cloud only when quality genuinely requires it.
+  </div>
+</section>
+
+<!-- ===================================================================
+     SLIDE 3 — TOOLS FOR RUNNING LOCAL LLMS
+     =================================================================== -->
+<section class="slide">
+  <h2>Tools for running local LLMs</h2>
+  <div class="intro-banner">
+    Three popular ways to run open-weight models on a laptop. They wrap the same underlying inference engines (<code>llama.cpp</code>, <code>gguf</code>) but differ in interface. <span class="pill">This deck uses Ollama</span> — simplest CLI, OpenAI-compatible API out of the box.
+  </div>
+
+  <div class="three-panel">
+    <div class="panel bordered-teal">
+      <img class="tool-icon" src="img/ollama.png" alt="Ollama logo">
+      <span class="panel-label teal">OLLAMA</span>
+      <h4>CLI + daemon</h4>
+      <p style="font-size:0.93rem; color:var(--slate-600);">One-command install. Background server on <code>localhost:11434</code> with an OpenAI-compatible HTTP API. Best default if you write code.</p>
+    </div>
+    <div class="panel bordered-navy">
+      <img class="tool-icon" src="img/lmstudio.png" alt="LM Studio logo">
+      <span class="panel-label navy">LM STUDIO</span>
+      <h4>Desktop GUI</h4>
+      <p style="font-size:0.93rem; color:var(--slate-600);">Point-and-click app for browsing, downloading, and chatting with models. Also exposes a local OpenAI-compatible server. Best if you want zero CLI.</p>
+    </div>
+    <div class="panel bordered-warning">
+      <img class="tool-icon" src="img/huggingface.png" alt="Hugging Face logo">
+      <span class="panel-label amber">HUGGING FACE</span>
+      <h4>Library + hub</h4>
+      <p style="font-size:0.93rem; color:var(--slate-600);">Lowest level: <code>transformers</code> in Python, manual loading and inference. Best when you need full control of tokeniser, sampling, or quantisation.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ===================================================================
+     SLIDE 4 — HOW OLLAMA WORKS
+     =================================================================== -->
+<section class="slide">
+  <h2>How Ollama works</h2>
+  <div class="intro-banner">
+    Ollama is a small <span class="pill">background daemon</span>. The CLI and your Python code both talk to it over HTTP on <code>localhost:11434</code>. The daemon loads model weights from disk, runs inference, and streams results back — all on your machine.
+  </div>
+
+  <div class="ollama-arch">
+    <div class="arch-layer">
+      <div class="arch-card">
+        <svg class="icon" width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="2" y="3" width="20" height="14" rx="2"/>
+          <path d="M6 8l3 2-3 2"/>
+          <line x1="11" y1="13" x2="15" y2="13"/>
+          <line x1="6" y1="21" x2="18" y2="21"/>
+          <line x1="12" y1="17" x2="12" y2="21"/>
+        </svg>
+        <span class="name">Terminal</span>
+        <span class="hint">ollama run …</span>
+      </div>
+      <div class="arch-card">
+        <svg class="icon" width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M9 4h6a3 3 0 0 1 3 3v4H8a3 3 0 0 0-3 3v2"/>
+          <path d="M15 20H9a3 3 0 0 1-3-3v-4h10a3 3 0 0 0 3-3V8"/>
+          <circle cx="9" cy="7" r="1" fill="currentColor"/>
+          <circle cx="15" cy="17" r="1" fill="currentColor"/>
+        </svg>
+        <span class="name">Python</span>
+        <span class="hint">openai SDK · requests</span>
+      </div>
+    </div>
+
+    <div class="arch-conn">
+      <span class="label">HTTP POST  →  :11434</span>
+      <span class="arrow">↓</span>
+    </div>
+
+    <div class="arch-layer">
+      <div class="arch-card daemon wide">
+        <svg class="icon" width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="4" width="18" height="6" rx="1.5"/>
+          <rect x="3" y="14" width="18" height="6" rx="1.5"/>
+          <circle cx="7" cy="7" r="0.9" fill="currentColor"/>
+          <circle cx="7" cy="17" r="0.9" fill="currentColor"/>
+          <line x1="11" y1="7" x2="17" y2="7"/>
+          <line x1="11" y1="17" x2="17" y2="17"/>
+        </svg>
+        <span class="name">Ollama daemon</span>
+        <span class="hint">always running · auto-starts on boot</span>
+      </div>
+    </div>
+
+    <div class="arch-conn">
+      <span class="label">load weights into RAM</span>
+      <span class="arrow">↓</span>
+    </div>
+
+    <div class="arch-layer">
+      <div class="arch-card disk wide">
+        <svg class="icon" width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <ellipse cx="12" cy="5" rx="8" ry="2.5"/>
+          <path d="M4 5v6c0 1.4 3.6 2.5 8 2.5s8-1.1 8-2.5V5"/>
+          <path d="M4 11v6c0 1.4 3.6 2.5 8 2.5s8-1.1 8-2.5v-6"/>
+        </svg>
+        <span class="name">Model files</span>
+        <span class="hint">~/.ollama/models · 1–8 GB each</span>
+      </div>
+    </div>
+  </div>
+
+  <p style="font-size:0.95rem; color:var(--slate-600); margin-top:0.5rem;">
+    The daemon starts automatically after install (background app on macOS / Windows, <code>systemd</code> service on Linux). You never start it manually — you just type <code>ollama run …</code> or call the API and the daemon answers.
+  </p>
+</section>
+
+<!-- ===================================================================
+     SLIDE 5 — INSTALL
+     =================================================================== -->
+<section class="slide">
+  <h2>Install Ollama</h2>
+  <div class="intro-banner">
+    Two options to install Ollama:
+    <ul style="margin: 0.4rem 0 0 1.2rem; font-weight: 500;">
+      <li>Grab the GUI installer at <a href="https://ollama.com/download" target="_blank"><strong>ollama.com/download</strong></a> and follow the on-screen steps.</li>
+      <li>Run the one-line command for your OS in a terminal (see below).</li>
+    </ul>
+  </div>
+
+  <div class="install-rows">
+    <div class="install-row">
+      <span class="panel-label teal">macOS</span>
+      <div class="meta">Run in Terminal. Daemon auto-starts on login.</div>
+<pre class="code-block">curl -fsSL https://ollama.com/install.sh | sh</pre>
+    </div>
+    <div class="install-row linux">
+      <span class="panel-label navy">Linux</span>
+      <div class="meta">Run in your shell. Installs a <code>systemd</code> service called <code>ollama</code> and starts it.</div>
+<pre class="code-block">curl -fsSL https://ollama.com/install.sh | sh</pre>
+    </div>
+    <div class="install-row windows">
+      <span class="panel-label amber">Windows</span>
+      <div class="meta">Run in PowerShell. Installs a background service that starts with Windows.</div>
+<pre class="code-block">irm https://ollama.com/install.ps1 | iex</pre>
+    </div>
+  </div>
+
+<pre class="code-block"><span class="label">Verify the daemon</span><span class="comment"># should return JSON; empty list of models on first run</span>
+curl http://localhost:11434/api/tags
+
+<span class="comment"># or open in a browser — should say "Ollama is running"</span>
+open http://localhost:11434/</pre>
+</section>
+
+<!-- ===================================================================
+     SLIDE 6 — FIND A MODEL
+     =================================================================== -->
+<section class="slide">
+  <h2>Find a model</h2>
+  <div class="intro-banner">
+    Browse the catalog at <a href="https://ollama.com/library" target="_blank">ollama.com/library</a>. Pick by <span class="pill">parameter count</span> and <span class="pill">free RAM</span> — a rough rule is ~1 GB of RAM per 1 B parameters for Q4-quantised models.
+  </div>
+
+  <table class="data-table">
+    <thead>
+      <tr><th>Model name</th><th>Size on disk</th><th>RAM needed</th><th>Good for</th></tr>
+    </thead>
+    <tbody>
+      <tr><td class="mono">llama3.2:3b</td><td>~2 GB</td><td>~4 GB free</td><td>general chat · tight laptops</td></tr>
+      <tr><td class="mono">llama3.2:1b</td><td>~1.3 GB</td><td>~2 GB free</td><td>fastest · weakest reasoning</td></tr>
+      <tr><td class="mono">qwen2.5:7b</td><td>~4.7 GB</td><td>~8 GB free</td><td>instruction-following · code</td></tr>
+      <tr><td class="mono">mistral:7b</td><td>~4.4 GB</td><td>~8 GB free</td><td>general purpose · long-time community favourite</td></tr>
+      <tr><td class="mono">nomic-embed-text</td><td>~270 MB</td><td>~1 GB free</td><td>embeddings (768-dim) for RAG</td></tr>
+    </tbody>
+  </table>
+
+  <p style="font-size:0.95rem; color:var(--slate-600);">
+    <strong>How to read the name:</strong> <code>family:tag</code>. <code>llama3.2:3b</code> = the Llama 3.2 family, the 3-billion-parameter variant. Omitting the tag picks the default (usually the most popular size). Many models also ship explicit quantisation tags like <code>:q4_K_M</code> or <code>:fp16</code> if you want to control the precision.
+  </p>
+</section>
+
+<!-- ===================================================================
+     SLIDE 7 — PULL AND MANAGE MODELS
+     =================================================================== -->
+<section class="slide">
+  <h2>Pull and manage models</h2>
+  <div class="intro-banner">
+    Models are downloaded once and cached under <code>~/.ollama/models</code>. The CLI gives you everything you need to add, list, and remove them.
+  </div>
+
+<pre class="code-block"><span class="label">Manage your local models</span><span class="comment"># download a model (~2 GB)</span>
+ollama pull llama3.2:3b
+
+<span class="comment"># also pull an embedding model</span>
+ollama pull nomic-embed-text
+
+<span class="comment"># see what you have</span>
+ollama list
+<span class="comment"># NAME                      ID            SIZE     MODIFIED</span>
+<span class="comment"># llama3.2:3b               a80c4f17acd5  2.0 GB   2 minutes ago</span>
+<span class="comment"># nomic-embed-text:latest   0a109f422b47  274 MB   1 minute ago</span>
+
+<span class="comment"># see what's currently loaded in RAM</span>
+ollama ps
+
+<span class="comment"># pull updates for a model you already have</span>
+ollama pull llama3.2:3b
+
+<span class="comment"># remove a model to free disk space</span>
+ollama rm llama3.2:3b</pre>
+</section>
+
+<!-- ===================================================================
+     SLIDE 8 — RUN FROM THE TERMINAL
+     =================================================================== -->
+<section class="slide">
+  <h2>Run a model from the terminal</h2>
+  <div class="intro-banner">
+    <code>ollama run</code> opens an <span class="pill">interactive chat</span>. Append a quoted prompt for a <span class="pill">one-shot</span> answer. Type <code>/bye</code> to exit a chat session.
+  </div>
+
+<pre class="terminal"><span class="label-tag">Interactive chat</span><span class="prompt">$</span> <span class="user-input">ollama run llama3.2:3b</span>
+<span class="response">&gt;&gt;&gt; </span><span class="user-input">What is retrieval-augmented generation?</span>
+<span class="response">RAG is a pattern where you fetch relevant text from your own
+documents at query time and paste it into the LLM's prompt, so
+the model answers from your data rather than its training data.</span>
+
+<span class="response">&gt;&gt;&gt; </span><span class="user-input">/bye</span>
+<span class="prompt">$</span> <span class="comment"># back at your shell</span></pre>
+
+<pre class="terminal"><span class="label-tag">One-shot prompt</span><span class="prompt">$</span> <span class="user-input">ollama run llama3.2:3b "Explain RAG in one sentence."</span>
+<span class="response">RAG fetches relevant chunks from your documents and pastes them
+into the prompt so the LLM answers from grounded context.</span>
+
+<span class="prompt">$</span> <span class="comment"># piping works too</span>
+<span class="prompt">$</span> <span class="user-input">cat question.txt | ollama run llama3.2:3b</span></pre>
+
+  <p style="font-size:0.95rem; color:var(--slate-600);">
+    The first call after pulling a model takes a few extra seconds — the daemon loads the weights into RAM. Subsequent calls are fast until the model is evicted (Ollama unloads idle models automatically). <code>ollama ps</code> shows what's currently resident.
+  </p>
+</section>
+
+<!-- ===================================================================
+     SLIDE 9 — USE IN A PYTHON NOTEBOOK
+     =================================================================== -->
+<section class="slide">
+  <h2>Use Ollama from a Python notebook</h2>
+  <div class="intro-banner">
+    Two equivalent ways. The <span class="pill">OpenAI SDK</span> path is the course standard — your code works against Ollama locally and any cloud provider after a single <code>.env</code> change.
+  </div>
+
+<pre class="code-block"><span class="label">Install</span>pip install openai           <span class="comment"># OpenAI-compatible path</span>
+pip install ollama           <span class="comment"># or the native client</span></pre>
+
+<pre class="code-block"><span class="label">Approach 1 — OpenAI SDK (recommended)</span><span class="kw">from</span> openai <span class="kw">import</span> OpenAI
+
+client = <span class="cls">OpenAI</span>(
+    <span class="param">base_url</span>=<span class="str">"http://localhost:11434/v1"</span>,
+    <span class="param">api_key</span>=<span class="str">"ollama"</span>,    <span class="comment"># required but ignored</span>
+)
+
+resp = client.chat.completions.<span class="fn">create</span>(
+    <span class="param">model</span>=<span class="str">"llama3.2:3b"</span>,
+    <span class="param">messages</span>=[
+        {<span class="str">"role"</span>: <span class="str">"system"</span>, <span class="str">"content"</span>: <span class="str">"You are concise."</span>},
+        {<span class="str">"role"</span>: <span class="str">"user"</span>,   <span class="str">"content"</span>: <span class="str">"What is a local LLM?"</span>},
+    ],
+)
+<span class="builtin">print</span>(resp.choices[<span class="num">0</span>].message.content)</pre>
+
+<pre class="code-block"><span class="label">Approach 2 — native ollama client</span><span class="kw">from</span> ollama <span class="kw">import</span> Client
+
+client = <span class="cls">Client</span>(<span class="param">host</span>=<span class="str">"http://localhost:11434"</span>)
+
+resp = client.<span class="fn">chat</span>(
+    <span class="param">model</span>=<span class="str">"llama3.2:3b"</span>,
+    <span class="param">messages</span>=[{<span class="str">"role"</span>: <span class="str">"user"</span>, <span class="str">"content"</span>: <span class="str">"What is a local LLM?"</span>}],
+)
+<span class="builtin">print</span>(resp.message.content)</pre>
+
+<pre class="code-block"><span class="label">Embeddings (either approach)</span>vec = client.embeddings.<span class="fn">create</span>(
+    <span class="param">model</span>=<span class="str">"nomic-embed-text"</span>,
+    <span class="param">input</span>=<span class="str">"refund policy and cancellation rules"</span>,
+).data[<span class="num">0</span>].embedding
+
+<span class="builtin">print</span>(<span class="builtin">len</span>(vec))    <span class="comment"># → 768</span></pre>
+</section>
+
+<!-- ===================================================================
+     SLIDE 10 — CHEATSHEET
+     =================================================================== -->
+<section class="slide">
+  <h2>Command cheatsheet</h2>
+  <div class="intro-banner">
+    Everything you actually need, in one place.
+  </div>
+
+  <div class="cheat">
+    <div class="row"><div class="cmd">ollama pull &lt;model&gt;</div><div class="desc">download a model to local cache</div></div>
+    <div class="row"><div class="cmd">ollama list</div><div class="desc">show all locally downloaded models</div></div>
+    <div class="row"><div class="cmd">ollama ps</div><div class="desc">show models currently loaded in RAM</div></div>
+    <div class="row"><div class="cmd">ollama run &lt;model&gt;</div><div class="desc">interactive chat in the terminal</div></div>
+    <div class="row"><div class="cmd">ollama run &lt;model&gt; "prompt"</div><div class="desc">one-shot prompt, prints answer and exits</div></div>
+    <div class="row"><div class="cmd">ollama rm &lt;model&gt;</div><div class="desc">delete a model from local cache</div></div>
+    <div class="row"><div class="cmd">curl localhost:11434/api/tags</div><div class="desc">verify the daemon is responding</div></div>
+    <div class="row"><div class="cmd">tail -f ~/.ollama/logs/server.log</div><div class="desc">follow daemon logs (macOS)</div></div>
+    <div class="row"><div class="cmd">sudo systemctl restart ollama</div><div class="desc">restart the daemon (Linux)</div></div>
+  </div>
+
+  <div class="callout warning" style="margin-top:0.3rem;">
+    <div class="callout-title">COMMON GOTCHAS</div>
+    Port is <code>11434</code> (not <code>11343</code>). API errors if the model isn't pulled — run <code>ollama list</code> first. Cold start adds a few seconds while the model loads into RAM.
+  </div>
+</section>
+
+<!-- ===================================================================
+     SLIDE 11 — LINKS
+     =================================================================== -->
+<section class="slide">
+  <h2>Links</h2>
+  <div class="intro-banner">
+    Bookmark these. Everything else is one of these pages away.
+  </div>
+
+  <ul class="resources">
+    <li><span class="label docs">DOCS</span> <a href="https://ollama.com/download" target="_blank">ollama.com/download</a> — installers for every OS.</li>
+    <li><span class="label docs">DOCS</span> <a href="https://ollama.com/library" target="_blank">ollama.com/library</a> — model catalog with sizes and quantisations.</li>
+    <li><span class="label docs">DOCS</span> <a href="https://github.com/ollama/ollama/blob/main/README.md" target="_blank">Ollama README</a> — CLI reference, FAQ, troubleshooting.</li>
+    <li><span class="label docs">DOCS</span> <a href="https://github.com/ollama/ollama/blob/main/docs/openai.md" target="_blank">OpenAI compatibility reference</a> — which endpoints and parameters are supported.</li>
+    <li><span class="label docs">DOCS</span> <a href="https://github.com/ollama/ollama/blob/main/docs/api.md" target="_blank">Native Ollama API</a> — non-OpenAI endpoints (<code>/api/generate</code>, <code>/api/embeddings</code>).</li>
+    <li><span class="label docs">REPO</span> <a href="https://github.com/ollama/ollama" target="_blank">github.com/ollama/ollama</a> — source, issues, releases.</li>
+  </ul>
+</section>
+
+<script>
+(function () {
+  "use strict";
+  const CONFIG = {
+    slideSelector: ".slide",
+    slideNumberClass: "slide-number",
+    katexAutoRenderOptions: {
+      delimiters: [
+        { left: "$$", right: "$$", display: true },
+        { left: "$", right: "$", display: false },
+      ],
+      throwOnError: false,
+      errorColor: "#EF4444",
+    },
+  };
+  let slides = [];
+  let currentSlideIndex = 0;
+
+  function init() {
+    slides = Array.from(document.querySelectorAll(CONFIG.slideSelector));
+    if (slides.length === 0) return;
+    autoNumberSlides();
+    renderKaTeX();
+    bindKeyboard();
+  }
+  function autoNumberSlides() {
+    const total = slides.length;
+    slides.forEach(function (slide, i) {
+      if (slide.querySelector("." + CONFIG.slideNumberClass)) return;
+      var num = document.createElement("span");
+      num.className = CONFIG.slideNumberClass;
+      num.textContent = (i + 1) + " / " + total;
+      slide.appendChild(num);
+      if (!slide.id) slide.id = "slide-" + (i + 1);
+    });
+  }
+  function renderKaTeX() {
+    if (typeof window.renderMathInElement !== "function") return;
+    slides.forEach(function (slide) {
+      window.renderMathInElement(slide, CONFIG.katexAutoRenderOptions);
+    });
+  }
+  function bindKeyboard() {
+    document.addEventListener("keydown", function (e) {
+      var tag = (e.target.tagName || "").toLowerCase();
+      if (tag === "input" || tag === "textarea") return;
+      switch (e.key) {
+        case "ArrowRight": case "ArrowDown": case "PageDown":
+          e.preventDefault(); navigateTo(currentSlideIndex + 1); break;
+        case "ArrowLeft": case "ArrowUp": case "PageUp":
+          e.preventDefault(); navigateTo(currentSlideIndex - 1); break;
+        case "Home": e.preventDefault(); navigateTo(0); break;
+        case "End":  e.preventDefault(); navigateTo(slides.length - 1); break;
+      }
+    });
+  }
+  function navigateTo(index) {
+    if (index < 0 || index >= slides.length) return;
+    currentSlideIndex = index;
+    slides[index].scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", init);
+  } else {
+    init();
+  }
+})();
+</script>
+</body>
+</html>
