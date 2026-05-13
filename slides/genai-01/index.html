@@ -475,6 +475,23 @@ code {
 .resources .label.docs  { background: var(--info-bg);  color: var(--accent-dim); }
 .resources .label.read  { background: var(--success-bg); color: var(--success); }
 
+
+.panel.bordered-teal { border-top: 3px solid var(--accent-dim); }
+
+/* Panel label chips (Class 02/03 standard) */
+.panel-label {
+  display: inline-block;
+  font-size: 0.7rem; font-weight: 700; letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 0.18em 0.55em;
+  border-radius: 4px;
+  margin-bottom: 0.5rem;
+}
+.panel-label.teal   { background: var(--info-bg);    color: var(--accent-dim); }
+.panel-label.amber  { background: var(--warning-bg); color: var(--warning); }
+.panel-label.navy   { background: var(--navy-50);    color: var(--navy-700); }
+.panel-label.green  { background: var(--success-bg); color: var(--success); }
+
 @media (max-width: 900px) {
   :root { --slide-padding: 2rem 2rem; }
   html { font-size: 17px; }
@@ -485,7 +502,7 @@ code {
 <body>
 
 <!-- ===================================================================
-     SLIDE 1 — TITLE
+     TITLE
      =================================================================== -->
 <section class="slide title-slide">
   <h1>LLM Fundamentals</h1>
@@ -493,7 +510,7 @@ code {
 </section>
 
 <!-- ===================================================================
-     SLIDE 2 — HOW LLMs ARE MADE
+     HOW LLMs ARE MADE
      =================================================================== -->
 <section class="slide">
   <h2>How an LLM is made</h2>
@@ -501,15 +518,15 @@ code {
     A quick anchor before we start using LLMs. Modern chat models come out of a multi-stage training pipeline, and they fall into two architecture families. We won't go deep — just enough perspective on the thing your app is calling.
   </div>
 
-  <img src="img_class01/llm_training_stages.png" alt="Top: three training stages — Pretraining (trillions of tokens from the open web) arrow Base model (predicts next token, not a chatbot) arrow Chat model (SFT + RLHF, follows instructions). Bottom: two architecture cards — Encoder-Decoder (BART, T5, FLAN; translation, summarisation) and Decoder-only (GPT, Llama, Claude, Gemma; chat, completion, what we use)." class="slide-figure">
+  <img src="img/llm_training_stages.png" alt="Top: three training stages — Pretraining (trillions of tokens from the open web) arrow Base model (predicts next token, not a chatbot) arrow Chat model (SFT + RLHF, follows instructions). Bottom: two architecture cards — Encoder-Decoder (BART, T5, FLAN; translation, summarisation) and Decoder-only (GPT, Llama, Claude, Gemma; chat, completion, what we use)." class="slide-figure">
 
   <p style="font-size:1.02rem; color:var(--slate-600);">
-    Everything in this course uses <strong>decoder-only</strong> chat models. The training stages are out of scope — you call the finished model through an API.
+    Modern chat models are <strong>decoder-only</strong>. The training stages happen inside model labs — you call the finished model through an API.
   </p>
 </section>
 
 <!-- ===================================================================
-     SLIDE 3 — LIFECYCLE
+     LIFECYCLE
      =================================================================== -->
 <section class="slide">
   <h2>From model to product</h2>
@@ -517,15 +534,15 @@ code {
     The model has its own lifecycle, and the app you build on top of it has its own. They meet at the <span class="pill">API</span> — the only contract that crosses between them.
   </div>
 
-  <img src="img_class01/lifecycle.png" alt="Two zones: model lifecycle (greyed) with stages Pretrain → Align → Serve, and application lifecycle (teal) with stages Prompt → Build → Evaluate, joined by an API pill between them" class="slide-figure">
+  <img src="img/lifecycle.png" alt="Two zones: model lifecycle (greyed) with stages Pretrain → Align → Serve, and application lifecycle (teal) with stages Prompt → Build → Evaluate, joined by an API pill between them" class="slide-figure">
 
   <p style="font-size:1.02rem; color:var(--slate-600);">
-    Everything to the right of the API is what this course teaches — real application engineering. The left side is its own engineering discipline that lives in model labs and infrastructure teams.
+    Everything to the right of the API is application engineering. The left side is its own engineering discipline that lives in model labs and infrastructure teams.
   </p>
 </section>
 
 <!-- ===================================================================
-     SLIDE 4 — WHAT IS AN LLM? (real diagram)
+     WHAT IS AN LLM? (real diagram)
      =================================================================== -->
 <section class="slide">
   <h2>What an LLM actually does</h2>
@@ -533,7 +550,7 @@ code {
     Strip away the hype: an LLM is a <span class="pill">learned function</span> that turns a token sequence into a probability distribution over the next token. We sample one token, append it, and repeat.
   </div>
 
-  <img src="img_class01/llm_blackbox.png" alt="Diagram: input tokens The cat sat on the flow into a Large Language Model with embed, attention, softmax layers and a next-token probability bar chart; one token is sampled (the tall amber bar) and emitted as the generated text" class="slide-figure">
+  <img src="img/llm_blackbox.png" alt="Diagram: input tokens The cat sat on the flow into a Large Language Model with embed, attention, softmax layers and a next-token probability bar chart; one token is sampled (the tall amber bar) and emitted as the generated text" class="slide-figure">
 
   <div class="two-panel" style="margin-top:0.4rem;">
     <div class="panel bordered-navy">
@@ -548,7 +565,7 @@ code {
 </section>
 
 <!-- ===================================================================
-     SLIDE — TOKENS
+     TOKENS
      =================================================================== -->
 <section class="slide">
   <h2>Tokens</h2>
@@ -599,7 +616,7 @@ code {
 </section>
 
 <!-- ===================================================================
-     SLIDE 8 — CONTEXT WINDOW
+     CONTEXT WINDOW
      =================================================================== -->
 <section class="slide">
   <h2>The context window is a budget</h2>
@@ -641,7 +658,7 @@ code {
 </section>
 
 <!-- ===================================================================
-     SLIDE — MESSAGE ROLES (after context window)
+     MESSAGE ROLES (after context window)
      =================================================================== -->
 <section class="slide">
   <h2>The chat-completion message format</h2>
@@ -673,7 +690,7 @@ messages <span class="op">=</span> [<br>
 </section>
 
 <!-- ===================================================================
-     SLIDE — STATELESS CALL
+     STATELESS CALL
      =================================================================== -->
 <section class="slide">
   <h2>Pattern 1 — Stateless call</h2>
@@ -714,7 +731,7 @@ messages <span class="op">=</span> [<br>
 </section>
 
 <!-- ===================================================================
-     SLIDE 10 — STATEFUL CHATBOT
+     STATEFUL CHATBOT
      =================================================================== -->
 <section class="slide">
   <h2>Pattern 2 — Stateful chatbot</h2>
@@ -734,7 +751,7 @@ messages <span class="op">=</span> [<br>
 </section>
 
 <!-- ===================================================================
-     SLIDE 11 — MEMORY STRATEGIES (with data plot)
+     MEMORY STRATEGIES (with data plot)
      =================================================================== -->
 <section class="slide">
   <h2>Memory strategies</h2>
@@ -761,7 +778,7 @@ messages <span class="op">=</span> [<br>
 </section>
 
 <!-- ===================================================================
-     SLIDE 12 — TEMPERATURE (real distribution plot)
+     TEMPERATURE (real distribution plot)
      =================================================================== -->
 <section class="slide">
   <h2>Temperature reshapes the next-token distribution</h2>
@@ -769,7 +786,7 @@ messages <span class="op">=</span> [<br>
     Temperature scales the model's logits before sampling. <strong>Low</strong> sharpens the distribution onto the most likely token; <strong>high</strong> flattens it so other tokens get a real chance.
   </div>
 
-  <img src="img_class01/temperature_distributions.png" alt="Three bar charts showing the same prompt's next-token probabilities at temperature 0.0 (one bar at 'the' near 1.0), 0.4 (sharp peak at 'the' around 0.58 with smaller bars for 'a' and 'this'), and 1.0 (gradual distribution with 'the' at 0.38 and several other candidates visible)" class="slide-figure">
+  <img src="img/temperature_distributions.png" alt="Three bar charts showing the same prompt's next-token probabilities at temperature 0.0 (one bar at 'the' near 1.0), 0.4 (sharp peak at 'the' around 0.58 with smaller bars for 'a' and 'this'), and 1.0 (gradual distribution with 'the' at 0.38 and several other candidates visible)" class="slide-figure">
 
   <div class="two-panel" style="margin-top:0.5rem;">
     <div class="panel bordered-success">
@@ -784,7 +801,7 @@ messages <span class="op">=</span> [<br>
 </section>
 
 <!-- ===================================================================
-     SLIDE 13 — OTHER GENERATION PARAMETERS
+     OTHER GENERATION PARAMETERS
      =================================================================== -->
 <section class="slide">
   <h2>Other generation parameters</h2>
@@ -804,13 +821,13 @@ messages <span class="op">=</span> [<br>
   </table>
 
   <div class="callout success">
-    <div class="callout-title">DEFAULT PROFILE WE USE IN THIS COURSE</div>
+    <div class="callout-title">SAFE DEFAULT PROFILE</div>
     <code>temperature=0.2</code>, <code>max_tokens=600</code>, no <code>top_p</code> override, <code>stop=None</code>. Predictable, bounded, easy to reason about.
   </div>
 </section>
 
 <!-- ===================================================================
-     SLIDE 14 — PROMPT ENGINEERING
+     PROMPT ENGINEERING
      =================================================================== -->
 <section class="slide">
   <h2>Prompt engineering</h2>
@@ -840,7 +857,7 @@ Explain retrieval-augmented generation.
 </section>
 
 <!-- ===================================================================
-     SLIDE 15 — PROMPT TEMPLATES
+     PROMPT TEMPLATES
      =================================================================== -->
 <section class="slide">
   <h2>Prompt templates</h2>
@@ -867,7 +884,7 @@ Use {n_bullets} bullet points. Avoid jargon."""</span><br>
 </section>
 
 <!-- ===================================================================
-     SLIDE 16 — STRUCTURED OUTPUT
+     STRUCTURED OUTPUT
      =================================================================== -->
 <section class="slide">
   <h2>Structured output</h2>
@@ -906,7 +923,7 @@ Use {n_bullets} bullet points. Avoid jargon."""</span><br>
 </section>
 
 <!-- ===================================================================
-     SLIDE 17 — COMMON FAILURE MODES
+     COMMON FAILURE MODES
      =================================================================== -->
 <section class="slide">
   <h2>Common failure modes</h2>
@@ -984,12 +1001,12 @@ Use {n_bullets} bullet points. Avoid jargon."""</span><br>
 </section>
 
 <!-- ===================================================================
-     SLIDE — WHAT YOU'LL BUILD
+     WHAT YOU'LL BUILD
      =================================================================== -->
 <section class="slide">
   <h2>What you'll build today</h2>
   <div class="intro-banner">
-    Six runnable modes — each maps to one concept from this deck. By the end of class you have a CLI that demonstrates every fundamental we covered.
+    Six runnable modes — each maps to one concept from this deck. Together they form a CLI that demonstrates every fundamental covered here.
   </div>
 
   <div class="two-panel" style="grid-template-columns: 1fr 1fr 1fr;">
@@ -1004,7 +1021,7 @@ Use {n_bullets} bullet points. Avoid jargon."""</span><br>
 </section>
 
 <!-- ===================================================================
-     SLIDE 20 — RESOURCES & RECAP
+     RESOURCES & RECAP
      =================================================================== -->
 <section class="slide">
   <h2>Recap &amp; resources</h2>
@@ -1026,7 +1043,7 @@ Use {n_bullets} bullet points. Avoid jargon."""</span><br>
   <ul class="resources">
     <li><span class="label video">VIDEO</span> Andrej Karpathy — <a href="https://www.youtube.com/watch?v=zjkBMFhNj_g" target="_blank">Intro to Large Language Models (1h)</a>. The single best mental-model talk on what an LLM actually is.</li>
     <li><span class="label video">VIDEO</span> 3Blue1Brown — <a href="https://www.youtube.com/watch?v=wjZofJX0v4M" target="_blank">But what is a GPT?</a> Visual intuition for attention and next-token prediction.</li>
-    <li><span class="label docs">DOCS</span> <a href="https://platform.openai.com/docs/guides/text-generation" target="_blank">OpenAI — Text generation guide</a>. The reference for the chat-message format we use all course.</li>
+    <li><span class="label docs">DOCS</span> <a href="https://platform.openai.com/docs/guides/text-generation" target="_blank">OpenAI — Text generation guide</a>. The reference for the chat-message format.</li>
   </ul>
 </section>
 
