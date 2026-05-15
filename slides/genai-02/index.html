@@ -446,6 +446,13 @@ code {
 
   <img src="img/cosine_similarity.png" alt="Two side-by-side panels comparing cosine similarity for two pairs of embedding vectors. LEFT panel banner 'apple vs banana · semantically related': vector embedding(\"banana\") at a small angle (25°) above the horizontal vector embedding(\"apple\"). A small amber arc marks the angle θ at the origin. A green box in the upper-right reads similarity / θ = 25° / ≈ 0.91. RIGHT panel banner 'apple vs house · semantically unrelated': vector embedding(\"house\") at a steep angle (80°) above embedding(\"apple\"). A larger amber arc marks the angle. An amber box reads similarity / θ = 80° / ≈ 0.17. The slide formula shows cos θ = (a · b) / (‖a‖ ‖b‖). Subtitle: Cosine similarity compares vector direction, not magnitude." class="slide-figure">
 
+  <div class="callout info" style="margin-top:0.5rem;">
+    <div class="callout-title">SIMILARITY VS DISTANCE</div>
+    <div><strong>cosine similarity</strong> ∈ <code>[−1, +1]</code></div>
+    <div><strong>cosine distance</strong> = <code>1 − cosine similarity</code> ∈ <code>[0, 2]</code></div>
+    <div style="margin-top:0.3rem;">Vector DBs report <em>distance</em>; you convert back to similarity with <code>1 − distance</code>.</div>
+    <div>Real text embeddings rarely go negative, so in practice you see similarities in roughly <code>[0, 1]</code>.</div>
+  </div>
 </section>
 
 <!-- ===================================================================
