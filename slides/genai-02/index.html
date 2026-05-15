@@ -1,0 +1,985 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Class 02 — RAG Fundamentals</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+<style>
+/* ============================================================
+   Gen AI Engineer Course — Slide Theme (inlined)
+   ============================================================ */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+:root {
+  --navy-900: #1A3264; --navy-800: #214078; --navy-700: #2E5090;
+  --navy-600: #3660A3; --navy-500: #4272B8; --navy-400: #5A8ACB;
+  --navy-300: #7BA4D8; --navy-200: #A3C0E4; --navy-100: #C8D9EF; --navy-50: #E8EFF7;
+  --slate-900: #1E1E2E; --slate-800: #2A2A3C; --slate-700: #3A3A4F;
+  --slate-600: #4A4A62; --slate-500: #6B6B82; --slate-400: #8E8EA3;
+  --slate-300: #B0B0C2; --slate-200: #D0D0DC; --slate-100: #E8E8EF; --slate-50: #F5F5F9;
+  --info: #36A2B5; --success: #5B9E7B; --warning: #C49545; --error: #D4594E;
+  --info-bg: #EAF5F7; --success-bg: #EDF5F0; --warning-bg: #FBF4E8; --error-bg: #FBEEED;
+  --accent: #4BB8C9; --accent-light: #7FCDD8; --accent-dim: #2A8F9E;
+  --font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-code: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
+  --slide-padding: 3rem 4rem;
+  --slide-max-width: 1150px;
+  --radius-sm: 6px; --radius-md: 10px; --radius-lg: 16px;
+  --shadow-sm: 0 1px 3px rgba(0,0,0,.08);
+  --shadow-md: 0 4px 12px rgba(0,0,0,.10);
+  --shadow-lg: 0 8px 30px rgba(0,0,0,.14);
+  --ease: cubic-bezier(.4, 0, .2, 1);
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { font-size: 19px; scroll-behavior: smooth; -webkit-font-smoothing: antialiased; }
+body { font-family: var(--font-body); color: var(--slate-800); background: var(--slate-50); line-height: 1.6; }
+
+.slide {
+  min-height: 100vh;
+  padding: var(--slide-padding);
+  display: flex; flex-direction: column; justify-content: center;
+  max-width: var(--slide-max-width);
+  margin: 0 auto;
+  position: relative;
+}
+.slide-number {
+  position: absolute; bottom: 1.2rem; right: 1.5rem;
+  font-size: 0.75rem; font-weight: 600; color: var(--slate-400); letter-spacing: 0.04em;
+}
+.slide + .slide { border-top: 1px solid var(--slate-100); }
+
+h1, h2, h3, h4 { color: var(--navy-700); line-height: 1.25; font-weight: 700; letter-spacing: -0.01em; }
+h1 { font-size: 2.8rem; font-weight: 800; margin-bottom: 1rem; }
+h2 { font-size: 2.15rem; margin-bottom: 0.8rem; }
+h3 { font-size: 1.6rem; margin-bottom: 0.6rem; }
+h4 { font-size: 1.3rem; font-weight: 600; margin-bottom: 0.5rem; }
+p { margin-bottom: 1rem; font-size: 1.1rem; }
+strong { font-weight: 600; color: var(--navy-700); }
+a { color: var(--accent-dim); text-decoration: none; border-bottom: 1px solid transparent; transition: border-color 0.2s var(--ease); }
+a:hover { border-bottom-color: var(--accent-dim); }
+ul, ol { margin: 0.5rem 0 1rem 1.6rem; }
+li { margin-bottom: 0.4rem; font-size: 1.1rem; }
+li::marker { color: var(--navy-400); }
+
+.subtitle { font-size: 1.3rem; color: var(--slate-500); font-weight: 400; margin-bottom: 1.5rem; }
+.muted { color: var(--slate-400); }
+
+/* Intro banner (S10e) */
+.intro-banner {
+  border-left: 4px solid var(--accent-dim);
+  background: var(--info-bg);
+  padding: 0.9rem 1.2rem;
+  font-size: 1.05rem;
+  font-weight: 500;
+  color: var(--navy-800);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  margin: 1rem 0 1.4rem 0;
+}
+
+/* Key-phrase pill (S10f) */
+.pill {
+  background: var(--warning-bg);
+  padding: 0 0.3em;
+  border-radius: 3px;
+  font-weight: 600;
+  color: var(--navy-700);
+}
+
+/* Slide figure — generated PNG */
+.slide-figure {
+  display: block;
+  margin: 0.6rem auto 1.0rem;
+  max-width: 100%;
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-md);
+  background: white;
+}
+
+/* Title slide */
+.slide.title-slide {
+  text-align: center;
+  background: linear-gradient(135deg, var(--navy-800) 0%, var(--navy-600) 100%);
+  color: #fff;
+}
+.slide.title-slide h1 { color: #fff; font-size: 3.4rem; margin-bottom: 0.6rem; }
+.slide.title-slide .subtitle { color: var(--navy-100); font-size: 1.4rem; }
+
+/* Code blocks (S08 — soft-dark bg) */
+.code-block {
+  background: var(--slate-800);
+  color: #E2E8F0;
+  font-family: var(--font-code);
+  font-size: 0.92rem;
+  line-height: 1.65;
+  padding: 1.3rem 1.5rem;
+  border-radius: var(--radius-md);
+  overflow-x: auto;
+  margin: 1rem 0;
+  box-shadow: var(--shadow-md);
+  position: relative;
+}
+.code-block .label {
+  position: absolute; top: 0.5rem; right: 0.8rem;
+  font-size: 0.65rem; font-weight: 600; text-transform: uppercase;
+  letter-spacing: 0.08em; color: var(--slate-400); font-family: var(--font-body);
+}
+.code-block .kw      { color: #C792EA; }
+.code-block .fn      { color: #82AAFF; }
+.code-block .str     { color: #C3E88D; }
+.code-block .num     { color: #F78C6C; }
+.code-block .comment { color: #50FA7B; font-style: italic; }
+.code-block .op      { color: #89DDFF; }
+.code-block .cls     { color: #E8C577; }
+.code-block .dec     { color: #F07178; }
+.code-block .builtin { color: #89DDFF; }
+.code-block .param   { color: #E2E8F0; font-style: italic; }
+
+/* S09 — disable ligatures */
+.code-block, .code-block *, code {
+  font-variant-ligatures: none;
+  font-feature-settings: "liga" 0, "calt" 0;
+}
+
+code {
+  font-family: var(--font-code); font-size: 0.88em;
+  background: var(--navy-50); color: var(--navy-700);
+  padding: 0.15em 0.4em; border-radius: 4px;
+}
+
+/* Panels — S10a min-width:0 */
+.two-panel { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin: 1rem 0; }
+.three-panel { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1.2rem; margin: 1rem 0; }
+.two-panel > *, .three-panel > * { min-width: 0; }
+
+.panel {
+  background: #fff;
+  border: 1px solid var(--slate-200);
+  border-radius: var(--radius-md);
+  padding: 1.3rem;
+  box-shadow: var(--shadow-sm);
+}
+.panel h4 { margin-bottom: 0.5rem; color: var(--navy-700); font-size: 1.05rem; }
+.panel.bordered-success { border-top: 3px solid var(--success); }
+.panel.bordered-warning { border-top: 3px solid var(--warning); }
+.panel.bordered-info    { border-top: 3px solid var(--info); }
+.panel.bordered-navy    { border-top: 3px solid var(--navy-600); }
+.panel.bordered-error   { border-top: 3px solid var(--error); }
+.panel.bordered-teal    { border-top: 3px solid var(--accent-dim); }
+
+/* Panel label chips */
+.panel-label {
+  display: inline-block;
+  font-size: 0.7rem; font-weight: 700; letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 0.18em 0.55em;
+  border-radius: 4px;
+  margin-bottom: 0.5rem;
+}
+.panel-label.teal   { background: var(--info-bg);    color: var(--accent-dim); }
+.panel-label.amber  { background: var(--warning-bg); color: var(--warning); }
+.panel-label.navy   { background: var(--navy-50);    color: var(--navy-700); }
+
+/* Data table */
+.data-table {
+  width: 100%; border-collapse: collapse; margin: 1rem 0; font-size: 0.95rem;
+}
+.data-table th {
+  background: var(--navy-700); color: #fff; font-weight: 600;
+  text-align: left; padding: 0.7rem 1rem;
+}
+.data-table th:first-child { border-radius: var(--radius-sm) 0 0 0; }
+.data-table th:last-child  { border-radius: 0 var(--radius-sm) 0 0; }
+.data-table td {
+  padding: 0.6rem 1rem; border-bottom: 1px solid var(--slate-100); vertical-align: top;
+}
+.data-table tr:last-child td { border-bottom: none; }
+.data-table tbody tr:nth-child(even) { background: var(--slate-50); }
+.data-table .mono { font-family: var(--font-code); font-size: 0.9em; }
+
+/* Callouts */
+.callout {
+  padding: 1.1rem 1.3rem;
+  border-radius: var(--radius-md);
+  margin: 1rem 0;
+  border-left: 4px solid;
+  font-size: 0.97rem;
+}
+.callout-title { font-weight: 700; margin-bottom: 0.3rem; font-size: 0.92rem; letter-spacing: 0.02em; }
+.callout.info    { background: var(--info-bg);    border-color: var(--info); }
+.callout.warning { background: var(--warning-bg); border-color: var(--warning); }
+.callout.success { background: var(--success-bg); border-color: var(--success); }
+.callout.error   { background: var(--error-bg);   border-color: var(--error); }
+.callout.info .callout-title    { color: var(--info); }
+.callout.warning .callout-title { color: var(--warning); }
+.callout.success .callout-title { color: var(--success); }
+.callout.error .callout-title   { color: var(--error); }
+
+/* Card grid */
+.card {
+  background: #fff;
+  border: 1px solid var(--slate-200);
+  border-radius: var(--radius-md);
+  padding: 1.2rem;
+  box-shadow: var(--shadow-sm);
+}
+.card h4 { font-size: 1.05rem; margin-bottom: 0.4rem; color: var(--navy-700); }
+.card p  { font-size: 0.92rem; color: var(--slate-600); margin-bottom: 0; }
+
+.card-tag {
+  display: inline-block;
+  font-size: 0.65rem; font-weight: 700; letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 0.18em 0.55em;
+  border-radius: 4px;
+  margin-bottom: 0.5rem;
+}
+.card-tag.teal   { background: var(--info-bg);    color: var(--accent-dim); }
+.card-tag.green  { background: var(--success-bg); color: var(--success); }
+.card-tag.amber  { background: var(--warning-bg); color: var(--warning); }
+.card-tag.navy   { background: var(--navy-50);    color: var(--navy-700); }
+
+.summary-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1.1rem; margin: 1rem 0; }
+.summary-grid > * { min-width: 0; }
+.summary-grid .card { border-top: 3px solid var(--success); }
+
+/* Failure-mode cards */
+.failure-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+  margin: 1rem 0;
+}
+.failure-grid > * { min-width: 0; }
+.failure-card {
+  background: #fff;
+  border: 1px solid var(--slate-200);
+  border-left: 4px solid var(--error);
+  border-radius: var(--radius-md);
+  padding: 0.95rem 1.1rem;
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  gap: 0.85rem;
+  align-items: flex-start;
+}
+.failure-card .glyph {
+  flex-shrink: 0;
+  width: 2.2rem;
+  height: 2.2rem;
+  border-radius: 50%;
+  background: var(--error-bg);
+  color: var(--error);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 1.05rem;
+  font-family: var(--font-code);
+}
+.failure-card h4 {
+  font-size: 0.98rem;
+  margin: 0.05rem 0 0.35rem 0;
+  color: var(--navy-700);
+}
+.failure-card .meta { font-size: 0.86rem; color: var(--slate-600); line-height: 1.45; }
+.failure-card .meta .lbl {
+  display: inline-block;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  padding: 0.05em 0.4em;
+  border-radius: 3px;
+  margin-right: 0.4em;
+  vertical-align: 0.05em;
+}
+.failure-card .meta .lbl.cause { background: var(--warning-bg); color: var(--warning); }
+.failure-card .meta .lbl.fix   { background: var(--success-bg); color: var(--success); }
+.failure-card .meta .line { display: block; margin: 0.2em 0; }
+
+/* App architecture diagram */
+.arch-diagram {
+  background: white;
+  border: 1px solid var(--slate-200);
+  border-radius: var(--radius-md);
+  padding: 1.4rem 1.5rem;
+  margin: 1rem 0;
+  box-shadow: var(--shadow-sm);
+}
+.arch-row {
+  display: flex; align-items: center; gap: 1rem;
+  padding: 0.5rem 0.7rem;
+  margin: 0.25rem 0;
+  border-radius: var(--radius-sm);
+}
+.arch-row .file {
+  font-family: var(--font-code);
+  font-size: 0.95rem;
+  font-weight: 600;
+  min-width: 220px;
+}
+.arch-row .desc { font-size: 0.95rem; color: var(--slate-600); flex: 1; }
+.arch-row.navy   { background: var(--navy-50);    color: var(--navy-800); }
+.arch-row.navy   .file { color: var(--navy-700); }
+.arch-row.teal   { background: var(--info-bg);    color: var(--accent-dim); }
+.arch-row.teal   .file { color: var(--accent-dim); }
+.arch-row.green  { background: var(--success-bg); color: var(--success); }
+.arch-row.green  .file { color: var(--success); }
+.arch-row.amber  { background: var(--warning-bg); color: var(--warning); }
+.arch-row.amber  .file { color: var(--warning); }
+
+.arch-section-label {
+  display: inline-block;
+  font-size: 0.72rem; font-weight: 700;
+  letter-spacing: 0.08em; text-transform: uppercase;
+  color: var(--slate-500);
+  margin: 0.8rem 0 0.3rem 0.4rem;
+}
+
+/* Diagnostic step-list (for "inspect retrieval" slide) */
+.diag-flow {
+  display: flex; align-items: stretch; gap: 0;
+  margin: 1rem 0;
+}
+.diag-flow .step {
+  flex: 1;
+  background: white;
+  border: 1px solid var(--slate-200);
+  border-radius: var(--radius-md);
+  padding: 0.9rem 1rem;
+  margin: 0 0.4rem;
+  box-shadow: var(--shadow-sm);
+  position: relative;
+}
+.diag-flow .step h4 { font-size: 0.95rem; margin-bottom: 0.3rem; color: var(--navy-700); }
+.diag-flow .step p  { font-size: 0.86rem; color: var(--slate-600); margin: 0; }
+.diag-flow .step.q1 { border-top: 3px solid var(--accent-dim); }
+.diag-flow .step.q2 { border-top: 3px solid var(--warning); }
+.diag-flow .step.q3 { border-top: 3px solid var(--success); }
+.diag-flow .arrow {
+  display: flex; align-items: center; justify-content: center;
+  color: var(--slate-400);
+  font-size: 1.5rem; font-weight: 700;
+}
+
+/* Resources */
+.resources li { font-size: 1.05rem; margin-bottom: 0.6rem; }
+.resources .label {
+  display: inline-block;
+  font-size: 0.7rem; font-weight: 700;
+  padding: 0.15em 0.5em; border-radius: 3px;
+  margin-right: 0.5em; letter-spacing: 0.05em;
+}
+.resources .label.video { background: var(--error-bg); color: var(--error); }
+.resources .label.docs  { background: var(--info-bg);  color: var(--accent-dim); }
+.resources .label.read  { background: var(--success-bg); color: var(--success); }
+
+@media (max-width: 900px) {
+  :root { --slide-padding: 2rem 2rem; }
+  html { font-size: 17px; }
+  .two-panel, .three-panel, .summary-grid, .failure-grid { grid-template-columns: 1fr; }
+  .diag-flow { flex-direction: column; }
+  .diag-flow .arrow { transform: rotate(90deg); padding: 0.5rem 0; }
+}
+</style>
+</head>
+<body>
+
+<section class="slide title-slide">
+  <h1>RAG — Retrieval-Augmented Generation</h1>
+  <p class="subtitle">Embeddings and vector databases</p>
+</section>
+
+<!-- ===================================================================
+     WHY RAG EXISTS
+     =================================================================== -->
+<section class="slide">
+  <h2>Why RAG exists</h2>
+  <div class="intro-banner">
+    An LLM has no idea what's in your private documents. RAG fixes that by <span class="pill">fetching relevant context</span> at query time and pasting it into the prompt — without touching the model's weights.
+  </div>
+
+  <img src="img/why_rag.png" alt="Two stacked cards comparing the same user query 'refund policy?' under two conditions. TOP card 'WITHOUT RAG' has a soft red top stripe and tagline 'the LLM only sees what's in its weights'. Flow: slate-bordered query box, light arrow, LLM box with a subtle navy tint and 'weights only' sub, light arrow, soft-red pill with an X icon and 'doesn't know your docs — the model invents or refuses'. BOTTOM card 'WITH RAG' has a soft green top stripe and tagline 'retrieve relevant context first, then ask the LLM'. Flow: same query box, arrow, RETRIEVE box (sage-green tint, sub-labels 'relevant chunks' and 'semantic search') with a stack of private documents feeding upward into it, arrow, LLM box ('+ context') in the same subtle navy tint, arrow, soft-green pill with a check icon and 'grounded answer — cites the chunk it used'." class="slide-figure">
+
+  <p style="font-size:1.02rem; color:var(--slate-600);">
+    Two motivations stack here: <strong>privacy</strong> (the model never trained on your docs) and <strong>freshness</strong> (your docs change daily; the model's training cut-off does not). Both are solved without retraining.
+  </p>
+</section>
+
+<!-- ===================================================================
+     FULL RAG PIPELINE
+     =================================================================== -->
+<section class="slide">
+  <h2>Full RAG pipeline</h2>
+  <div class="intro-banner">
+    <span class="pill">Indexing</span> writes to the vector DB; <span class="pill">query</span> reads from it. Indexing runs once or on a schedule; query runs on every user request.
+  </div>
+
+  <img src="img/rag_pipeline.png" alt="A two-band pipeline diagram. TOP band 'INDEXING — runs once / on schedule' (navy tint) shows five icon stages connected by arrows: Documents (stack of pages), Load (funnel), Chunk (2×2 grid), Embed (vector brackets), and Vector DB (cylinder, store + index). BOTTOM band 'QUERY — runs per user request' (green tint) shows seven icon stages: Question (speech bubble with ?), Embed (vector brackets, query → vector), Retrieve (magnifier, ANN top-k · cosine), Rerank (transformer-layer stack, cross-encoder), Prompt (paper, context + Q), LLM (chip with halo, generate answer), Answer (speech bubble with check, + citation). A small annotation 'text chunks (not vectors)' floats above the Prompt → LLM arrow. A navy L-shaped 'reads top-k' connector drops from below the Vector DB stage in the indexing band, runs left through the gap between bands, and lands as an arrow into the Retrieve stage of the query band. Footer: 'Hybrid option: add a parallel BM25 retrieval and merge before reranking — see the Retrieval Strategies figure.'" class="slide-figure">
+
+</section>
+
+<!-- ===================================================================
+     EMBEDDING SPACE
+     =================================================================== -->
+<section class="slide">
+  <h2>Embeddings</h2>
+  <div class="intro-banner">
+    An <strong>embedding model</strong> is a separate model from your LLM. Its job is to map any piece of text to a <span class="pill">vector of numbers</span> in a space where semantically similar text lands near each other.
+  </div>
+
+  <img src="img/semantic_similarity.png" alt="A 2-D projection of an embedding space. Two clusters of points represent two topics. Five teal points on the left form the 'Refund-related embeddings' cluster (refund policy, return policy, request a refund, get my money back, how to cancel my order). Five navy points on the right form the 'Pizza-related embeddings' cluster (pizza recipe, best margherita, italian dough, how to make sauce, oven temperature). An amber star labelled 'How can I request a refund?' sits inside the refund cluster. Three dashed amber lines connect the query to its top-3 nearest neighbours (badged #1, #2, #3). The bottom legend includes 'top-3 retrieved embeddings (by cosine similarity)'." class="slide-figure">
+</section>
+
+<!-- ===================================================================
+     COSINE SIMILARITY
+     =================================================================== -->
+<section class="slide">
+  <h2>Cosine similarity</h2>
+  <div class="intro-banner">
+    The score behind every dense retrieval. Cosine similarity measures the <span class="pill">angle between two vectors</span> — close to 1 when they point the same way, close to 0 when perpendicular, regardless of vector length.
+  </div>
+
+  <img src="img/cosine_similarity.png" alt="Two side-by-side panels comparing cosine similarity for two pairs of embedding vectors. LEFT panel banner 'apple vs banana · semantically related': vector embedding(\"banana\") at a small angle (25°) above the horizontal vector embedding(\"apple\"). A small amber arc marks the angle θ at the origin. A green box in the upper-right reads similarity / θ = 25° / ≈ 0.91. RIGHT panel banner 'apple vs house · semantically unrelated': vector embedding(\"house\") at a steep angle (80°) above embedding(\"apple\"). A larger amber arc marks the angle. An amber box reads similarity / θ = 80° / ≈ 0.17. The slide formula shows cos θ = (a · b) / (‖a‖ ‖b‖). Subtitle: Cosine similarity compares vector direction, not magnitude." class="slide-figure">
+
+</section>
+
+<!-- ===================================================================
+     DOCUMENT PARSING
+     =================================================================== -->
+<section class="slide">
+  <h2>Document parsing</h2>
+  <div class="intro-banner">
+    Before chunking, every document has to become clean text. <span class="pill">Garbage in → garbage retrieval</span> — a sloppy parser will haunt every query you ever make.
+  </div>
+
+  <table class="data-table">
+    <thead>
+      <tr><th>Format</th><th>Library</th><th>Watch out for</th></tr>
+    </thead>
+    <tbody>
+      <tr><td class="mono">.txt</td><td class="mono">built-in</td><td>encoding mismatches (always open with <code>utf-8</code>)</td></tr>
+      <tr><td class="mono">.md</td><td class="mono">built-in / markdown-it</td><td>preserve heading structure as metadata sections</td></tr>
+      <tr><td class="mono">.pdf</td><td class="mono">pypdf · unstructured</td><td>multi-column layouts · scanned PDFs (need OCR) · mangled tables</td></tr>
+      <tr><td class="mono">.html</td><td class="mono">BeautifulSoup · trafilatura</td><td>strip nav / footer / ads; keep article body</td></tr>
+      <tr><td class="mono">.docx</td><td class="mono">python-docx</td><td>headings and tables are structured — extract them as such</td></tr>
+    </tbody>
+  </table>
+
+  <div class="callout info" style="margin-top:0.5rem;">
+    <div class="callout-title">SANITY CHECK</div>
+    Always print the first ~500 characters of every parsed document before you embed it. If it doesn't look readable to <em>you</em>, no LLM is going to make sense of it either. Mangled tables, lost headings, repeated boilerplate, and OCR typos all wreck embeddings silently.
+  </div>
+</section>
+
+<!-- ===================================================================
+     CHUNKING STRATEGIES
+     =================================================================== -->
+<section class="slide">
+  <h2>Chunking strategies</h2>
+  <div class="intro-banner">
+    A whole document is too big to embed and too big to paste into a prompt — the chunker splits it. There's no one right way to split: pick a <span class="pill">strategy</span> based on how your docs are structured and how users query them.
+  </div>
+
+  <img src="img/chunking.png" alt="Top: a single 'SOURCE DOCUMENT' bar (~5.2k tokens). Below it, three strategy rows split the same document differently. Row 1 'FIXED + OVERLAPPING — fixed-size windows that share N tokens at each boundary' shows five staggered, slightly-overlapping chunks c0–c4 in dusty blue-grey. PRO: simple · keeps context. CON: ignores structure. Row 2 'RECURSIVE / DOCUMENT-AWARE — split at paragraph, then sentence, then word' shows five variable-width paragraph-aligned chunks ¶1–¶5 in muted teal. PRO: respects natural structure. CON: variable chunk sizes. Row 3 'SEMANTIC — embedding-distance boundary detection · split where meaning shifts' shows four variable-width topic-coherent chunks T1–T4 in sage green, with small dark dots above each inter-chunk boundary marking where the embedding similarity drops. PRO: topically coherent. CON: needs embedding pass. Footer: 'Overlapping for general use · Recursive for structured docs · Semantic for topic shifts'." class="slide-figure">
+
+  <div class="callout info" style="margin-top:0.4rem;">
+    <div class="callout-title">SENSIBLE DEFAULTS</div>
+    Start with <code>chunk_size=500</code>, <code>chunk_overlap=80</code>. Too small loses context; too large blurs the embedding. Tune against a labelled eval set, not by eye.
+  </div>
+</section>
+
+<!-- ===================================================================
+     METADATA TRAVELS WITH CHUNKS
+     =================================================================== -->
+<!-- ===================================================================
+     DATABASE FAMILIES — WHERE VECTOR DBs FIT
+     =================================================================== -->
+<section class="slide">
+  <h2>Databases</h2>
+
+  <div style="display:grid; grid-template-columns: repeat(5, 1fr); gap: 0.7rem; margin-top: 0.6rem;">
+
+    <!-- Card 1: Relational -->
+    <div class="card" style="border-top: 3px solid var(--slate-500); padding: 0.8rem 0.75rem;">
+      <div style="text-align:center; margin-bottom:0.4rem;">
+        <svg width="40" height="40" viewBox="0 0 48 48" fill="none" stroke="var(--slate-700)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="6" y="8" width="36" height="32" rx="2"/>
+          <line x1="6" y1="18" x2="42" y2="18"/>
+          <line x1="6" y1="28" x2="42" y2="28"/>
+          <line x1="18" y1="8" x2="18" y2="40"/>
+          <line x1="30" y1="8" x2="30" y2="40"/>
+        </svg>
+      </div>
+      <h4 style="margin:0; text-align:center;">Relational</h4>
+      <p style="font-size:0.72rem; color:var(--slate-500); font-family:var(--font-code); text-align:center; margin-top:0.15rem;">rows + linked tables</p>
+      <p style="font-size:0.8rem; color:var(--slate-600); margin-top:0.5rem;">Schema-bound. Built for <em>joins</em> and ACID transactions — structured business data.</p>
+      <p style="font-size:0.7rem; color:var(--slate-500); margin-top:0.35rem; font-family:var(--font-code); text-align:center;">Postgres · MySQL</p>
+    </div>
+
+    <!-- Card 2: Non-relational (Document) -->
+    <div class="card" style="border-top: 3px solid var(--slate-500); padding: 0.8rem 0.75rem;">
+      <div style="text-align:center; margin-bottom:0.4rem;">
+        <svg width="40" height="40" viewBox="0 0 48 48" fill="none" stroke="var(--slate-700)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M14 8 Q9 8 9 13 V35 Q9 40 14 40"/>
+          <path d="M34 8 Q39 8 39 13 V35 Q39 40 34 40"/>
+          <circle cx="19" cy="24" r="1.6" fill="var(--slate-700)"/>
+          <circle cx="24" cy="24" r="1.6" fill="var(--slate-700)"/>
+          <circle cx="29" cy="24" r="1.6" fill="var(--slate-700)"/>
+        </svg>
+      </div>
+      <h4 style="margin:0; text-align:center;">Non-relational</h4>
+      <p style="font-size:0.72rem; color:var(--slate-500); font-family:var(--font-code); text-align:center; margin-top:0.15rem;">nested JSON docs</p>
+      <p style="font-size:0.8rem; color:var(--slate-600); margin-top:0.5rem;">Schema-flex. Each record a self-describing document — query by path, no upfront schema.</p>
+      <p style="font-size:0.7rem; color:var(--slate-500); margin-top:0.35rem; font-family:var(--font-code); text-align:center;">MongoDB · Firestore</p>
+    </div>
+
+    <!-- Card 3: Key-Value -->
+    <div class="card" style="border-top: 3px solid var(--slate-500); padding: 0.8rem 0.75rem;">
+      <div style="text-align:center; margin-bottom:0.4rem;">
+        <svg width="40" height="40" viewBox="0 0 48 48" fill="none" stroke="var(--slate-700)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="13" cy="24" r="6"/>
+          <line x1="19" y1="24" x2="34" y2="24"/>
+          <line x1="29" y1="24" x2="29" y2="30"/>
+          <line x1="34" y1="24" x2="34" y2="32"/>
+        </svg>
+      </div>
+      <h4 style="margin:0; text-align:center;">Key-Value</h4>
+      <p style="font-size:0.72rem; color:var(--slate-500); font-family:var(--font-code); text-align:center; margin-top:0.15rem;">opaque value by key</p>
+      <p style="font-size:0.8rem; color:var(--slate-600); margin-top:0.5rem;">No inner structure — value is an opaque blob. Sub-ms <code>get/set</code> by key — caches, sessions.</p>
+      <p style="font-size:0.7rem; color:var(--slate-500); margin-top:0.35rem; font-family:var(--font-code); text-align:center;">Redis · DynamoDB</p>
+    </div>
+
+    <!-- Card 4: Graph -->
+    <div class="card" style="border-top: 3px solid var(--slate-500); padding: 0.8rem 0.75rem;">
+      <div style="text-align:center; margin-bottom:0.4rem;">
+        <svg width="40" height="40" viewBox="0 0 48 48" fill="none" stroke="var(--slate-700)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="14" r="4"/>
+          <circle cx="36" cy="14" r="4"/>
+          <circle cx="24" cy="36" r="4"/>
+          <line x1="15" y1="16" x2="33" y2="16"/>
+          <line x1="14" y1="18" x2="22" y2="33"/>
+          <line x1="34" y1="18" x2="26" y2="33"/>
+        </svg>
+      </div>
+      <h4 style="margin:0; text-align:center;">Graph</h4>
+      <p style="font-size:0.72rem; color:var(--slate-500); font-family:var(--font-code); text-align:center; margin-top:0.15rem;">nodes + labelled edges</p>
+      <p style="font-size:0.8rem; color:var(--slate-600); margin-top:0.5rem;">Relationships are first-class. Indexed for multi-hop traversal — paths, recommendations.</p>
+      <p style="font-size:0.7rem; color:var(--slate-500); margin-top:0.35rem; font-family:var(--font-code); text-align:center;">Neo4j · Neptune</p>
+    </div>
+
+    <!-- Card 5: Vector (emphasized — RAG's home) -->
+    <div class="card" style="border-top: 3px solid var(--success); padding: 0.8rem 0.75rem; background: var(--success-bg); position: relative;">
+      <span style="position:absolute; top:0.6rem; right:0.6rem; font-size:0.58rem; font-weight:700; letter-spacing:0.08em; background:var(--success); color:white; padding:0.12em 0.4em; border-radius:3px;">RAG ↓</span>
+      <div style="text-align:center; margin-bottom:0.4rem;">
+        <svg width="40" height="40" viewBox="0 0 48 48" fill="none" stroke="var(--success)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="22" cy="22" r="3" fill="var(--success)"/>
+          <circle cx="13" cy="14" r="2" fill="var(--success-bg)"/>
+          <circle cx="34" cy="13" r="2" fill="var(--success-bg)"/>
+          <circle cx="11" cy="30" r="2" fill="var(--success-bg)"/>
+          <circle cx="38" cy="33" r="2" fill="var(--success-bg)"/>
+          <circle cx="26" cy="37" r="2" fill="var(--success-bg)"/>
+          <circle cx="16" cy="36" r="6" fill="none" stroke-dasharray="3 2"/>
+        </svg>
+      </div>
+      <h4 style="margin:0; text-align:center; color:var(--success);">Vector</h4>
+      <p style="font-size:0.72rem; color:var(--slate-500); font-family:var(--font-code); text-align:center; margin-top:0.15rem;">embeddings + ANN index</p>
+      <p style="font-size:0.8rem; color:var(--slate-700); margin-top:0.5rem;">Fixed-dim arrays. Indexed for <strong>nearest-neighbour by similarity</strong> — retrieves by <em>meaning</em>.</p>
+      <p style="font-size:0.7rem; color:var(--slate-500); margin-top:0.35rem; font-family:var(--font-code); text-align:center;">Chroma · FAISS · Pinecone</p>
+    </div>
+
+  </div>
+
+  <h3 style="margin-top:1.4rem; margin-bottom:0.4rem;">Vector databases</h3>
+
+  <div class="three-panel">
+    <div class="panel bordered-teal">
+      <span class="panel-label teal">LOCAL · IN-PROCESS</span>
+      <h4>FAISS</h4>
+      <p style="font-size:0.92rem; color:var(--slate-600);">Library, not a service. Lives inside your Python process. Fastest for single-machine workloads. Bring your own metadata layer.</p>
+    </div>
+    <div class="panel bordered-navy">
+      <span class="panel-label navy">LOCAL · EMBEDDED</span>
+      <h4>ChromaDB</h4>
+      <p style="font-size:0.92rem; color:var(--slate-600);">Persists to disk, manages metadata, friendly Python API. Works offline, no service to run.</p>
+    </div>
+    <div class="panel bordered-warning">
+      <span class="panel-label amber">MANAGED · CLOUD</span>
+      <h4>Pinecone · Qdrant · Weaviate</h4>
+      <p style="font-size:0.92rem; color:var(--slate-600);">SaaS endpoints. Scale past one machine, sharding included. Operational overhead is theirs; latency and pricing become yours.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ===================================================================
+     RETRIEVAL METHODS
+     =================================================================== -->
+<section class="slide">
+  <h2>Retrieval strategies</h2>
+
+  <img src="img/retrieval.png" alt="Three side-by-side strategy columns. DENSE VECTOR: query → embed model → ANN index (HNSW | IVF | PQ) → top-k chunks. Tag: FAISS · Qdrant · Pinecone / ANN vector similarity search. Badges: sublinear speed / good accuracy. Bottom label: fast semantic recall. HYBRID: query splits into COSINE (semantic retrieval) + BM25 (lexical retrieval) → FUSE (weighted merge) → top-k chunks. Tag: exact terms · IDs · code / best of both worlds. Badges: varies / robust. Bottom label: robust recall. RERANKING: query → wide retrieval (top 20–100 candidates) → strip of 12 grey candidate rectangles → RERANK box (cross-encoder, score(q, chunk)) → strip of 4 green rectangles → top 3–10 chunks to LLM. Tag: huge quality boost / small extra cost. Badges: slower / best. Bottom label: best precision." class="slide-figure">
+
+  <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap: 0.7rem; margin-top: 0.5rem;">
+    <div class="card" style="border-top: 3px solid var(--accent-dim); padding: 0.8rem 0.9rem;">
+      <h4 style="margin:0;">Dense — the default</h4>
+      <p style="font-size:0.9rem; color:var(--slate-600); margin-top:0.4rem;">Embedding similarity over an ANN index. Sublinear time, good recall on paraphrased queries.</p>
+    </div>
+    <div class="card" style="border-top: 3px solid var(--navy-600); padding: 0.8rem 0.9rem;">
+      <h4 style="margin:0;">Hybrid — add when keywords matter</h4>
+      <p style="font-size:0.9rem; color:var(--slate-600); margin-top:0.4rem;">Run BM25 in parallel and fuse the ranked lists. Rescues queries with exact identifiers, codes, or rare terms.</p>
+    </div>
+    <div class="card" style="border-top: 3px solid var(--success); padding: 0.8rem 0.9rem;">
+      <h4 style="margin:0;">Rerank — add when quality &gt; latency</h4>
+      <p style="font-size:0.9rem; color:var(--slate-600); margin-top:0.4rem;">Retrieve 20–100 cheap candidates, score each <code>(query, chunk)</code> pair with a cross-encoder, keep the top 3–10.</p>
+    </div>
+  </div>
+
+</section>
+
+<!-- ===================================================================
+     QUERY
+     =================================================================== -->
+<section class="slide">
+  <h2>Query</h2>
+  <div class="intro-banner">
+    Three logical inputs — the <span style="background:#FEF3CD; padding:0 0.3em; border-radius:3px; font-weight:600;">system rules</span>, the <span style="background:#D6ECEF; padding:0 0.3em; border-radius:3px; font-weight:600;">retrieved chunks</span>, and the <span style="background:#DDEBDD; padding:0 0.3em; border-radius:3px; font-weight:600;">user's question</span> — get packed into the chat-completion message format: the <code>system</code> role carries the rules; the <code>user</code> role carries the chunks <em>and</em> the question, in that order.
+  </div>
+
+  <h4 style="margin: 0.4rem 0 0.4rem 0;">Assembled prompt sent to the LLM</h4>
+<pre class="code-block" style="font-size:0.92rem; line-height:1.55; margin:0;"><span style="color:#9FA8BC;">role:</span> <span style="color:#E8C577; font-weight:700;">system</span>
+<span style="background:rgba(196,149,69,0.22); display:inline-block; width:100%; padding:0.15rem 0.4rem; border-left:3px solid #C49545;">Answer ONLY from the context below.
+Cite every fact as [source#chunk_id].
+If the answer isn't there, say so plainly.</span>
+
+<span style="color:#9FA8BC;">role:</span> <span style="color:#82AAFF; font-weight:700;">user</span>
+<span style="background:rgba(54,162,181,0.22); display:inline-block; width:100%; padding:0.15rem 0.4rem; border-left:3px solid var(--accent-dim);">Context:
+[refund_policy.html#refund_policy-c000]
+Refunds within 30 days of purchase, item unused, original receipt presented.
+
+[refund_policy.html#refund_policy-c001]
+After 30 days, store credit may be offered at the manager's discretion.</span>
+
+<span style="background:rgba(91,158,123,0.25); display:inline-block; width:100%; padding:0.15rem 0.4rem; border-left:3px solid var(--success);">Question: What is the refund window?</span></pre>
+
+  <div class="callout info" style="margin-top:0.6rem;">
+    <div class="callout-title">RETRIEVAL FINDS, THE LLM REASONS</div>
+    Retrieval surfaces <em>evidence</em>; the LLM does the reasoning and synthesis over that evidence. The prompt above is what stitches the two halves into a single chat-completion call.
+  </div>
+</section>
+
+<!-- ===================================================================
+     CITATIONS AND GROUNDING
+     =================================================================== -->
+<section class="slide">
+  <h2>Citations and grounding</h2>
+  <div class="intro-banner">
+    A <strong>grounded answer</strong> is one you can <span class="pill">trace back to a source chunk</span>. Without that trace, you can't audit the answer and your users can't trust it.
+  </div>
+
+  <div class="two-panel">
+    <div class="panel bordered-error">
+      <span class="panel-label" style="background:var(--error-bg); color:var(--error);">UNGROUNDED</span>
+      <h4>"Our refund policy is 30 days."</h4>
+      <p style="font-size:0.95rem; color:var(--slate-600);">
+        Sounds confident. No way to tell whether the model read it in your docs or invented it. If the policy changed last week, you'd never know.
+      </p>
+    </div>
+    <div class="panel bordered-success">
+      <span class="panel-label" style="background:var(--success-bg); color:var(--success);">GROUNDED</span>
+      <h4>"Our refund policy is 30 days <em>(refund_policy.md, chunk 4)</em>."</h4>
+      <p style="font-size:0.95rem; color:var(--slate-600);">
+        Same answer — auditable. A reviewer can open the source, find chunk 4, and verify in seconds. Wrong answer? Fix the doc, re-index, done.
+      </p>
+    </div>
+  </div>
+
+  <div class="callout info" style="margin-top:0.6rem;">
+    <div class="callout-title">HOW YOU GET CITATIONS</div>
+    Tell the model in the system prompt to emit them, and hand each chunk in with its <code>source</code> + <code>chunk_id</code> already attached. The model can't cite what you didn't label.
+  </div>
+</section>
+
+<!-- ===================================================================
+     EMBEDDING MODELS IN THE WILD
+     =================================================================== -->
+<section class="slide">
+  <h2>Embedding models</h2>
+  <div class="intro-banner">
+    The embedding model is a <span class="pill">swappable choice</span>. Tiny local models, mid-size open-source, premium APIs — they all sit in the same socket, with very different trade-offs on speed, dimension, cost, and quality.
+  </div>
+
+  <table class="data-table">
+    <thead>
+      <tr>
+        <th>Model</th>
+        <th>Provider</th>
+        <th>Dim</th>
+        <th>Runs</th>
+        <th>Best for</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="mono">all-MiniLM-L6-v2</td>
+        <td>sentence-transformers</td>
+        <td>384</td>
+        <td><span class="card-tag green">LOCAL</span></td>
+        <td>tiny, fast baseline</td>
+      </tr>
+      <tr>
+        <td class="mono">all-mpnet-base-v2</td>
+        <td>sentence-transformers</td>
+        <td>768</td>
+        <td><span class="card-tag green">LOCAL</span></td>
+        <td>better quality, ~3× slower</td>
+      </tr>
+      <tr>
+        <td class="mono">nomic-embed-text</td>
+        <td>Nomic AI</td>
+        <td>768</td>
+        <td><span class="card-tag green">LOCAL</span></td>
+        <td>8k-token context</td>
+      </tr>
+      <tr>
+        <td class="mono">mxbai-embed-large</td>
+        <td>mixedbread.ai</td>
+        <td>1024</td>
+        <td><span class="card-tag green">LOCAL</span></td>
+        <td>top open-source retrieval scores</td>
+      </tr>
+      <tr>
+        <td class="mono">bge-large-en-v1.5</td>
+        <td>BAAI</td>
+        <td>1024</td>
+        <td><span class="card-tag green">LOCAL</span></td>
+        <td>strong MTEB, research-popular</td>
+      </tr>
+      <tr>
+        <td class="mono">text-embedding-3-small</td>
+        <td>OpenAI</td>
+        <td>1536</td>
+        <td><span class="card-tag amber">CLOUD</span></td>
+        <td>$0.02 / 1M tokens — cheap default</td>
+      </tr>
+      <tr>
+        <td class="mono">text-embedding-3-large</td>
+        <td>OpenAI</td>
+        <td>3072</td>
+        <td><span class="card-tag amber">CLOUD</span></td>
+        <td>$0.13 / 1M tokens — premium</td>
+      </tr>
+      <tr>
+        <td class="mono">embed-english-v3.0</td>
+        <td>Cohere</td>
+        <td>1024</td>
+        <td><span class="card-tag amber">CLOUD</span></td>
+        <td>pairs with Cohere reranker</td>
+      </tr>
+      <tr>
+        <td class="mono">voyage-3</td>
+        <td>Voyage AI</td>
+        <td>1024</td>
+        <td><span class="card-tag amber">CLOUD</span></td>
+        <td>RAG-tuned, strong MTEB</td>
+      </tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- ===================================================================
+     COMMON RAG FAILURE MODES
+     =================================================================== -->
+<section class="slide">
+  <h2>Common RAG failure modes</h2>
+  <div class="intro-banner">
+    A handful of failure modes show up over and over. Each one has a recognisable symptom and a specific fix — once you know the menu, debugging gets fast.
+  </div>
+
+  <div class="failure-grid">
+    <div class="failure-card">
+      <div class="glyph">A</div>
+      <div>
+        <h4>Wrong chunks retrieved</h4>
+        <div class="meta">
+          <span class="line"><span class="lbl cause">cause</span>chunk size too large, or query phrasing mismatches the docs.</span>
+          <span class="line"><span class="lbl fix">fix</span>shrink chunks; embed query and a known-good chunk and inspect their similarity.</span>
+        </div>
+      </div>
+    </div>
+    <div class="failure-card">
+      <div class="glyph">B</div>
+      <div>
+        <h4>No relevant chunk retrieved</h4>
+        <div class="meta">
+          <span class="line"><span class="lbl cause">cause</span>the doc never made it into the index, or chunks too small dropped key context.</span>
+          <span class="line"><span class="lbl fix">fix</span>re-run ingestion; widen chunk size; verify the doc is in the DB by metadata filter.</span>
+        </div>
+      </div>
+    </div>
+    <div class="failure-card">
+      <div class="glyph">C</div>
+      <div>
+        <h4>Model ignores the context</h4>
+        <div class="meta">
+          <span class="line"><span class="lbl cause">cause</span>weak system rule, or context buried after the question.</span>
+          <span class="line"><span class="lbl fix">fix</span>tighten the system prompt; put context <em>before</em> the question; explicitly require citation.</span>
+        </div>
+      </div>
+    </div>
+    <div class="failure-card">
+      <div class="glyph">D</div>
+      <div>
+        <h4>Model hallucinates from context</h4>
+        <div class="meta">
+          <span class="line"><span class="lbl cause">cause</span>context is contradictory or sparse; model fills the gap with training data.</span>
+          <span class="line"><span class="lbl fix">fix</span>require "I don't know" when context is insufficient; lower temperature.</span>
+        </div>
+      </div>
+    </div>
+    <div class="failure-card">
+      <div class="glyph">E</div>
+      <div>
+        <h4>Citation mismatch</h4>
+        <div class="meta">
+          <span class="line"><span class="lbl cause">cause</span>chunk ids in the prompt don't match what's stored, or model fabricates the citation.</span>
+          <span class="line"><span class="lbl fix">fix</span>render context with explicit <code>[source::chunk_id]</code> markers; validate citations against the retrieved set.</span>
+        </div>
+      </div>
+    </div>
+    <div class="failure-card">
+      <div class="glyph">F</div>
+      <div>
+        <h4>Context window overflow</h4>
+        <div class="meta">
+          <span class="line"><span class="lbl cause">cause</span>top-k × chunk-size pushed past the LLM's window.</span>
+          <span class="line"><span class="lbl fix">fix</span>cap top-k; consider smaller chunks; pick a model with a bigger context if it's genuinely needed.</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================================================================
+     SLIDE — RETRIEVAL EVALUATION
+     =================================================================== -->
+<section class="slide">
+  <h2>Retrieval evaluation</h2>
+  <div class="intro-banner">
+    Judge the retrieval before you judge the answer — if the right chunk never lands in the top-k, no prompt tuning saves you.
+  </div>
+
+  <div class="three-panel">
+    <div class="panel bordered-teal">
+      <span class="panel-label teal">RECALL@K</span>
+      <h4>Did we find them all?</h4>
+      <p style="font-size:0.95rem; color:var(--slate-600);">Of the relevant chunks, what fraction made the top-k.</p>
+    </div>
+    <div class="panel bordered-navy">
+      <span class="panel-label navy">PRECISION@K</span>
+      <h4>How much noise?</h4>
+      <p style="font-size:0.95rem; color:var(--slate-600);">Of the k returned, what fraction was actually relevant.</p>
+    </div>
+    <div class="panel bordered-warning">
+      <span class="panel-label amber">HIT-RATE</span>
+      <h4>Did we find it at all?</h4>
+      <p style="font-size:0.95rem; color:var(--slate-600);">Did the correct chunk appear <em>anywhere</em> in the top-k — yes / no.</p>
+    </div>
+  </div>
+
+  <div class="callout info" style="margin-top:0.6rem;">
+    <div class="callout-title">BUILD A SMALL LABELLED EVAL SET</div>
+    20–50 questions paired with their expected chunks. Run as a CI check on every change to <code>chunk_size</code>, embedding model, or retrieval strategy — a hit-rate drop tells you which knob hurt, long before users complain.
+  </div>
+</section>
+
+<!-- ===================================================================
+     RECAP & RESOURCES
+     =================================================================== -->
+<section class="slide">
+  <h2>Useful resources</h2>
+  <div class="intro-banner">
+    Pick one or two and go deeper. Each link is a deliberate choice — no spam, no SEO blog posts.
+  </div>
+
+  <ul class="resources">
+    <li><span class="label docs">DOCS</span> <a href="https://docs.trychroma.com/" target="_blank">ChromaDB documentation</a>. The vector DB the project app uses. The "Getting started" and "Embeddings" pages cover everything you'll need.</li>
+    <li><span class="label docs">DOCS</span> <a href="https://www.sbert.net/" target="_blank">SentenceTransformers</a>. The library behind the default local embedding model. The "Pretrained Models" page helps you pick one for your domain.</li>
+    <li><span class="label docs">DOCS</span> <a href="https://python.langchain.com/docs/tutorials/rag/" target="_blank">LangChain — RAG tutorial</a>. A concrete second pattern for the same pipeline. Read it as a comparison to the way we built it, not as a replacement.</li>
+    <li><span class="label read">BLOG</span> Anthropic — <a href="https://www.anthropic.com/news/contextual-retrieval" target="_blank">Contextual Retrieval</a>. A simple modification (prepend a short context to each chunk before embedding) that meaningfully improves retrieval. Good "what's next after this class" pointer.</li>
+  </ul>
+</section>
+
+<script>
+(function () {
+  "use strict";
+  const CONFIG = {
+    slideSelector: ".slide",
+    slideNumberClass: "slide-number",
+    katexAutoRenderOptions: {
+      delimiters: [
+        { left: "$$", right: "$$", display: true },
+        { left: "$", right: "$", display: false },
+      ],
+      throwOnError: false,
+      errorColor: "#EF4444",
+    },
+  };
+  let slides = [];
+  let currentSlideIndex = 0;
+
+  function init() {
+    slides = Array.from(document.querySelectorAll(CONFIG.slideSelector));
+    if (slides.length === 0) return;
+    autoNumberSlides();
+    renderKaTeX();
+    bindKeyboard();
+  }
+  function autoNumberSlides() {
+    const total = slides.length;
+    slides.forEach(function (slide, i) {
+      if (slide.querySelector("." + CONFIG.slideNumberClass)) return;
+      var num = document.createElement("span");
+      num.className = CONFIG.slideNumberClass;
+      num.textContent = (i + 1) + " / " + total;
+      slide.appendChild(num);
+      if (!slide.id) slide.id = "slide-" + (i + 1);
+    });
+  }
+  function renderKaTeX() {
+    if (typeof window.renderMathInElement !== "function") return;
+    slides.forEach(function (slide) {
+      window.renderMathInElement(slide, CONFIG.katexAutoRenderOptions);
+    });
+  }
+  function bindKeyboard() {
+    document.addEventListener("keydown", function (e) {
+      var tag = (e.target.tagName || "").toLowerCase();
+      if (tag === "input" || tag === "textarea") return;
+      switch (e.key) {
+        case "ArrowRight": case "ArrowDown": case "PageDown":
+          e.preventDefault(); navigateTo(currentSlideIndex + 1); break;
+        case "ArrowLeft": case "ArrowUp": case "PageUp":
+          e.preventDefault(); navigateTo(currentSlideIndex - 1); break;
+        case "Home": e.preventDefault(); navigateTo(0); break;
+        case "End":  e.preventDefault(); navigateTo(slides.length - 1); break;
+      }
+    });
+  }
+  function navigateTo(index) {
+    if (index < 0 || index >= slides.length) return;
+    currentSlideIndex = index;
+    slides[index].scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", init);
+  } else {
+    init();
+  }
+})();
+</script>
+</body>
+</html>
