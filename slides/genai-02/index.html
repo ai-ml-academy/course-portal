@@ -200,6 +200,11 @@ code {
 .data-table tr:last-child td { border-bottom: none; }
 .data-table tbody tr:nth-child(even) { background: var(--slate-50); }
 .data-table .mono { font-family: var(--font-code); font-size: 0.9em; }
+/* Compact variant — single-line rows, smaller font, used for model tables */
+.data-table.compact { font-size: 0.85rem; }
+.data-table.compact th { padding: 0.5rem 0.75rem; }
+.data-table.compact td { padding: 0.4rem 0.75rem; white-space: nowrap; vertical-align: middle; }
+.data-table.compact .mono { font-size: 0.88em; }
 
 /* Callouts */
 .callout {
@@ -403,7 +408,9 @@ code {
     An LLM has no idea what's in your private documents. RAG fixes that by <span class="pill">fetching relevant context</span> at query time and pasting it into the prompt — without touching the model's weights.
   </div>
 
-  <img src="img/why_rag.png" alt="Two stacked cards comparing the same user query 'refund policy?' under two conditions. TOP card 'WITHOUT RAG' has a soft red top stripe and tagline 'the LLM only sees what's in its weights'. Flow: slate-bordered query box, light arrow, LLM box with a subtle navy tint and 'weights only' sub, light arrow, soft-red pill with an X icon and 'doesn't know your docs — the model invents or refuses'. BOTTOM card 'WITH RAG' has a soft green top stripe and tagline 'retrieve relevant context first, then ask the LLM'. Flow: same query box, arrow, RETRIEVE box (sage-green tint, sub-labels 'relevant chunks' and 'semantic search') with a stack of private documents feeding upward into it, arrow, LLM box ('+ context') in the same subtle navy tint, arrow, soft-green pill with a check icon and 'grounded answer — cites the chunk it used'." class="slide-figure">
+  <img src="img/without_rag.png" alt="Without RAG diagram. A Query box on the left flows through an arrow into an LLM box labelled 'weights only', then a 'Generate' arrow points right into a soft-red outcome card with a dark-red X icon and the labels 'Hallucinates' and 'or refuses'. Above the LLM sits a faded stack of papers labelled 'Your private docs' with a dashed arrow pointing down to the LLM — a large red X strikes through the arrow, indicating the documents never reach the model." class="slide-figure">
+
+  <img src="img/naive_rag.png" alt="With RAG pipeline diagram. A Query box on the left feeds into a stylised Vector Store cylinder (navy blue body with four coloured data dots and a small gear icon). Above the cylinder sits an 'Embedded documents' icon — a small stack of paper sheets with a tiny network overlay — connected to the cylinder by a downward arrow, indicating documents are embedded into the store at ingest time. From the Vector Store a 'Retrieve' arrow points right into a Prompt box. The Prompt box contains an inner 'Query' label, a plus sign, and a stack of three small rectangles labelled 'Top K relevant chunks' beneath it. From the Prompt a 'Generate' arrow points right into a final LLM box." class="slide-figure">
 
   <p style="font-size:1.02rem; color:var(--slate-600);">
     Two motivations stack here: <strong>privacy</strong> (the model never trained on your docs) and <strong>freshness</strong> (your docs change daily; the model's training cut-off does not). Both are solved without retraining.
@@ -419,7 +426,7 @@ code {
     <span class="pill">Indexing</span> writes to the vector DB; <span class="pill">query</span> reads from it. Indexing runs once or on a schedule; query runs on every user request.
   </div>
 
-  <img src="img/rag_pipeline.png" alt="A two-band pipeline diagram. TOP band 'INDEXING — runs once / on schedule' (navy tint) shows five icon stages connected by arrows: Documents (stack of pages), Load (funnel), Chunk (2×2 grid), Embed (vector brackets), and Vector DB (cylinder, store + index). BOTTOM band 'QUERY — runs per user request' (green tint) shows seven icon stages: Question (speech bubble with ?), Embed (vector brackets, query → vector), Retrieve (magnifier, ANN top-k · cosine), Rerank (transformer-layer stack, cross-encoder), Prompt (paper, context + Q), LLM (chip with halo, generate answer), Answer (speech bubble with check, + citation). A small annotation 'text chunks (not vectors)' floats above the Prompt → LLM arrow. A navy L-shaped 'reads top-k' connector drops from below the Vector DB stage in the indexing band, runs left through the gap between bands, and lands as an arrow into the Retrieve stage of the query band. Footer: 'Hybrid option: add a parallel BM25 retrieval and merge before reranking — see the Retrieval Strategies figure.'" class="slide-figure">
+  <img src="img/rag_pipeline.png" alt="Title 'RAG Pipeline' over two sharp-corner bands with thick coloured top accent lines. TOP band INDEXING (navy band, left-flushed 'INDEXING' block with italic subtitle 'runs once / on schedule'): five icon stages connected by short arrows — Documents (stack of pages, PDF · MD · HTML), Load (funnel, extract text), Chunk (2×2 grid, split + overlap), Embed (vector brackets, text → vector), Vector DB (cylinder, store + index). BOTTOM band QUERY (sage-green band, left-flushed 'QUERY' block with italic subtitle 'runs per user request'): six logical nodes — Question (speech bubble with ?, user input), Embed (vector brackets, query → vector), then a dashed sage 'retrieval' grouping box that contains three method icons side-by-side (magnifier 'dense', Y-merge 'hybrid', stacked transformer pills 'rerank'), then Prompt (paper, context + Q), LLM (4-pointed sparkle, generate answer), Answer (speech bubble with check, + citation). A navy L-shaped connector leaves the bottom edge of the INDEXING band below the Vector DB stage, runs left, and lands as an arrow on the top edge of the QUERY band above the dashed retrieval box." class="slide-figure">
 
 </section>
 
@@ -432,7 +439,7 @@ code {
     An <strong>embedding model</strong> is a separate model from your LLM. Its job is to map any piece of text to a <span class="pill">vector of numbers</span> in a space where semantically similar text lands near each other.
   </div>
 
-  <img src="img/semantic_similarity.png" alt="A 2-D projection of an embedding space. Two clusters of points represent two topics. Five teal points on the left form the 'Refund-related embeddings' cluster (refund policy, return policy, request a refund, get my money back, how to cancel my order). Five navy points on the right form the 'Pizza-related embeddings' cluster (pizza recipe, best margherita, italian dough, how to make sauce, oven temperature). An amber star labelled 'How can I request a refund?' sits inside the refund cluster. Three dashed amber lines connect the query to its top-3 nearest neighbours (badged #1, #2, #3). The bottom legend includes 'top-3 retrieved embeddings (by cosine similarity)'." class="slide-figure">
+  <img src="img/semantic_similarity.png" alt="Title 'Semantic similarity' over a sharp-corner container with a thick slate top accent band. Two clusters of points are diagonally arranged: the 'Refund-related embeddings' cluster (teal tag, upper-left) holds five teal points (refund policy, return policy, request a refund, get my money back, how to cancel my order); the 'Pizza-related embeddings' cluster (navy tag, lower-right) holds five navy points (pizza recipe, best margherita, italian dough, how to make sauce, oven temperature). An amber query star sits inside the refund cluster with the italic label '\"How can I request a refund?\"' to its left. Three dashed amber lines fan out from the query to its three nearest refund-cluster neighbours, and the rank numbers 1 / 2 / 3 are written directly inside those teal points. The bottom legend has four entries: refund-related (teal dot), pizza-related (navy dot), query (star), top-3 retrieved (dashed line)." class="slide-figure">
 </section>
 
 <!-- ===================================================================
@@ -444,7 +451,7 @@ code {
     The score behind every dense retrieval. Cosine similarity measures the <span class="pill">angle between two vectors</span> — close to 1 when they point the same way, close to 0 when perpendicular, regardless of vector length.
   </div>
 
-  <img src="img/cosine_similarity.png" alt="Two side-by-side panels comparing cosine similarity for two pairs of embedding vectors. LEFT panel banner 'apple vs banana · semantically related': vector embedding(\"banana\") at a small angle (25°) above the horizontal vector embedding(\"apple\"). A small amber arc marks the angle θ at the origin. A green box in the upper-right reads similarity / θ = 25° / ≈ 0.91. RIGHT panel banner 'apple vs house · semantically unrelated': vector embedding(\"house\") at a steep angle (80°) above embedding(\"apple\"). A larger amber arc marks the angle. An amber box reads similarity / θ = 80° / ≈ 0.17. The slide formula shows cos θ = (a · b) / (‖a‖ ‖b‖). Subtitle: Cosine similarity compares vector direction, not magnitude." class="slide-figure">
+  <img src="img/cosine_similarity.png" alt="Title 'Cosine similarity' over the formula cos θ = (a · b) / (‖a‖ ‖b‖). Two side-by-side panels with sharp-corner cards and a thick coloured top band. LEFT panel (green band) banner 'apple vs banana · semantically related': vector embedding(\"banana\") at a small angle (18°) above the horizontal vector embedding(\"apple\"). An amber arc marks θ at the origin and an amber θ symbol sits inside the wedge on the bisector. A green similarity card reads similarity / θ = 18° / ≈ 0.95. RIGHT panel (dusty-red band) banner 'apple vs house · semantically unrelated': vector embedding(\"house\") at a steep angle (75°) above embedding(\"apple\"). An amber arc marks θ. A dusty-red similarity card reads similarity / θ = 75° / ≈ 0.26. Subtitle: compares direction, not magnitude. Footer: higher cosine similarity → embeddings are more semantically similar." class="slide-figure">
 
   <div class="callout info" style="margin-top:0.5rem;">
     <div class="callout-title">SIMILARITY VS DISTANCE</div>
@@ -626,9 +633,9 @@ code {
      RETRIEVAL METHODS
      =================================================================== -->
 <section class="slide">
-  <h2>Retrieval strategies</h2>
+  <h2>Retrieval</h2>
 
-  <img src="img/retrieval.png" alt="Three side-by-side strategy columns. DENSE VECTOR: query → embed model → ANN index (HNSW | IVF | PQ) → top-k chunks. Tag: FAISS · Qdrant · Pinecone / ANN vector similarity search. Badges: sublinear speed / good accuracy. Bottom label: fast semantic recall. HYBRID: query splits into COSINE (semantic retrieval) + BM25 (lexical retrieval) → FUSE (weighted merge) → top-k chunks. Tag: exact terms · IDs · code / best of both worlds. Badges: varies / robust. Bottom label: robust recall. RERANKING: query → wide retrieval (top 20–100 candidates) → strip of 12 grey candidate rectangles → RERANK box (cross-encoder, score(q, chunk)) → strip of 4 green rectangles → top 3–10 chunks to LLM. Tag: huge quality boost / small extra cost. Badges: slower / best. Bottom label: best precision." class="slide-figure">
+  <img src="img/retrieval.png" alt="Title 'Retrieval strategies — three approaches for fetching the right chunks'. Three side-by-side column cards with sharp corners and a thick coloured top band that matches the card border. DENSE VECTOR (navy band): query → embed model (query → vector) → Vector DB (ANN index · HNSW / IVF) → top-k chunks. Badges: sublinear speed / good accuracy. Caption: fast semantic recall. HYBRID (teal band): query splits into two parallel paths — left path embed model → Vector DB (dense), right path tokenize → BM25 index (lexical). Both paths converge into a FUSE box labelled 'RRF · rank fusion', which produces top-k chunks. Badges: varies speed / robust accuracy. Caption: best of both worlds. RERANKING (sage-green band): query → embed model → wide retrieval (top 20–100, shown as a strip of 12 grey candidate rectangles) → cross-encoder score(q, chunk) → top 3–10 to LLM (strip of 4 sage rectangles). Badges: slower speed / best accuracy. Caption: best precision. The embed model appears only on dense paths; the BM25 lexical path has no embedding step." class="slide-figure">
 
   <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap: 0.7rem; margin-top: 0.5rem;">
     <div class="card" style="border-top: 3px solid var(--accent-dim); padding: 0.8rem 0.9rem;">
@@ -719,7 +726,7 @@ After 30 days, store credit may be offered at the manager's discretion.</span>
     The embedding model is a <span class="pill">swappable choice</span>. Tiny local models, mid-size open-source, premium APIs — they all sit in the same socket, with very different trade-offs on speed, dimension, cost, and quality.
   </div>
 
-  <table class="data-table">
+  <table class="data-table compact">
     <thead>
       <tr>
         <th>Model</th>
@@ -792,6 +799,93 @@ After 30 days, store credit may be offered at the manager's discretion.</span>
         <td>1024</td>
         <td><span class="card-tag amber">CLOUD</span></td>
         <td>RAG-tuned, strong MTEB</td>
+      </tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- ===================================================================
+     RERANKER MODELS
+     =================================================================== -->
+<section class="slide">
+  <h2>Reranker models</h2>
+  <div class="intro-banner">
+    Same socket as the embedder — drop in any cross-encoder and the pipeline keeps working. Tiny MiniLM models cover most cases at single-digit ms per pair; <span class="pill">BGE, mxbai</span>, and the <span class="pill">Cohere / Voyage</span> hosted APIs are what enterprise stacks reach for when answer quality matters more than latency.
+  </div>
+
+  <table class="data-table compact">
+    <thead>
+      <tr>
+        <th>Model</th>
+        <th>Provider</th>
+        <th>Size</th>
+        <th>Runs</th>
+        <th>Best for</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="mono">ms-marco-MiniLM-L-6-v2</td>
+        <td>sentence-transformers</td>
+        <td>~22M</td>
+        <td><span class="card-tag green">LOCAL</span></td>
+        <td>fast default, CPU-friendly</td>
+      </tr>
+      <tr>
+        <td class="mono">ms-marco-MiniLM-L-12-v2</td>
+        <td>sentence-transformers</td>
+        <td>~33M</td>
+        <td><span class="card-tag green">LOCAL</span></td>
+        <td>more accurate, still CPU-friendly</td>
+      </tr>
+      <tr>
+        <td class="mono">bge-reranker-base</td>
+        <td>BAAI</td>
+        <td>~278M</td>
+        <td><span class="card-tag green">LOCAL</span></td>
+        <td>strong general-purpose English</td>
+      </tr>
+      <tr>
+        <td class="mono">bge-reranker-large</td>
+        <td>BAAI</td>
+        <td>~568M</td>
+        <td><span class="card-tag green">LOCAL</span></td>
+        <td>higher accuracy, slower</td>
+      </tr>
+      <tr>
+        <td class="mono">bge-reranker-v2-m3</td>
+        <td>BAAI</td>
+        <td>~568M</td>
+        <td><span class="card-tag green">LOCAL</span></td>
+        <td>multilingual · long-context</td>
+      </tr>
+      <tr>
+        <td class="mono">mxbai-rerank-large-v1</td>
+        <td>mixedbread.ai</td>
+        <td>~435M</td>
+        <td><span class="card-tag green">LOCAL</span></td>
+        <td>top MTEB rerank for English</td>
+      </tr>
+      <tr>
+        <td class="mono">jina-reranker-v2-base-multilingual</td>
+        <td>Jina AI</td>
+        <td>~278M</td>
+        <td><span class="card-tag green">LOCAL</span></td>
+        <td>multilingual, 1024-token context</td>
+      </tr>
+      <tr>
+        <td class="mono">rerank-3.5</td>
+        <td>Cohere</td>
+        <td>API</td>
+        <td><span class="card-tag amber">CLOUD</span></td>
+        <td>often best quality — enterprise default</td>
+      </tr>
+      <tr>
+        <td class="mono">rerank-2</td>
+        <td>Voyage AI</td>
+        <td>API</td>
+        <td><span class="card-tag amber">CLOUD</span></td>
+        <td>strong on technical / domain corpora</td>
       </tr>
     </tbody>
   </table>
@@ -904,6 +998,36 @@ After 30 days, store credit may be offered at the manager's discretion.</span>
 </section>
 
 <!-- ===================================================================
+     SLIDE — BEYOND VECTOR RAG
+     =================================================================== -->
+<section class="slide">
+  <h2>Beyond vector RAG</h2>
+  <div class="intro-banner">
+    Vector search matches <span class="pill">chunks</span>; graph retrieval follows <span class="pill">relationships between facts</span>.
+  </div>
+
+  <img src="img/graph_rag.png" alt="Graph RAG pipeline diagram. A Query box on the left fans out into two parallel branches via orthogonal connector lines. The upper branch, labelled 'Graph Search', leads to a Knowledge graph icon — six small blue circles connected by edges. The lower branch, labelled 'Vector search', leads to the same Vector Store cylinder as the naive-RAG figure (navy body, coloured data dots, gear). Both branches converge to the right of the icons and merge into a single 'Retrieve' arrow that points into the same Prompt box (Query + plus + three Top K relevant chunk rectangles). A 'Generate' arrow continues right from the Prompt into the LLM box. The point: graph RAG combines a knowledge-graph traversal with vector search, both feeding the same prompt." class="slide-figure">
+
+  <table class="data-table" style="margin-top:0.8rem;">
+    <thead>
+      <tr>
+        <th style="text-align:center; padding:0.9rem 1.2rem;">Dimension</th>
+        <th style="text-align:center; padding:0.9rem 1.2rem;">Traditional RAG</th>
+        <th style="text-align:center; padding:0.9rem 1.2rem;">Graph RAG</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td style="padding:0.85rem 1.2rem;"><strong>Data source</strong></td><td style="padding:0.85rem 1.2rem; text-align:center;">Unstructured text (docs, wikis)</td><td style="padding:0.85rem 1.2rem; text-align:center;">Knowledge graph (entities, edges)</td></tr>
+      <tr><td style="padding:0.85rem 1.2rem;"><strong>Retrieval</strong></td><td style="padding:0.85rem 1.2rem; text-align:center;">Vector similarity search</td><td style="padding:0.85rem 1.2rem; text-align:center;">Graph traversal · multi-hop</td></tr>
+      <tr><td style="padding:0.85rem 1.2rem;"><strong>Reasoning</strong></td><td style="padding:0.85rem 1.2rem; text-align:center;">Single-hop, chunk-local</td><td style="padding:0.85rem 1.2rem; text-align:center;">Multi-hop, relational</td></tr>
+      <tr><td style="padding:0.85rem 1.2rem;"><strong>Explainability</strong></td><td style="padding:0.85rem 1.2rem; text-align:center;">Retrieved chunks only</td><td style="padding:0.85rem 1.2rem; text-align:center;">Reasoning paths through entities</td></tr>
+      <tr><td style="padding:0.85rem 1.2rem;"><strong>Best for</strong></td><td style="padding:0.85rem 1.2rem; text-align:center;">FAQ bots, doc Q&amp;A</td><td style="padding:0.85rem 1.2rem; text-align:center;">Enterprise search, compliance, discovery</td></tr>
+      <tr><td style="padding:0.85rem 1.2rem;"><strong>Performance</strong></td><td style="padding:0.85rem 1.2rem; text-align:center;">Faster — single index lookup</td><td style="padding:0.85rem 1.2rem; text-align:center;">Slower — traversal cost</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- ===================================================================
      RECAP & RESOURCES
      =================================================================== -->
 <section class="slide">
@@ -916,7 +1040,8 @@ After 30 days, store credit may be offered at the manager's discretion.</span>
     <li><span class="label docs">DOCS</span> <a href="https://docs.trychroma.com/" target="_blank">ChromaDB documentation</a>. The vector DB the project app uses. The "Getting started" and "Embeddings" pages cover everything you'll need.</li>
     <li><span class="label docs">DOCS</span> <a href="https://www.sbert.net/" target="_blank">SentenceTransformers</a>. The library behind the default local embedding model. The "Pretrained Models" page helps you pick one for your domain.</li>
     <li><span class="label docs">DOCS</span> <a href="https://python.langchain.com/docs/tutorials/rag/" target="_blank">LangChain — RAG tutorial</a>. A concrete second pattern for the same pipeline. Read it as a comparison to the way we built it, not as a replacement.</li>
-    <li><span class="label read">BLOG</span> Anthropic — <a href="https://www.anthropic.com/news/contextual-retrieval" target="_blank">Contextual Retrieval</a>. A simple modification (prepend a short context to each chunk before embedding) that meaningfully improves retrieval. Good "what's next after this class" pointer.</li>
+    <li><span class="label read">BLOG</span> Anthropic — <a href="https://www.anthropic.com/news/contextual-retrieval" target="_blank">Contextual Retrieval</a>. A simple modification (prepend a short context to each chunk before embedding) that meaningfully improves retrieval. Good "what's next" pointer.</li>
+    <li><span class="label read">PAPER</span> Microsoft Research — <a href="https://www.microsoft.com/en-us/research/blog/graphrag-unlocking-llm-discovery-on-narrative-private-data/" target="_blank">GraphRAG</a>. Knowledge-graph-driven retrieval with community summaries. Read it to see what changes when the retrieval substrate is a graph instead of a vector index.</li>
   </ul>
 </section>
 
