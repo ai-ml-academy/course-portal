@@ -1,0 +1,2152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Building APIs with FastAPI</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+<script src="https://code.iconify.design/iconify-icon/2.1.0/iconify-icon.min.js"></script>
+<style>
+/* ============================================================
+   Gen AI Engineer Course — Slide Theme (inlined)
+   ============================================================ */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+:root {
+  --navy-900: #1A3264; --navy-800: #214078; --navy-700: #2E5090;
+  --navy-600: #3660A3; --navy-500: #4272B8; --navy-400: #5A8ACB;
+  --navy-300: #7BA4D8; --navy-200: #A3C0E4; --navy-100: #C8D9EF; --navy-50: #E8EFF7;
+  --slate-900: #1E1E2E; --slate-800: #2A2A3C; --slate-700: #3A3A4F;
+  --slate-600: #4A4A62; --slate-500: #6B6B82; --slate-400: #8E8EA3;
+  --slate-300: #B0B0C2; --slate-200: #D0D0DC; --slate-100: #E8E8EF; --slate-50: #F5F5F9;
+  --info: #36A2B5; --success: #5B9E7B; --warning: #C49545; --error: #D4594E;
+  --info-bg: #EAF5F7; --success-bg: #EDF5F0; --warning-bg: #FBF4E8; --error-bg: #FBEEED;
+  --accent: #4BB8C9; --accent-light: #7FCDD8; --accent-dim: #2A8F9E;
+  --font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-code: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
+  --slide-padding: 3rem 4rem;
+  --slide-max-width: 1150px;
+  --radius-sm: 6px; --radius-md: 10px; --radius-lg: 16px;
+  --shadow-sm: 0 1px 3px rgba(0,0,0,.08);
+  --shadow-md: 0 4px 12px rgba(0,0,0,.10);
+  --shadow-lg: 0 8px 30px rgba(0,0,0,.14);
+  --ease: cubic-bezier(.4, 0, .2, 1);
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { font-size: 19px; scroll-behavior: smooth; -webkit-font-smoothing: antialiased; }
+body { font-family: var(--font-body); color: var(--slate-800); background: var(--slate-50); line-height: 1.6; }
+
+.slide {
+  min-height: 100vh;
+  padding: var(--slide-padding);
+  display: flex; flex-direction: column; justify-content: center;
+  max-width: var(--slide-max-width);
+  margin: 0 auto;
+  position: relative;
+}
+.slide-number {
+  position: absolute; bottom: 1.2rem; right: 1.5rem;
+  font-size: 0.75rem; font-weight: 600; color: var(--slate-400); letter-spacing: 0.04em;
+}
+.slide + .slide { border-top: 1px solid var(--slate-100); }
+
+h1, h2, h3, h4 { color: var(--navy-700); line-height: 1.25; font-weight: 700; letter-spacing: -0.01em; }
+h1 { font-size: 2.8rem; font-weight: 800; margin-bottom: 1rem; }
+h2 { font-size: 2.15rem; margin-bottom: 0.8rem; }
+h3 { font-size: 1.6rem; margin-bottom: 0.6rem; }
+h4 { font-size: 1.3rem; font-weight: 600; margin-bottom: 0.5rem; }
+p { margin-bottom: 1rem; font-size: 1.1rem; }
+strong { font-weight: 600; color: var(--navy-700); }
+a { color: var(--accent-dim); text-decoration: none; border-bottom: 1px solid transparent; transition: border-color 0.2s var(--ease); }
+a:hover { border-bottom-color: var(--accent-dim); }
+ul, ol { margin: 0.5rem 0 1rem 1.6rem; }
+li { margin-bottom: 0.4rem; font-size: 1.1rem; }
+li::marker { color: var(--navy-400); }
+
+.subtitle { font-size: 1.3rem; color: var(--slate-500); font-weight: 400; margin-bottom: 1.5rem; }
+.muted { color: var(--slate-400); }
+
+/* Intro banner (S10e) */
+.intro-banner {
+  border-left: 4px solid var(--accent-dim);
+  background: var(--info-bg);
+  padding: 0.9rem 1.2rem;
+  font-size: 1.05rem;
+  font-weight: 500;
+  color: var(--navy-800);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  margin: 1rem 0 1.4rem 0;
+}
+
+/* Key-phrase pill (S10f) */
+.pill {
+  background: var(--warning-bg);
+  padding: 0 0.3em;
+  border-radius: 3px;
+  font-weight: 600;
+  color: var(--navy-700);
+}
+
+/* Slide figure — generated PNG */
+.slide-figure {
+  display: block;
+  margin: 0.6rem auto 1.0rem;
+  max-width: 100%;
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-md);
+  background: white;
+}
+
+/* Title slide */
+.slide.title-slide {
+  text-align: center;
+  background: linear-gradient(135deg, var(--navy-800) 0%, var(--navy-600) 100%);
+  color: #fff;
+}
+.slide.title-slide h1 { color: #fff; font-size: 3.4rem; margin-bottom: 0.6rem; }
+.slide.title-slide .subtitle { color: var(--navy-100); font-size: 1.4rem; }
+
+/* Code blocks (S08 — soft-dark bg) */
+.code-block {
+  background: var(--slate-800);
+  color: #E2E8F0;
+  font-family: var(--font-code);
+  font-size: 0.92rem;
+  line-height: 1.65;
+  padding: 1.3rem 1.5rem;
+  border-radius: var(--radius-md);
+  overflow-x: auto;
+  margin: 1rem 0;
+  box-shadow: var(--shadow-md);
+  position: relative;
+}
+.code-block .label {
+  position: absolute; top: 0.5rem; right: 0.8rem;
+  font-size: 0.65rem; font-weight: 600; text-transform: uppercase;
+  letter-spacing: 0.08em; color: var(--slate-400); font-family: var(--font-body);
+}
+.code-block .kw      { color: #C792EA; }
+.code-block .fn      { color: #82AAFF; }
+.code-block .str     { color: #C3E88D; }
+.code-block .num     { color: #F78C6C; }
+.code-block .comment { color: #50FA7B; font-style: italic; }
+.code-block .op      { color: #89DDFF; }
+.code-block .cls     { color: #E8C577; }
+.code-block .dec     { color: #F07178; }
+.code-block .builtin { color: #89DDFF; }
+.code-block .param   { color: #E2E8F0; font-style: italic; }
+
+/* S09 — disable ligatures */
+.code-block, .code-block *, code {
+  font-variant-ligatures: none;
+  font-feature-settings: "liga" 0, "calt" 0;
+}
+
+code {
+  font-family: var(--font-code); font-size: 0.88em;
+  background: var(--navy-50); color: var(--navy-700);
+  padding: 0.15em 0.4em; border-radius: 4px;
+}
+
+/* Panels — S10a min-width:0 */
+.two-panel { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin: 1rem 0; }
+.three-panel { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1.2rem; margin: 1rem 0; }
+.two-panel > *, .three-panel > * { min-width: 0; }
+
+.panel {
+  background: #fff;
+  border: 1px solid var(--slate-200);
+  border-radius: var(--radius-md);
+  padding: 1.3rem;
+  box-shadow: var(--shadow-sm);
+}
+.panel h4 { margin-bottom: 0.5rem; color: var(--navy-700); font-size: 1.05rem; }
+.panel.bordered-success { border-top: 3px solid var(--success); }
+.panel.bordered-warning { border-top: 3px solid var(--warning); }
+.panel.bordered-info    { border-top: 3px solid var(--info); }
+.panel.bordered-navy    { border-top: 3px solid var(--navy-600); }
+.panel.bordered-error   { border-top: 3px solid var(--error); }
+.panel.bordered-teal    { border-top: 3px solid var(--accent-dim); }
+
+/* Panel label chips */
+.panel-label {
+  display: inline-block;
+  font-size: 0.7rem; font-weight: 700; letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 0.18em 0.55em;
+  border-radius: 4px;
+  margin-bottom: 0.5rem;
+}
+.panel-label.teal   { background: var(--info-bg);    color: var(--accent-dim); }
+.panel-label.amber  { background: var(--warning-bg); color: var(--warning); }
+.panel-label.navy   { background: var(--navy-50);    color: var(--navy-700); }
+.panel-label.green  { background: var(--success-bg); color: var(--success); }
+
+/* Data table */
+.data-table {
+  width: 100%; border-collapse: collapse; margin: 1rem 0; font-size: 0.95rem;
+}
+.data-table th {
+  background: var(--navy-700); color: #fff; font-weight: 600;
+  text-align: left; padding: 0.7rem 1rem;
+}
+.data-table th:first-child { border-radius: var(--radius-sm) 0 0 0; }
+.data-table th:last-child  { border-radius: 0 var(--radius-sm) 0 0; }
+.data-table td {
+  padding: 0.6rem 1rem; border-bottom: 1px solid var(--slate-100); vertical-align: top;
+}
+.data-table tr:last-child td { border-bottom: none; }
+.data-table tbody tr:nth-child(even) { background: var(--slate-50); }
+.data-table .mono { font-family: var(--font-code); font-size: 0.9em; }
+
+/* Callouts */
+.callout {
+  padding: 1.1rem 1.3rem;
+  border-radius: var(--radius-md);
+  margin: 1rem 0;
+  border-left: 4px solid;
+  font-size: 0.97rem;
+}
+.callout-title { font-weight: 700; margin-bottom: 0.3rem; font-size: 0.92rem; letter-spacing: 0.02em; }
+.callout.info    { background: var(--info-bg);    border-color: var(--info); }
+.callout.warning { background: var(--warning-bg); border-color: var(--warning); }
+.callout.success { background: var(--success-bg); border-color: var(--success); }
+.callout.error   { background: var(--error-bg);   border-color: var(--error); }
+.callout.info .callout-title    { color: var(--info); }
+.callout.warning .callout-title { color: var(--warning); }
+.callout.success .callout-title { color: var(--success); }
+.callout.error .callout-title   { color: var(--error); }
+
+/* Card grid */
+.card {
+  background: #fff;
+  border: 1px solid var(--slate-200);
+  border-radius: var(--radius-md);
+  padding: 1.2rem;
+  box-shadow: var(--shadow-sm);
+}
+.card h4 { font-size: 1.05rem; margin-bottom: 0.4rem; color: var(--navy-700); }
+.card p  { font-size: 0.92rem; color: var(--slate-600); margin-bottom: 0; }
+
+.card-tag {
+  display: inline-block;
+  font-size: 0.65rem; font-weight: 700; letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 0.18em 0.55em;
+  border-radius: 4px;
+  margin-bottom: 0.5rem;
+}
+.card-tag.teal   { background: var(--info-bg);    color: var(--accent-dim); }
+.card-tag.green  { background: var(--success-bg); color: var(--success); }
+.card-tag.amber  { background: var(--warning-bg); color: var(--warning); }
+.card-tag.navy   { background: var(--navy-50);    color: var(--navy-700); }
+
+.summary-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1.1rem; margin: 1rem 0; }
+.summary-grid > * { min-width: 0; }
+.summary-grid .card { border-top: 3px solid var(--success); }
+
+/* Failure-mode cards */
+.failure-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+  margin: 1rem 0;
+}
+.failure-grid > * { min-width: 0; }
+.failure-card {
+  background: #fff;
+  border: 1px solid var(--slate-200);
+  border-left: 4px solid var(--error);
+  border-radius: var(--radius-md);
+  padding: 0.95rem 1.1rem;
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  gap: 0.85rem;
+  align-items: flex-start;
+}
+.failure-card .glyph {
+  flex-shrink: 0;
+  width: 2.2rem;
+  height: 2.2rem;
+  border-radius: 50%;
+  background: var(--error-bg);
+  color: var(--error);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 1.05rem;
+  font-family: var(--font-code);
+}
+.failure-card h4 {
+  font-size: 0.98rem;
+  margin: 0.05rem 0 0.35rem 0;
+  color: var(--navy-700);
+}
+.failure-card .meta { font-size: 0.86rem; color: var(--slate-600); line-height: 1.45; }
+.failure-card .meta .lbl {
+  display: inline-block;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  padding: 0.05em 0.4em;
+  border-radius: 3px;
+  margin-right: 0.4em;
+  vertical-align: 0.05em;
+}
+.failure-card .meta .lbl.cause { background: var(--warning-bg); color: var(--warning); }
+.failure-card .meta .lbl.fix   { background: var(--success-bg); color: var(--success); }
+.failure-card .meta .line { display: block; margin: 0.2em 0; }
+
+/* App architecture diagram */
+.arch-diagram {
+  background: white;
+  border: 1px solid var(--slate-200);
+  border-radius: var(--radius-md);
+  padding: 1.4rem 1.5rem;
+  margin: 1rem 0;
+  box-shadow: var(--shadow-sm);
+}
+.arch-row {
+  display: flex; align-items: center; gap: 1rem;
+  padding: 0.5rem 0.7rem;
+  margin: 0.25rem 0;
+  border-radius: var(--radius-sm);
+}
+.arch-row .file {
+  font-family: var(--font-code);
+  font-size: 0.95rem;
+  font-weight: 600;
+  min-width: 220px;
+}
+.arch-row .desc { font-size: 0.95rem; color: var(--slate-600); flex: 1; }
+.arch-row.navy   { background: var(--navy-50);    color: var(--navy-800); }
+.arch-row.navy   .file { color: var(--navy-700); }
+.arch-row.teal   { background: var(--info-bg);    color: var(--accent-dim); }
+.arch-row.teal   .file { color: var(--accent-dim); }
+.arch-row.green  { background: var(--success-bg); color: var(--success); }
+.arch-row.green  .file { color: var(--success); }
+.arch-row.amber  { background: var(--warning-bg); color: var(--warning); }
+.arch-row.amber  .file { color: var(--warning); }
+
+.arch-section-label {
+  display: inline-block;
+  font-size: 0.72rem; font-weight: 700;
+  letter-spacing: 0.08em; text-transform: uppercase;
+  color: var(--slate-500);
+  margin: 0.8rem 0 0.3rem 0.4rem;
+}
+
+/* Diagnostic step-list (for "inspect retrieval" slide) */
+.diag-flow {
+  display: flex; align-items: stretch; gap: 0;
+  margin: 1rem 0;
+}
+.diag-flow .step {
+  flex: 1;
+  background: white;
+  border: 1px solid var(--slate-200);
+  border-radius: var(--radius-md);
+  padding: 0.9rem 1rem;
+  margin: 0 0.4rem;
+  box-shadow: var(--shadow-sm);
+  position: relative;
+}
+.diag-flow .step h4 { font-size: 0.95rem; margin-bottom: 0.3rem; color: var(--navy-700); }
+.diag-flow .step p  { font-size: 0.86rem; color: var(--slate-600); margin: 0; }
+.diag-flow .step.q1 { border-top: 3px solid var(--accent-dim); }
+.diag-flow .step.q2 { border-top: 3px solid var(--warning); }
+.diag-flow .step.q3 { border-top: 3px solid var(--success); }
+.diag-flow .arrow {
+  display: flex; align-items: center; justify-content: center;
+  color: var(--slate-400);
+  font-size: 1.5rem; font-weight: 700;
+}
+
+/* Resources */
+.resources li { font-size: 1.05rem; margin-bottom: 0.6rem; }
+.resources .label {
+  display: inline-block;
+  font-size: 0.7rem; font-weight: 700;
+  padding: 0.15em 0.5em; border-radius: 3px;
+  margin-right: 0.5em; letter-spacing: 0.05em;
+}
+.resources .label.video { background: var(--error-bg); color: var(--error); }
+.resources .label.docs  { background: var(--info-bg);  color: var(--accent-dim); }
+.resources .label.read  { background: var(--success-bg); color: var(--success); }
+
+@media (max-width: 900px) {
+  :root { --slide-padding: 2rem 2rem; }
+  html { font-size: 17px; }
+  .two-panel, .three-panel, .summary-grid, .failure-grid { grid-template-columns: 1fr; }
+  .diag-flow { flex-direction: column; }
+  .diag-flow .arrow { transform: rotate(90deg); padding: 0.5rem 0; }
+}
+
+/* === FastAPI deck additions === */
+
+/* Method pills (used in tables / endpoint lists) */
+.method-pill {
+  display: inline-block;
+  min-width: 60px;
+  text-align: center;
+  padding: 0.15em 0.55em;
+  border-radius: 4px;
+  font-family: var(--font-code);
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: #fff;
+}
+.method-pill.get    { background: #2E5090; }
+.method-pill.post   { background: #5B9E7B; }
+.method-pill.put    { background: #C49545; }
+.method-pill.patch  { background: #8E7CC3; }
+.method-pill.delete { background: #C97B72; }
+
+/* CLI vs API comparison cards (slide 2) */
+.compare-cards {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.2rem;
+  margin: 0.8rem 0;
+}
+.compare-card2 {
+  background: #fff;
+  border: 1px solid var(--slate-200);
+  border-radius: var(--radius-md);
+  padding: 1.0rem 1.1rem;
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  flex-direction: column;
+}
+.compare-card2.cli  { border-top: 3px solid var(--warning); }
+.compare-card2.api  { border-top: 3px solid var(--success); }
+.compare-card2 h4 { font-size: 1.05rem; margin-bottom: 0.5rem; }
+.compare-card2 .clients {
+  display: flex; justify-content: center; gap: 0.6rem; flex-wrap: wrap;
+  background: var(--slate-50);
+  padding: 0.6rem;
+  border-radius: var(--radius-sm);
+  margin-bottom: 0.3rem;
+}
+.compare-card2 .client {
+  display: flex; flex-direction: column; align-items: center; gap: 0.15rem;
+  min-width: 56px;
+}
+.compare-card2 .client .icon { color: var(--slate-600); }
+.compare-card2 .client .lbl  { font-size: 0.7rem; color: var(--slate-500); font-family: var(--font-code); }
+.compare-card2 .arrow-down {
+  text-align: center; color: var(--slate-400); font-size: 1.2rem; line-height: 1; margin: 0.15rem 0;
+}
+.compare-card2 .hop {
+  background: #fff;
+  border: 1.5px solid var(--accent-dim);
+  border-radius: var(--radius-sm);
+  padding: 0.45rem 0.7rem;
+  text-align: center;
+  font-weight: 600;
+  color: var(--navy-700);
+  font-size: 0.95rem;
+}
+.compare-card2 .hop .sub {
+  display: block; font-size: 0.72rem; font-weight: 400;
+  color: var(--slate-500); font-family: var(--font-code);
+}
+.compare-card2 .hop.svc { border-color: var(--success); background: var(--success-bg); }
+.compare-card2 .hop.fastapi { border-color: var(--accent-dim); background: var(--info-bg); }
+.compare-card2 ul { margin-top: 0.5rem; font-size: 0.85rem; color: var(--slate-600); padding-left: 1rem; }
+.compare-card2 ul li { margin-bottom: 0.15rem; line-height: 1.4; }
+
+/* Swagger UI mockup (slide 9) */
+.swagger-mock {
+  background: #fff;
+  border: 1px solid var(--slate-200);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  box-shadow: var(--shadow-md);
+  margin: 0.6rem 0;
+}
+.swagger-mock .swagger-top {
+  background: #1B1B2E;
+  color: #fff;
+  padding: 0.6rem 1rem;
+  display: flex; justify-content: space-between; align-items: center;
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+.swagger-mock .swagger-top .url {
+  font-family: var(--font-code);
+  font-size: 0.8rem;
+  color: #82AAFF;
+  background: rgba(255,255,255,0.08);
+  padding: 0.15rem 0.6rem;
+  border-radius: 3px;
+}
+.swagger-mock .swagger-body { padding: 0.8rem 1rem; background: var(--slate-50); }
+.swagger-row {
+  background: #fff;
+  border: 1px solid var(--slate-200);
+  border-radius: var(--radius-sm);
+  padding: 0.45rem 0.7rem;
+  margin-bottom: 0.4rem;
+  display: flex; align-items: center; gap: 0.7rem;
+  font-family: var(--font-code);
+  font-size: 0.88rem;
+  cursor: default;
+}
+.swagger-row.expanded { border-left: 3px solid var(--accent-dim); padding-left: 0.6rem; }
+.swagger-row .path { color: var(--navy-700); font-weight: 700; }
+.swagger-row .desc { color: var(--slate-500); font-style: italic; font-size: 0.82rem; margin-left: auto; font-family: var(--font-body); }
+.swagger-expand-content {
+  background: #fff;
+  border: 1px solid var(--slate-200);
+  border-top: none;
+  padding: 0.6rem 0.8rem;
+  border-radius: 0 0 var(--radius-sm) var(--radius-sm);
+  margin-top: -0.4rem;
+  margin-bottom: 0.4rem;
+  font-family: var(--font-code);
+  font-size: 0.82rem;
+  color: var(--slate-600);
+}
+.swagger-try-btn {
+  display: inline-block;
+  background: var(--success);
+  color: #fff;
+  padding: 0.15rem 0.7rem;
+  border-radius: 3px;
+  font-weight: 600;
+  font-size: 0.78rem;
+  font-family: var(--font-body);
+  margin-top: 0.4rem;
+}
+
+/* RAG API architecture (slide 10) — layered with SVG icons */
+.rag-api-arch {
+  margin: 0.6rem auto;
+  max-width: 760px;
+  background: var(--slate-50);
+  border: 1.5px dashed var(--accent-dim);
+  border-radius: var(--radius-md);
+  padding: 1.4rem 1.0rem 1.0rem;
+  position: relative;
+}
+.rag-api-arch::before {
+  content: "YOUR SERVER";
+  position: absolute;
+  top: -0.7rem; left: 1.2rem;
+  background: var(--slate-50);
+  padding: 0 0.6rem;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  color: var(--accent-dim);
+}
+.arch-layer2 {
+  display: flex;
+  justify-content: center;
+  gap: 0.9rem;
+}
+.arch-card2 {
+  background: #fff;
+  border: 1px solid var(--slate-200);
+  border-radius: var(--radius-md);
+  padding: 0.6rem 0.9rem;
+  text-align: center;
+  box-shadow: var(--shadow-sm);
+  flex: 1;
+  max-width: 240px;
+}
+.arch-card2.client { border-top: 3px solid var(--success); }
+.arch-card2.api    { border-top: 3px solid var(--accent-dim); }
+.arch-card2.svc    { border-top: 3px solid var(--navy-600); }
+.arch-card2.dep    { border-top: 3px solid var(--warning); }
+.arch-card2 .icon { color: var(--navy-700); }
+.arch-card2 .name { font-weight: 600; color: var(--navy-700); font-size: 0.95rem; margin-top: 0.1rem; }
+.arch-card2 .sub  { display: block; font-family: var(--font-code); font-size: 0.72rem; color: var(--slate-500); margin-top: 0.1rem; }
+.arch-conn2 {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 0.25rem 0;
+}
+.arch-conn2 .label {
+  font-size: 0.72rem;
+  color: var(--slate-500);
+  font-family: var(--font-code);
+  background: var(--slate-50);
+  padding: 0.05rem 0.45rem;
+  border-radius: 3px;
+}
+.arch-conn2 .arrow {
+  color: var(--slate-400);
+  font-size: 1.25rem;
+  line-height: 1;
+}
+
+/* Endpoint table */
+.endpoint-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 0.4rem 0 0.6rem;
+  font-size: 0.93rem;
+}
+.endpoint-table th {
+  background: var(--navy-700); color: #fff;
+  text-align: left; padding: 0.5rem 0.8rem; font-weight: 600;
+}
+.endpoint-table td {
+  background: #fff;
+  border-bottom: 1px solid var(--slate-100);
+  padding: 0.45rem 0.8rem;
+}
+.endpoint-table td.path    { font-family: var(--font-code); font-weight: 600; color: var(--navy-800); }
+.endpoint-table td.purpose { color: var(--slate-600); font-size: 0.88rem; }
+
+
+/* API styles grid (slide 3) */
+.style-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.6rem;
+  margin: 0.4rem auto;
+  max-width: 1080px;         /* a bit wider — fills the slide better */
+  align-items: stretch;      /* each row's cards match heights left = right */
+}
+.style-card { padding: 0.45rem 0.7rem 0.5rem; display: flex; flex-direction: column; }
+.style-card pre.code-block { margin-top: auto !important; }   /* code hugs the bottom; prose sits above */
+.style-card p { font-size: 0.82rem; line-height: 1.35; margin: 0 0 0.35rem; color: var(--slate-600); }
+.style-card .head { margin-bottom: 0.25rem; }
+.style-card h4 { font-size: 0.95rem; }
+.style-card pre.code-block {
+  padding: 0.45rem 0.7rem !important;
+  margin: 0.25rem 0 0 !important;
+  line-height: 1.3 !important;
+  font-size: 0.7rem !important;
+  border-radius: 6px;
+  box-shadow: none;
+}
+.style-card {
+  background: #fff;
+  border: none;
+  border-radius: var(--radius-md);
+  padding: 0.65rem 0.95rem 0.7rem;
+  box-shadow: var(--shadow-sm);
+  border-left: 4px solid var(--slate-300);
+  position: relative;
+}
+.style-card.rest    { border-left-color: var(--success); }
+.style-card.graphql { border-left-color: #B14EAB; }
+.style-card.grpc    { border-left-color: var(--navy-600); }
+.style-card.ws      { border-left-color: var(--warning); }
+.style-card .head {
+  display: flex; align-items: baseline; justify-content: space-between;
+  margin-bottom: 0.3rem;
+}
+.style-card h4 { font-size: 1.05rem; margin: 0; color: var(--navy-700); }
+.style-card .tag {
+  display: inline-block;
+  font-size: 0.66rem; font-weight: 700; letter-spacing: 0.06em;
+  padding: 0.1rem 0.45rem; border-radius: 3px;
+  background: var(--slate-100); color: var(--slate-600);
+}
+.style-card.rest    .tag { background: var(--success-bg); color: var(--success); }
+.style-card.graphql .tag { background: #F4E8F3;           color: #B14EAB; }
+.style-card.grpc    .tag { background: var(--navy-50);    color: var(--navy-700); }
+.style-card.ws      .tag { background: var(--warning-bg); color: var(--warning); }
+.style-card p { font-size: 0.88rem; color: var(--slate-600); margin: 0; line-height: 1.4; }
+.style-card .runs {
+  display: block;
+  font-family: var(--font-code);
+  font-size: 0.74rem;
+  color: var(--slate-500);
+  margin-top: 0.3rem;
+}
+
+/* REST + HTTP combo panel (slide 4) */
+.combo-stack {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.9rem;
+  margin: 0.7rem 0;
+}
+.combo-card {
+  background: #fff;
+  border: 1px solid var(--slate-200);
+  border-radius: var(--radius-md);
+  padding: 0.9rem 1.1rem;
+  box-shadow: var(--shadow-sm);
+}
+.combo-card.rest { border-top: 3px solid var(--success); }
+.combo-card.http { border-top: 3px solid var(--accent-dim); }
+.combo-card h4 { font-size: 1.1rem; margin-bottom: 0.3rem; }
+.combo-card .sub { font-size: 0.82rem; color: var(--slate-500); font-style: italic; margin-bottom: 0.5rem; }
+.combo-card ul { margin: 0 0 0 1rem; font-size: 0.88rem; color: var(--slate-600); }
+.combo-card ul li { margin-bottom: 0.15rem; }
+.combo-merge {
+  background: var(--info-bg);
+  border-left: 4px solid var(--accent-dim);
+  padding: 0.8rem 1.1rem;
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  margin-top: 0.4rem;
+  font-size: 0.98rem;
+  color: var(--navy-800);
+}
+.combo-merge strong { color: var(--navy-700); }
+
+/* FastAPI comparison (slide 9) */
+.fastapi-hero {
+  display: grid;
+  grid-template-columns: 1fr 1.2fr;
+  gap: 1rem;
+  margin: 0.7rem 0;
+}
+.fastapi-hero .summary {
+  background: var(--info-bg);
+  border-radius: var(--radius-md);
+  padding: 1rem 1.1rem;
+  border-left: 4px solid var(--accent-dim);
+}
+.fastapi-hero .summary h4 { margin-bottom: 0.4rem; }
+.fastapi-hero .summary p { font-size: 0.92rem; color: var(--slate-700); line-height: 1.5; margin: 0; }
+.fastapi-features {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.6rem;
+}
+.fastapi-features .feat {
+  background: #fff;
+  border: 1px solid var(--slate-200);
+  border-radius: var(--radius-sm);
+  padding: 0.6rem 0.8rem;
+  box-shadow: var(--shadow-sm);
+}
+.fastapi-features .feat .title {
+  font-weight: 700; color: var(--navy-700); font-size: 0.92rem; margin-bottom: 0.15rem;
+}
+.fastapi-features .feat .desc {
+  font-size: 0.78rem; color: var(--slate-600); line-height: 1.35;
+}
+
+
+/* Layered REST/HTTP/TCP stack (slide 4) */
+.stack-layers {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.35rem;
+  margin: 1.0rem auto;
+  max-width: 980px;
+}
+.stack-layer {
+  width: 100%;
+  background: #fff;
+  border-radius: var(--radius-md);
+  padding: 0.55rem 1.2rem;
+  box-shadow: var(--shadow-sm);
+  display: grid;
+  grid-template-columns: 120px 1fr 110px;
+  align-items: center;
+  gap: 1.1rem;
+  border-left: 4px solid var(--slate-300);
+}
+.stack-layer .lay-name {
+  font-size: 1.25rem; font-weight: 800; letter-spacing: -0.01em;
+  font-family: var(--font-code);
+  white-space: nowrap;
+}
+.stack-layer .lay-role {
+  font-size: 0.9rem; color: var(--slate-700); line-height: 1.35;
+  white-space: nowrap;
+}
+.stack-layer .lay-tag {
+  font-size: 0.7rem; font-weight: 700; letter-spacing: 0.06em;
+  text-transform: uppercase;
+  text-align: center;
+  padding: 0.18rem 0.45rem;
+  border-radius: 4px;
+  background: var(--slate-100);
+  color: var(--slate-600);
+}
+.stack-layer.rest { border-left-color: var(--success); }
+.stack-layer.rest .lay-name { color: var(--success); }
+.stack-layer.rest .lay-tag  { background: var(--success-bg); color: var(--success); }
+.stack-layer.http { border-left-color: var(--accent-dim); }
+.stack-layer.http .lay-name { color: var(--accent-dim); }
+.stack-layer.http .lay-tag  { background: var(--info-bg); color: var(--accent-dim); }
+.stack-layer.tcp  { border-left-color: var(--slate-500); }
+.stack-layer.tcp  .lay-name { color: var(--slate-700); }
+.stack-layer.tcp  .lay-tag  { background: var(--slate-100); color: var(--slate-700); }
+.stack-conn {
+  font-size: 0.75rem; color: var(--slate-500); font-family: var(--font-code);
+  text-align: center;
+  line-height: 1.15;
+}
+.stack-conn .arrow { display: block; font-size: 1.0rem; color: var(--slate-400); margin-bottom: 0.0rem; }
+
+/* Flask-vs-FastAPI code comparison (slide 9) */
+.compare-code {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin: 0.6rem 0;
+}
+.compare-code > * { min-width: 0; }
+.compare-code .compare-col h4 {
+  margin-bottom: 0.3rem;
+  font-size: 1.0rem;
+  display: flex; align-items: center; gap: 0.5rem;
+}
+.compare-code .compare-col .tag {
+  font-size: 0.66rem; font-weight: 700; letter-spacing: 0.06em;
+  padding: 0.12rem 0.5rem; border-radius: 3px;
+  text-transform: uppercase;
+}
+.compare-code .compare-col.weak h4 .tag { background: var(--warning-bg); color: var(--warning); }
+.compare-code .compare-col.strong h4 .tag { background: var(--success-bg); color: var(--success); }
+.compare-code .compare-col pre.code-block {
+  font-size: 0.74rem;
+  padding: 0.7rem 0.9rem;
+  margin: 0;
+  overflow-x: auto;
+  white-space: pre;
+  line-height: 1.5;
+}
+.compare-code .compare-col .takeaway {
+  font-size: 0.85rem; color: var(--slate-600);
+  margin-top: 0.4rem; line-height: 1.4;
+}
+
+/* Slide 9 — FastAPI 3-layer placement diagram */
+.fastapi-place {
+  display: flex; align-items: stretch; gap: 0;
+  max-width: 800px; margin: 0.5rem auto;
+}
+.fastapi-place .layer {
+  flex: 1;
+  background: #fff;
+  border: 1px solid var(--slate-200);
+  border-radius: var(--radius-sm);
+  padding: 0.7rem 0.9rem;
+  text-align: center;
+  margin: 0 0.3rem;
+}
+.fastapi-place .layer .who { font-size: 0.7rem; font-weight: 700; letter-spacing: 0.06em; color: var(--slate-500); text-transform: uppercase; margin-bottom: 0.2rem; }
+.fastapi-place .layer .what { font-weight: 700; color: var(--navy-700); font-size: 1.0rem; }
+.fastapi-place .layer .sub { font-size: 0.8rem; color: var(--slate-600); margin-top: 0.15rem; }
+.fastapi-place .layer.rest    { border-top: 3px solid var(--success); }
+.fastapi-place .layer.http    { border-top: 3px solid var(--accent-dim); }
+.fastapi-place .layer.fastapi { border-top: 3px solid var(--navy-700); background: var(--navy-50); }
+
+
+/* Slide 2 — CLI vs API */
+.compare-card2 .clients .client .icon { color: var(--navy-700); }
+.compare-card2 .hop { margin: 0.15rem 0; }
+.compare-card2 .arrow-down { font-size: 1.0rem; color: var(--slate-300); margin: 0.05rem 0; }
+.compare-card2 .hop.svc {
+  border-color: var(--success);
+  background: var(--success-bg);
+  color: var(--success);
+}
+.compare-card2 .hop.svc .sub { color: var(--slate-500); }
+.same-code-chip {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.55rem;
+  margin: 0.8rem auto 0;
+  padding: 0.5rem 1.3rem;
+  background: var(--success-bg);
+  border: 1.5px dashed var(--success);
+  border-radius: var(--radius-sm);
+  font-size: 0.88rem;
+  color: var(--success);
+  max-width: 820px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+.same-code-chip .eq {
+  font-size: 1.15rem;
+  font-weight: 700;
+  letter-spacing: -0.05em;
+}
+.same-code-chip code {
+  background: rgba(40, 163, 122, 0.12);
+  padding: 0.05rem 0.35rem;
+  border-radius: 3px;
+  font-family: var(--font-code);
+  color: var(--success);
+  font-weight: 600;
+}
+
+</style>
+
+<style>
+/* (terminal-style CSS removed) */
+
+/* Cheatsheet two-column table */
+.cheat {
+  display: grid;
+  grid-template-columns: 1fr 1.4fr;
+  gap: 0 1.2rem;
+  margin: 1rem 0;
+  font-size: 0.94rem;
+}
+.cheat .row {
+  display: contents;
+}
+.cheat .cmd {
+  font-family: var(--font-code);
+  background: var(--slate-800);
+  color: #E2E8F0;
+  padding: 0.4rem 0.6rem;
+  border-radius: var(--radius-sm);
+  margin-bottom: 0.4rem;
+  font-size: 0.85rem;
+}
+.cheat .desc {
+  color: var(--slate-600);
+  padding: 0.45rem 0;
+  margin-bottom: 0.4rem;
+  border-bottom: 1px solid var(--slate-100);
+}
+
+/* Comparison cards used on "what is a local LLM" */
+.compare-pair {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.2rem;
+  margin: 1rem 0;
+}
+.compare-card {
+  background: #fff;
+  border: 1px solid var(--slate-200);
+  border-radius: var(--radius-md);
+  padding: 1.1rem;
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  flex-direction: column;
+}
+.compare-card h4 { margin-bottom: 0.5rem; font-size: 1.1rem; }
+.compare-card.cloud { border-top: 3px solid var(--slate-500); }
+.compare-card.local { border-top: 3px solid var(--success); }
+.compare-card ul {
+  margin: 0.3rem 0 0 0.9rem;
+  font-size: 0.82rem;
+  color: var(--slate-600);
+}
+.compare-card ul li { margin-bottom: 0.15rem; line-height: 1.35; }
+.compare-card ul li strong { color: var(--navy-700); }
+
+/* (Ollama compare-flow CSS removed) */
+
+/* (Ollama install rows removed) */
+
+/* === FastAPI deck additions === */
+
+/* Method pills (used in tables / endpoint lists) */
+.method-pill {
+  display: inline-block;
+  min-width: 60px;
+  text-align: center;
+  padding: 0.15em 0.55em;
+  border-radius: 4px;
+  font-family: var(--font-code);
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: #fff;
+}
+.method-pill.get    { background: #2E5090; }
+.method-pill.post   { background: #5B9E7B; }
+.method-pill.put    { background: #C49545; }
+.method-pill.patch  { background: #8E7CC3; }
+.method-pill.delete { background: #C97B72; }
+
+/* CLI vs API comparison cards (slide 2) */
+.compare-cards {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.2rem;
+  margin: 0.8rem 0;
+}
+.compare-card2 {
+  background: #fff;
+  border: 1px solid var(--slate-200);
+  border-radius: var(--radius-md);
+  padding: 1.0rem 1.1rem;
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  flex-direction: column;
+}
+.compare-card2.cli  { border-top: 3px solid var(--warning); }
+.compare-card2.api  { border-top: 3px solid var(--success); }
+.compare-card2 h4 { font-size: 1.05rem; margin-bottom: 0.5rem; }
+.compare-card2 .clients {
+  display: flex; justify-content: center; gap: 0.6rem; flex-wrap: wrap;
+  background: var(--slate-50);
+  padding: 0.6rem;
+  border-radius: var(--radius-sm);
+  margin-bottom: 0.3rem;
+}
+.compare-card2 .client {
+  display: flex; flex-direction: column; align-items: center; gap: 0.15rem;
+  min-width: 56px;
+}
+.compare-card2 .client .icon { color: var(--slate-600); }
+.compare-card2 .client .lbl  { font-size: 0.7rem; color: var(--slate-500); font-family: var(--font-code); }
+.compare-card2 .arrow-down {
+  text-align: center; color: var(--slate-400); font-size: 1.2rem; line-height: 1; margin: 0.15rem 0;
+}
+.compare-card2 .hop {
+  background: #fff;
+  border: 1.5px solid var(--accent-dim);
+  border-radius: var(--radius-sm);
+  padding: 0.45rem 0.7rem;
+  text-align: center;
+  font-weight: 600;
+  color: var(--navy-700);
+  font-size: 0.95rem;
+}
+.compare-card2 .hop .sub {
+  display: block; font-size: 0.72rem; font-weight: 400;
+  color: var(--slate-500); font-family: var(--font-code);
+}
+.compare-card2 .hop.svc { border-color: var(--success); background: var(--success-bg); }
+.compare-card2 .hop.fastapi { border-color: var(--accent-dim); background: var(--info-bg); }
+.compare-card2 ul { margin-top: 0.5rem; font-size: 0.85rem; color: var(--slate-600); padding-left: 1rem; }
+.compare-card2 ul li { margin-bottom: 0.15rem; line-height: 1.4; }
+
+/* Swagger UI mockup (slide 9) */
+.swagger-mock {
+  background: #fff;
+  border: 1px solid var(--slate-200);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  box-shadow: var(--shadow-md);
+  margin: 0.6rem 0;
+}
+.swagger-mock .swagger-top {
+  background: #1B1B2E;
+  color: #fff;
+  padding: 0.6rem 1rem;
+  display: flex; justify-content: space-between; align-items: center;
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+.swagger-mock .swagger-top .url {
+  font-family: var(--font-code);
+  font-size: 0.8rem;
+  color: #82AAFF;
+  background: rgba(255,255,255,0.08);
+  padding: 0.15rem 0.6rem;
+  border-radius: 3px;
+}
+.swagger-mock .swagger-body { padding: 0.8rem 1rem; background: var(--slate-50); }
+.swagger-row {
+  background: #fff;
+  border: 1px solid var(--slate-200);
+  border-radius: var(--radius-sm);
+  padding: 0.45rem 0.7rem;
+  margin-bottom: 0.4rem;
+  display: flex; align-items: center; gap: 0.7rem;
+  font-family: var(--font-code);
+  font-size: 0.88rem;
+  cursor: default;
+}
+.swagger-row.expanded { border-left: 3px solid var(--accent-dim); padding-left: 0.6rem; }
+.swagger-row .path { color: var(--navy-700); font-weight: 700; }
+.swagger-row .desc { color: var(--slate-500); font-style: italic; font-size: 0.82rem; margin-left: auto; font-family: var(--font-body); }
+.swagger-expand-content {
+  background: #fff;
+  border: 1px solid var(--slate-200);
+  border-top: none;
+  padding: 0.6rem 0.8rem;
+  border-radius: 0 0 var(--radius-sm) var(--radius-sm);
+  margin-top: -0.4rem;
+  margin-bottom: 0.4rem;
+  font-family: var(--font-code);
+  font-size: 0.82rem;
+  color: var(--slate-600);
+}
+.swagger-try-btn {
+  display: inline-block;
+  background: var(--success);
+  color: #fff;
+  padding: 0.15rem 0.7rem;
+  border-radius: 3px;
+  font-weight: 600;
+  font-size: 0.78rem;
+  font-family: var(--font-body);
+  margin-top: 0.4rem;
+}
+
+/* RAG API architecture (slide 10) — layered with SVG icons */
+.rag-api-arch {
+  margin: 0.6rem auto;
+  max-width: 760px;
+  background: var(--slate-50);
+  border: 1.5px dashed var(--accent-dim);
+  border-radius: var(--radius-md);
+  padding: 1.4rem 1.0rem 1.0rem;
+  position: relative;
+}
+.rag-api-arch::before {
+  content: "YOUR SERVER";
+  position: absolute;
+  top: -0.7rem; left: 1.2rem;
+  background: var(--slate-50);
+  padding: 0 0.6rem;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  color: var(--accent-dim);
+}
+.arch-layer2 {
+  display: flex;
+  justify-content: center;
+  gap: 0.9rem;
+}
+.arch-card2 {
+  background: #fff;
+  border: 1px solid var(--slate-200);
+  border-radius: var(--radius-md);
+  padding: 0.6rem 0.9rem;
+  text-align: center;
+  box-shadow: var(--shadow-sm);
+  flex: 1;
+  max-width: 240px;
+}
+.arch-card2.client { border-top: 3px solid var(--success); }
+.arch-card2.api    { border-top: 3px solid var(--accent-dim); }
+.arch-card2.svc    { border-top: 3px solid var(--navy-600); }
+.arch-card2.dep    { border-top: 3px solid var(--warning); }
+.arch-card2 .icon { color: var(--navy-700); }
+.arch-card2 .name { font-weight: 600; color: var(--navy-700); font-size: 0.95rem; margin-top: 0.1rem; }
+.arch-card2 .sub  { display: block; font-family: var(--font-code); font-size: 0.72rem; color: var(--slate-500); margin-top: 0.1rem; }
+.arch-conn2 {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 0.25rem 0;
+}
+.arch-conn2 .label {
+  font-size: 0.72rem;
+  color: var(--slate-500);
+  font-family: var(--font-code);
+  background: var(--slate-50);
+  padding: 0.05rem 0.45rem;
+  border-radius: 3px;
+}
+.arch-conn2 .arrow {
+  color: var(--slate-400);
+  font-size: 1.25rem;
+  line-height: 1;
+}
+
+/* Endpoint table */
+.endpoint-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 0.4rem 0 0.6rem;
+  font-size: 0.93rem;
+}
+.endpoint-table th {
+  background: var(--navy-700); color: #fff;
+  text-align: left; padding: 0.5rem 0.8rem; font-weight: 600;
+}
+.endpoint-table td {
+  background: #fff;
+  border-bottom: 1px solid var(--slate-100);
+  padding: 0.45rem 0.8rem;
+}
+.endpoint-table td.path    { font-family: var(--font-code); font-weight: 600; color: var(--navy-800); }
+.endpoint-table td.purpose { color: var(--slate-600); font-size: 0.88rem; }
+
+
+/* API styles grid (slide 3) */
+.style-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.6rem;
+  margin: 0.4rem auto;
+  max-width: 1080px;         /* a bit wider — fills the slide better */
+  align-items: stretch;      /* each row's cards match heights left = right */
+}
+.style-card { padding: 0.45rem 0.7rem 0.5rem; display: flex; flex-direction: column; }
+.style-card pre.code-block { margin-top: auto !important; }   /* code hugs the bottom; prose sits above */
+.style-card p { font-size: 0.82rem; line-height: 1.35; margin: 0 0 0.35rem; color: var(--slate-600); }
+.style-card .head { margin-bottom: 0.25rem; }
+.style-card h4 { font-size: 0.95rem; }
+.style-card pre.code-block {
+  padding: 0.45rem 0.7rem !important;
+  margin: 0.25rem 0 0 !important;
+  line-height: 1.3 !important;
+  font-size: 0.7rem !important;
+  border-radius: 6px;
+  box-shadow: none;
+}
+.style-card {
+  background: #fff;
+  border: none;
+  border-radius: var(--radius-md);
+  padding: 0.65rem 0.95rem 0.7rem;
+  box-shadow: var(--shadow-sm);
+  border-left: 4px solid var(--slate-300);
+  position: relative;
+}
+.style-card.rest    { border-left-color: var(--success); }
+.style-card.graphql { border-left-color: #B14EAB; }
+.style-card.grpc    { border-left-color: var(--navy-600); }
+.style-card.ws      { border-left-color: var(--warning); }
+.style-card .head {
+  display: flex; align-items: baseline; justify-content: space-between;
+  margin-bottom: 0.3rem;
+}
+.style-card h4 { font-size: 1.05rem; margin: 0; color: var(--navy-700); }
+.style-card .tag {
+  display: inline-block;
+  font-size: 0.66rem; font-weight: 700; letter-spacing: 0.06em;
+  padding: 0.1rem 0.45rem; border-radius: 3px;
+  background: var(--slate-100); color: var(--slate-600);
+}
+.style-card.rest    .tag { background: var(--success-bg); color: var(--success); }
+.style-card.graphql .tag { background: #F4E8F3;           color: #B14EAB; }
+.style-card.grpc    .tag { background: var(--navy-50);    color: var(--navy-700); }
+.style-card.ws      .tag { background: var(--warning-bg); color: var(--warning); }
+.style-card p { font-size: 0.88rem; color: var(--slate-600); margin: 0; line-height: 1.4; }
+.style-card .runs {
+  display: block;
+  font-family: var(--font-code);
+  font-size: 0.74rem;
+  color: var(--slate-500);
+  margin-top: 0.3rem;
+}
+
+/* REST + HTTP combo panel (slide 4) */
+.combo-stack {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.9rem;
+  margin: 0.7rem 0;
+}
+.combo-card {
+  background: #fff;
+  border: 1px solid var(--slate-200);
+  border-radius: var(--radius-md);
+  padding: 0.9rem 1.1rem;
+  box-shadow: var(--shadow-sm);
+}
+.combo-card.rest { border-top: 3px solid var(--success); }
+.combo-card.http { border-top: 3px solid var(--accent-dim); }
+.combo-card h4 { font-size: 1.1rem; margin-bottom: 0.3rem; }
+.combo-card .sub { font-size: 0.82rem; color: var(--slate-500); font-style: italic; margin-bottom: 0.5rem; }
+.combo-card ul { margin: 0 0 0 1rem; font-size: 0.88rem; color: var(--slate-600); }
+.combo-card ul li { margin-bottom: 0.15rem; }
+.combo-merge {
+  background: var(--info-bg);
+  border-left: 4px solid var(--accent-dim);
+  padding: 0.8rem 1.1rem;
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  margin-top: 0.4rem;
+  font-size: 0.98rem;
+  color: var(--navy-800);
+}
+.combo-merge strong { color: var(--navy-700); }
+
+/* FastAPI comparison (slide 9) */
+.fastapi-hero {
+  display: grid;
+  grid-template-columns: 1fr 1.2fr;
+  gap: 1rem;
+  margin: 0.7rem 0;
+}
+.fastapi-hero .summary {
+  background: var(--info-bg);
+  border-radius: var(--radius-md);
+  padding: 1rem 1.1rem;
+  border-left: 4px solid var(--accent-dim);
+}
+.fastapi-hero .summary h4 { margin-bottom: 0.4rem; }
+.fastapi-hero .summary p { font-size: 0.92rem; color: var(--slate-700); line-height: 1.5; margin: 0; }
+.fastapi-features {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.6rem;
+}
+.fastapi-features .feat {
+  background: #fff;
+  border: 1px solid var(--slate-200);
+  border-radius: var(--radius-sm);
+  padding: 0.6rem 0.8rem;
+  box-shadow: var(--shadow-sm);
+}
+.fastapi-features .feat .title {
+  font-weight: 700; color: var(--navy-700); font-size: 0.92rem; margin-bottom: 0.15rem;
+}
+.fastapi-features .feat .desc {
+  font-size: 0.78rem; color: var(--slate-600); line-height: 1.35;
+}
+
+
+/* Layered REST/HTTP/TCP stack (slide 4) */
+.stack-layers {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.35rem;
+  margin: 1.0rem auto;
+  max-width: 980px;
+}
+.stack-layer {
+  width: 100%;
+  background: #fff;
+  border-radius: var(--radius-md);
+  padding: 0.55rem 1.2rem;
+  box-shadow: var(--shadow-sm);
+  display: grid;
+  grid-template-columns: 120px 1fr 110px;
+  align-items: center;
+  gap: 1.1rem;
+  border-left: 4px solid var(--slate-300);
+}
+.stack-layer .lay-name {
+  font-size: 1.25rem; font-weight: 800; letter-spacing: -0.01em;
+  font-family: var(--font-code);
+  white-space: nowrap;
+}
+.stack-layer .lay-role {
+  font-size: 0.9rem; color: var(--slate-700); line-height: 1.35;
+  white-space: nowrap;
+}
+.stack-layer .lay-tag {
+  font-size: 0.7rem; font-weight: 700; letter-spacing: 0.06em;
+  text-transform: uppercase;
+  text-align: center;
+  padding: 0.18rem 0.45rem;
+  border-radius: 4px;
+  background: var(--slate-100);
+  color: var(--slate-600);
+}
+.stack-layer.rest { border-left-color: var(--success); }
+.stack-layer.rest .lay-name { color: var(--success); }
+.stack-layer.rest .lay-tag  { background: var(--success-bg); color: var(--success); }
+.stack-layer.http { border-left-color: var(--accent-dim); }
+.stack-layer.http .lay-name { color: var(--accent-dim); }
+.stack-layer.http .lay-tag  { background: var(--info-bg); color: var(--accent-dim); }
+.stack-layer.tcp  { border-left-color: var(--slate-500); }
+.stack-layer.tcp  .lay-name { color: var(--slate-700); }
+.stack-layer.tcp  .lay-tag  { background: var(--slate-100); color: var(--slate-700); }
+.stack-conn {
+  font-size: 0.75rem; color: var(--slate-500); font-family: var(--font-code);
+  text-align: center;
+  line-height: 1.15;
+}
+.stack-conn .arrow { display: block; font-size: 1.0rem; color: var(--slate-400); margin-bottom: 0.0rem; }
+
+/* Flask-vs-FastAPI code comparison (slide 9) */
+.compare-code {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin: 0.6rem 0;
+}
+.compare-code > * { min-width: 0; }
+.compare-code .compare-col h4 {
+  margin-bottom: 0.3rem;
+  font-size: 1.0rem;
+  display: flex; align-items: center; gap: 0.5rem;
+}
+.compare-code .compare-col .tag {
+  font-size: 0.66rem; font-weight: 700; letter-spacing: 0.06em;
+  padding: 0.12rem 0.5rem; border-radius: 3px;
+  text-transform: uppercase;
+}
+.compare-code .compare-col.weak h4 .tag { background: var(--warning-bg); color: var(--warning); }
+.compare-code .compare-col.strong h4 .tag { background: var(--success-bg); color: var(--success); }
+.compare-code .compare-col pre.code-block {
+  font-size: 0.74rem;
+  padding: 0.7rem 0.9rem;
+  margin: 0;
+  overflow-x: auto;
+  white-space: pre;
+  line-height: 1.5;
+}
+.compare-code .compare-col .takeaway {
+  font-size: 0.85rem; color: var(--slate-600);
+  margin-top: 0.4rem; line-height: 1.4;
+}
+
+/* Slide 9 — FastAPI 3-layer placement diagram */
+.fastapi-place {
+  display: flex; align-items: stretch; gap: 0;
+  max-width: 800px; margin: 0.5rem auto;
+}
+.fastapi-place .layer {
+  flex: 1;
+  background: #fff;
+  border: 1px solid var(--slate-200);
+  border-radius: var(--radius-sm);
+  padding: 0.7rem 0.9rem;
+  text-align: center;
+  margin: 0 0.3rem;
+}
+.fastapi-place .layer .who { font-size: 0.7rem; font-weight: 700; letter-spacing: 0.06em; color: var(--slate-500); text-transform: uppercase; margin-bottom: 0.2rem; }
+.fastapi-place .layer .what { font-weight: 700; color: var(--navy-700); font-size: 1.0rem; }
+.fastapi-place .layer .sub { font-size: 0.8rem; color: var(--slate-600); margin-top: 0.15rem; }
+.fastapi-place .layer.rest    { border-top: 3px solid var(--success); }
+.fastapi-place .layer.http    { border-top: 3px solid var(--accent-dim); }
+.fastapi-place .layer.fastapi { border-top: 3px solid var(--navy-700); background: var(--navy-50); }
+
+</style>
+
+</head>
+<body>
+
+<section class="slide title-slide">
+  <h1>Building APIs with FastAPI</h1>
+  <p class="subtitle">From CLI to HTTP — REST, FastAPI, and the Python service pattern</p>
+</section>
+
+<!-- SLIDE 2 — BIG PICTURE OF WHAT YOU'RE BUILDING -->
+<section class="slide">
+  <h2>The big picture</h2>
+  <div class="intro-banner">
+    Clients on one side, your service on the other. The <span class="pill">middle box</span> — the API — is the gateway between them.
+  </div>
+
+  <!-- Big-picture mini: 3 boxes horizontal, real Iconify logos -->
+  <div style="display:flex; align-items:stretch; justify-content:center; gap:0.4rem; margin: 1.2rem auto 0.8rem; max-width:1180px;">
+
+    <!-- CLIENTS -->
+    <div style="flex: 0 0 195px; background:#fff; border-radius:12px; padding:0.8rem 0.9rem; box-shadow:var(--shadow-sm); border-left:4px solid var(--navy-600); display:flex; flex-direction:column; gap:0.4rem;">
+      <div style="font-weight:700; font-size:0.95rem; color:var(--navy-700); margin-bottom:0.25rem; letter-spacing:0.02em;">Clients</div>
+      <div style="display:flex; align-items:center; gap:0.5rem; font-size:0.86rem; color:var(--slate-700);">
+        <iconify-icon icon="mdi:web" style="font-size:22px; min-width:22px; color:#2664c8;"></iconify-icon> Browser
+      </div>
+      <div style="display:flex; align-items:center; gap:0.5rem; font-size:0.86rem; color:var(--slate-700);">
+        <iconify-icon icon="mdi:cellphone" style="font-size:22px; min-width:22px; color:var(--navy-600);"></iconify-icon> Mobile
+      </div>
+      <div style="display:flex; align-items:center; gap:0.5rem; font-size:0.86rem; color:var(--slate-700);">
+        <iconify-icon icon="codicon:terminal" style="font-size:22px; min-width:22px; color:var(--slate-700);"></iconify-icon> curl · scripts
+      </div>
+    </div>
+
+    <!-- Arrow 1 — bidirectional with label centred between -->
+    <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; gap:0.5rem; flex:0 0 auto; padding: 0 0.45rem;">
+      <div style="display:flex; align-items:center;">
+        <div style="width:108px; height:2.5px; background:var(--accent-dim); border-radius:2px;"></div>
+        <span style="color:var(--accent-dim); font-size:1.1rem; line-height:0; margin-left:-3px;">▶</span>
+      </div>
+      <span style="font-family:var(--font-code); font-size:0.72rem; color:var(--slate-600); letter-spacing:0.04em; padding:0.1rem 0.55rem; background:var(--info-bg); border-radius:999px;">HTTP | JSON</span>
+      <div style="display:flex; align-items:center;">
+        <span style="color:var(--slate-500); font-size:1.1rem; line-height:0; margin-right:-3px;">◀</span>
+        <div style="width:108px; height:2.5px; background:var(--slate-400); border-radius:2px;"></div>
+      </div>
+    </div>
+
+    <!-- FASTAPI SERVICE -->
+    <div style="flex:0 1 440px; background:var(--info-bg); border-radius:14px; padding:0.9rem 1.1rem; box-shadow:var(--shadow-md); border:2px solid var(--accent-dim);">
+      <div style="display:flex; align-items:center; justify-content:center; gap:0.55rem; margin-bottom:0.7rem;">
+        <iconify-icon icon="simple-icons:fastapi" style="font-size:30px; color:#009688;"></iconify-icon>
+        <span style="font-weight:800; font-size:1.1rem; color:var(--navy-700); letter-spacing:-0.005em;">FastAPI service</span>
+      </div>
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.5rem 1.1rem; font-size:0.88rem; color:var(--slate-700);">
+        <div style="display:flex; align-items:center; gap:0.5rem;">
+          <iconify-icon icon="logos:python" style="font-size:22px; min-width:22px;"></iconify-icon> uvicorn
+        </div>
+        <div style="display:flex; align-items:center; gap:0.5rem;">
+          <iconify-icon icon="mdi:routes" style="font-size:22px; min-width:22px; color:var(--success);"></iconify-icon> Routes
+        </div>
+        <div style="display:flex; align-items:center; gap:0.5rem;">
+          <iconify-icon icon="simple-icons:pydantic" style="font-size:22px; min-width:22px;"></iconify-icon> Pydantic
+        </div>
+        <div style="display:flex; align-items:center; gap:0.5rem;">
+          <iconify-icon icon="simple-icons:swagger" style="font-size:22px; min-width:22px;"></iconify-icon> OpenAPI docs
+        </div>
+      </div>
+    </div>
+
+    <!-- Arrow 2 — bidirectional with label centred between -->
+    <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; gap:0.5rem; flex:0 0 auto; padding: 0 0.45rem;">
+      <div style="display:flex; align-items:center;">
+        <div style="width:108px; height:2.5px; background:var(--accent-dim); border-radius:2px;"></div>
+        <span style="color:var(--accent-dim); font-size:1.1rem; line-height:0; margin-left:-3px;">▶</span>
+      </div>
+      <span style="font-family:var(--font-code); font-size:0.72rem; color:var(--slate-600); letter-spacing:0.04em; padding:0.1rem 0.55rem; background:var(--info-bg); border-radius:999px;">calls | returns</span>
+      <div style="display:flex; align-items:center;">
+        <span style="color:var(--slate-500); font-size:1.1rem; line-height:0; margin-right:-3px;">◀</span>
+        <div style="width:108px; height:2.5px; background:var(--slate-400); border-radius:2px;"></div>
+      </div>
+    </div>
+
+    <!-- SERVICE (logic + state + external deps) -->
+    <div style="flex:0 0 215px; background:#fff; border-radius:12px; padding:0.8rem 0.9rem; box-shadow:var(--shadow-sm); border-left:4px solid var(--success); display:flex; flex-direction:column; gap:0.4rem;">
+      <div style="font-weight:700; font-size:0.95rem; color:var(--success); margin-bottom:0.25rem; letter-spacing:0.02em;">Your service</div>
+      <div style="display:flex; align-items:center; gap:0.5rem; font-size:0.86rem; color:var(--slate-700);">
+        <iconify-icon icon="mdi:cog-outline" style="font-size:22px; min-width:22px; color:var(--success);"></iconify-icon> Business logic
+      </div>
+      <div style="display:flex; align-items:center; gap:0.5rem; font-size:0.86rem; color:var(--slate-700);">
+        <iconify-icon icon="mdi:database-outline" style="font-size:22px; min-width:22px; color:var(--slate-700);"></iconify-icon> State (memory · Redis · DB)
+      </div>
+      <div style="display:flex; align-items:center; gap:0.5rem; font-size:0.86rem; color:var(--slate-700);">
+        <iconify-icon icon="mdi:transit-connection-variant" style="font-size:22px; min-width:22px; color:var(--navy-600);"></iconify-icon> External APIs / LLM
+      </div>
+    </div>
+
+  </div>
+</section>
+
+
+<!-- SLIDE 2 — WHAT IS AN API, REALLY? -->
+<section class="slide">
+  <h2>What is an API, really?</h2>
+
+  <!-- A — API — B figure -->
+  <div style="text-align:center; margin:0.5rem 0 0.6rem;">
+    <img src="img/what_is_api.png" alt="Software A communicates with Software B through the API contract — request and response" style="max-width:88%; width:88%; height:auto;" />
+  </div>
+
+  <div class="style-grid">
+    <div class="style-card rest">
+      <div class="head"><h4>Class API</h4><span class="tag">in-process</span></div>
+      <p>Methods of a class. Same Python process.</p>
+<pre class="code-block" style="font-size:0.76rem; line-height:1.35; margin-top:0.45rem;"><span class="kw">class</span> <span class="cls">Calculator</span>:
+    <span class="kw">def</span> <span class="fn">add</span>(<span class="param">self</span>, a, b):
+        <span class="kw">return</span> a + b
+
+calc = <span class="cls">Calculator</span>()
+calc.<span class="fn">add</span>(<span class="num">2</span>, <span class="num">3</span>)</pre>
+    </div>
+
+    <div class="style-card rest">
+      <div class="head"><h4>Library API</h4><span class="tag">in-process</span></div>
+      <p>Public functions in a package &mdash; what you reach after <code>import</code>.</p>
+<pre class="code-block" style="font-size:0.76rem; line-height:1.35; margin-top:0.45rem;"><span class="kw">import</span> numpy <span class="kw">as</span> np
+<span class="kw">import</span> pandas <span class="kw">as</span> pd
+
+np.<span class="fn">array</span>([<span class="num">1</span>, <span class="num">2</span>, <span class="num">3</span>])
+pd.<span class="fn">read_csv</span>(<span class="str">"data.csv"</span>)</pre>
+    </div>
+
+    <div class="style-card rest">
+      <div class="head"><h4>Web API</h4><span class="tag">over network</span></div>
+      <p>Reachable over HTTP. Different processes, different machines.</p>
+<pre class="code-block" style="font-size:0.76rem; line-height:1.35; margin-top:0.45rem;"><span class="comment"># any language, any machine</span>
+POST /chat
+content-type: application/json
+
+{<span class="str">"message"</span>: <span class="str">"hi"</span>}</pre>
+    </div>
+
+    <div class="style-card rest">
+      <div class="head"><h4>Other APIs</h4><span class="tag">everywhere</span></div>
+      <p>OS, GPU drivers, DB drivers, hardware &mdash; every layer of the stack exposes one.</p>
+<pre class="code-block" style="font-size:0.76rem; line-height:1.35; margin-top:0.45rem;">os.path.<span class="fn">exists</span>(<span class="str">"foo"</span>)      <span class="comment"># OS API</span>
+cursor.<span class="fn">execute</span>(<span class="str">"SELECT 1"</span>)   <span class="comment"># DB API</span>
+torch.cuda.<span class="fn">empty_cache</span>()     <span class="comment"># GPU API</span></pre>
+    </div>
+  </div>
+
+</section>
+
+<!-- SLIDE 3 — TWO APIs IN ONE CALL -->
+<section class="slide">
+  <h2>Behind the OpenAI SDK — the HTTP API every provider speaks</h2>
+  <div class="intro-banner">
+    <ul style="margin: 0; padding-left: 1.1rem; line-height: 1.55;">
+      <li><code>client.chat.completions.create(...)</code> is the <strong>OpenAI Python SDK</strong> method — what you write in your Python code.</li>
+      <li>It sends <code>POST /v1/chat/completions</code> under the hood — the <strong>HTTP endpoint</strong> every major model provider implements (Ollama, OpenAI, Groq, Together, OpenRouter…).</li>
+      <li>Switch providers with one line — the <strong>base URL</strong>. Same SDK code, any provider.</li>
+    </ul>
+  </div>
+
+  <div class="stack-layers">
+    <div class="stack-layer rest" style="display:block; padding:0.7rem 1.1rem;">
+      <div style="display:flex; align-items:center; justify-content:space-between; gap:0.8rem; margin-bottom:0.35rem;">
+        <span class="lay-name" style="font-size:1.05rem;">Python SDK API</span>
+        <span class="lay-tag">in-process</span>
+      </div>
+      <div style="font-size:0.92rem; color:var(--slate-700); line-height:1.45;">
+        <code>client.chat.completions.create(...)</code> — a method on a Python object. The SDK's interface, designed for Python users.
+      </div>
+    </div>
+    <div class="stack-conn"><span class="arrow">↓</span>SDK builds an HTTP request and sends it</div>
+    <div class="stack-layer http" style="display:block; padding:0.7rem 1.1rem;">
+      <div style="display:flex; align-items:center; justify-content:space-between; gap:0.8rem; margin-bottom:0.35rem;">
+        <span class="lay-name" style="font-size:1.05rem;">Web API (HTTP)</span>
+        <span class="lay-tag">over network</span>
+      </div>
+      <div style="font-size:0.92rem; color:var(--slate-700); line-height:1.45;">
+        <code>POST&nbsp;api.openai.com/v1/chat/completions</code> with a JSON body. OpenAI's public interface — any language can call it.
+      </div>
+    </div>
+    <div class="stack-conn"><span class="arrow">↓</span>OpenAI's server processes the JSON</div>
+    <div class="stack-layer tcp" style="display:block; padding:0.7rem 1.1rem;">
+      <div style="display:flex; align-items:center; justify-content:space-between; gap:0.8rem; margin-bottom:0.35rem;">
+        <span class="lay-name" style="font-size:1.05rem;">OpenAI server</span>
+        <span class="lay-tag">runtime</span>
+      </div>
+      <div style="font-size:0.92rem; color:var(--slate-700); line-height:1.45;">
+        Runs the model, returns JSON. The SDK parses it back into a Python object you can dot-access.
+      </div>
+    </div>
+  </div>
+
+</section>
+
+<!-- SLIDE 4 — CLI to API -->
+<section class="slide">
+  <h2>From CLI to API</h2>
+  <div class="intro-banner">
+    A Python script runs in a terminal — one user, one machine. To <span class="pill">share it</span> with a UI, a mobile app, or another service, you expose it over a network. <span class="pill">Same business logic</span> — new way to reach it.
+  </div>
+
+  <div class="compare-cards">
+    <div class="compare-card2 cli">
+      <span class="panel-label amber">CLI</span>
+      <h4>One user, one machine</h4>
+      <div class="clients">
+        <div class="client">
+          <svg class="icon" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="8" r="3"/><path d="M5 21c0-3.5 3-6 7-6s7 2.5 7 6"/>
+          </svg>
+          <span class="lbl">user</span>
+        </div>
+      </div>
+      <div class="arrow-down">↓</div>
+      <div class="hop">cli.py<span class="sub">python script · stdin / argv</span></div>
+      <div class="arrow-down">↓ calls</div>
+      <div class="hop svc">service<span class="sub">business logic</span></div>
+    </div>
+
+    <div class="compare-card2 api">
+      <span class="panel-label green">API</span>
+      <h4>Many clients, one service</h4>
+      <div class="clients">
+        <div class="client">
+          <svg class="icon" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="2" y="3" width="20" height="14" rx="2"/><path d="M6 8l3 2-3 2"/><line x1="11" y1="13" x2="15" y2="13"/>
+          </svg>
+          <span class="lbl">curl</span>
+        </div>
+        <div class="client">
+          <svg class="icon" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="9"/><line x1="3" y1="12" x2="21" y2="12"/><path d="M12 3a9 12 0 0 1 0 18"/><path d="M12 3a9 12 0 0 0 0 18"/>
+          </svg>
+          <span class="lbl">browser</span>
+        </div>
+        <div class="client">
+          <svg class="icon" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="6" y="2" width="12" height="20" rx="2"/><line x1="10" y1="19" x2="14" y2="19"/>
+          </svg>
+          <span class="lbl">mobile</span>
+        </div>
+        <div class="client">
+          <svg class="icon" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="4" width="18" height="6" rx="1.5"/><rect x="3" y="14" width="18" height="6" rx="1.5"/>
+            <circle cx="7" cy="7" r="0.9" fill="currentColor"/><circle cx="7" cy="17" r="0.9" fill="currentColor"/>
+          </svg>
+          <span class="lbl">service</span>
+        </div>
+      </div>
+      <div class="arrow-down">↓ over a network</div>
+      <div class="hop fastapi">API server<span class="sub">routes incoming requests</span></div>
+      <div class="arrow-down">↓ calls</div>
+      <div class="hop svc">service<span class="sub">business logic</span></div>
+    </div>
+  </div>
+
+  <div class="same-code-chip">
+    <span class="eq">≡</span>
+    <span>identical <code>service</code> code — the API just wraps it in a network layer</span>
+  </div>
+</section>
+
+<!-- SLIDE 5 — API STYLES LANDSCAPE -->
+<section class="slide">
+  <h2>APIs come in different styles</h2>
+  <div class="intro-banner">
+    "API" is a generic term — it just means "a way for two programs to talk". Several <span class="pill">styles</span> exist for talking over a network. Each has a different shape, transport, and best fit.
+  </div>
+
+  <div class="style-grid">
+    <div class="style-card rest">
+      <div class="head"><h4>REST</h4><span class="tag">HTTP + JSON</span></div>
+      <p>Resources accessed via URLs + a small set of HTTP verbs.  Stateless, debuggable with <code>curl</code>.</p>
+    </div>
+    <div class="style-card graphql">
+      <div class="head"><h4>GraphQL</h4><span class="tag">HTTP + JSON</span></div>
+      <p>One endpoint.  The client sends a query describing exactly the fields it wants back.</p>
+    </div>
+    <div class="style-card grpc">
+      <div class="head"><h4>gRPC</h4><span class="tag">HTTP/2 + protobuf</span></div>
+      <p>Protobuf contracts, code-generated clients, binary on the wire.  Common between microservices.</p>
+    </div>
+    <div class="style-card ws">
+      <div class="head"><h4>WebSocket / SSE</h4><span class="tag">long-lived TCP</span></div>
+      <p>Persistent connection — server can push events to the client.  Used for streaming and live updates.</p>
+    </div>
+  </div>
+
+  <div style="margin-top:0.7rem; display:flex; gap:0.55rem; max-width:1080px; margin-left:auto; margin-right:auto;">
+    <div style="flex:1; background:var(--info-bg); border-radius:0 6px 6px 0; border-left:4px solid var(--accent-dim); padding:0.45rem 0.75rem;">
+      <strong style="color:var(--accent-dim); font-size:0.82rem;">Transport</strong>
+      <span style="font-size:0.82rem; color:var(--slate-700);"> — how do I get a message from A to B?</span>
+    </div>
+    <div style="flex:1; background:var(--info-bg); border-radius:0 6px 6px 0; border-left:4px solid var(--accent-dim); padding:0.45rem 0.75rem;">
+      <strong style="color:var(--accent-dim); font-size:0.82rem;">Payload format</strong>
+      <span style="font-size:0.82rem; color:var(--slate-700);"> — once it arrives, how is the data shaped so both sides can parse it?</span>
+    </div>
+  </div>
+
+  <table style="margin: 0.5rem auto 0; max-width: 1080px; width: 100%; border-collapse: collapse; font-size: 0.86rem;">
+    <thead>
+      <tr style="background: var(--navy-50); color: var(--navy-700);">
+        <th style="text-align:left; padding:0.4rem 0.75rem; border-radius:6px 0 0 6px;">Style</th>
+        <th style="text-align:left; padding:0.4rem 0.75rem;">Transport</th>
+        <th style="text-align:left; padding:0.4rem 0.75rem; border-radius:0 6px 6px 0;">Payload format</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr style="border-bottom:1px solid var(--slate-100);">
+        <td style="padding:0.35rem 0.75rem; font-weight:600; color:var(--success);">REST</td>
+        <td style="padding:0.35rem 0.75rem;"><code>HTTP</code></td>
+        <td style="padding:0.35rem 0.75rem;"><code>JSON</code></td>
+      </tr>
+      <tr style="border-bottom:1px solid var(--slate-100);">
+        <td style="padding:0.35rem 0.75rem; font-weight:600; color:#B14EAB;">GraphQL</td>
+        <td style="padding:0.35rem 0.75rem;"><code>HTTP</code></td>
+        <td style="padding:0.35rem 0.75rem;"><code>JSON</code> &mdash; with a query language inside the body</td>
+      </tr>
+      <tr style="border-bottom:1px solid var(--slate-100);">
+        <td style="padding:0.35rem 0.75rem; font-weight:600; color:var(--navy-700);">gRPC</td>
+        <td style="padding:0.35rem 0.75rem;"><code>HTTP/2</code></td>
+        <td style="padding:0.35rem 0.75rem;"><code>Protobuf</code> &mdash; binary, schema-defined</td>
+      </tr>
+      <tr>
+        <td style="padding:0.35rem 0.75rem; font-weight:600; color:var(--warning);">WebSocket / SSE</td>
+        <td style="padding:0.35rem 0.75rem;"><code>persistent TCP</code></td>
+        <td style="padding:0.35rem 0.75rem;"><code>JSON or binary</code> &mdash; your choice</td>
+      </tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- SLIDE 4 — REST + HTTP -->
+<section class="slide">
+  <h2>REST + HTTP — how they stack</h2>
+  <div class="intro-banner">
+    Two separate ideas that combine in every web API you'll touch. Each layer does <span class="pill">one thing</span> and hands off to the next.
+  </div>
+
+  <div class="stack-layers">
+    <div class="stack-layer rest">
+      <span class="lay-name">REST</span>
+      <span class="lay-role">The design style.  What a URL means, what a verb does.</span>
+      <span class="lay-tag">style</span>
+    </div>
+    <div class="stack-conn"><span class="arrow">↓</span>expressed via</div>
+    <div class="stack-layer http">
+      <span class="lay-name">HTTP</span>
+      <span class="lay-role">The wire protocol.  Message format, methods, status codes, headers, body.</span>
+      <span class="lay-tag">protocol</span>
+    </div>
+    <div class="stack-conn"><span class="arrow">↓</span>runs on</div>
+    <div class="stack-layer tcp">
+      <span class="lay-name">TCP / IP</span>
+      <span class="lay-role">The network plumbing.  Packets get from your laptop to a server.</span>
+      <span class="lay-tag">network</span>
+    </div>
+  </div>
+
+</section>
+
+<!-- SLIDE 5 — HTTP request/response anatomy -->
+<section class="slide">
+  <h2>Anatomy of an HTTP message</h2>
+  <div class="intro-banner">
+    Every HTTP exchange is the same shape — a <span class="pill">start line</span>, some <span class="pill">headers</span>, and an optional <span class="pill">body</span>. The request asks; the response answers.
+  </div>
+
+  <img src="img/request_response.png" alt="Two stacked HTTP messages between a tall CLIENT pillar (left, with laptop glyph) and a tall SERVER pillar (right, with server-stack glyph, labelled 'FastAPI · uvicorn'). TOP envelope — REQUEST (navy border): tab labelled 'REQUEST  client to server'. Three sections each with a coloured left bar — navy 'START LINE' (POST /ask HTTP/1.1), teal 'HEADERS' (Host: rag-api.example.com, Content-Type: application/json), sage 'BODY' ({question: What is RAG?, top_k: 5}). Navy arrows: client to envelope to server. BOTTOM envelope — RESPONSE (green border): tab labelled 'RESPONSE  server to client'. Sections: green 'STATUS LINE' (HTTP/1.1 200 OK), teal 'HEADERS' (Content-Type, X-Request-Id), sage 'BODY' ({answer: RAG fetches context..., sources: [...]}). Green arrows: server to envelope to client. Caption: Both messages have the same three-part shape: start/status line, headers, body." class="slide-figure">
+</section>
+
+<!-- SLIDE — HTTP Methods + REST URL combined (replaces the old separate verbs + URL slides) -->
+<section class="slide">
+  <h2>HTTP Methods + REST URL — verbs and nouns</h2>
+  <div class="intro-banner">
+    In REST the <span class="pill">URL is a noun</span> (what) and the <span class="pill">method is a verb</span> (how). Five verbs cover almost everything — each with a meaning, an example URL, and an <span class="pill">idempotency guarantee</span>.
+  </div>
+
+  <img src="img/methods_urls.png" alt="Five rows, one per HTTP method, each a chip row with role labels. Row 1 — navy GET chip + teal /documents chip + amber /42 chip → 'read document #42' | green badge 'Yes — safe to retry'. Role labels below: verb · collection · id · idempotent? Row 2 — sage POST chip + teal /documents chip → 'create a new document' | red badge 'No — retries duplicate'. Row 3 — amber PUT chip + teal /documents chip + amber /42 chip → 'replace document #42 entirely' | green badge 'Yes'. Row 4 — lavender PATCH chip + teal /documents chip + amber /42 chip → 'partially update document #42' | grey badge 'Usually'. Row 5 — red DELETE chip + teal /documents chip + amber /42 chip → 'remove document #42' | green badge 'Yes'. Footer: Same noun (/documents/42) reused across verbs — the verb decides the operation." class="slide-figure">
+
+  <div class="callout info" style="margin-top:0.4rem;">
+    <div class="callout-title">IDEMPOTENT = SAFE TO RETRY</div>
+    Calling it twice has the same effect as once. <code>GET</code> and <code>DELETE</code> are safe; <code>POST</code> isn&rsquo;t — a retried <code>POST /orders</code> creates two orders.
+  </div>
+</section>
+
+<!-- SLIDE 8 — Status codes -->
+<section class="slide">
+  <h2>HTTP status codes</h2>
+  <div class="intro-banner">
+    The first digit groups outcomes into three families. <span class="pill">Always check the status before reading the body</span> — a 500 response usually has no JSON, just an error string.
+  </div>
+
+  <img src="img/status_codes.png" alt="Three side-by-side colored zones. LEFT (green) — 2xx SUCCESS: 200 OK (standard success with body), 201 Created (new resource was made), 204 No Content (success, no body returned). MIDDLE (amber) — 4xx CLIENT ERROR: 400 Bad Request (malformed payload), 401 Unauthorized (missing/invalid auth), 404 Not Found (no such resource), 422 Unprocessable (Pydantic validation failed). RIGHT (red) — 5xx SERVER ERROR: 500 Internal (your code raised), 502 Bad Gateway (upstream call failed), 503 Unavailable (service down/overloaded), 504 Gateway Timeout (upstream too slow). Footer: first digit = family signal — the rest narrows the situation." class="slide-figure">
+</section>
+
+<!-- SLIDE 9 — FastAPI -->
+<section class="slide">
+  <h2>FastAPI — the Python tool</h2>
+  <div class="intro-banner">
+    REST said <em>what</em>.  HTTP said <em>how it travels</em>.  <span class="pill">FastAPI</span> is the Python framework that turns your function signatures into a working REST API.
+  </div>
+
+  <div class="fastapi-place">
+    <div class="layer rest">
+      <div class="who">style</div>
+      <div class="what">REST</div>
+      <div class="sub">URLs + verbs + status codes</div>
+    </div>
+    <div class="layer http">
+      <div class="who">protocol</div>
+      <div class="what">HTTP</div>
+      <div class="sub">request / response on the wire</div>
+    </div>
+    <div class="layer fastapi">
+      <div class="who">python tool</div>
+      <div class="what">FastAPI</div>
+      <div class="sub">declarative routes from type hints</div>
+    </div>
+  </div>
+
+  <div class="compare-code">
+    <div class="compare-col weak">
+      <h4>Without FastAPI <span class="tag">manual</span></h4>
+<pre class="code-block"><span class="kw">from</span> flask <span class="kw">import</span> Flask, request, jsonify
+app = <span class="cls">Flask</span>(__name__)
+
+<span class="dec">@app.route</span>(<span class="str">"/ask"</span>, methods=[<span class="str">"POST"</span>])
+<span class="kw">def</span> <span class="fn">ask</span>():
+    data = request.<span class="fn">get_json</span>()
+    <span class="kw">if</span> <span class="str">"question"</span> <span class="kw">not in</span> data:
+        <span class="kw">return</span> <span class="fn">jsonify</span>(
+            {<span class="str">"error"</span>: <span class="str">"missing question"</span>}
+        ), <span class="num">400</span>
+    <span class="kw">if</span> <span class="kw">not</span> <span class="builtin">isinstance</span>(data[<span class="str">"question"</span>], <span class="builtin">str</span>):
+        <span class="kw">return</span> <span class="fn">jsonify</span>(
+            {<span class="str">"error"</span>: <span class="str">"must be str"</span>}
+        ), <span class="num">400</span>
+    top_k = data.<span class="fn">get</span>(<span class="str">"top_k"</span>, <span class="num">5</span>)
+    result = rag.<span class="fn">answer</span>(
+        data[<span class="str">"question"</span>], top_k=top_k
+    )
+    <span class="kw">return</span> <span class="fn">jsonify</span>(result.__dict__)</pre>
+      <p class="takeaway">Manual JSON parsing, manual validation, manual error responses, no docs page.</p>
+    </div>
+    <div class="compare-col strong">
+      <h4>With FastAPI <span class="tag">type hints</span></h4>
+<pre class="code-block"><span class="kw">from</span> fastapi <span class="kw">import</span> FastAPI
+<span class="kw">from</span> pydantic <span class="kw">import</span> BaseModel
+
+<span class="kw">class</span> <span class="cls">AskRequest</span>(<span class="cls">BaseModel</span>):
+    question: <span class="builtin">str</span>
+    top_k: <span class="builtin">int</span> = <span class="num">5</span>
+
+<span class="kw">class</span> <span class="cls">AskResponse</span>(<span class="cls">BaseModel</span>):
+    answer: <span class="builtin">str</span>
+    sources: <span class="builtin">list</span>[<span class="builtin">str</span>]
+
+app = <span class="cls">FastAPI</span>()
+
+<span class="dec">@app.post</span>(<span class="str">"/ask"</span>, <span class="param">response_model</span>=AskResponse)
+<span class="kw">def</span> <span class="fn">ask</span>(req: AskRequest):
+    <span class="kw">return</span> rag.<span class="fn">answer</span>(
+        req.question,
+        top_k=req.top_k,
+    )</pre>
+      <p class="takeaway">Pydantic validates and parses.  Errors return a clean <code>422</code>.  <code>/docs</code> is generated automatically.</p>
+    </div>
+  </div>
+</section>
+
+<!-- SLIDE 10 — A FastAPI route end-to-end -->
+<section class="slide">
+  <h2>A FastAPI route — same logic, new transport</h2>
+  <div class="intro-banner">
+    Same <code>LLMClient.chat(...)</code>, same message list, same multi-turn loop. Only the <span class="pill">transport</span> changes &mdash; stdin becomes an HTTP route, <code>print()</code> becomes a JSON response, one in-memory list becomes a dict keyed by <code>session_id</code>.
+  </div>
+
+  <div class="two-panel">
+    <div class="panel bordered-navy">
+      <span class="panel-label navy">CLI</span>
+      <h4>scripts/chat_cli.py</h4>
+<pre class="code-block" style="font-size:0.78rem; line-height:1.35;"><span class="kw">from</span> app.llm.client <span class="kw">import</span> LLMClient
+
+client = <span class="cls">LLMClient</span>()
+messages = [{<span class="str">"role"</span>: <span class="str">"system"</span>, <span class="str">"content"</span>: SYSTEM_PROMPT}]
+
+<span class="kw">while</span> <span class="builtin">True</span>:
+    text = <span class="builtin">input</span>(<span class="str">"you &#9656; "</span>)
+    messages.<span class="fn">append</span>({<span class="str">"role"</span>: <span class="str">"user"</span>, <span class="str">"content"</span>: text})
+    reply = client.<span class="fn">chat</span>(messages)
+    <span class="builtin">print</span>(<span class="str">"bot &#9656;"</span>, reply)
+    messages.<span class="fn">append</span>({<span class="str">"role"</span>: <span class="str">"assistant"</span>, <span class="str">"content"</span>: reply})</pre>
+    </div>
+    <div class="panel bordered-teal">
+      <span class="panel-label teal">API</span>
+      <h4>app/main.py</h4>
+<pre class="code-block" style="font-size:0.78rem; line-height:1.35;"><span class="kw">from</span> fastapi <span class="kw">import</span> FastAPI
+<span class="kw">from</span> pydantic <span class="kw">import</span> BaseModel
+<span class="kw">from</span> app.llm.client <span class="kw">import</span> LLMClient
+
+app      = <span class="cls">FastAPI</span>()
+client   = <span class="cls">LLMClient</span>()
+sessions: <span class="builtin">dict</span>[<span class="builtin">str</span>, <span class="builtin">list</span>] = {}
+
+<span class="kw">class</span> <span class="cls">ChatRequest</span>(<span class="cls">BaseModel</span>):
+    session_id: <span class="builtin">str</span>
+    message:    <span class="builtin">str</span>
+
+<span class="dec">@app.post</span>(<span class="str">"/chat"</span>)
+<span class="kw">def</span> <span class="fn">chat</span>(req: ChatRequest):
+    history = sessions.<span class="fn">setdefault</span>(req.session_id, [SYSTEM_MSG])
+    history.<span class="fn">append</span>({<span class="str">"role"</span>: <span class="str">"user"</span>, <span class="str">"content"</span>: req.message})
+    reply = client.<span class="fn">chat</span>(history)
+    history.<span class="fn">append</span>({<span class="str">"role"</span>: <span class="str">"assistant"</span>, <span class="str">"content"</span>: reply})
+    <span class="kw">return</span> {<span class="str">"reply"</span>: reply}</pre>
+    </div>
+  </div>
+
+</section>
+
+<!-- SLIDE 11 — Auto docs -->
+<section class="slide">
+  <h2>Automatic API documentation</h2>
+  <div class="intro-banner">
+    Your type hints + Pydantic schemas produce a live <span class="pill">OpenAPI spec</span> at <code>/openapi.json</code>, rendered as a clickable <span class="pill">Swagger UI</span> at <code>/docs</code>.
+  </div>
+
+  <h4 style="margin: 0 0 0.4rem;">What these terms mean</h4>
+  <div class="three-panel" style="margin-bottom: 0.6rem;">
+    <div class="panel bordered-teal">
+      <span class="panel-label teal">OpenAPI</span>
+      <h4>A standardised spec</h4>
+      <p style="font-size:0.88rem; color:var(--slate-600);">A JSON file describing every endpoint, parameter, request body, response shape, and error.  Industry standard for REST APIs.</p>
+      <p style="font-size:0.78rem; color:var(--slate-500); margin-top:0.3rem;">served at <code>/openapi.json</code></p>
+    </div>
+    <div class="panel bordered-navy">
+      <span class="panel-label navy">Swagger UI</span>
+      <h4>An interactive page</h4>
+      <p style="font-size:0.88rem; color:var(--slate-600);">A web interface that <em>reads</em> an OpenAPI spec and renders a clickable list of endpoints — with a "Try it out" button that calls your live server.</p>
+      <p style="font-size:0.78rem; color:var(--slate-500); margin-top:0.3rem;">served at <code>/docs</code></p>
+    </div>
+    <div class="panel bordered-warning">
+      <span class="panel-label amber">ReDoc</span>
+      <h4>An alternative reader</h4>
+      <p style="font-size:0.88rem; color:var(--slate-600);">A second viewer for the same spec — cleaner reference layout, no "try it out".  Good for sharing with external consumers.</p>
+      <p style="font-size:0.78rem; color:var(--slate-500); margin-top:0.3rem;">served at <code>/redoc</code></p>
+    </div>
+  </div>
+
+  <h4 style="margin: 0.3rem 0 0.3rem;">What <code>/docs</code> looks like in the browser</h4>
+  <div class="swagger-mock">
+    <div class="swagger-top">
+      <span>RAG API · v0.1.0</span>
+      <span class="url">localhost:8000/docs</span>
+    </div>
+    <div class="swagger-body">
+      <div class="swagger-row">
+        <span class="method-pill get">GET</span>
+        <span class="path">/health</span>
+        <span class="desc">Liveness check</span>
+      </div>
+      <div class="swagger-row expanded">
+        <span class="method-pill post">POST</span>
+        <span class="path">/ask</span>
+        <span class="desc">Answer a question from indexed docs</span>
+      </div>
+      <div class="swagger-expand-content">
+        <div>Request body — <code>AskRequest</code></div>
+        <div style="margin-top:0.25rem;">{ "question": <span style="color:#5B9E7B;">"What is RAG?"</span>, "top_k": <span style="color:#C49545;">5</span> }</div>
+        <span class="swagger-try-btn">Try it out</span>
+      </div>
+      <div class="swagger-row">
+        <span class="method-pill post">POST</span>
+        <span class="path">/ingest</span>
+        <span class="desc">Index a document</span>
+      </div>
+    </div>
+  </div>
+
+</section>
+
+<!-- NEW — Multi-turn state -->
+<section class="slide">
+  <h2>Multi-turn state — where does conversation history live?</h2>
+  <div class="intro-banner">
+    For an LLM to "remember" what was said earlier, every <code>/chat</code> call must include the full conversation history. <span class="pill">Where you keep that history</span> decides how the service scales and what survives a restart.
+  </div>
+
+  <h4 style="margin: 0 0 0.4rem;">The simplest option — in-process dict</h4>
+<pre class="code-block" style="font-size:0.82rem;">sessions: <span class="builtin">dict</span>[<span class="builtin">str</span>, <span class="builtin">list</span>[<span class="builtin">dict</span>]] = {}
+
+<span class="dec">@app.post</span>(<span class="str">"/chat"</span>)
+<span class="kw">def</span> <span class="fn">chat</span>(req: ChatRequest):
+    history = sessions.<span class="fn">setdefault</span>(req.session_id, [SYSTEM_MSG])
+    history.<span class="fn">append</span>({<span class="str">"role"</span>: <span class="str">"user"</span>, <span class="str">"content"</span>: req.message})
+    reply = client.<span class="fn">chat</span>(history)
+    history.<span class="fn">append</span>({<span class="str">"role"</span>: <span class="str">"assistant"</span>, <span class="str">"content"</span>: reply})
+    <span class="kw">return</span> {<span class="str">"reply"</span>: reply, <span class="str">"turns"</span>: <span class="builtin">len</span>(history) // <span class="num">2</span>}</pre>
+
+  <p style="font-size:0.92rem; color:var(--slate-600); margin: 0.55rem 0 0.3rem;">Fine for a demo &mdash; one process, fast lookups, no extra infrastructure. Two limits show up the moment you go past one instance:</p>
+
+  <h4 style="margin: 0.2rem 0 0.3rem; color: var(--warning);">Limitations</h4>
+  <ol style="font-size:0.95rem; color:var(--slate-700); line-height:1.5; padding-left:1.4rem; margin:0;">
+    <li>History gets erased when the process restarts.</li>
+    <li>Doesn&rsquo;t scale across instances &mdash; each replica has its own dict.</li>
+  </ol>
+</section>
+
+<!-- NEW — Testing the API -->
+<section class="slide">
+  <h2>Testing the API — four levels of confidence</h2>
+  <div class="intro-banner">
+    There's no single "right" way to test a FastAPI app &#8212; you reach for different tools depending on what you're checking.  Start at the top, drop down as the question gets sharper.
+  </div>
+
+  <div class="two-panel">
+    <div class="panel bordered-teal">
+      <span class="panel-label teal">1 · curl</span>
+      <h4>Sanity check from a shell</h4>
+<pre class="code-block" style="font-size:0.78rem; line-height:1.35;">curl -s localhost:8000/health
+
+curl -s -X POST localhost:8000/chat \
+  -H <span class="str">'content-type: application/json'</span> \
+  -d <span class="str">'{"session_id":"a","message":"hi"}'</span></pre>
+      <p style="font-size:0.85rem; color:var(--slate-600); margin-top:0.3rem;">No code to write. Fast feedback that the service is up and accepts your payload.</p>
+    </div>
+    <div class="panel bordered-navy">
+      <span class="panel-label navy">2 · /docs</span>
+      <h4>Interactive try-it-out</h4>
+      <p style="font-size:0.88rem; color:var(--slate-600); margin-bottom:0.4rem;">FastAPI ships Swagger UI at <code>/docs</code>. Click an endpoint, click <strong>Try it out</strong>, paste a JSON body, hit <strong>Execute</strong>. Best for showing colleagues or QA people who don't write code.</p>
+      <p style="font-size:0.85rem; color:var(--slate-500);">Pydantic validation errors show up as 422 with the exact field that failed &#8212; no need to dig through tracebacks.</p>
+    </div>
+  </div>
+
+  <div class="two-panel" style="margin-top:0.5rem;">
+    <div class="panel bordered-success">
+      <span class="panel-label green">3 · requests</span>
+      <h4>From a Python notebook or script</h4>
+<pre class="code-block" style="font-size:0.78rem; line-height:1.35;"><span class="kw">import</span> requests
+r = requests.<span class="fn">post</span>(
+    <span class="str">"http://localhost:8000/chat"</span>,
+    json={<span class="str">"session_id"</span>: <span class="str">"a"</span>, <span class="str">"message"</span>: <span class="str">"hi"</span>},
+)
+<span class="builtin">print</span>(r.status_code, r.<span class="fn">json</span>())</pre>
+      <p style="font-size:0.85rem; color:var(--slate-600); margin-top:0.3rem;">Same call shape as production clients. Drives the notebook walkthrough.</p>
+    </div>
+    <div class="panel bordered-success">
+      <span class="panel-label green">4 · pytest + TestClient</span>
+      <h4>Locked-in regression coverage</h4>
+<pre class="code-block" style="font-size:0.78rem; line-height:1.35;"><span class="kw">from</span> fastapi.testclient <span class="kw">import</span> TestClient
+<span class="kw">import</span> assistant_api
+client = <span class="cls">TestClient</span>(assistant_api.app)
+
+<span class="kw">def</span> <span class="fn">test_health</span>():
+    <span class="kw">assert</span> client.<span class="fn">get</span>(<span class="str">"/health"</span>).status_code == <span class="num">200</span></pre>
+      <p style="font-size:0.85rem; color:var(--slate-600); margin-top:0.3rem;"><code>TestClient</code> calls routes in-process &#8212; no server needed, no network. CI runs these on every push.</p>
+    </div>
+  </div>
+</section>
+
+<!-- SLIDE 13 — Resources -->
+<section class="slide">
+  <h2>Resources</h2>
+  <ul class="resources">
+    <li><span class="label docs">DOCS</span> <a href="https://fastapi.tiangolo.com/" target="_blank">FastAPI documentation</a> — the tutorial walks every feature in order.</li>
+    <li><span class="label docs">DOCS</span> <a href="https://docs.pydantic.dev/" target="_blank">Pydantic v2 docs</a> — the validation engine behind FastAPI.</li>
+    <li><span class="label read">READ</span> <a href="https://restfulapi.net/" target="_blank">restfulapi.net</a> — concise reference for REST principles and status codes.</li>
+    <li><span class="label read">READ</span> <a href="https://www.smashingmagazine.com/2018/01/understanding-using-rest-api/" target="_blank">Understanding and using REST APIs</a> — gentle introduction with HTTP examples.</li>
+    <li><span class="label docs">DOCS</span> <a href="https://www.uvicorn.org/" target="_blank">Uvicorn</a> — the ASGI server FastAPI runs on.</li>
+  </ul>
+</section>
+
+<script>
+(function () {
+  "use strict";
+  const CONFIG = {
+    slideSelector: ".slide",
+    slideNumberClass: "slide-number",
+    katexAutoRenderOptions: {
+      delimiters: [
+        { left: "$$", right: "$$", display: true },
+        { left: "$", right: "$", display: false },
+      ],
+      throwOnError: false,
+      errorColor: "#EF4444",
+    },
+  };
+  let slides = [];
+  let currentSlideIndex = 0;
+
+  function init() {
+    slides = Array.from(document.querySelectorAll(CONFIG.slideSelector));
+    if (slides.length === 0) return;
+    autoNumberSlides();
+    renderKaTeX();
+    bindKeyboard();
+  }
+  function autoNumberSlides() {
+    const total = slides.length;
+    slides.forEach(function (slide, i) {
+      if (slide.querySelector("." + CONFIG.slideNumberClass)) return;
+      var num = document.createElement("span");
+      num.className = CONFIG.slideNumberClass;
+      num.textContent = (i + 1) + " / " + total;
+      slide.appendChild(num);
+      if (!slide.id) slide.id = "slide-" + (i + 1);
+    });
+  }
+  function renderKaTeX() {
+    if (typeof window.renderMathInElement !== "function") return;
+    slides.forEach(function (slide) {
+      window.renderMathInElement(slide, CONFIG.katexAutoRenderOptions);
+    });
+  }
+  function bindKeyboard() {
+    document.addEventListener("keydown", function (e) {
+      var tag = (e.target.tagName || "").toLowerCase();
+      if (tag === "input" || tag === "textarea") return;
+      switch (e.key) {
+        case "ArrowRight": case "ArrowDown": case "PageDown":
+          e.preventDefault(); navigateTo(currentSlideIndex + 1); break;
+        case "ArrowLeft": case "ArrowUp": case "PageUp":
+          e.preventDefault(); navigateTo(currentSlideIndex - 1); break;
+        case "Home": e.preventDefault(); navigateTo(0); break;
+        case "End":  e.preventDefault(); navigateTo(slides.length - 1); break;
+      }
+    });
+  }
+  function navigateTo(index) {
+    if (index < 0 || index >= slides.length) return;
+    currentSlideIndex = index;
+    slides[index].scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", init);
+  } else {
+    init();
+  }
+})();
+</script>
+</body>
+</html>
