@@ -790,6 +790,46 @@ code {
 }
 .stack-conn .arrow { display: block; font-size: 1.0rem; color: var(--slate-400); margin-bottom: 0.0rem; }
 
+/* REST principles mini-grid (slide 4) */
+.rest-principles {
+  max-width: 980px;
+  margin: 0.9rem auto 0;
+}
+.rp-tagline {
+  font-size: 0.92rem;
+  color: var(--slate-700);
+  text-align: center;
+  margin-bottom: 0.55rem;
+}
+.rp-tagline .rp-acronym { color: var(--success); font-weight: 700; }
+.rp-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.5rem 0.85rem;
+}
+.rp-card {
+  background: #fff;
+  border-left: 3px solid var(--success);
+  border-radius: 6px;
+  padding: 0.5rem 0.8rem;
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+}
+.rp-name {
+  font-weight: 700;
+  font-size: 0.92rem;
+  color: var(--success);
+  font-family: var(--font-code);
+  letter-spacing: -0.01em;
+}
+.rp-desc {
+  font-size: 0.85rem;
+  color: var(--slate-700);
+  line-height: 1.35;
+}
+
 /* Flask-vs-FastAPI code comparison (slide 9) */
 .compare-code {
   display: grid;
@@ -1350,6 +1390,46 @@ code {
 }
 .stack-conn .arrow { display: block; font-size: 1.0rem; color: var(--slate-400); margin-bottom: 0.0rem; }
 
+/* REST principles mini-grid (slide 4) */
+.rest-principles {
+  max-width: 980px;
+  margin: 0.9rem auto 0;
+}
+.rp-tagline {
+  font-size: 0.92rem;
+  color: var(--slate-700);
+  text-align: center;
+  margin-bottom: 0.55rem;
+}
+.rp-tagline .rp-acronym { color: var(--success); font-weight: 700; }
+.rp-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.5rem 0.85rem;
+}
+.rp-card {
+  background: #fff;
+  border-left: 3px solid var(--success);
+  border-radius: 6px;
+  padding: 0.5rem 0.8rem;
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+}
+.rp-name {
+  font-weight: 700;
+  font-size: 0.92rem;
+  color: var(--success);
+  font-family: var(--font-code);
+  letter-spacing: -0.01em;
+}
+.rp-desc {
+  font-size: 0.85rem;
+  color: var(--slate-700);
+  line-height: 1.35;
+}
+
 /* Flask-vs-FastAPI code comparison (slide 9) */
 .compare-code {
   display: grid;
@@ -1763,6 +1843,30 @@ torch.cuda.<span class="fn">empty_cache</span>()     <span class="comment"># GPU
       <span class="lay-name">TCP / IP</span>
       <span class="lay-role">The network plumbing.  Packets get from your laptop to a server.</span>
       <span class="lay-tag">network</span>
+    </div>
+  </div>
+
+  <div class="rest-principles">
+    <div class="rp-tagline">
+      <span class="rp-acronym">REST = Representational State Transfer</span> &mdash; the server sends a <em>representation</em> of a resource&rsquo;s current <em>state</em>; four principles every RESTful API follows:
+    </div>
+    <div class="rp-grid">
+      <div class="rp-card">
+        <span class="rp-name">Stateless</span>
+        <span class="rp-desc">Server remembers nothing between requests. Each request carries everything it needs.</span>
+      </div>
+      <div class="rp-card">
+        <span class="rp-name">Client &ndash; Server</span>
+        <span class="rp-desc">UI and data storage live on separate machines and can evolve independently.</span>
+      </div>
+      <div class="rp-card">
+        <span class="rp-name">Uniform interface</span>
+        <span class="rp-desc">Predictable URLs as nouns + standard verbs (<code>GET</code>, <code>POST</code>, <code>PUT</code>, <code>DELETE</code>).</span>
+      </div>
+      <div class="rp-card">
+        <span class="rp-name">Cacheable</span>
+        <span class="rp-desc">Responses declare whether clients may store and reuse them &mdash; speeds up future requests.</span>
+      </div>
     </div>
   </div>
 
