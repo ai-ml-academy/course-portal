@@ -1,0 +1,1039 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Docker Setup</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+<style>
+/* ============================================================
+   Slide Theme (inlined) — matches the local-ollama deck.
+   ============================================================ */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+:root {
+  --navy-900: #1A3264; --navy-800: #214078; --navy-700: #2E5090;
+  --navy-600: #3660A3; --navy-500: #4272B8; --navy-400: #5A8ACB;
+  --navy-300: #7BA4D8; --navy-200: #A3C0E4; --navy-100: #C8D9EF; --navy-50: #E8EFF7;
+  --slate-900: #1E1E2E; --slate-800: #2A2A3C; --slate-700: #3A3A4F;
+  --slate-600: #4A4A62; --slate-500: #6B6B82; --slate-400: #8E8EA3;
+  --slate-300: #B0B0C2; --slate-200: #D0D0DC; --slate-100: #E8E8EF; --slate-50: #F5F5F9;
+  --info: #36A2B5; --success: #5B9E7B; --warning: #C49545; --error: #D4594E;
+  --info-bg: #EAF5F7; --success-bg: #EDF5F0; --warning-bg: #FBF4E8; --error-bg: #FBEEED;
+  --accent: #4BB8C9; --accent-light: #7FCDD8; --accent-dim: #2A8F9E;
+  --font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-code: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
+  --slide-padding: 3rem 4rem;
+  --slide-max-width: 1150px;
+  --radius-sm: 6px; --radius-md: 10px; --radius-lg: 16px;
+  --shadow-sm: 0 1px 3px rgba(0,0,0,.08);
+  --shadow-md: 0 4px 12px rgba(0,0,0,.10);
+  --shadow-lg: 0 8px 30px rgba(0,0,0,.14);
+  --ease: cubic-bezier(.4, 0, .2, 1);
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { font-size: 19px; scroll-behavior: smooth; -webkit-font-smoothing: antialiased; }
+body { font-family: var(--font-body); color: var(--slate-800); background: var(--slate-50); line-height: 1.6; }
+
+.slide {
+  min-height: 100vh;
+  padding: var(--slide-padding);
+  display: flex; flex-direction: column; justify-content: center;
+  max-width: var(--slide-max-width);
+  margin: 0 auto;
+  position: relative;
+}
+.slide-number {
+  position: absolute; bottom: 1.2rem; right: 1.5rem;
+  font-size: 0.75rem; font-weight: 600; color: var(--slate-400); letter-spacing: 0.04em;
+}
+.slide + .slide { border-top: 1px solid var(--slate-100); }
+
+h1, h2, h3, h4 { color: var(--navy-700); line-height: 1.25; font-weight: 700; letter-spacing: -0.01em; }
+h1 { font-size: 2.8rem; font-weight: 800; margin-bottom: 1rem; }
+h2 { font-size: 2.15rem; margin-bottom: 0.8rem; }
+h3 { font-size: 1.6rem; margin-bottom: 0.6rem; }
+h4 { font-size: 1.3rem; font-weight: 600; margin-bottom: 0.5rem; }
+p { margin-bottom: 1rem; font-size: 1.1rem; }
+strong { font-weight: 600; color: var(--navy-700); }
+a { color: var(--accent-dim); text-decoration: none; border-bottom: 1px solid transparent; transition: border-color 0.2s var(--ease); }
+a:hover { border-bottom-color: var(--accent-dim); }
+ul, ol { margin: 0.5rem 0 1rem 1.6rem; }
+li { margin-bottom: 0.4rem; font-size: 1.1rem; }
+li::marker { color: var(--navy-400); }
+
+.subtitle { font-size: 1.3rem; color: var(--slate-500); font-weight: 400; margin-bottom: 1.5rem; }
+.muted { color: var(--slate-400); }
+
+/* Intro banner */
+.intro-banner {
+  border-left: 4px solid var(--accent-dim);
+  background: var(--info-bg);
+  padding: 0.9rem 1.2rem;
+  font-size: 1.05rem;
+  font-weight: 500;
+  color: var(--navy-800);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  margin: 1rem 0 1.4rem 0;
+}
+
+/* Pill */
+.pill {
+  background: var(--warning-bg);
+  padding: 0 0.3em;
+  border-radius: 3px;
+  font-weight: 600;
+  color: var(--navy-700);
+}
+
+/* Definition rows inside an intro banner — pill label + short definition */
+.def-banner { padding: 0.85rem 1.1rem; }
+.def-row {
+  display: flex;
+  align-items: baseline;
+  gap: 0.7rem;
+  line-height: 1.5;
+}
+.def-row + .def-row { margin-top: 0.5rem; padding-top: 0.5rem; border-top: 1px dashed rgba(46, 80, 144, 0.18); }
+.def-row .pill {
+  flex-shrink: 0;
+  min-width: 5.2em;
+  text-align: center;
+  padding: 0.1em 0.55em;
+}
+
+/* Title slide */
+.slide.title-slide {
+  text-align: center;
+  background: linear-gradient(135deg, var(--navy-800) 0%, var(--navy-600) 100%);
+  color: #fff;
+}
+.slide.title-slide h1 { color: #fff; font-size: 3.4rem; margin-bottom: 0.6rem; }
+.slide.title-slide .subtitle { color: var(--navy-100); font-size: 1.4rem; }
+
+/* Code blocks */
+.code-block {
+  background: var(--slate-800);
+  color: #E2E8F0;
+  font-family: var(--font-code);
+  font-size: 0.92rem;
+  line-height: 1.65;
+  padding: 1.3rem 1.5rem;
+  border-radius: var(--radius-md);
+  overflow-x: auto;
+  margin: 1rem 0;
+  box-shadow: var(--shadow-md);
+  position: relative;
+  white-space: pre;
+}
+.code-block .label {
+  position: absolute; top: 0.5rem; right: 0.8rem;
+  font-size: 0.65rem; font-weight: 600; text-transform: uppercase;
+  letter-spacing: 0.08em; color: var(--slate-400); font-family: var(--font-body);
+}
+.code-block .kw      { color: #C792EA; }
+.code-block .fn      { color: #82AAFF; }
+.code-block .str     { color: #C3E88D; }
+.code-block .num     { color: #F78C6C; }
+.code-block .comment { color: #50FA7B; font-style: italic; }
+.code-block .op      { color: #89DDFF; }
+.code-block .builtin { color: #89DDFF; }
+.code-block, .code-block *, code {
+  font-variant-ligatures: none;
+  font-feature-settings: "liga" 0, "calt" 0;
+}
+
+code {
+  font-family: var(--font-code); font-size: 0.88em;
+  background: var(--navy-50); color: var(--navy-700);
+  padding: 0.15em 0.4em; border-radius: 4px;
+}
+
+/* Compact code block — matches the dense install-row size */
+.code-block.compact {
+  font-size: 0.78rem;
+  line-height: 1.5;
+  padding: 0.6rem 0.9rem;
+  margin: 0.4rem 0;
+  box-shadow: none;
+}
+
+/* Panels */
+.two-panel { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin: 1rem 0; }
+.three-panel { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1.2rem; margin: 1rem 0; }
+.two-panel > *, .three-panel > * { min-width: 0; }
+
+.panel {
+  background: #fff;
+  border: 1px solid var(--slate-200);
+  border-radius: var(--radius-md);
+  padding: 1.3rem;
+  box-shadow: var(--shadow-sm);
+}
+.panel h4 { margin-bottom: 0.5rem; color: var(--navy-700); font-size: 1.05rem; }
+.panel.bordered-success { border-top: 3px solid var(--success); }
+.panel.bordered-warning { border-top: 3px solid var(--warning); }
+.panel.bordered-info    { border-top: 3px solid var(--info); }
+.panel.bordered-navy    { border-top: 3px solid var(--navy-600); }
+.panel.bordered-teal    { border-top: 3px solid var(--accent-dim); }
+
+.panel-label {
+  display: inline-block;
+  font-size: 0.7rem; font-weight: 700; letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 0.18em 0.55em;
+  border-radius: 4px;
+  margin-bottom: 0.5rem;
+}
+.panel-label.teal   { background: var(--info-bg);    color: var(--accent-dim); }
+.panel-label.amber  { background: var(--warning-bg); color: var(--warning); }
+.panel-label.navy   { background: var(--navy-50);    color: var(--navy-700); }
+.panel-label.green  { background: var(--success-bg); color: var(--success); }
+
+/* Callouts */
+.callout {
+  padding: 1.1rem 1.3rem;
+  border-radius: var(--radius-md);
+  margin: 1rem 0;
+  border-left: 4px solid;
+  font-size: 0.97rem;
+}
+.callout-title { font-weight: 700; margin-bottom: 0.3rem; font-size: 0.92rem; letter-spacing: 0.02em; }
+.callout.info    { background: var(--info-bg);    border-color: var(--info); }
+.callout.warning { background: var(--warning-bg); border-color: var(--warning); }
+.callout.success { background: var(--success-bg); border-color: var(--success); }
+.callout.error   { background: var(--error-bg);   border-color: var(--error); }
+.callout.info .callout-title    { color: var(--info); }
+.callout.warning .callout-title { color: var(--warning); }
+.callout.success .callout-title { color: var(--success); }
+.callout.error .callout-title   { color: var(--error); }
+
+/* Install rows */
+.install-rows { display: flex; flex-direction: column; gap: 0.9rem; margin: 0.8rem 0; }
+.install-row {
+  background: #fff;
+  border: 1px solid var(--slate-200);
+  border-left: 4px solid var(--accent-dim);
+  border-radius: var(--radius-sm);
+  padding: 0.85rem 1.1rem;
+  box-shadow: var(--shadow-sm);
+}
+.install-row.linux   { border-left-color: var(--navy-600); }
+.install-row.windows { border-left-color: var(--warning); }
+.install-row .row-head {
+  display: flex; align-items: center; gap: 0.7rem;
+  margin-bottom: 0.4rem;
+}
+.install-row .row-head h4 { margin: 0; font-size: 1.05rem; }
+.install-row .meta { font-size: 0.93rem; color: var(--slate-600); line-height: 1.4; margin-bottom: 0.3rem; }
+.install-row pre.code-block {
+  margin: 0.4rem 0;
+  font-size: 0.82rem;
+  padding: 0.6rem 0.85rem;
+  box-shadow: none;
+  white-space: pre;
+}
+
+/* Failure-mode cards — clear "error → fix" reading rhythm */
+.failure-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.9rem;
+  margin: 0.9rem 0;
+}
+.failure-grid > * { min-width: 0; }
+.failure-card {
+  background: #fff;
+  border: 1px solid var(--slate-200);
+  border-radius: var(--radius-md);
+  padding: 0.85rem 1rem 0.9rem;
+  box-shadow: var(--shadow-sm);
+}
+.failure-card .err {
+  display: inline-block;
+  font-family: var(--font-code);
+  font-size: 0.78rem;
+  background: var(--warning-bg);
+  color: var(--navy-800);
+  border-left: 3px solid var(--warning);
+  padding: 0.2rem 0.55rem;
+  border-radius: 4px;
+  margin-bottom: 0.55rem;
+  font-weight: 600;
+  line-height: 1.3;
+}
+.failure-card .fix {
+  font-size: 0.92rem;
+  color: var(--slate-700);
+  line-height: 1.5;
+}
+.failure-card .fix code {
+  font-size: 0.8rem;
+  background: var(--navy-50);
+  color: var(--navy-700);
+  padding: 0.1rem 0.4rem;
+  border-radius: 3px;
+}
+
+/* Cheatsheet — grouped by category */
+.cheat-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.85rem;
+  margin: 0.6rem 0;
+}
+.cheat-grid > * { min-width: 0; }
+.cheat-card {
+  background: #fff;
+  border: 1px solid var(--slate-200);
+  border-radius: var(--radius-md);
+  padding: 0.75rem 0.9rem 0.8rem;
+  box-shadow: var(--shadow-sm);
+}
+.cheat-card.daemon     { border-top: 3px solid var(--accent-dim); }
+.cheat-card.images     { border-top: 3px solid var(--warning); }
+.cheat-card.containers { border-top: 3px solid var(--success); }
+.cheat-card.compose    { border-top: 3px solid var(--navy-600); }
+.cheat-card h4 {
+  font-size: 0.72rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  font-weight: 700;
+  margin-bottom: 0.55rem;
+}
+.cheat-card.daemon h4     { color: var(--accent-dim); }
+.cheat-card.images h4     { color: var(--warning); }
+.cheat-card.containers h4 { color: var(--success); }
+.cheat-card.compose h4    { color: var(--navy-700); }
+
+.cheat-list {
+  display: grid;
+  grid-template-columns: minmax(0, max-content) 1fr;
+  gap: 0.32rem 0.7rem;
+  font-size: 0.82rem;
+  margin: 0;
+}
+.cheat-list dt {
+  font-family: var(--font-code);
+  background: var(--slate-800);
+  color: #E2E8F0;
+  padding: 0.18rem 0.5rem;
+  border-radius: 3px;
+  font-size: 0.78rem;
+  white-space: nowrap;
+  line-height: 1.4;
+  align-self: center;
+}
+/* Syntax colors inside cheatsheet commands */
+.cheat-list dt .kw      { color: #C792EA; }   /* docker · sudo · open */
+.cheat-list dt .fn      { color: #82AAFF; }   /* subcommand verb: ps, run, build */
+.cheat-list dt .builtin { color: #89DDFF; }   /* namespace: system, image, compose */
+.cheat-list dt .flag    { color: #F78C6C; }   /* flags: --version, -a, -it */
+.cheat-list dt .arg     { color: #FFCB6B; font-style: italic; }  /* placeholders */
+.cheat-list dt .str     { color: #C3E88D; }   /* literal strings */
+.cheat-list dd {
+  color: var(--slate-600);
+  line-height: 1.4;
+  margin: 0;
+  align-self: center;
+  font-size: 0.83rem;
+}
+
+/* Resources */
+.resources li { font-size: 1.0rem; margin-bottom: 0.5rem; }
+.resources .label {
+  display: inline-block;
+  font-size: 0.7rem; font-weight: 700;
+  padding: 0.15em 0.5em; border-radius: 3px;
+  margin-right: 0.5em; letter-spacing: 0.05em;
+}
+.resources .label.docs  { background: var(--info-bg);  color: var(--accent-dim); }
+.resources .label.video { background: var(--error-bg); color: var(--error); }
+.resources .label.read  { background: var(--success-bg); color: var(--success); }
+
+/* Goal box */
+.goal-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem; margin: 1rem 0; }
+.goal-grid > * { min-width: 0; }
+.goal-card {
+  background: #fff;
+  border: 1px solid var(--slate-200);
+  border-top: 3px solid var(--success);
+  border-radius: var(--radius-md);
+  padding: 0.95rem 1.1rem;
+  box-shadow: var(--shadow-sm);
+}
+.goal-card .cmd {
+  font-family: var(--font-code);
+  font-size: 0.86rem;
+  background: var(--slate-800);
+  color: #E2E8F0;
+  padding: 0.4rem 0.6rem;
+  border-radius: var(--radius-sm);
+  display: block;
+  margin-bottom: 0.45rem;
+}
+.goal-card .out {
+  font-size: 0.84rem;
+  color: var(--slate-600);
+  line-height: 1.4;
+}
+
+/* Full-width vertical stack for the "free a port" slide */
+.port-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin: 0.3rem 0;
+}
+.port-card {
+  display: grid;
+  grid-template-columns: 180px 1fr;
+  align-items: stretch;
+  gap: 0.85rem;
+  background: #fff;
+  border: 1px solid var(--slate-200);
+  border-left: 4px solid var(--slate-300);
+  border-radius: var(--radius-sm);
+  padding: 0.5rem 0.85rem;
+  box-shadow: var(--shadow-sm);
+}
+.port-card.teal  { border-left-color: var(--accent-dim); }
+.port-card.amber { border-left-color: var(--warning); }
+.port-card.green { border-left-color: var(--success); }
+.port-card .panel-label { margin: 0.3rem 0 0; align-self: start; }
+.port-code {
+  margin: 0;
+  font-size: 0.73rem;
+  line-height: 1.45;
+  padding: 0.5rem 0.75rem;
+  box-shadow: none;
+  white-space: pre;
+}
+
+/* Numbered step list — compact one-liner version */
+.step-list { margin: 0.5rem 0 0.4rem; counter-reset: step; list-style: none; padding-left: 0; }
+.step-list li {
+  position: relative;
+  padding-left: 2.2rem;
+  margin-bottom: 0.45rem;
+  font-size: 0.97rem;
+  color: var(--slate-700);
+  line-height: 1.45;
+}
+.step-list li::before {
+  counter-increment: step;
+  content: counter(step);
+  position: absolute;
+  left: 0; top: 0.05rem;
+  width: 1.55rem; height: 1.55rem;
+  background: var(--navy-700);
+  color: #fff;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 700; font-size: 0.8rem;
+  font-family: var(--font-body);
+}
+
+/* Official guide link badge — sits at the top of each install slide */
+.official-guide {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  background: var(--info-bg);
+  border: 1px solid var(--accent-dim);
+  border-radius: var(--radius-sm);
+  padding: 0.4rem 0.75rem;
+  margin: 0.2rem 0 1rem;
+  font-size: 0.9rem;
+  box-shadow: var(--shadow-sm);
+}
+.official-guide .lbl {
+  font-size: 0.65rem; font-weight: 700;
+  letter-spacing: 0.08em; text-transform: uppercase;
+  background: var(--accent-dim); color: #fff;
+  padding: 0.15rem 0.5rem;
+  border-radius: 3px;
+}
+.official-guide a {
+  color: var(--accent-dim);
+  font-family: var(--font-code);
+  font-size: 0.85rem;
+  border-bottom: 1px dashed var(--accent-dim);
+}
+.official-guide a:hover { color: var(--navy-700); border-bottom-color: var(--navy-700); }
+
+/* Layered architecture diagram — "what Docker is" */
+.docker-arch {
+  margin: 1rem auto 0.5rem;
+  max-width: 820px;
+  background: var(--slate-50);
+  border: 1.5px dashed var(--accent-dim);
+  border-radius: var(--radius-md);
+  padding: 1.6rem 1.4rem 1.3rem;
+  position: relative;
+}
+.docker-arch::before {
+  content: "YOUR MACHINE";
+  position: absolute;
+  top: -0.7rem; left: 1.2rem;
+  background: var(--slate-50);
+  padding: 0 0.6rem;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  color: var(--accent-dim);
+}
+.arch-layer {
+  display: flex;
+  justify-content: center;
+  align-items: stretch;
+  gap: 1rem;
+}
+.arch-card {
+  background: #fff;
+  border: 1px solid var(--slate-200);
+  border-radius: var(--radius-md);
+  padding: 0.85rem 1.1rem;
+  text-align: center;
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+  flex: 1;
+  max-width: 360px;
+}
+.arch-card.you      { border-top: 3px solid var(--navy-600); }
+.arch-card.daemon   { border-top: 3px solid var(--info); }
+.arch-card.images   { border-top: 3px solid var(--warning); }
+.arch-card.contains { border-top: 3px solid var(--success); }
+.arch-card .arch-icon {
+  font-size: 1.6rem;
+  line-height: 1;
+  margin-bottom: 0.2rem;
+}
+.arch-card.you      .arch-icon { color: var(--navy-600); }
+.arch-card.daemon   .arch-icon { color: var(--info); }
+.arch-card.images   .arch-icon { color: var(--warning); }
+.arch-card.contains .arch-icon { color: var(--success); }
+.arch-card .name {
+  font-weight: 700;
+  color: var(--navy-700);
+  font-size: 1.0rem;
+}
+.arch-card .hint {
+  font-family: var(--font-code);
+  font-size: 0.78rem;
+  color: var(--slate-500);
+  line-height: 1.35;
+}
+.arch-conn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 0.45rem 0;
+}
+.arch-conn .label {
+  font-size: 0.74rem;
+  color: var(--slate-600);
+  font-family: var(--font-code);
+  background: #fff;
+  padding: 0.1rem 0.55rem;
+  border-radius: 3px;
+  border: 1px solid var(--slate-200);
+  margin-bottom: 0.15rem;
+}
+.arch-conn .arrow {
+  color: var(--slate-400);
+  font-size: 1.1rem;
+  line-height: 1;
+}
+
+@media (max-width: 900px) {
+  :root { --slide-padding: 2rem 2rem; }
+  html { font-size: 17px; }
+  .two-panel, .three-panel, .goal-grid, .failure-grid { grid-template-columns: 1fr; }
+  .cheat { grid-template-columns: 1fr; }
+  .arch-layer { flex-direction: column; align-items: stretch; }
+}
+</style>
+
+</head>
+<body>
+
+<!-- ===================================================================
+     SLIDE 1 — TITLE
+     =================================================================== -->
+<section class="slide title-slide">
+  <h1>Docker Setup</h1>
+  <p class="subtitle">Install and verify on macOS, Windows, and Linux</p>
+</section>
+
+<!-- ===================================================================
+     SLIDE 2 — WHAT YOU'RE INSTALLING
+     =================================================================== -->
+<section class="slide">
+  <h2>Docker containers</h2>
+  <div class="intro-banner def-banner">
+    <div class="def-row">
+      <span class="pill">Container</span>
+      <span>A packaged app bundled with all its dependencies, so it runs the same on any machine.</span>
+    </div>
+    <div class="def-row">
+      <span class="pill">Docker</span>
+      <span>The tool that builds and runs containers — a CLI you type into, plus a background daemon that does the work.</span>
+    </div>
+  </div>
+
+  <div class="docker-arch">
+    <div class="arch-layer">
+      <div class="arch-card you">
+        <div class="arch-icon">▶_</div>
+        <span class="name">You</span>
+        <span class="hint">docker run · docker compose up</span>
+      </div>
+    </div>
+
+    <div class="arch-conn">
+      <span class="label">/var/run/docker.sock</span>
+      <span class="arrow">↓</span>
+    </div>
+
+    <div class="arch-layer">
+      <div class="arch-card daemon">
+        <div class="arch-icon">⚙</div>
+        <span class="name">Docker daemon (dockerd)</span>
+        <span class="hint">background service · pulls, builds, runs, networks</span>
+      </div>
+    </div>
+
+    <div class="arch-conn">
+      <span class="label">pulls · builds · runs</span>
+      <span class="arrow">↓</span>
+    </div>
+
+    <div class="arch-layer">
+      <div class="arch-card images">
+        <div class="arch-icon">📦</div>
+        <span class="name">Images</span>
+        <span class="hint">read-only templates · cached on disk</span>
+      </div>
+      <div class="arch-card contains">
+        <div class="arch-icon">●</div>
+        <span class="name">Containers</span>
+        <span class="hint">running processes · started from images</span>
+      </div>
+    </div>
+  </div>
+
+</section>
+
+<!-- ===================================================================
+     SLIDE 3 — macOS
+     =================================================================== -->
+<section class="slide">
+  <h2>Install on macOS</h2>
+
+  <div class="official-guide">
+    <span class="lbl">Official guide</span>
+    <a href="https://docs.docker.com/desktop/setup/install/mac-install/" target="_blank">docs.docker.com/desktop/setup/install/mac-install/</a>
+  </div>
+
+  <ol class="step-list">
+    <li><strong>Download Docker Desktop</strong> — pick Apple silicon (M1–M4) or Intel from the guide above.</li>
+    <li>Open the <code>.dmg</code> and drag <strong>Docker.app</strong> to <strong>/Applications</strong>.</li>
+    <li>Start it once (macOS will prompt for your admin password to install the privileged helper).</li>
+    <li>Verify from Terminal once the daemon is ready.</li>
+  </ol>
+
+<pre class="code-block"><span class="label">Terminal — steps 3 and 4</span><span class="comment"># start the daemon (background app; no window to keep open)</span>
+open -a Docker
+
+<span class="comment"># verify</span>
+docker --version
+docker compose version
+docker run --rm hello-world</pre>
+</section>
+
+<!-- ===================================================================
+     SLIDE 4 — Windows
+     =================================================================== -->
+<section class="slide">
+  <h2>Install on Windows 10 / 11</h2>
+
+  <div class="official-guide">
+    <span class="lbl">Official guide</span>
+    <a href="https://docs.docker.com/desktop/setup/install/windows-install/" target="_blank">docs.docker.com/desktop/setup/install/windows-install/</a>
+  </div>
+
+  <p style="font-size: 0.9rem; color: var(--slate-600); margin-bottom: 0.3rem;">
+    Two parts: enable WSL 2, then install Docker Desktop with the WSL 2 backend. Run all Docker commands from inside Ubuntu, not PowerShell.
+  </p>
+
+<pre class="code-block compact"><span class="label">1 · PowerShell (Admin) — enable WSL 2</span>wsl --install
+<span class="comment"># reboot when prompted; Ubuntu first-launch asks for a username + password</span>
+
+wsl --status            <span class="comment"># "Default Version: 2"</span>
+wsl --list --verbose    <span class="comment"># Ubuntu should show VERSION 2</span></pre>
+
+<pre class="code-block compact"><span class="label">2 · Run the installer + start the daemon</span><span class="comment"># run the wizard from the official guide above</span>
+<span class="comment"># leave "Use WSL 2 instead of Hyper-V" CHECKED — only checkbox that matters; reboot if prompted</span>
+
+&amp; <span class="str">"C:\Program Files\Docker\Docker\Docker Desktop.exe"</span> -Autostart
+wsl -d Ubuntu           <span class="comment"># drop into your Ubuntu distro</span></pre>
+
+<pre class="code-block compact"><span class="label">3 · Ubuntu (WSL) — verify</span>docker --version
+docker compose version
+docker run --rm hello-world</pre>
+
+  <div class="callout warning" style="padding: 0.7rem 1rem; font-size: 0.9rem; margin-top: 0.5rem;">
+    <strong style="color: var(--warning);">Use the Ubuntu shell, not PowerShell.</strong>
+    Keep your project files <em>inside</em> WSL (<code>~/projects/...</code>) — editing from <code>C:\Users\you\...</code> works but is much slower.
+  </div>
+</section>
+
+<!-- ===================================================================
+     SLIDE 5 — Linux
+     =================================================================== -->
+<section class="slide">
+  <h2>Install on Linux</h2>
+
+  <div class="official-guide">
+    <span class="lbl">Official guides</span>
+    <a href="https://docs.docker.com/engine/install/ubuntu/" target="_blank">Ubuntu</a> ·
+    <a href="https://docs.docker.com/engine/install/debian/" target="_blank">Debian</a> ·
+    <a href="https://docs.docker.com/engine/install/fedora/" target="_blank">Fedora</a>
+  </div>
+
+  <p style="font-size: 0.95rem; color: var(--slate-600); margin-bottom: 0.5rem;">
+    Native containers — no VM, no Desktop. Install Docker Engine, then add yourself to the <code>docker</code> group so <code>sudo</code> isn't on every command.
+  </p>
+
+  <div class="install-rows">
+
+    <div class="install-row linux">
+      <div class="row-head">
+        <span class="panel-label navy">Ubuntu / Debian</span>
+        <h4>Docker Engine via apt</h4>
+      </div>
+<pre class="code-block"><span class="comment"># remove any old/distro Docker packages</span>
+sudo apt-get remove docker docker-engine docker.io containerd runc 2&gt;/dev/null
+
+<span class="comment"># set up Docker's official apt repo</span>
+sudo apt-get update
+sudo apt-get install -y ca-certificates curl gnupg
+sudo install -m 0755 -d /etc/apt/keyrings
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | \
+    sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+sudo chmod a+r /etc/apt/keyrings/docker.gpg
+
+echo <span class="str">"deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu $(. /etc/os-release &amp;&amp; echo \"$VERSION_CODENAME\") stable"</span> \
+  | sudo tee /etc/apt/sources.list.d/docker.list &gt; /dev/null
+
+<span class="comment"># install</span>
+sudo apt-get update
+sudo apt-get install -y docker-ce docker-ce-cli containerd.io \
+    docker-buildx-plugin docker-compose-plugin
+
+<span class="comment"># run docker without sudo</span>
+sudo usermod -aG docker $USER
+newgrp docker            <span class="comment"># picks up the new group in THIS shell</span></pre>
+    </div>
+
+    <div class="install-row">
+      <div class="row-head">
+        <span class="panel-label teal">Fedora / RHEL / Rocky / Alma</span>
+        <h4>Docker Engine via dnf</h4>
+      </div>
+<pre class="code-block">sudo dnf -y install dnf-plugins-core
+sudo dnf config-manager --add-repo \
+    https://download.docker.com/linux/fedora/docker-ce.repo
+
+sudo dnf install -y docker-ce docker-ce-cli containerd.io \
+    docker-buildx-plugin docker-compose-plugin
+
+sudo systemctl enable --now docker
+sudo usermod -aG docker $USER
+newgrp docker</pre>
+    </div>
+
+  </div>
+</section>
+
+<!-- ===================================================================
+     SLIDE 6 — VERIFY
+     =================================================================== -->
+<section class="slide">
+  <h2>Verify your install</h2>
+  <div class="intro-banner">
+    Three commands. If all three are green, your install is done — no matter which OS you came from. Run them in a fresh terminal.
+  </div>
+
+<pre class="code-block"><span class="label">Terminal · any OS</span><span class="comment"># 1 — CLI is installed and on PATH</span>
+docker --version
+<span class="comment"># → Docker version 24.0.0 or newer</span>
+
+<span class="comment"># 2 — Compose v2 plugin is loaded</span>
+docker compose version
+<span class="comment"># → Docker Compose version v2.20+ (note: TWO words, no hyphen)</span>
+
+<span class="comment"># 3 — the daemon can pull, run, and clean up a container</span>
+docker run --rm hello-world</pre>
+
+<pre class="code-block" style="background: var(--success-bg); color: var(--success); box-shadow: none;"><span class="label">expected — hello-world tail</span>Hello from Docker!
+This message shows that your installation appears to be working correctly.</pre>
+
+  <h4 style="margin: 0.6rem 0 0.3rem;">Bonus — one real-image smoke test</h4>
+<pre class="code-block">docker run --rm python:3.11-slim python -c <span class="str">"print(1 + 1)"</span>
+<span class="comment"># → 2  · confirms the daemon can pull, run code, and clean up</span></pre>
+</section>
+
+<!-- ===================================================================
+     SLIDE 7 — COMMON GOTCHAS
+     =================================================================== -->
+<section class="slide">
+  <h2>Common gotchas</h2>
+  <div class="intro-banner">
+    The six errors you're most likely to hit on install day. If your verify step failed, scan this list first.
+  </div>
+
+  <div class="failure-grid">
+    <div class="failure-card">
+      <span class="err">Cannot connect to the Docker daemon</span>
+      <div class="fix">Daemon isn't running. Mac: <code>open -a Docker</code> · Linux: <code>sudo systemctl start docker</code>.</div>
+    </div>
+
+    <div class="failure-card">
+      <span class="err">permission denied on /var/run/docker.sock</span>
+      <div class="fix">Linux — join the docker group: <code>sudo usermod -aG docker $USER &amp;&amp; newgrp docker</code>.</div>
+    </div>
+
+    <div class="failure-card">
+      <span class="err">docker-compose: command not found</span>
+      <div class="fix">Use <code>docker compose</code> (two words). The hyphenated v1 binary is deprecated.</div>
+    </div>
+
+    <div class="failure-card">
+      <span class="err">Hyper-V / VT-x error on Windows</span>
+      <div class="fix">Virtualisation disabled in BIOS. Reboot into firmware, enable VT-x / AMD-V / SVM Mode.</div>
+    </div>
+
+    <div class="failure-card">
+      <span class="err">Docker is eating my disk</span>
+      <div class="fix"><code>docker system df</code> shows usage. Clean with <code>docker system prune</code>.</div>
+    </div>
+
+    <div class="failure-card">
+      <span class="err">port is already allocated</span>
+      <div class="fix">Something else holds the port — find &amp; kill, or remap with <code>-p 8001:8000</code>. Next slide.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================================================================
+     SLIDE 8 — PORT ALREADY IN USE (DEEP DIVE)
+     =================================================================== -->
+<section class="slide compact">
+  <h2>Free a port that's "already in use"</h2>
+  <div class="intro-banner" style="margin-bottom: 0.7rem;">
+    Three moves: <span class="pill">find</span> what holds the port, <span class="pill">kill</span> it (or remap), prefer <code>docker stop</code> when a container is the culprit.
+  </div>
+
+  <div class="port-grid">
+    <div class="port-card teal">
+      <span class="panel-label teal">macOS · Linux</span>
+<pre class="code-block port-code"><span class="comment"># find PID on 8000</span>
+lsof -iTCP:8000 -sTCP:LISTEN
+
+<span class="comment"># kill in one line</span>
+lsof -ti :<span class="num">8000</span> | xargs kill -9</pre>
+    </div>
+    <div class="port-card amber">
+      <span class="panel-label amber">Windows · PowerShell</span>
+<pre class="code-block port-code"><span class="comment"># find PID on 8000 (last column)</span>
+netstat -ano | findstr :8000
+
+<span class="comment"># kill in one line</span>
+Get-NetTCPConnection -LocalPort <span class="num">8000</span> | % <span class="op">{</span> Stop-Process -Id $_.OwningProcess -Force <span class="op">}</span></pre>
+    </div>
+    <div class="port-card green">
+      <span class="panel-label green">If a container holds it</span>
+<pre class="code-block port-code">docker ps --filter <span class="str">"publish=8000"</span>
+docker stop &lt;container-name&gt;
+
+<span class="comment"># or just remap the host port</span>
+docker run -p 8001:8000 ...</pre>
+    </div>
+  </div>
+
+  <div class="callout warning" style="margin-top: 0.5rem; padding: 0.7rem 1rem; font-size: 0.9rem;">
+    <strong style="color: var(--warning);">Don't kill what you don't recognise.</strong>
+    If the process isn't yours, remap the host side (<code>-p 8001:8000</code>) instead of killing.
+  </div>
+</section>
+
+<!-- ===================================================================
+     SLIDE 9 — CHEATSHEET
+     =================================================================== -->
+<section class="slide">
+  <h2>Post-install cheatsheet</h2>
+  <div class="intro-banner" style="margin-bottom: 0.7rem;">
+    The day-to-day commands, grouped. Daemon &amp; system in teal; images in amber; containers in green; Compose in navy.
+  </div>
+
+  <div class="cheat-grid">
+
+    <div class="cheat-card daemon">
+      <h4>Daemon &amp; system</h4>
+      <dl class="cheat-list">
+        <dt><span class="kw">docker</span> <span class="flag">--version</span></dt>                                               <dd>installed CLI version</dd>
+        <dt><span class="kw">docker</span> <span class="builtin">compose</span> <span class="fn">version</span></dt>             <dd>confirm Compose v2 plugin</dd>
+        <dt><span class="kw">docker</span> <span class="fn">info</span></dt>                                                    <dd>full daemon status &amp; config</dd>
+        <dt><span class="kw">docker</span> <span class="builtin">system</span> <span class="fn">df</span></dt>                   <dd>disk usage by category</dd>
+        <dt><span class="kw">docker</span> <span class="builtin">system</span> <span class="fn">prune</span></dt>                <dd>nuke unused everything</dd>
+        <dt><span class="kw">open</span> <span class="flag">-a</span> <span class="str">Docker</span></dt>                          <dd>start daemon on macOS</dd>
+        <dt><span class="kw">sudo</span> <span class="builtin">systemctl</span> <span class="fn">restart</span> docker</dt>       <dd>restart daemon on Linux</dd>
+      </dl>
+    </div>
+
+    <div class="cheat-card images">
+      <h4>Images</h4>
+      <dl class="cheat-list">
+        <dt><span class="kw">docker</span> <span class="fn">images</span></dt>                                                  <dd>list local images</dd>
+        <dt><span class="kw">docker</span> <span class="fn">pull</span> <span class="arg">&lt;image&gt;</span></dt>                  <dd>download from a registry</dd>
+        <dt><span class="kw">docker</span> <span class="fn">build</span> <span class="flag">-t</span> <span class="arg">&lt;name&gt;</span> .</dt> <dd>build from a Dockerfile</dd>
+        <dt><span class="kw">docker</span> <span class="fn">tag</span> <span class="arg">&lt;src&gt;</span> <span class="arg">&lt;dst&gt;</span></dt> <dd>add another tag to an image</dd>
+        <dt><span class="kw">docker</span> <span class="fn">push</span> <span class="arg">&lt;image&gt;</span></dt>                  <dd>upload to a registry</dd>
+        <dt><span class="kw">docker</span> <span class="fn">rmi</span> <span class="arg">&lt;image&gt;</span></dt>                   <dd>delete a local image</dd>
+        <dt><span class="kw">docker</span> <span class="builtin">image</span> <span class="fn">prune</span></dt>                  <dd>remove dangling images (safe)</dd>
+      </dl>
+    </div>
+
+    <div class="cheat-card containers">
+      <h4>Containers</h4>
+      <dl class="cheat-list">
+        <dt><span class="kw">docker</span> <span class="fn">ps</span></dt>                                                      <dd>list running containers</dd>
+        <dt><span class="kw">docker</span> <span class="fn">ps</span> <span class="flag">-a</span></dt>                          <dd>list all (incl. stopped)</dd>
+        <dt><span class="kw">docker</span> <span class="fn">run</span> <span class="arg">&lt;image&gt;</span></dt>                   <dd>start a new container</dd>
+        <dt><span class="kw">docker</span> <span class="fn">exec</span> <span class="flag">-it</span> <span class="arg">&lt;c&gt;</span> bash</dt> <dd>shell into a running container</dd>
+        <dt><span class="kw">docker</span> <span class="fn">logs</span> <span class="flag">-f</span> <span class="arg">&lt;c&gt;</span></dt> <dd>follow container stdout/stderr</dd>
+        <dt><span class="kw">docker</span> <span class="fn">stop</span> <span class="arg">&lt;c&gt;</span></dt>                       <dd>SIGTERM then SIGKILL</dd>
+        <dt><span class="kw">docker</span> <span class="fn">rm</span> <span class="arg">&lt;c&gt;</span></dt>                         <dd>delete a stopped container</dd>
+        <dt><span class="kw">docker</span> <span class="builtin">container</span> <span class="fn">prune</span></dt>              <dd>remove all stopped (safe)</dd>
+      </dl>
+    </div>
+
+    <div class="cheat-card compose">
+      <h4>Compose</h4>
+      <dl class="cheat-list">
+        <dt><span class="kw">docker</span> <span class="builtin">compose</span> <span class="fn">up</span></dt>                  <dd>start the whole stack</dd>
+        <dt><span class="kw">docker</span> <span class="builtin">compose</span> <span class="fn">up</span> <span class="flag">--build</span></dt> <dd>rebuild images first</dd>
+        <dt><span class="kw">docker</span> <span class="builtin">compose</span> <span class="fn">ps</span></dt>                  <dd>services + their status</dd>
+        <dt><span class="kw">docker</span> <span class="builtin">compose</span> <span class="fn">logs</span> <span class="flag">-f</span> <span class="arg">&lt;svc&gt;</span></dt> <dd>follow one service's logs</dd>
+        <dt><span class="kw">docker</span> <span class="builtin">compose</span> <span class="fn">exec</span> <span class="arg">&lt;svc&gt;</span> sh</dt> <dd>shell into a running service</dd>
+        <dt><span class="kw">docker</span> <span class="builtin">compose</span> <span class="fn">down</span></dt>                <dd>stop &amp; remove (keep volumes)</dd>
+        <dt><span class="kw">docker</span> <span class="builtin">compose</span> <span class="fn">down</span> <span class="flag">-v</span></dt> <dd>also drop named volumes</dd>
+      </dl>
+    </div>
+
+  </div>
+</section>
+
+<!-- ===================================================================
+     SLIDE 10 — LINKS
+     =================================================================== -->
+<section class="slide">
+  <h2>Official references</h2>
+  <div class="intro-banner">
+    Bookmark these. Docker's own docs are the source of truth — if anything in this deck drifts out of date, the docs win.
+  </div>
+
+  <ul class="resources">
+    <li><span class="label docs">DOCS</span> <a href="https://docs.docker.com/" target="_blank">docs.docker.com</a> — main entry point.</li>
+    <li><span class="label docs">DOCS</span> <a href="https://docs.docker.com/get-started/get-docker/" target="_blank">All install guides</a> — one page listing the right installer for every OS.</li>
+    <li><span class="label docs">DOCS</span> <a href="https://docs.docker.com/desktop/setup/install/mac-install/" target="_blank">macOS — Docker Desktop</a></li>
+    <li><span class="label docs">DOCS</span> <a href="https://docs.docker.com/desktop/setup/install/windows-install/" target="_blank">Windows — Docker Desktop + WSL2</a></li>
+    <li><span class="label docs">DOCS</span> <a href="https://docs.docker.com/desktop/setup/install/linux/" target="_blank">Linux — Docker Desktop</a></li>
+    <li><span class="label docs">DOCS</span> <a href="https://docs.docker.com/engine/install/ubuntu/" target="_blank">Linux — Docker Engine (Ubuntu)</a> ·
+      <a href="https://docs.docker.com/engine/install/debian/" target="_blank">Debian</a> ·
+      <a href="https://docs.docker.com/engine/install/fedora/" target="_blank">Fedora</a>
+    </li>
+    <li><span class="label docs">DOCS</span> <a href="https://docs.docker.com/engine/install/linux-postinstall/" target="_blank">Linux post-install</a> — non-root usage, autostart, log rotation.</li>
+    <li><span class="label read">READ</span> <a href="https://docs.docker.com/reference/dockerfile/" target="_blank">Dockerfile reference</a> — every instruction with examples.</li>
+  </ul>
+</section>
+
+<script>
+(function () {
+  "use strict";
+  const CONFIG = {
+    slideSelector: ".slide",
+    slideNumberClass: "slide-number",
+    katexAutoRenderOptions: {
+      delimiters: [
+        { left: "$$", right: "$$", display: true },
+        { left: "$", right: "$", display: false },
+      ],
+      throwOnError: false,
+      errorColor: "#EF4444",
+    },
+  };
+  let slides = [];
+  let currentSlideIndex = 0;
+
+  function init() {
+    slides = Array.from(document.querySelectorAll(CONFIG.slideSelector));
+    if (slides.length === 0) return;
+    autoNumberSlides();
+    renderKaTeX();
+    bindKeyboard();
+  }
+  function autoNumberSlides() {
+    const total = slides.length;
+    slides.forEach(function (slide, i) {
+      if (slide.querySelector("." + CONFIG.slideNumberClass)) return;
+      var num = document.createElement("span");
+      num.className = CONFIG.slideNumberClass;
+      num.textContent = (i + 1) + " / " + total;
+      slide.appendChild(num);
+      if (!slide.id) slide.id = "slide-" + (i + 1);
+    });
+  }
+  function renderKaTeX() {
+    if (typeof window.renderMathInElement !== "function") return;
+    slides.forEach(function (slide) {
+      window.renderMathInElement(slide, CONFIG.katexAutoRenderOptions);
+    });
+  }
+  function bindKeyboard() {
+    document.addEventListener("keydown", function (e) {
+      var tag = (e.target.tagName || "").toLowerCase();
+      if (tag === "input" || tag === "textarea") return;
+      switch (e.key) {
+        case "ArrowRight": case "ArrowDown": case "PageDown":
+          e.preventDefault(); navigateTo(currentSlideIndex + 1); break;
+        case "ArrowLeft": case "ArrowUp": case "PageUp":
+          e.preventDefault(); navigateTo(currentSlideIndex - 1); break;
+        case "Home": e.preventDefault(); navigateTo(0); break;
+        case "End":  e.preventDefault(); navigateTo(slides.length - 1); break;
+      }
+    });
+  }
+  function navigateTo(index) {
+    if (index < 0 || index >= slides.length) return;
+    currentSlideIndex = index;
+    slides[index].scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", init);
+  } else {
+    init();
+  }
+})();
+</script>
+</body>
+</html>
