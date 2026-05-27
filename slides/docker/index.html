@@ -1,0 +1,2376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Docker &amp; Containers</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+<script src="https://code.iconify.design/iconify-icon/2.1.0/iconify-icon.min.js"></script>
+<style>
+/* ============================================================
+   Slide Theme (inlined) — palette and components match the
+   FastAPI sibling deck for visual consistency.
+   ============================================================ */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+:root {
+  --navy-900: #1A3264; --navy-800: #214078; --navy-700: #2E5090;
+  --navy-600: #3660A3; --navy-500: #4272B8; --navy-400: #5A8ACB;
+  --navy-300: #7BA4D8; --navy-200: #A3C0E4; --navy-100: #C8D9EF; --navy-50: #E8EFF7;
+  --slate-900: #1E1E2E; --slate-800: #2A2A3C; --slate-700: #3A3A4F;
+  --slate-600: #4A4A62; --slate-500: #6B6B82; --slate-400: #8E8EA3;
+  --slate-300: #B0B0C2; --slate-200: #D0D0DC; --slate-100: #E8E8EF; --slate-50: #F5F5F9;
+  --info: #36A2B5; --success: #5B9E7B; --warning: #C49545; --error: #D4594E;
+  --info-bg: #EAF5F7; --success-bg: #EDF5F0; --warning-bg: #FBF4E8; --error-bg: #FBEEED;
+  --accent: #4BB8C9; --accent-light: #7FCDD8; --accent-dim: #2A8F9E;
+  --font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-code: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
+  --slide-padding: 3rem 4rem;
+  --slide-max-width: 1150px;
+  --radius-sm: 6px; --radius-md: 10px; --radius-lg: 16px;
+  --shadow-sm: 0 1px 3px rgba(0,0,0,.08);
+  --shadow-md: 0 4px 12px rgba(0,0,0,.10);
+  --shadow-lg: 0 8px 30px rgba(0,0,0,.14);
+  --ease: cubic-bezier(.4, 0, .2, 1);
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { font-size: 19px; scroll-behavior: smooth; -webkit-font-smoothing: antialiased; }
+body { font-family: var(--font-body); color: var(--slate-800); background: var(--slate-50); line-height: 1.6; }
+
+.slide {
+  min-height: 100vh;
+  padding: var(--slide-padding);
+  display: flex; flex-direction: column; justify-content: center;
+  max-width: var(--slide-max-width);
+  margin: 0 auto;
+  position: relative;
+}
+.slide-number {
+  position: absolute; bottom: 1.2rem; right: 1.5rem;
+  font-size: 0.75rem; font-weight: 600; color: var(--slate-400); letter-spacing: 0.04em;
+}
+.slide + .slide { border-top: 1px solid var(--slate-100); }
+
+h1, h2, h3, h4 { color: var(--navy-700); line-height: 1.25; font-weight: 700; letter-spacing: -0.01em; }
+h1 { font-size: 2.8rem; font-weight: 800; margin-bottom: 1rem; }
+h2 { font-size: 2.15rem; margin-bottom: 0.8rem; }
+h3 { font-size: 1.6rem; margin-bottom: 0.6rem; }
+h4 { font-size: 1.3rem; font-weight: 600; margin-bottom: 0.5rem; }
+p { margin-bottom: 1rem; font-size: 1.1rem; }
+strong { font-weight: 600; color: var(--navy-700); }
+a { color: var(--accent-dim); text-decoration: none; border-bottom: 1px solid transparent; transition: border-color 0.2s var(--ease); }
+a:hover { border-bottom-color: var(--accent-dim); }
+ul, ol { margin: 0.5rem 0 1rem 1.6rem; }
+li { margin-bottom: 0.4rem; font-size: 1.1rem; }
+li::marker { color: var(--navy-400); }
+
+.subtitle { font-size: 1.3rem; color: var(--slate-500); font-weight: 400; margin-bottom: 1.5rem; }
+.muted { color: var(--slate-400); }
+
+/* Intro banner (S10e) */
+.intro-banner {
+  border-left: 4px solid var(--accent-dim);
+  background: var(--info-bg);
+  padding: 0.9rem 1.2rem;
+  font-size: 1.05rem;
+  font-weight: 500;
+  color: var(--navy-800);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  margin: 1rem 0 1.4rem 0;
+}
+
+/* Key-phrase pill (S10f) */
+.pill {
+  background: var(--warning-bg);
+  padding: 0 0.3em;
+  border-radius: 3px;
+  font-weight: 600;
+  color: var(--navy-700);
+}
+
+/* Slide figure — generated PNG */
+.slide-figure {
+  display: block;
+  margin: 0.6rem auto 1.0rem;
+  max-width: 100%;
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-md);
+  background: white;
+}
+
+/* Title slide */
+.slide.title-slide {
+  text-align: center;
+  background: linear-gradient(135deg, var(--navy-800) 0%, var(--navy-600) 100%);
+  color: #fff;
+}
+.slide.title-slide h1 { color: #fff; font-size: 3.4rem; margin-bottom: 0.6rem; }
+.slide.title-slide .subtitle { color: var(--navy-100); font-size: 1.4rem; }
+
+/* Code blocks (S08 — soft-dark bg) */
+.code-block {
+  background: var(--slate-800);
+  color: #E2E8F0;
+  font-family: var(--font-code);
+  font-size: 0.92rem;
+  line-height: 1.65;
+  padding: 1.3rem 1.5rem;
+  border-radius: var(--radius-md);
+  overflow-x: auto;
+  margin: 1rem 0;
+  box-shadow: var(--shadow-md);
+  position: relative;
+}
+.code-block .label {
+  position: absolute; top: 0.5rem; right: 0.8rem;
+  font-size: 0.65rem; font-weight: 600; text-transform: uppercase;
+  letter-spacing: 0.08em; color: var(--slate-400); font-family: var(--font-body);
+}
+.code-block .kw      { color: #C792EA; }
+.code-block .fn      { color: #82AAFF; }
+.code-block .str     { color: #C3E88D; }
+.code-block .num     { color: #F78C6C; }
+.code-block .comment { color: #50FA7B; font-style: italic; }
+.code-block .op      { color: #89DDFF; }
+.code-block .cls     { color: #E8C577; }
+.code-block .dec     { color: #F07178; }
+.code-block .builtin { color: #89DDFF; }
+.code-block .param   { color: #E2E8F0; font-style: italic; }
+.code-block .flag    { color: #F78C6C; }                          /* CLI flags */
+.code-block .arg     { color: #FFCB6B; font-style: italic; }      /* placeholders / image name */
+.code-block .prompt  { color: #6B6B82; }                          /* shell $ prompt */
+.code-block .eff     { color: #89DDFF; font-weight: 600; }        /* "effective →" label */
+.code-block .prog    { color: #C792EA; font-weight: 600; }        /* resulting program */
+
+/* Compact code block — tighter than the default */
+.code-block.compact {
+  font-size: 0.74rem;
+  line-height: 1.45;
+  padding: 0.55rem 0.8rem;
+  margin: 0.4rem 0;
+  box-shadow: none;
+  white-space: pre;
+}
+
+/* User-diagram for the non-root USER slide — slim before/after visual */
+.user-diagram {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  gap: 0.6rem;
+  align-items: stretch;
+  margin: 0.35rem 0 0.65rem;
+}
+.container-vis {
+  background: #fff;
+  border: 1px solid var(--slate-200);
+  border-radius: var(--radius-md);
+  padding: 0.55rem 0.8rem 0.6rem;
+  box-shadow: var(--shadow-sm);
+}
+.container-vis.default { border-top: 3px solid var(--warning); }
+.container-vis.fixed   { border-top: 3px solid var(--success); }
+.vis-label {
+  font-size: 0.7rem; font-weight: 700;
+  letter-spacing: 0.08em; text-transform: uppercase;
+  margin-bottom: 0.35rem;
+}
+.container-vis.default .vis-label { color: var(--warning); }
+.container-vis.fixed   .vis-label { color: var(--success); }
+.vis-label code { font-size: 0.72rem; background: transparent; padding: 0; color: inherit; }
+.vis-box {
+  background: var(--slate-50);
+  border: 1.5px dashed var(--slate-300);
+  border-radius: var(--radius-sm);
+  padding: 0.35rem 0.6rem;
+  margin-bottom: 0.35rem;
+  position: relative;
+}
+.vis-box::before {
+  content: "container";
+  position: absolute;
+  top: -0.55rem; left: 0.55rem;
+  background: #fff;
+  font-size: 0.6rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--slate-400);
+  padding: 0 0.35rem;
+  font-weight: 700;
+}
+.vis-proc {
+  font-family: var(--font-code);
+  font-size: 0.82rem;
+}
+.vis-proc.root { color: var(--error); font-weight: 600; }
+.vis-proc.app  { color: var(--success); font-weight: 600; }
+.vis-result {
+  font-size: 0.84rem;
+  color: var(--slate-700);
+  line-height: 1.35;
+}
+.user-arrow {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-code);
+  font-size: 0.75rem;
+  color: var(--accent-dim);
+  font-weight: 700;
+  padding: 0 0.2rem;
+  gap: 0.1rem;
+}
+.user-arrow .ah { font-size: 1.3rem; line-height: 1; color: var(--slate-400); }
+
+/* Tag visual — "one image, many tags" for the tagging slide */
+.tag-diagram {
+  background: var(--slate-50);
+  border-radius: var(--radius-md);
+  padding: 0.7rem 0.9rem 0.85rem;
+  margin: 0.4rem 0 0.5rem;
+}
+.td-image {
+  text-align: center;
+  background: #fff;
+  border: 1.5px solid var(--accent-dim);
+  border-radius: var(--radius-sm);
+  padding: 0.4rem 0.7rem;
+  margin: 0 auto 0.7rem;
+  width: fit-content;
+  box-shadow: var(--shadow-sm);
+}
+.td-label {
+  display: block;
+  font-size: 0.62rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--accent-dim);
+  font-weight: 700;
+  margin-bottom: 0.15rem;
+}
+.td-digest {
+  font-size: 0.8rem;
+  background: transparent;
+  color: var(--navy-700);
+  padding: 0;
+  font-family: var(--font-code);
+}
+.td-tags {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 0.6rem;
+}
+.td-tag {
+  text-align: center;
+  background: #fff;
+  border-radius: var(--radius-sm);
+  padding: 0.4rem 0.5rem 0.5rem;
+  border-top: 3px solid var(--slate-300);
+  box-shadow: var(--shadow-sm);
+}
+.td-tag.latest { border-top-color: var(--accent-dim); }
+.td-tag.semver { border-top-color: var(--navy-600); }
+.td-tag.sha    { border-top-color: var(--success); }
+.td-tag .td-arrow {
+  display: block;
+  font-size: 1.05rem;
+  color: var(--slate-400);
+  line-height: 1;
+  margin-bottom: 0.25rem;
+  font-weight: 700;
+}
+.td-tag code {
+  font-size: 0.82rem;
+  background: var(--slate-800);
+  color: #E2E8F0;
+  padding: 0.15rem 0.5rem;
+  border-radius: 3px;
+  display: inline-block;
+  font-family: var(--font-code);
+}
+.td-tag .td-note {
+  display: block;
+  font-size: 0.74rem;
+  color: var(--slate-600);
+  margin-top: 0.35rem;
+}
+
+/* 2-stage visual for the multi-stage slide */
+.ms-diagram {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  gap: 0.7rem;
+  align-items: stretch;
+  margin: 0.4rem 0 0.5rem;
+}
+.ms-stage {
+  background: #fff;
+  border: 1px solid var(--slate-200);
+  border-radius: var(--radius-md);
+  padding: 0.55rem 0.85rem 0.6rem;
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  flex-direction: column;
+}
+.ms-stage.builder { border-top: 3px solid var(--warning); }
+.ms-stage.runtime { border-top: 3px solid var(--success); }
+.ms-label {
+  font-size: 0.7rem; font-weight: 700;
+  letter-spacing: 0.08em; text-transform: uppercase;
+  margin-bottom: 0.3rem;
+}
+.ms-stage.builder .ms-label { color: var(--warning); }
+.ms-stage.runtime .ms-label { color: var(--success); }
+/* Image-layer stack visual */
+.ms-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  margin: 0.35rem 0 0.5rem;
+  flex: 1;
+}
+.ms-layer {
+  padding: 0.32rem 0.55rem;
+  font-size: 0.78rem;
+  font-family: var(--font-code);
+  border-radius: 3px;
+  line-height: 1.3;
+  border-left: 3px solid transparent;
+}
+.ms-layer.kept {
+  background: var(--success-bg);
+  color: var(--success);
+  font-weight: 600;
+  border-left-color: var(--success);
+}
+.ms-layer.drop {
+  background: var(--slate-100);
+  color: var(--slate-500);
+  text-decoration: line-through;
+  border-left-color: var(--slate-300);
+}
+.ms-layer.base {
+  background: var(--navy-50);
+  color: var(--navy-700);
+  font-weight: 700;
+  border-left-color: var(--navy-600);
+}
+.ms-fate {
+  margin-top: 0.2rem;
+  font-size: 0.78rem;
+  font-weight: 700;
+  font-family: var(--font-code);
+  letter-spacing: 0.02em;
+  align-self: flex-start;
+}
+.ms-fate.drop { color: var(--slate-500); }
+.ms-fate.ship { color: var(--success); }
+
+.ms-bridge {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 0 0.3rem;
+  gap: 0.4rem;
+}
+.ms-bridge .bridge-arrow {
+  font-size: 1.8rem;
+  color: var(--accent-dim);
+  line-height: 1;
+  font-weight: 700;
+}
+.ms-bridge .bridge-label {
+  font-family: var(--font-code);
+  font-size: 0.7rem;
+  color: var(--slate-700);
+  background: var(--slate-100);
+  padding: 0.18rem 0.45rem;
+  border-radius: 3px;
+  white-space: nowrap;
+}
+
+/* Image-size comparison bar for the multi-stage slide */
+.ms-size-bar {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  margin: 0.5rem 0 0.3rem;
+}
+.ms-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.45rem 0.85rem;
+  border-radius: var(--radius-sm);
+  font-size: 0.9rem;
+  border-left: 4px solid var(--slate-300);
+}
+.ms-bar.single { background: var(--warning-bg); border-left-color: var(--warning); }
+.ms-bar.multi  { background: var(--success-bg); border-left-color: var(--success); }
+.ms-bar-label { color: var(--slate-700); }
+.ms-bar-label code { font-size: 0.82rem; }
+.ms-bar-size {
+  font-family: var(--font-code);
+  font-weight: 700;
+  font-size: 1.05rem;
+}
+.ms-bar.single .ms-bar-size { color: var(--warning); }
+.ms-bar.multi  .ms-bar-size { color: var(--success); }
+
+/* S09 — disable ligatures */
+.code-block, .code-block *, code {
+  font-variant-ligatures: none;
+  font-feature-settings: "liga" 0, "calt" 0;
+}
+
+code {
+  font-family: var(--font-code); font-size: 0.88em;
+  background: var(--navy-50); color: var(--navy-700);
+  padding: 0.15em 0.4em; border-radius: 4px;
+}
+
+/* Panels — S10a min-width:0 */
+.two-panel { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin: 1rem 0; }
+.three-panel { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1.2rem; margin: 1rem 0; }
+.two-panel > *, .three-panel > * { min-width: 0; }
+
+.panel {
+  background: #fff;
+  border: 1px solid var(--slate-200);
+  border-radius: var(--radius-md);
+  padding: 1.3rem;
+  box-shadow: var(--shadow-sm);
+}
+.panel h4 { margin-bottom: 0.5rem; color: var(--navy-700); font-size: 1.05rem; }
+.panel.bordered-success { border-top: 3px solid var(--success); }
+.panel.bordered-warning { border-top: 3px solid var(--warning); }
+.panel.bordered-info    { border-top: 3px solid var(--info); }
+.panel.bordered-navy    { border-top: 3px solid var(--navy-600); }
+.panel.bordered-error   { border-top: 3px solid var(--error); }
+.panel.bordered-teal    { border-top: 3px solid var(--accent-dim); }
+
+/* Panel label chips */
+.panel-label {
+  display: inline-block;
+  font-size: 0.7rem; font-weight: 700; letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 0.18em 0.55em;
+  border-radius: 4px;
+  margin-bottom: 0.5rem;
+}
+.panel-label.teal   { background: var(--info-bg);    color: var(--accent-dim); }
+.panel-label.amber  { background: var(--warning-bg); color: var(--warning); }
+.panel-label.navy   { background: var(--navy-50);    color: var(--navy-700); }
+.panel-label.green  { background: var(--success-bg); color: var(--success); }
+
+/* Data table */
+.data-table {
+  width: 100%; border-collapse: collapse; margin: 1rem 0; font-size: 0.95rem;
+}
+.data-table th {
+  background: var(--navy-700); color: #fff; font-weight: 600;
+  text-align: left; padding: 0.7rem 1rem;
+}
+.data-table th:first-child { border-radius: var(--radius-sm) 0 0 0; }
+.data-table th:last-child  { border-radius: 0 var(--radius-sm) 0 0; }
+.data-table td {
+  padding: 0.6rem 1rem; border-bottom: 1px solid var(--slate-100); vertical-align: top;
+}
+.data-table tr:last-child td { border-bottom: none; }
+.data-table tbody tr:nth-child(even) { background: var(--slate-50); }
+.data-table .mono { font-family: var(--font-code); font-size: 0.9em; }
+
+/* Callouts */
+.callout {
+  padding: 1.1rem 1.3rem;
+  border-radius: var(--radius-md);
+  margin: 1rem 0;
+  border-left: 4px solid;
+  font-size: 0.97rem;
+}
+.callout-title { font-weight: 700; margin-bottom: 0.3rem; font-size: 0.92rem; letter-spacing: 0.02em; }
+.callout.info    { background: var(--info-bg);    border-color: var(--info); }
+.callout.warning { background: var(--warning-bg); border-color: var(--warning); }
+.callout.success { background: var(--success-bg); border-color: var(--success); }
+.callout.error   { background: var(--error-bg);   border-color: var(--error); }
+.callout.info .callout-title    { color: var(--info); }
+.callout.warning .callout-title { color: var(--warning); }
+.callout.success .callout-title { color: var(--success); }
+.callout.error .callout-title   { color: var(--error); }
+
+/* Card grid */
+.card {
+  background: #fff;
+  border: 1px solid var(--slate-200);
+  border-radius: var(--radius-md);
+  padding: 1.2rem;
+  box-shadow: var(--shadow-sm);
+}
+.card h4 { font-size: 1.05rem; margin-bottom: 0.4rem; color: var(--navy-700); }
+.card p  { font-size: 0.92rem; color: var(--slate-600); margin-bottom: 0; }
+
+.card-tag {
+  display: inline-block;
+  font-size: 0.65rem; font-weight: 700; letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 0.18em 0.55em;
+  border-radius: 4px;
+  margin-bottom: 0.5rem;
+}
+.card-tag.teal   { background: var(--info-bg);    color: var(--accent-dim); }
+.card-tag.green  { background: var(--success-bg); color: var(--success); }
+.card-tag.amber  { background: var(--warning-bg); color: var(--warning); }
+.card-tag.navy   { background: var(--navy-50);    color: var(--navy-700); }
+
+.summary-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1.1rem; margin: 1rem 0; }
+.summary-grid > * { min-width: 0; }
+.summary-grid .card { border-top: 3px solid var(--success); }
+
+/* Resources */
+.resources li { font-size: 1.05rem; margin-bottom: 0.6rem; }
+.resources .label {
+  display: inline-block;
+  font-size: 0.7rem; font-weight: 700;
+  padding: 0.15em 0.5em; border-radius: 3px;
+  margin-right: 0.5em; letter-spacing: 0.05em;
+}
+.resources .label.video { background: var(--error-bg); color: var(--error); }
+.resources .label.docs  { background: var(--info-bg);  color: var(--accent-dim); }
+.resources .label.read  { background: var(--success-bg); color: var(--success); }
+
+@media (max-width: 900px) {
+  :root { --slide-padding: 2rem 2rem; }
+  html { font-size: 17px; }
+  .two-panel, .three-panel, .summary-grid { grid-template-columns: 1fr; }
+}
+
+/* === Docker deck additions === */
+
+/* Pain-cards on slide 2 — pre-Docker problems */
+.pain-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.1rem;
+  margin: 0.6rem 0 0.8rem;
+}
+.pain-grid > * { min-width: 0; }
+.pain-card {
+  background: #fff;
+  border: 1px solid var(--slate-200);
+  border-left: 4px solid var(--warning);
+  border-radius: var(--radius-md);
+  padding: 0.85rem 1.0rem 0.9rem;
+  box-shadow: var(--shadow-sm);
+}
+.pain-card .head {
+  font-family: var(--font-code);
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--warning);
+  background: var(--warning-bg);
+  display: inline-block;
+  padding: 0.1rem 0.5rem;
+  border-radius: 3px;
+  margin-bottom: 0.4rem;
+  letter-spacing: 0.04em;
+}
+.pain-card h4 { font-size: 0.98rem; margin-bottom: 0.25rem; }
+.pain-card p { font-size: 0.84rem; color: var(--slate-600); margin: 0; line-height: 1.45; }
+
+/* Docker promise band — the takeaway under pain cards */
+.promise-band {
+  background: var(--success-bg);
+  border-left: 4px solid var(--success);
+  border-radius: var(--radius-sm);
+  padding: 0.8rem 1.1rem;
+  font-size: 0.98rem;
+  color: var(--navy-800);
+  margin-top: 0.4rem;
+}
+.promise-band strong { color: var(--success); }
+
+/* Dockerfile-annotation slide — line + caption rows */
+.df-rows {
+  display: grid;
+  grid-template-columns: 1.05fr 1fr;
+  gap: 0 1rem;
+  margin: 0.6rem 0;
+  align-items: stretch;
+}
+.df-rows > .col {
+  background: var(--slate-800);
+  color: #E2E8F0;
+  font-family: var(--font-code);
+  font-size: 0.84rem;
+  line-height: 1.55;
+  padding: 1.0rem 1.1rem;
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-md);
+  position: relative;
+  white-space: pre;
+  overflow-x: auto;
+}
+.df-rows > .col .label {
+  position: absolute; top: 0.45rem; right: 0.7rem;
+  font-size: 0.62rem; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 0.08em; color: var(--slate-400); font-family: var(--font-body);
+}
+.df-rows > .col .kw      { color: #C792EA; }
+.df-rows > .col .fn      { color: #82AAFF; }
+.df-rows > .col .str     { color: #C3E88D; }
+.df-rows > .col .num     { color: #F78C6C; }
+.df-rows > .col .comment { color: #50FA7B; font-style: italic; }
+.df-rows > .col .builtin { color: #89DDFF; }
+
+.df-rows .captions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.32rem;
+}
+.df-rows .cap {
+  background: #fff;
+  border: 1px solid var(--slate-200);
+  border-left: 3px solid var(--accent-dim);
+  border-radius: var(--radius-sm);
+  padding: 0.45rem 0.75rem;
+  font-size: 0.84rem;
+  color: var(--slate-700);
+  line-height: 1.4;
+}
+.df-rows .cap .name {
+  font-family: var(--font-code);
+  font-weight: 700;
+  color: var(--navy-700);
+  margin-right: 0.4rem;
+}
+
+/* Tagging conventions table (slide 6) */
+.tag-list {
+  margin: 0.6rem 0 0.4rem 0;
+  display: grid;
+  grid-template-columns: 0.5fr 0.5fr 1.4fr;
+  gap: 0.3rem 0.8rem;
+  font-size: 0.92rem;
+  align-items: baseline;
+}
+.tag-list .ttag {
+  font-family: var(--font-code);
+  background: var(--slate-800);
+  color: #C3E88D;
+  padding: 0.18rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.85rem;
+  width: max-content;
+}
+.tag-list .what {
+  font-weight: 600;
+  color: var(--navy-700);
+  font-size: 0.92rem;
+}
+.tag-list .desc {
+  color: var(--slate-600);
+  font-size: 0.88rem;
+}
+
+/* run-flag rows (slide 7) */
+.flag-rows {
+  display: grid;
+  grid-template-columns: minmax(170px, max-content) 1fr;
+  gap: 0.35rem 1rem;
+  margin: 0.7rem 0;
+}
+.flag-rows .fc {
+  font-family: var(--font-code);
+  background: var(--slate-800);
+  color: #82AAFF;
+  padding: 0.32rem 0.55rem;
+  border-radius: 4px;
+  font-size: 0.82rem;
+  width: max-content;
+}
+.flag-rows .fd {
+  color: var(--slate-700);
+  font-size: 0.92rem;
+  padding-top: 0.35rem;
+}
+.flag-rows .fd strong { color: var(--navy-700); }
+
+/* lifecycle cheatsheet table */
+.life-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 0.5rem 0;
+  font-size: 0.94rem;
+}
+.life-table th {
+  background: var(--navy-700); color: #fff;
+  text-align: left; padding: 0.5rem 0.8rem; font-weight: 600;
+  font-size: 0.92rem;
+}
+.life-table td {
+  background: #fff;
+  border-bottom: 1px solid var(--slate-100);
+  padding: 0.4rem 0.8rem;
+  vertical-align: top;
+}
+.life-table td.cmd {
+  font-family: var(--font-code);
+  font-weight: 700;
+  color: var(--navy-800);
+  white-space: nowrap;
+}
+.life-table td.desc { color: var(--slate-600); font-size: 0.9rem; }
+.life-table td.ex {
+  font-family: var(--font-code);
+  color: var(--accent-dim);
+  font-size: 0.82rem;
+}
+
+/* "why compose" before/after panels (slide 9) */
+.before-after {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin: 0.6rem 0 0.4rem;
+}
+.before-after > * { min-width: 0; }
+.before-after .bcol {
+  background: #fff;
+  border: 1px solid var(--slate-200);
+  border-radius: var(--radius-md);
+  padding: 0.85rem 1.0rem;
+  box-shadow: var(--shadow-sm);
+}
+.before-after .bcol.before { border-top: 3px solid var(--warning); }
+.before-after .bcol.after  { border-top: 3px solid var(--success); }
+.before-after .bcol h4 { font-size: 1.0rem; margin-bottom: 0.4rem; }
+.before-after .bcol pre.code-block {
+  font-size: 0.78rem;
+  padding: 0.7rem 0.9rem;
+  margin: 0.3rem 0;
+  line-height: 1.55;
+  box-shadow: none;
+}
+.before-after .bcol .takeaway {
+  font-size: 0.85rem;
+  color: var(--slate-600);
+  margin-top: 0.4rem;
+  line-height: 1.4;
+}
+
+/* RAG-style compose annotated YAML + walkthrough (slide 10) */
+.compose-walk {
+  display: grid;
+  grid-template-columns: 1.15fr 0.85fr;
+  gap: 1rem;
+  margin: 0.5rem 0;
+}
+.compose-walk > * { min-width: 0; }
+.compose-walk pre.code-block {
+  font-size: 0.78rem;
+  padding: 0.85rem 1.0rem;
+  margin: 0;
+  line-height: 1.55;
+  white-space: pre;
+}
+.compose-walk .notes {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+.compose-walk .note {
+  background: #fff;
+  border: 1px solid var(--slate-200);
+  border-left: 3px solid var(--accent-dim);
+  border-radius: var(--radius-sm);
+  padding: 0.45rem 0.75rem;
+  font-size: 0.83rem;
+  color: var(--slate-700);
+  line-height: 1.4;
+}
+.compose-walk .note .k {
+  font-family: var(--font-code);
+  font-weight: 700;
+  color: var(--navy-700);
+  margin-right: 0.35rem;
+}
+
+/* compose CLI mini-cheat strip */
+.compose-cli {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 0.6rem;
+  margin: 0.4rem 0 0;
+}
+.compose-cli .c {
+  background: var(--slate-800);
+  color: #E2E8F0;
+  font-family: var(--font-code);
+  padding: 0.5rem 0.7rem;
+  border-radius: var(--radius-sm);
+  font-size: 0.8rem;
+  text-align: center;
+}
+.compose-cli .c .cm { color: #C3E88D; font-weight: 700; }
+.compose-cli .c .ex { color: var(--slate-400); font-family: var(--font-body); font-size: 0.7rem; display: block; margin-top: 0.1rem; }
+
+/* side-by-side dockerfile + compose (slide 11) */
+.df-compose {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin: 0.5rem 0 0.4rem;
+}
+.df-compose > * { min-width: 0; }
+.df-compose .col h4 {
+  font-size: 0.98rem;
+  margin-bottom: 0.3rem;
+  display: flex; align-items: center; gap: 0.4rem;
+}
+.df-compose .col h4 .tag {
+  font-size: 0.66rem; font-weight: 700; letter-spacing: 0.06em;
+  padding: 0.12rem 0.5rem; border-radius: 3px;
+  background: var(--info-bg); color: var(--accent-dim);
+  text-transform: uppercase;
+}
+.df-compose pre.code-block {
+  font-size: 0.74rem;
+  padding: 0.8rem 0.9rem;
+  margin: 0;
+  line-height: 1.55;
+  white-space: pre;
+  overflow-x: auto;
+}
+
+.run-strip {
+  background: var(--success-bg);
+  border-left: 4px solid var(--success);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  padding: 0.7rem 1.0rem;
+  margin-top: 0.6rem;
+  font-size: 0.95rem;
+  color: var(--navy-800);
+  display: flex; align-items: center; gap: 0.8rem;
+}
+.run-strip code {
+  background: var(--slate-800);
+  color: #C3E88D;
+  padding: 0.18rem 0.55rem;
+  border-radius: 4px;
+  font-size: 0.85rem;
+}
+
+/* Compose-gains strip — "what Compose does for you" under the before/after */
+.compose-gains {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.35rem 1.2rem;
+  margin-top: 0.55rem;
+  padding: 0.6rem 0.9rem;
+  background: var(--info-bg);
+  border-left: 4px solid var(--info);
+  border-radius: var(--radius-sm);
+}
+.cg-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  font-size: 0.85rem;
+  color: var(--slate-700);
+  line-height: 1.4;
+}
+.cg-icon {
+  color: var(--info);
+  font-weight: 700;
+  font-size: 0.95rem;
+  line-height: 1.4;
+}
+.cg-text strong { color: var(--navy-700); }
+.cg-text code { font-size: 0.76rem; }
+
+/* Run-steps strip for the "containerise the stack" slide */
+.run-steps {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 0.55rem;
+  margin: 0.55rem 0 0.2rem;
+}
+.run-step {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.55rem;
+  align-items: start;
+  background: #fff;
+  border: 1px solid var(--slate-200);
+  border-left: 4px solid var(--accent-dim);
+  border-radius: var(--radius-sm);
+  padding: 0.5rem 0.7rem 0.55rem;
+  box-shadow: var(--shadow-sm);
+}
+.run-step .rs-num {
+  font-family: var(--font-code);
+  font-size: 0.75rem;
+  width: 1.4rem; height: 1.4rem;
+  border-radius: 50%;
+  background: var(--accent-dim);
+  color: #fff;
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 700;
+  margin-top: 0.05rem;
+}
+.run-step .rs-body { min-width: 0; }
+.run-step .rs-cmd {
+  font-family: var(--font-code);
+  font-size: 0.78rem;
+  background: var(--slate-800);
+  color: #E2E8F0;
+  padding: 0.18rem 0.5rem;
+  border-radius: 3px;
+  margin-bottom: 0.3rem;
+  white-space: nowrap;
+  overflow-x: auto;
+}
+.run-step .rs-note {
+  font-size: 0.8rem;
+  color: var(--slate-600);
+  line-height: 1.35;
+}
+.run-step .rs-note code { font-size: 0.74rem; }
+
+/* Three-rules strip for the networking slide */
+.net-rules {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 0.6rem;
+  margin: 0.5rem 0 0.7rem;
+}
+.net-rule {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.6rem;
+  align-items: start;
+  background: #fff;
+  border: 1px solid var(--slate-200);
+  border-top: 3px solid var(--slate-300);
+  border-radius: var(--radius-md);
+  padding: 0.55rem 0.75rem 0.6rem;
+  box-shadow: var(--shadow-sm);
+}
+.net-rule.same { border-top-color: var(--accent-dim); }
+.net-rule.host { border-top-color: var(--warning); }
+.net-rule.net  { border-top-color: var(--success); }
+.nr-num {
+  font-family: var(--font-code);
+  font-size: 0.78rem;
+  width: 1.5rem; height: 1.5rem;
+  border-radius: 50%;
+  color: #fff;
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 700;
+  margin-top: 0.1rem;
+}
+.net-rule.same .nr-num { background: var(--accent-dim); }
+.net-rule.host .nr-num { background: var(--warning); }
+.net-rule.net  .nr-num { background: var(--success); }
+.nr-body { min-width: 0; }
+.nr-title {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--navy-800);
+  margin-bottom: 0.25rem;
+  line-height: 1.3;
+}
+.nr-title .nr-sub {
+  font-weight: 400;
+  font-size: 0.78rem;
+  color: var(--slate-500);
+}
+.nr-addr {
+  display: inline-block;
+  font-family: var(--font-code);
+  background: var(--slate-800);
+  color: #C3E88D;
+  padding: 0.15rem 0.45rem;
+  border-radius: 3px;
+  font-size: 0.76rem;
+  margin-bottom: 0.25rem;
+}
+.nr-eg {
+  font-size: 0.78rem;
+  color: var(--slate-600);
+  line-height: 1.35;
+}
+.nr-eg code { font-size: 0.74rem; }
+
+/* Container networking diagram (slide 11) */
+.net-diagram {
+  position: relative;
+  background: var(--slate-50);
+  border-radius: 8px;
+  padding: 1rem;
+  margin: 0.5rem 0;
+  min-height: 260px;
+}
+.net-host {
+  background: white;
+  border: 2px dashed var(--slate-300);
+  border-radius: 6px;
+  padding: 0.7rem 0.9rem 0.8rem;
+  position: relative;
+}
+.net-host > .lbl-row {
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: var(--slate-500);
+  margin-bottom: 0.5rem;
+  text-transform: uppercase;
+}
+.net-host .host-svc {
+  display: inline-block;
+  background: var(--warning-bg);
+  color: var(--warning);
+  border-radius: 4px;
+  padding: 0.25rem 0.55rem;
+  font-family: var(--font-code);
+  font-size: 0.78rem;
+  font-weight: 600;
+  margin-bottom: 0.6rem;
+}
+.net-network {
+  background: var(--info-bg);
+  border: 2px solid var(--info);
+  border-radius: 6px;
+  padding: 0.65rem 0.85rem 0.8rem;
+  margin-top: 0.5rem;
+  position: relative;
+}
+.net-network > .lbl-row {
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: var(--info);
+  margin-bottom: 0.5rem;
+  text-transform: uppercase;
+}
+.net-containers { display: flex; gap: 1.2rem; flex-wrap: wrap; }
+.net-container {
+  flex: 1;
+  min-width: 200px;
+  background: white;
+  border-radius: 6px;
+  padding: 0.55rem 0.75rem 0.7rem;
+  border-top: 3px solid var(--navy-700);
+  position: relative;
+}
+.net-container.redis-c { border-top-color: var(--success); }
+.net-container .ctitle { font-weight: 700; font-size: 0.92rem; color: var(--navy-800); margin-bottom: 0.25rem; }
+.net-container .csub   { font-size: 0.72rem; color: var(--slate-500); font-family: var(--font-code); margin-bottom: 0.4rem; }
+.net-internet {
+  position: absolute;
+  top: 0.7rem; right: 0.9rem;
+  background: var(--slate-100);
+  color: var(--slate-700);
+  padding: 0.25rem 0.55rem;
+  font-size: 0.78rem;
+  border-radius: 4px;
+  font-weight: 600;
+}
+.net-arrow {
+  font-family: var(--font-code);
+  font-size: 0.72rem;
+  color: var(--navy-700);
+  margin: 0.3rem 0;
+  padding: 0.18rem 0.45rem;
+  background: var(--navy-50);
+  border-radius: 4px;
+  display: inline-block;
+}
+.net-arrow .target { color: var(--accent-dim); font-weight: 700; }
+.net-arrow.bad { background: var(--error-bg); color: var(--error); text-decoration: line-through; }
+
+/* Multi-stage build flow (slide 10) */
+.ms-flow {
+  display: grid;
+  grid-template-columns: 1fr 60px 1fr 60px 1fr;
+  align-items: center;
+  gap: 0.6rem;
+  margin: 0.7rem 0;
+}
+.ms-stage {
+  border-radius: 8px;
+  padding: 0.85rem 0.9rem;
+  min-height: 195px;
+  position: relative;
+}
+.ms-stage.builder { background: var(--info-bg);    border-top: 3px solid var(--info); }
+.ms-stage.runtime { background: var(--success-bg); border-top: 3px solid var(--success); }
+.ms-stage.discard { background: var(--slate-50);   border-top: 3px dashed var(--slate-300); }
+.ms-stage h4 { margin: 0 0 0.4rem; font-size: 0.95rem; color: var(--navy-800); font-weight: 700; }
+.ms-stage .lbl {
+  display: inline-block;
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  padding: 0.1rem 0.4rem;
+  border-radius: 3px;
+  margin-bottom: 0.3rem;
+}
+.ms-stage.builder .lbl { background: var(--info);      color: white; }
+.ms-stage.runtime .lbl { background: var(--success);   color: white; }
+.ms-stage.discard .lbl { background: var(--slate-300); color: white; }
+.ms-items { font-family: var(--font-code); font-size: 0.72rem; line-height: 1.65; color: var(--slate-700); }
+.ms-items .keep { color: var(--success); font-weight: 600; }
+.ms-items .drop { color: var(--slate-400); text-decoration: line-through; }
+.ms-items .ok::before { content: "\2713 "; color: var(--success);   font-weight: 700; }
+.ms-items .x::before  { content: "\2715 "; color: var(--slate-400); font-weight: 700; }
+.ms-arrow { text-align: center; color: var(--slate-500); font-size: 0.7rem; font-weight: 600; letter-spacing: 0.05em; }
+.ms-arrow .head { font-size: 1.6rem; line-height: 1; }
+.ms-arrow.up    { color: var(--accent-dim); }
+.ms-arrow.down  { color: var(--slate-400); }
+
+/* CMD vs ENTRYPOINT pattern grid (slide 7) */
+.cmd-key { display:flex; gap:0.8rem; justify-content:center; margin:0.4rem 0 0.8rem; font-size:0.82rem; flex-wrap:wrap; }
+.cmd-key span { display:inline-flex; align-items:center; gap:0.35rem; color:var(--slate-600); }
+.cmd-key .chip { display:inline-block; width:14px; height:14px; border-radius:3px; }
+.chip-entry { background: var(--info); }
+.chip-cmd   { background: var(--warning); }
+.chip-arg   { background: var(--accent-dim); }
+
+.pattern-grid { display:grid; grid-template-columns:1fr 1fr 1fr; gap:0.7rem; }
+.pattern-card {
+  background: #fff;
+  border: 1px solid var(--slate-200);
+  border-radius: 8px;
+  padding: 0.75rem 0.9rem 0.85rem;
+  border-top: 3px solid var(--info);
+  box-shadow: var(--shadow-sm);
+}
+.pattern-card.p2 { border-top-color: var(--accent-dim); }
+.pattern-card.p3 { border-top-color: var(--warning); }
+.pattern-card h4 { margin: 0 0 0.4rem; font-size: 0.98rem; color: var(--navy-800); font-weight: 700; }
+.pattern-card .df {
+  font-family: var(--font-code);
+  font-size: 0.75rem;
+  color: var(--slate-700);
+  background: var(--slate-50);
+  padding: 0.4rem 0.6rem;
+  border-radius: 4px;
+  border: 1px solid var(--slate-200);
+  margin-bottom: 0.6rem;
+  white-space: pre;
+  overflow-x: auto;
+}
+.pattern-card .df .kw  { color: var(--navy-700); font-weight: 600; }
+.pattern-card .df .str { color: var(--success); }
+.scenario { display:flex; align-items:center; gap:0.35rem; font-family: var(--font-code); font-size:0.74rem; margin: 0.3rem 0; flex-wrap: wrap; }
+.scenario .lbl { font-family: var(--font-body); font-size:0.72rem; color: var(--slate-500); margin-right:0.3rem; min-width:54px; font-weight:600; letter-spacing: 0.04em; text-transform: uppercase; }
+.arrow-mid { color: var(--slate-400); font-weight: 600; }
+.blk { padding: 0.18rem 0.5rem; border-radius: 4px; font-weight: 600; }
+.blk-entry { background: var(--info-bg);    color: var(--info); }
+.blk-cmd   { background: var(--warning-bg); color: var(--warning); }
+.blk-arg   { background: #DCE9EC;           color: var(--accent-dim); }
+
+/* Docker artifacts flow (slide 3) — Dockerfile → BUILD → image → RUN → container */
+.docker-flow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  margin: 1.1rem auto 1.0rem;
+  padding: 1.1rem 0.6rem;
+  background: var(--slate-50);
+  border-radius: 10px;
+  flex-wrap: wrap;
+}
+.flow-step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.85rem 1.3rem 0.9rem;
+  background: #fff;
+  border-radius: 9px;
+  box-shadow: var(--shadow-sm);
+  min-width: 140px;
+}
+.flow-step iconify-icon {
+  font-size: 3.4rem;
+  line-height: 1;
+}
+.flow-step.dockerfile iconify-icon { color: #2496ED; }
+.flow-step.image      iconify-icon { color: #1D63ED; }
+.flow-step.container  iconify-icon { color: #4A8FF2; }
+.flow-step .flow-label {
+  font-size: 1.0rem;
+  font-weight: 700;
+  color: var(--navy-800);
+  letter-spacing: -0.01em;
+}
+.flow-step .flow-sub {
+  font-size: 0.78rem;
+  color: var(--slate-500);
+  font-style: italic;
+  margin-top: -0.25rem;
+}
+.flow-arrow {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.18rem;
+  padding: 0 0.15rem;
+}
+.flow-arrow .arrow-label {
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  color: var(--slate-700);
+  text-transform: uppercase;
+}
+.flow-arrow .arrow-shaft {
+  width: 92px;
+  height: 22px;
+  position: relative;
+}
+.flow-arrow .arrow-shaft::before {
+  content: '';
+  position: absolute;
+  top: 50%; left: 0; right: 12px;
+  height: 2px;
+  background: var(--slate-400);
+  transform: translateY(-50%);
+}
+.flow-arrow .arrow-shaft::after {
+  content: '';
+  position: absolute;
+  top: 50%; right: 0;
+  width: 0; height: 0;
+  border-top: 7px solid transparent;
+  border-bottom: 7px solid transparent;
+  border-left: 11px solid var(--slate-400);
+  transform: translateY(-50%);
+}
+.flow-arrow iconify-icon {
+  font-size: 1.1rem;
+  color: var(--slate-500);
+}
+
+/* Section divider — full-slide chapter break with a part-number badge + agenda */
+.slide.section-divider {
+  text-align: center;
+  align-items: center;
+  background: linear-gradient(135deg, var(--navy-50) 0%, var(--info-bg) 100%);
+}
+.slide.section-divider .part-num {
+  display: inline-block;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--accent-dim);
+  margin-bottom: 0.9rem;
+  background: #fff;
+  padding: 0.32rem 1.0rem;
+  border-radius: 999px;
+  box-shadow: var(--shadow-sm);
+}
+.slide.section-divider h2 {
+  font-size: 2.5rem;
+  color: var(--navy-800);
+  margin-bottom: 0.5rem;
+  line-height: 1.15;
+}
+.slide.section-divider .lead {
+  font-size: 1.05rem;
+  color: var(--slate-600);
+  max-width: 720px;
+  margin: 0 auto 1.6rem;
+  line-height: 1.55;
+}
+.slide.section-divider .agenda {
+  display: inline-flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 1.1rem 1.7rem;
+  background: #fff;
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+  text-align: left;
+  min-width: 380px;
+}
+.slide.section-divider .agenda .item {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  font-size: 0.95rem;
+  color: var(--slate-700);
+}
+.slide.section-divider .agenda .num {
+  font-family: var(--font-code);
+  font-size: 0.72rem;
+  background: var(--accent-dim);
+  color: #fff;
+  width: 1.5rem; height: 1.5rem;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+/* Cheatsheet — grouped by category (mirrors docker-setup deck) */
+.cheat-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.85rem;
+  margin: 0.5rem 0;
+}
+.cheat-grid > * { min-width: 0; }
+.cheat-card {
+  background: #fff;
+  border: 1px solid var(--slate-200);
+  border-radius: var(--radius-md);
+  padding: 0.7rem 0.9rem 0.75rem;
+  box-shadow: var(--shadow-sm);
+}
+.cheat-card.daemon     { border-top: 3px solid var(--accent-dim); }
+.cheat-card.images     { border-top: 3px solid var(--warning); }
+.cheat-card.containers { border-top: 3px solid var(--success); }
+.cheat-card.volumes    { border-top: 3px solid var(--info); }
+.cheat-card.compose    { border-top: 3px solid var(--navy-600); }
+.cheat-card.cleanup    { border-top: 3px solid var(--error); }
+.cheat-card h4 {
+  font-size: 0.72rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+}
+.cheat-card.daemon h4     { color: var(--accent-dim); }
+.cheat-card.images h4     { color: var(--warning); }
+.cheat-card.containers h4 { color: var(--success); }
+.cheat-card.volumes h4    { color: var(--info); }
+.cheat-card.compose h4    { color: var(--navy-700); }
+.cheat-card.cleanup h4    { color: var(--error); }
+
+.cheat-list {
+  display: grid;
+  grid-template-columns: minmax(0, max-content) 1fr;
+  gap: 0.2rem 0.6rem;
+  font-size: 0.74rem;
+  margin: 0;
+}
+.cheat-list dt {
+  font-family: var(--font-code);
+  background: var(--slate-800);
+  color: #E2E8F0;
+  padding: 0.12rem 0.42rem;
+  border-radius: 3px;
+  font-size: 0.7rem;
+  white-space: nowrap;
+  line-height: 1.35;
+  align-self: center;
+}
+.cheat-list dd {
+  color: var(--slate-600);
+  line-height: 1.3;
+  margin: 0;
+  align-self: center;
+  font-size: 0.74rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+/* Syntax colors inside cheatsheet commands */
+.cheat-list dt .kw      { color: #C792EA; }   /* docker · sudo · open */
+.cheat-list dt .fn      { color: #82AAFF; }   /* subcommand verb */
+.cheat-list dt .builtin { color: #89DDFF; }   /* namespace: system, image, compose */
+.cheat-list dt .flag    { color: #F78C6C; }   /* flags */
+.cheat-list dt .arg     { color: #FFCB6B; font-style: italic; }  /* placeholders */
+.cheat-list dt .str     { color: #C3E88D; }   /* literal strings */
+
+</style>
+</head>
+<body>
+
+<!-- SLIDE 1 — TITLE -->
+<section class="slide title-slide">
+  <h1>Docker &amp; Containers</h1>
+  <p class="subtitle">Dockerfile &rarr; image &rarr; container &rarr; Compose</p>
+</section>
+
+<!-- SECTION DIVIDER — PART 1: Foundations -->
+<section class="slide section-divider">
+  <span class="part-num">Part 1</span>
+  <h2>Foundations</h2>
+  <p class="lead">What containers actually solve, and the three artefacts &mdash; Dockerfile, image, container &mdash; you'll touch every day.</p>
+  <div class="agenda">
+    <div class="item"><span class="num">1</span>Containers &mdash; what &amp; why</div>
+    <div class="item"><span class="num">2</span>Image, container, Dockerfile</div>
+  </div>
+</section>
+
+<!-- SLIDE 2 — CONTAINERS: WHAT & WHY (consolidates old 2 + 3) -->
+<section class="slide">
+  <h2>Containers &mdash; what &amp; why</h2>
+  <div class="intro-banner">
+    A container is a <span class="pill">lightweight, isolated process</span> running on the host kernel &mdash; packaged with the exact libraries and OS files it needs. They exist because shipping an app means shipping more than code.
+  </div>
+
+  <div class="pain-grid">
+    <div class="pain-card">
+      <div class="head">env mismatch</div>
+      <h4>Same code, different result</h4>
+      <p>Python version, system libs, and dependency pins differ between laptops, staging, and prod. The app runs here, breaks there.</p>
+    </div>
+    <div class="pain-card">
+      <div class="head">setup tax</div>
+      <h4>Half a day to get running</h4>
+      <p>A new teammate burns the morning installing Python, system libs, and drivers before running their first <code>pytest</code>.</p>
+    </div>
+  </div>
+
+  <img src="img/vm_vs_container_v2.png" alt="Three vertical stacks side by side comparing how applications are deployed. LEFT &mdash; BARE METAL: hardware to host OS to runtime/libs to one app. MIDDLE &mdash; VIRTUAL MACHINES (amber 'heavy, full OS per app' banner): hardware to host OS to hypervisor to two stacks, each with its own guest OS plus libs plus app. RIGHT &mdash; CONTAINERS (sage 'lightweight, starts in seconds' banner): hardware to shared host kernel to container runtime (Docker) to three slim stacks, each with just libs plus app, all sharing the kernel." class="slide-figure">
+
+  <div class="promise-band">
+    Containers fix this by packaging <strong>code + every dependency + the OS layer</strong> into one immutable artifact that runs identically on any machine with a container runtime.
+  </div>
+</section>
+
+<!-- SLIDE 3 — IMAGE, CONTAINER, DOCKERFILE (consolidates old 4) -->
+<section class="slide">
+  <h2>Image, container, Dockerfile</h2>
+  <div class="intro-banner">
+    Three artifacts you'll work with. The <span class="pill">Dockerfile</span> is the recipe, the <span class="pill">image</span> is the snapshot built from it, and a <span class="pill">container</span> is a running instance of that image.
+  </div>
+
+  <div class="docker-flow" role="img" aria-label="Dockerfile is built into an image; an image is run as a container. Two verbs (BUILD and RUN) connect the three artifacts.">
+    <div class="flow-step dockerfile">
+      <iconify-icon icon="vscode-icons:file-type-docker2" noobserver></iconify-icon>
+      <div class="flow-label">Dockerfile</div>
+      <div class="flow-sub">the recipe</div>
+    </div>
+
+    <div class="flow-arrow">
+      <div class="arrow-label">BUILD</div>
+      <div class="arrow-shaft"></div>
+      <iconify-icon icon="mdi:wrench" noobserver></iconify-icon>
+    </div>
+
+    <div class="flow-step image">
+      <iconify-icon icon="logos:docker-icon" noobserver></iconify-icon>
+      <div class="flow-label">Docker image</div>
+      <div class="flow-sub">the snapshot</div>
+    </div>
+
+    <div class="flow-arrow">
+      <div class="arrow-label">RUN</div>
+      <div class="arrow-shaft"></div>
+      <iconify-icon icon="mdi:flash" noobserver></iconify-icon>
+    </div>
+
+    <div class="flow-step container">
+      <iconify-icon icon="mdi:package-variant-closed" noobserver></iconify-icon>
+      <div class="flow-label">Docker container</div>
+      <div class="flow-sub">the running process</div>
+    </div>
+  </div>
+
+  <div class="df-rows">
+<pre class="col"><span class="label">Dockerfile</span><span class="kw">FROM</span> python:<span class="num">3.11</span>-slim
+
+<span class="kw">COPY</span> app.py .
+
+<span class="kw">CMD</span> [<span class="str">"python"</span>, <span class="str">"app.py"</span>]</pre>
+
+<pre class="col"><span class="label">build &amp; run</span><span class="comment"># build the image once</span>
+$ docker build -t myapp:<span class="num">0.1</span> .
+
+<span class="comment"># spin up containers from it</span>
+$ docker run myapp:<span class="num">0.1</span>
+$ docker run myapp:<span class="num">0.1</span></pre>
+  </div>
+</section>
+
+<!-- SECTION DIVIDER — PART 2: Build & share your image -->
+<section class="slide section-divider">
+  <span class="part-num">Part 2</span>
+  <h2>Build &amp; share your image</h2>
+  <p class="lead">Everything that goes into a production-shape Dockerfile, plus how to ship the result to a registry so other machines can pull it.</p>
+  <div class="agenda">
+    <div class="item"><span class="num">1</span>Dockerfile + <code>docker build</code></div>
+    <div class="item"><span class="num">2</span><code>.dockerignore</code> — keep the build context lean</div>
+    <div class="item"><span class="num">3</span><code>docker run</code> — common flags</div>
+    <div class="item"><span class="num">4</span>CMD vs ENTRYPOINT — the override rules</div>
+    <div class="item"><span class="num">5</span>ARG vs ENV — build-time vs run-time</div>
+    <div class="item"><span class="num">6</span>Non-root <code>USER</code> — security baseline</div>
+    <div class="item"><span class="num">7</span>Multi-stage builds — smaller, safer images</div>
+    <div class="item"><span class="num">8</span>Tagging + registries</div>
+  </div>
+</section>
+
+<!-- SLIDE 5 — DOCKERFILE ANATOMY -->
+<section class="slide">
+  <h2>Dockerfile + <code>docker build</code></h2>
+  <div class="intro-banner">
+    A Dockerfile is a text script. <code>docker build</code> compiles it top-to-bottom into an image &mdash; with <span class="pill">each directive adding one layer</span>.
+  </div>
+
+  <div class="df-rows">
+<pre class="col"><span class="label">Dockerfile</span><span class="kw">FROM</span> python:<span class="num">3.11</span>-slim
+
+<span class="kw">WORKDIR</span> /app
+
+<span class="kw">COPY</span> requirements.txt .
+<span class="kw">RUN</span>  pip install --no-cache-dir \
+       -r requirements.txt
+
+<span class="kw">COPY</span> . .
+
+<span class="kw">EXPOSE</span> <span class="num">8000</span>
+
+<span class="kw">ENTRYPOINT</span> [<span class="str">"uvicorn"</span>]
+<span class="kw">CMD</span> [<span class="str">"app.main:app"</span>,
+     <span class="str">"--host"</span>, <span class="str">"0.0.0.0"</span>,
+     <span class="str">"--port"</span>, <span class="str">"8000"</span>]</pre>
+
+    <div class="captions">
+      <div class="cap"><span class="name">FROM</span>start from a known base image &mdash; here a slim Debian + Python 3.11.</div>
+      <div class="cap"><span class="name">WORKDIR</span>set the working directory inside the image; subsequent commands run here.</div>
+      <div class="cap"><span class="name">COPY requirements.txt</span>copy only the manifest first &mdash; for layer caching (see callout below).</div>
+      <div class="cap"><span class="name">RUN</span>execute a build-time command &mdash; installs dependencies into the image.</div>
+      <div class="cap"><span class="name">COPY . .</span>copy the application source after dependencies are installed.</div>
+      <div class="cap"><span class="name">EXPOSE</span>document which port the container will listen on. Metadata only.</div>
+      <div class="cap"><span class="name">ENTRYPOINT</span>the fixed binary every container starts with. Locks the program &mdash; only flags can be overridden.</div>
+      <div class="cap"><span class="name">CMD</span>default arguments to the entrypoint. Replaced when caller passes args to <code>docker run</code>.</div>
+    </div>
+  </div>
+
+  <pre class="code-block" style="margin-top:0.5rem;"><span class="label">terminal</span><span class="comment"># build an image from ./Dockerfile, tag it myapp:0.1.</span>
+<span class="comment"># the trailing "." is the build context — the directory sent to the Docker daemon.</span>
+docker build <span class="flag">-t</span> myapp:<span class="num">0.1</span> .</pre>
+
+  <div class="callout info" style="margin-top:0.4rem;">
+    <div class="callout-title">WHY COPY requirements.txt FIRST</div>
+    Build cache invalidates from the first changed line down. If you <code>COPY . .</code> before installing dependencies, every code change re-runs <code>pip install</code> &mdash; slow. Copying the manifest first means dependencies cache until <code>requirements.txt</code> itself changes.
+  </div>
+</section>
+
+<!-- NEW SLIDE — .dockerignore -->
+<section class="slide">
+  <h2><code>.dockerignore</code> &mdash; keep the build context lean</h2>
+  <div class="intro-banner">
+    The <span class="pill">build context</span> is everything in the folder you pass to <code>docker build</code>. Without filtering, every file in that folder gets uploaded to the Docker daemon &mdash; and anything matched by <code>COPY . .</code> ends up baked into the image. <code>.dockerignore</code> is the filter. Same syntax as <code>.gitignore</code>.
+  </div>
+
+  <div class="two-panel">
+    <div class="panel bordered-warning">
+      <span class="panel-label amber">Without <code>.dockerignore</code></span>
+<pre class="code-block compact" style="padding-top: 1.6rem;"><span class="label">build context (no filter)</span>
+<span class="comment"># every file in the project folder</span>
+app.py
+requirements.txt
+Dockerfile
+.env                    <span class="comment">← contains API keys</span>
+.git/                   <span class="comment">← entire history</span>
+.venv/                  <span class="comment">← gigabytes of pip cache</span>
+__pycache__/            <span class="comment">← stale bytecode</span>
+node_modules/           <span class="comment">← if you have any</span>
+notes.md, *.log, .DS_Store</pre>
+      <div style="font-size:0.82rem; color:var(--slate-600); margin-top:0.4rem; line-height:1.4;">
+        Slow upload, bloated image &mdash; and a careless <code>COPY . .</code> just shipped your <code>.env</code> to Docker Hub.
+      </div>
+    </div>
+
+    <div class="panel bordered-success">
+      <span class="panel-label green">With <code>.dockerignore</code></span>
+<pre class="code-block compact" style="padding-top: 1.6rem;"><span class="label">.dockerignore</span>
+<span class="comment"># secrets — never let these touch a layer</span>
+.env
+.env.*
+*.pem
+*.key
+
+<span class="comment"># Python noise</span>
+__pycache__
+*.pyc
+.venv
+venv
+
+<span class="comment"># dev tooling, caches, docs</span>
+.git
+.pytest_cache
+.mypy_cache
+README.md
+.DS_Store</pre>
+      <div style="font-size:0.82rem; color:var(--slate-600); margin-top:0.4rem; line-height:1.4;">
+        Smaller context, faster build, secrets stay on the host.
+      </div>
+    </div>
+  </div>
+
+  <div class="callout warning" style="margin-top:0.4rem;">
+    <div class="callout-title">WHEN IT RUNS &mdash; AND WHEN IT DOESN'T</div>
+    <code>.dockerignore</code> is read by <strong><code>docker build</code></strong>, not <code>docker push</code>. By the time you push, the image is already built &mdash; ignored files were never in it. The same file does nothing for <code>docker run</code>. It's purely a build-time filter on what gets sent to the daemon.
+  </div>
+</section>
+
+<!-- SLIDE — LIFECYCLE COMMANDS -->
+
+<section class="slide">
+  <h2>docker run &mdash; common flags</h2>
+  <div class="intro-banner">
+    <span class="pill">docker run</span> turns an image into a running process. Most of its flags answer the same question &mdash; how should this isolated process talk to the outside world? Dozens exist; the ones below cover almost every workload.
+  </div>
+
+  <pre class="code-block"><span class="label">terminal</span>docker run -p <span class="num">8000</span>:<span class="num">8000</span> -e OPENAI_API_KEY=<span class="str">$KEY</span> \
+           -v ./data:/data --name rag-api -d myapp:<span class="num">0.1</span></pre>
+
+  <table class="life-table">
+    <thead>
+      <tr><th>Flag</th><th>What it does</th><th>Typical example</th></tr>
+    </thead>
+    <tbody>
+      <tr><td class="cmd">-p HOST:CONTAINER</td><td class="desc">Publish a container port to a host port.</td><td class="ex">-p 8000:8000</td></tr>
+      <tr><td class="cmd">-d</td><td class="desc">Detached — run in background and return.</td><td class="ex">docker run -d assistant</td></tr>
+      <tr><td class="cmd">--rm</td><td class="desc">Auto-remove container on exit (no cleanup).</td><td class="ex">--rm assistant</td></tr>
+      <tr><td class="cmd">--name</td><td class="desc">Give the container a name (else random).</td><td class="ex">--name assistant-dev</td></tr>
+      <tr><td class="cmd">-e KEY=VAL</td><td class="desc">Set one environment variable.</td><td class="ex">-e LOG_LEVEL=debug</td></tr>
+      <tr><td class="cmd">--env-file</td><td class="desc">Load env vars from a file (don't bake secrets).</td><td class="ex">--env-file .env</td></tr>
+      <tr><td class="cmd">-v SRC:DST</td><td class="desc">Mount a host path or named volume into the container.</td><td class="ex">-v $(pwd)/data:/data</td></tr>
+      <tr><td class="cmd">--network</td><td class="desc">Attach to a specific Docker network (instead of default bridge).</td><td class="ex">--network assistant_net</td></tr>
+      <tr><td class="cmd">--restart</td><td class="desc">Restart policy: <code>no</code>, <code>on-failure</code>, <code>always</code>, <code>unless-stopped</code>.</td><td class="ex">--restart unless-stopped</td></tr>
+      <tr><td class="cmd">--entrypoint</td><td class="desc">Override the image's ENTRYPOINT for this run.</td><td class="ex">--entrypoint /bin/bash</td></tr>
+      <tr><td class="cmd">-i / -t</td><td class="desc"><code>-i</code> keeps stdin open, <code>-t</code> allocates a TTY &mdash; almost always paired as <code>-it</code> for interactive shells.</td><td class="ex">-it --entrypoint bash</td></tr>
+    </tbody>
+  </table>
+
+  <div class="callout info" style="margin-top:0.4rem;">
+    <div class="callout-title">COMMON COMBOS</div>
+    <div style="font-size:0.84rem; color:var(--slate-700); margin-bottom:0.2rem;">Daemon-style, production-ish run</div>
+<pre class="code-block compact" style="margin:0 0 0.55rem;"><span class="prompt">$</span> docker run <span class="flag">-d</span> <span class="flag">--name</span> api <span class="flag">--restart</span> unless-stopped <span class="op">\</span>
+             <span class="flag">--env-file</span> .env <span class="flag">-p</span> <span class="num">8000</span>:<span class="num">8000</span> assistant</pre>
+    <div style="font-size:0.84rem; color:var(--slate-700); margin-bottom:0.2rem;">Throwaway debug shell</div>
+<pre class="code-block compact" style="margin:0;"><span class="prompt">$</span> docker run <span class="flag">--rm</span> <span class="flag">-it</span> <span class="flag">--entrypoint</span> /bin/bash assistant</pre>
+  </div>
+</section>
+
+<!-- NEW — CMD vs ENTRYPOINT deep dive -->
+<section class="slide">
+  <h2>CMD vs ENTRYPOINT — the override rules</h2>
+  <div class="intro-banner">
+    <span class="pill">ENTRYPOINT</span> is the program that runs; <span class="pill">CMD</span> is the arguments handed to it. The example below shows the three cases — default, override the arguments, override the program.
+  </div>
+
+<pre class="code-block" style="font-size:0.82rem; line-height:1.5; margin: 0.4rem 0 0.7rem;"><span class="label">worked example</span><span class="comment"># Dockerfile sets:</span>
+<span class="kw">ENTRYPOINT</span> [<span class="str">"uvicorn"</span>]
+<span class="kw">CMD</span>        [<span class="str">"app:app"</span>, <span class="str">"--port"</span>, <span class="str">"8000"</span>]
+
+<span class="comment"># 1) Default — ENTRYPOINT + CMD run together</span>
+<span class="prompt">$</span> <span class="kw">docker</span> <span class="fn">run</span> <span class="arg">img</span>
+   <span class="eff">effective →</span> <span class="prog">uvicorn</span> app:app <span class="flag">--port</span> <span class="num">8000</span>
+
+<span class="comment"># 2) Pass args — they REPLACE the CMD; entrypoint stays</span>
+<span class="prompt">$</span> <span class="kw">docker</span> <span class="fn">run</span> <span class="arg">img</span> other:app
+   <span class="eff">effective →</span> <span class="prog">uvicorn</span> other:app
+
+<span class="comment"># 3) --entrypoint flag REPLACES the entrypoint (CMD still appends!)</span>
+<span class="prompt">$</span> <span class="kw">docker</span> <span class="fn">run</span> <span class="flag">--entrypoint</span> python <span class="arg">img</span>
+   <span class="eff">effective →</span> <span class="prog">python</span> app:app <span class="flag">--port</span> <span class="num">8000</span>
+
+<span class="comment"># 3b) To swap BOTH, pass new args after the image name</span>
+<span class="prompt">$</span> <span class="kw">docker</span> <span class="fn">run</span> <span class="flag">--entrypoint</span> python <span class="arg">img</span> <span class="flag">-c</span> <span class="str">"print('hello')"</span>
+   <span class="eff">effective →</span> <span class="prog">python</span> <span class="flag">-c</span> <span class="str">"print('hello')"</span></pre>
+
+  <div class="callout info" style="margin-top:0.4rem;">
+    <div class="callout-title">WHEN TO PICK WHICH</div>
+    <strong>CMD only</strong> &mdash; dev or CI where you want to swap the command on each <code>docker run</code>. <strong>ENTRYPOINT + CMD</strong> &mdash; production binaries with tunable flags (servers, CLI tools like <code>aws</code> / <code>terraform</code>).
+  </div>
+</section>
+
+<!-- SLIDE — ARG vs ENV (paired with CMD vs ENTRYPOINT — both are "two directives that confuse beginners") -->
+<section class="slide">
+  <h2>ARG vs ENV — build-time vs run-time</h2>
+  <div class="intro-banner">
+    <span class="pill">ARG</span> exists only while <code>docker build</code> is running — gone the moment the build finishes. <span class="pill">ENV</span> is baked into the image and available inside the running container. Same idea as <code>CMD</code> vs <code>ENTRYPOINT</code>: which mechanism you use decides who can change the value and when.
+  </div>
+
+<pre class="code-block" style="font-size:0.82rem; line-height:1.5; margin: 0.4rem 0 0.5rem;"><span class="label">Dockerfile</span><span class="kw">ARG</span> PYTHON_VERSION=<span class="num">3.11</span>          <span class="comment"># only exists during `docker build`</span>
+<span class="kw">FROM</span> python:${PYTHON_VERSION}-slim
+<span class="kw">ENV</span> LOG_LEVEL=info               <span class="comment"># baked into the image; alive at runtime</span>
+<span class="kw">CMD</span> [<span class="str">"sh"</span>, <span class="flag">"-c"</span>, <span class="str">"echo $LOG_LEVEL"</span>]</pre>
+
+<pre class="code-block" style="font-size:0.82rem; line-height:1.5; margin: 0 0 0.7rem;"><span class="label">shell — build &amp; run</span><span class="comment"># 1) Default — uses ARG default at build, ENV default at run</span>
+<span class="prompt">$</span> <span class="kw">docker</span> <span class="fn">build</span> <span class="flag">-t</span> <span class="arg">img</span> .                          <span class="comment"># → built on Python 3.11</span>
+<span class="prompt">$</span> <span class="kw">docker</span> <span class="fn">run</span> <span class="arg">img</span>                                  <span class="comment"># → info</span>
+
+<span class="comment"># 2) Override ARG — only at build time, with --build-arg</span>
+<span class="prompt">$</span> <span class="kw">docker</span> <span class="fn">build</span> <span class="flag">--build-arg</span> PYTHON_VERSION=<span class="num">3.12</span> <span class="flag">-t</span> <span class="arg">img</span> .   <span class="comment"># → built on Python 3.12</span>
+
+<span class="comment"># 3) Override ENV — at run time, with -e</span>
+<span class="prompt">$</span> <span class="kw">docker</span> <span class="fn">run</span> <span class="flag">-e</span> LOG_LEVEL=debug <span class="arg">img</span>             <span class="comment"># → debug</span>
+
+<span class="comment"># 4) Try to override ARG at run time — DOES NOTHING (ARG is gone after build)</span>
+<span class="prompt">$</span> <span class="kw">docker</span> <span class="fn">run</span> <span class="flag">-e</span> PYTHON_VERSION=<span class="num">3.13</span> <span class="arg">img</span>        <span class="comment"># → info  (still the same Python the image was built with)</span></pre>
+
+  <div class="callout warning" style="margin-top:0.4rem;">
+    <div class="callout-title">NEVER PASS SECRETS AS ARG OR ENV</div>
+    <code>--build-arg DB_PASSWORD=…</code> bakes the value into a layer that's visible with <code>docker history</code>. Same risk for <code>ENV SECRET=…</code> in the Dockerfile. Pass secrets at run time via <code>--env-file</code> or a secrets manager.
+  </div>
+</section>
+
+<!-- SLIDE — Non-root USER -->
+<section class="slide">
+  <h2>Non-root <code>USER</code> — security baseline</h2>
+  <div class="intro-banner">
+    Containers run as <span class="pill">root</span> by default. If anything inside is compromised, the attacker has root in that container. Fix is two lines: create a user, switch to it.
+  </div>
+
+  <div class="user-diagram">
+    <div class="container-vis default">
+      <div class="vis-label">Default</div>
+      <div class="vis-box">
+        <div class="vis-proc root">▶ uvicorn  ·  uid=0 (root)</div>
+      </div>
+      <div class="vis-result">RCE inside &rarr; attacker has <strong>root</strong> inside the container</div>
+    </div>
+
+    <div class="user-arrow">
+      <span class="al">USER app</span>
+      <span class="ah">&rarr;</span>
+    </div>
+
+    <div class="container-vis fixed">
+      <div class="vis-label">With <code>USER app</code></div>
+      <div class="vis-box">
+        <div class="vis-proc app">▶ uvicorn  ·  uid=1000 (app)</div>
+      </div>
+      <div class="vis-result">RCE inside &rarr; attacker limited to <strong>app's permissions</strong></div>
+    </div>
+  </div>
+
+<pre class="code-block" style="font-size:0.82rem; line-height:1.5; margin: 0.4rem 0 0.5rem;"><span class="label">Dockerfile — production shape</span><span class="kw">FROM</span> python:<span class="num">3.11</span>-slim
+<span class="kw">WORKDIR</span> /app
+<span class="kw">COPY</span> <span class="flag">--chown=app:app</span> . .
+
+<span class="kw">RUN</span> useradd <span class="flag">--create-home --shell</span> /bin/bash app   <span class="comment"># 1) create a user</span>
+<span class="kw">USER</span> app                                          <span class="comment"># 2) switch to it</span>
+
+<span class="kw">CMD</span> [<span class="str">"python"</span>, <span class="str">"-m"</span>, <span class="str">"app"</span>]</pre>
+
+<pre class="code-block" style="font-size:0.82rem; line-height:1.5; margin: 0 0 0.5rem;"><span class="label">shell — verify it worked</span><span class="comment"># before the fix</span>
+<span class="prompt">$</span> <span class="kw">docker</span> <span class="fn">run</span> <span class="arg">img</span> whoami         <span class="comment"># → root</span>
+<span class="prompt">$</span> <span class="kw">docker</span> <span class="fn">run</span> <span class="arg">img</span> id             <span class="comment"># → uid=0(root) gid=0(root) groups=0(root)</span>
+
+<span class="comment"># after — with USER app</span>
+<span class="prompt">$</span> <span class="kw">docker</span> <span class="fn">run</span> <span class="arg">img</span> whoami         <span class="comment"># → app</span>
+<span class="prompt">$</span> <span class="kw">docker</span> <span class="fn">run</span> <span class="arg">img</span> id             <span class="comment"># → uid=1000(app) gid=1000(app)</span></pre>
+
+  <div class="callout info" style="margin-top:0.3rem; padding: 0.7rem 1rem; font-size: 0.9rem;">
+    <strong style="color: var(--info);">Ports &lt; 1024.</strong>
+    Non-root users can't bind to port 80 directly. Bind to 8000 inside the container and map <code>-p 80:8000</code> on the host. ECS, Kubernetes, and most prod orchestrators <em>require</em> non-root.
+  </div>
+</section>
+
+<!-- SLIDE — Multi-stage builds -->
+<section class="slide">
+  <h2>Multi-stage builds — smaller, safer images</h2>
+  <div class="intro-banner">
+    Build in a fat stage with compilers; copy <span class="pill">only the artefacts</span> into a thin runtime stage. The toolchain stays behind — the final image carries just what you need to run.
+  </div>
+
+  <div class="ms-diagram">
+    <div class="ms-stage builder">
+      <div class="ms-label">Stage 1 — builder</div>
+      <div class="ms-stack">
+        <div class="ms-layer kept">your source</div>
+        <div class="ms-layer kept">compiled wheels</div>
+        <div class="ms-layer drop">apt: gcc · libffi · libpq · libssl</div>
+        <div class="ms-layer base">python:3.11-slim</div>
+      </div>
+      <div class="ms-fate drop">→ discarded</div>
+    </div>
+
+    <div class="ms-bridge">
+      <span class="bridge-arrow">→</span>
+      <code class="bridge-label">COPY --from=builder</code>
+    </div>
+
+    <div class="ms-stage runtime">
+      <div class="ms-label">Stage 2 — runtime</div>
+      <div class="ms-stack">
+        <div class="ms-layer kept">your source</div>
+        <div class="ms-layer kept">compiled wheels</div>
+        <div class="ms-layer base">python:3.11-slim</div>
+      </div>
+      <div class="ms-fate ship">→ shipped</div>
+    </div>
+  </div>
+
+  <div class="ms-size-bar">
+    <div class="ms-bar single"><span class="ms-bar-label">single-stage on slim base, build deps kept</span><span class="ms-bar-size">~400 MB</span></div>
+    <div class="ms-bar multi"><span class="ms-bar-label">multi-stage — wheels copied, deps stripped</span><span class="ms-bar-size">~180 MB</span></div>
+  </div>
+
+<pre class="code-block compact" style="margin-top: 0.5rem;"><span class="label">Dockerfile.multistage</span><span class="kw">FROM</span> python:<span class="num">3.11</span>-slim <span class="kw">AS</span> builder
+<span class="kw">RUN</span> apt-get update &amp;&amp; apt-get install -y --no-install-recommends <span class="op">\</span>
+      gcc libffi-dev libpq-dev libssl-dev <span class="op">\</span>
+ &amp;&amp; rm -rf /var/lib/apt/lists/*
+<span class="kw">WORKDIR</span> /app
+<span class="kw">COPY</span> requirements.txt .
+<span class="kw">RUN</span> pip install <span class="flag">--user</span> -r requirements.txt
+
+<span class="kw">FROM</span> python:<span class="num">3.11</span>-slim <span class="kw">AS</span> runtime
+<span class="kw">WORKDIR</span> /app
+<span class="kw">COPY</span> <span class="flag">--from=</span>builder /root/.local /root/.local
+<span class="kw">COPY</span> . .
+<span class="kw">CMD</span> [<span class="str">"uvicorn"</span>, <span class="str">"app:app"</span>]</pre>
+
+  <div class="callout info" style="margin-top:0.4rem; padding: 0.65rem 0.95rem; font-size: 0.88rem;">
+    <strong style="color: var(--info);">Why <code>apt-get install</code> in the builder?</strong>
+    Slim images strip <code>gcc</code> and C headers. Packages with C extensions (<code>psycopg2</code>, <code>cryptography</code>, sometimes <code>numpy</code>) need them to <em>compile</em>. Install just the build libs you need in stage 1, throw them away by not copying them into stage 2. Sizes above assume the slim base; swapping the builder to the fat <code>python:3.11</code> bloats stage 1 to ~1 GB before stripping — same final runtime size, easier setup, slower CI.
+  </div>
+</section>
+
+<!-- SLIDE — Tagging + registries -->
+<section class="slide">
+  <h2>Tagging + registries</h2>
+  <div class="intro-banner">
+    A tag is just a <span class="pill">label</span> pointing at an image (identified by its digest). One image can carry many tags. A registry is the server that stores those labelled images so other machines can <code>pull</code> them — <span class="pill">Docker Hub</span>, <span class="pill">GHCR</span>, <span class="pill">ECR</span> all work the same way.
+  </div>
+
+  <div class="tag-diagram">
+    <div class="td-image">
+      <span class="td-label">one image (by digest)</span>
+      <code class="td-digest">sha256:abc123…</code>
+    </div>
+    <div class="td-tags">
+      <div class="td-tag latest">
+        <span class="td-arrow">↑</span>
+        <code>:latest</code>
+        <span class="td-note">moves over time · dev only</span>
+      </div>
+      <div class="td-tag semver">
+        <span class="td-arrow">↑</span>
+        <code>:v1.2.3</code>
+        <span class="td-note">semver release · stable per tag</span>
+      </div>
+      <div class="td-tag sha">
+        <span class="td-arrow">↑</span>
+        <code>:sha-abc1234</code>
+        <span class="td-note">unique per build · for prod</span>
+      </div>
+    </div>
+  </div>
+
+<pre class="code-block" style="font-size:0.78rem; line-height:1.5; margin: 0.3rem 0 0.4rem;"><span class="label">shell — build &amp; tag</span><span class="comment"># pass -t multiple times to attach all tags at once</span>
+<span class="prompt">$</span> SHA=$(git rev-parse --short HEAD)
+<span class="prompt">$</span> <span class="kw">docker</span> <span class="fn">build</span> <span class="op">\</span>
+    <span class="flag">-t</span> ghcr.io/<span class="arg">&lt;user&gt;</span>/assistant:latest <span class="op">\</span>
+    <span class="flag">-t</span> ghcr.io/<span class="arg">&lt;user&gt;</span>/assistant:v0.1.0 <span class="op">\</span>
+    <span class="flag">-t</span> ghcr.io/<span class="arg">&lt;user&gt;</span>/assistant:sha-<span class="num">$SHA</span> .
+
+<span class="comment"># or add a tag to an existing image after the fact:</span>
+<span class="prompt">$</span> <span class="kw">docker</span> <span class="fn">tag</span> <span class="arg">assistant:latest</span> ghcr.io/<span class="arg">&lt;user&gt;</span>/assistant:v0.1.1</pre>
+
+<pre class="code-block" style="font-size:0.78rem; line-height:1.5; margin: 0 0 0.5rem;"><span class="label">shell — login, push, pull</span><span class="comment"># 1) authenticate (GHCR uses a PAT with `write:packages`; CI uses GITHUB_TOKEN)</span>
+<span class="prompt">$</span> echo <span class="str">$GH_PAT</span> | <span class="kw">docker</span> <span class="fn">login</span> ghcr.io <span class="flag">-u</span> <span class="arg">&lt;user&gt;</span> <span class="flag">--password-stdin</span>
+
+<span class="comment"># 2) push every tag — same image, different labels, registry shares storage</span>
+<span class="prompt">$</span> <span class="kw">docker</span> <span class="fn">push</span> ghcr.io/<span class="arg">&lt;user&gt;</span>/assistant:v0.1.0
+<span class="prompt">$</span> <span class="kw">docker</span> <span class="fn">push</span> ghcr.io/<span class="arg">&lt;user&gt;</span>/assistant:sha-<span class="num">$SHA</span>
+
+<span class="comment"># 3) pull from anywhere</span>
+<span class="prompt">$</span> <span class="kw">docker</span> <span class="fn">pull</span> ghcr.io/<span class="arg">&lt;user&gt;</span>/assistant:sha-<span class="num">$SHA</span></pre>
+
+  <div class="callout info" style="padding: 0.7rem 1rem; font-size: 0.9rem;">
+    <strong style="color: var(--info);">Production rule.</strong>
+    Reference images by <strong>sha tag</strong>, never <code>:latest</code>. The sha tag is immutable — what you tested is what's running, and rollback is one tag change.
+  </div>
+</section>
+
+<!-- SECTION DIVIDER — PART 3: Multi-container runtime -->
+<section class="slide section-divider">
+  <span class="part-num">Part 3</span>
+  <h2>Multi-container runtime</h2>
+  <p class="lead">Real apps run more than one container — an API plus a database, a cache, a queue. How they reach each other, and how Compose declares the whole stack in one file.</p>
+  <div class="agenda">
+    <div class="item"><span class="num">1</span>Container networking — three things to know</div>
+    <div class="item"><span class="num">2</span>Why Docker Compose</div>
+    <div class="item"><span class="num">3</span>Compose file walkthrough</div>
+  </div>
+</section>
+
+<!-- NEW — Container networking (moved later — leads into Compose) -->
+<section class="slide">
+  <h2>Container networking — three things to know</h2>
+  <div class="intro-banner">
+    A container's <code>localhost</code> is its <em>own</em> loopback &mdash; not the host's, not another container's. Three rules cover every conversation:
+  </div>
+
+  <div class="net-rules">
+    <div class="net-rule same">
+      <div class="nr-num">1</div>
+      <div class="nr-body">
+        <div class="nr-title">Container → container <span class="nr-sub">(same network)</span></div>
+        <code class="nr-addr">&lt;service-name&gt;:&lt;port&gt;</code>
+        <div class="nr-eg">e.g. <code>chromadb:8000</code></div>
+      </div>
+    </div>
+    <div class="net-rule host">
+      <div class="nr-num">2</div>
+      <div class="nr-body">
+        <div class="nr-title">Container → host machine</div>
+        <code class="nr-addr">host.docker.internal:&lt;port&gt;</code>
+        <div class="nr-eg">e.g. Ollama at <code>host.docker.internal:11434</code></div>
+      </div>
+    </div>
+    <div class="net-rule net">
+      <div class="nr-num">3</div>
+      <div class="nr-body">
+        <div class="nr-title">Container → internet</div>
+        <code class="nr-addr">https://&lt;host&gt;</code>
+        <div class="nr-eg">e.g. <code>api.openai.com</code> &mdash; bridge NATs out</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="net-diagram">
+    <span class="net-internet">Internet &mdash; reachable by default via the bridge</span>
+    <div class="net-host">
+      <div class="lbl-row">Your laptop (host)</div>
+      <span class="host-svc">Ollama on host :11434</span>
+
+      <div class="net-network">
+        <div class="lbl-row">docker network: rag_net (custom bridge or compose default)</div>
+        <div class="net-containers">
+
+          <div class="net-container">
+            <div class="ctitle">rag-assistant container</div>
+            <div class="csub">port 8000</div>
+            <div class="net-arrow">to chromadb  →  <span class="target">chromadb:8000</span></div>
+            <div class="net-arrow">to host      →  <span class="target">host.docker.internal:11434</span></div>
+            <div class="net-arrow bad">to host      →  localhost:11434</div>
+          </div>
+
+          <div class="net-container redis-c">
+            <div class="ctitle">chromadb container</div>
+            <div class="csub">port 8000 (in-net)</div>
+            <div class="net-arrow">to rag-assistant  →  <span class="target">rag-assistant:8000</span></div>
+            <div class="net-arrow">to internet      →  <span class="target">https://example.com</span></div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SLIDE — WHY DOCKER COMPOSE -->
+<section class="slide">
+  <h2>Why Docker Compose</h2>
+  <div class="intro-banner">
+    A real app rarely runs alone — a RAG service needs an API container <em>and</em> a vector DB container. Wiring them by hand with three <code>docker run</code> commands is brittle. Compose declares the whole stack in <span class="pill">one YAML file</span>.
+  </div>
+
+  <div class="two-panel">
+    <div class="panel bordered-warning">
+      <span class="panel-label amber">Without Compose</span>
+<pre class="code-block compact"><span class="label">three commands, ordering matters</span><span class="prompt">$</span> <span class="kw">docker</span> <span class="builtin">network</span> <span class="fn">create</span> rag-net
+
+<span class="prompt">$</span> <span class="kw">docker</span> <span class="fn">run</span> <span class="flag">-d</span> <span class="flag">--name</span> chromadb <span class="op">\</span>
+    <span class="flag">--network</span> rag-net <span class="op">\</span>
+    <span class="flag">-v</span> chroma_data:/chroma/.chroma <span class="op">\</span>
+    chromadb/chroma
+
+<span class="prompt">$</span> <span class="kw">docker</span> <span class="fn">run</span> <span class="flag">-d</span> <span class="flag">--name</span> rag-assistant <span class="op">\</span>
+    <span class="flag">--network</span> rag-net <span class="op">\</span>
+    <span class="flag">-p</span> <span class="num">8000</span>:<span class="num">8000</span> <span class="op">\</span>
+    <span class="flag">-e</span> CHROMA_HOST=chromadb <span class="op">\</span>
+    <span class="flag">--env-file</span> .env <span class="op">\</span>
+    rag-api:<span class="num">0.1</span></pre>
+    </div>
+
+    <div class="panel bordered-success">
+      <span class="panel-label green">With Compose</span>
+<pre class="code-block compact"><span class="label">docker-compose.yml — one file</span><span class="kw">services</span>:
+  <span class="kw">rag-assistant</span>:
+    <span class="kw">build</span>: .
+    <span class="kw">ports</span>: [<span class="str">"8000:8000"</span>]
+    <span class="kw">env_file</span>: .env
+    <span class="kw">environment</span>:
+      <span class="kw">CHROMA_HOST</span>: chromadb
+    <span class="kw">depends_on</span>: [chromadb]
+
+  <span class="kw">chromadb</span>:
+    <span class="kw">image</span>: chromadb/chroma
+    <span class="kw">volumes</span>: [chroma_data:/chroma/.chroma]
+
+<span class="kw">volumes</span>:
+  <span class="kw">chroma_data</span>:</pre>
+    </div>
+  </div>
+
+  <div class="compose-gains">
+    <div class="cg-item"><span class="cg-icon">⊕</span><span class="cg-text"><strong>Auto network</strong> — services on a private bridge, addressable by name</span></div>
+    <div class="cg-item"><span class="cg-icon">⊕</span><span class="cg-text"><strong>Single up / down</strong> — <code>docker compose up</code> · <code>docker compose down -v</code></span></div>
+    <div class="cg-item"><span class="cg-icon">⊕</span><span class="cg-text"><strong>Start order</strong> — <code>depends_on</code> + healthchecks gate dependents</span></div>
+    <div class="cg-item"><span class="cg-icon">⊕</span><span class="cg-text"><strong>Same file</strong> — laptop, CI, single-host prod — identical topology</span></div>
+  </div>
+</section>
+
+<!-- SLIDE 10 — COMPOSE FILE WALKTHROUGH -->
+<section class="slide">
+  <h2>Compose file walkthrough</h2>
+  <div class="intro-banner">
+    Each top-level <code>services:</code> entry becomes a container. Compose also gives every service a <span class="pill">private DNS name</span> on a shared internal network — so the api can reach the DB at <code>chromadb:8000</code> without any port mapping.
+  </div>
+
+  <div class="compose-walk">
+<pre class="code-block"><span class="label">docker-compose.yml</span><span class="kw">services</span>:
+
+  <span class="fn">rag-assistant</span>:
+    <span class="kw">build</span>: <span class="str">.</span>                              <span class="comment"># build from local Dockerfile</span>
+    <span class="kw">image</span>: rag-api:<span class="num">0.1</span>
+    <span class="kw">ports</span>:
+      - <span class="str">"8000:8000"</span>                    <span class="comment"># host:container — expose to host</span>
+    <span class="kw">env_file</span>: <span class="str">.env</span>
+    <span class="kw">environment</span>:
+      <span class="builtin">CHROMA_HOST</span>: <span class="str">chromadb</span>             <span class="comment"># DNS name resolves on private net</span>
+      <span class="builtin">CHROMA_PORT</span>: <span class="num">8000</span>
+    <span class="kw">depends_on</span>:
+      <span class="fn">chromadb</span>:
+        <span class="kw">condition</span>: <span class="str">service_healthy</span>      <span class="comment"># wait until chromadb answers</span>
+    <span class="kw">restart</span>: <span class="str">unless-stopped</span>
+
+  <span class="fn">chromadb</span>:
+    <span class="kw">image</span>: <span class="str">chromadb/chroma:0.5.0</span>          <span class="comment"># ships its own HTTP API (uvicorn inside)</span>
+    <span class="kw">volumes</span>:
+      - chroma_data:/chroma/.chroma     <span class="comment"># persistent vector index</span>
+    <span class="kw">healthcheck</span>:                          <span class="comment"># /api/v1/heartbeat is built into chroma</span>
+      <span class="kw">test</span>: [<span class="str">"CMD"</span>, <span class="str">"curl"</span>, <span class="str">"-f"</span>, <span class="str">"http://localhost:8000/api/v1/heartbeat"</span>]
+      <span class="kw">interval</span>: <span class="num">5s</span>
+      <span class="kw">retries</span>: <span class="num">5</span>
+    <span class="kw">restart</span>: <span class="str">unless-stopped</span>
+
+<span class="kw">volumes</span>:
+  <span class="fn">chroma_data</span>:</pre>
+
+    <div class="notes">
+      <div class="note"><span class="k">services:</span>each child is one container on the same private network.</div>
+      <div class="note"><span class="k">build: .</span>Compose runs <code>docker build</code> using the Dockerfile in the current directory.</div>
+      <div class="note"><span class="k">image:</span>tag the build (or pull a pre-built image when there's no <code>build:</code>).</div>
+      <div class="note"><span class="k">ports:</span><code>host:container</code> — only services that talk to the outside need this.</div>
+      <div class="note"><span class="k">env_file:</span>load every variable from <code>.env</code> at startup.</div>
+      <div class="note"><span class="k">depends_on + condition:</span><code>service_healthy</code> blocks the api until <code>chromadb</code>'s healthcheck reports OK.</div>
+      <div class="note"><span class="k">healthcheck:</span>orchestrator probe — distinguishes <em>container running</em> from <em>service responding</em>. Same signal ECS, ALB, k8s use.</div>
+      <div class="note"><span class="k">volumes:</span>named volume (top-level <code>volumes:</code>) survives <code>down</code>; only <code>down -v</code> wipes it.</div>
+    </div>
+  </div>
+
+  <div class="compose-cli">
+    <div class="c"><span class="cm">docker compose up --build</span><span class="ex">build images and start everything</span></div>
+    <div class="c"><span class="cm">docker compose logs -f rag-assistant</span><span class="ex">follow logs from one service</span></div>
+    <div class="c"><span class="cm">docker compose down -v</span><span class="ex">stop and remove (also drop volumes)</span></div>
+  </div>
+</section>
+
+<!-- SECTION DIVIDER — PART 4: Put it together -->
+<section class="slide section-divider">
+  <span class="part-num">Part 4</span>
+  <h2>Put it together</h2>
+  <p class="lead">All the pieces applied to one real service — and a single-page reference for the commands you'll keep coming back to.</p>
+  <div class="agenda">
+    <div class="item"><span class="num">1</span>Containerising a FastAPI + ChromaDB stack</div>
+    <div class="item"><span class="num">2</span>Docker CLI cheatsheet</div>
+    <div class="item"><span class="num">3</span>Recap &amp; resources</div>
+  </div>
+</section>
+
+<!-- SLIDE — CONTAINERISING THE RAG API -->
+<section class="slide">
+  <h2>Containerising a FastAPI + ChromaDB stack</h2>
+  <div class="intro-banner">
+    The end state: a <span class="pill">Dockerfile</span> that builds a FastAPI service and a <span class="pill">compose file</span> that wires it to ChromaDB for vector storage. Both fit on one screen each.
+  </div>
+
+  <div class="df-compose">
+    <div class="col">
+      <h4>Dockerfile <span class="tag">image recipe</span></h4>
+<pre class="code-block"><span class="kw">FROM</span> python:<span class="num">3.11</span>-slim
+
+<span class="kw">WORKDIR</span> /app
+
+<span class="comment"># 1) deps first — cache</span>
+<span class="kw">COPY</span> requirements.txt .
+<span class="kw">RUN</span>  pip install --no-cache-dir \
+       -r requirements.txt
+
+<span class="comment"># 2) source second — our Python package</span>
+<span class="kw">COPY</span> rag_assistant/ ./rag_assistant/
+
+<span class="kw">RUN</span> useradd --create-home app
+<span class="kw">USER</span> app
+
+<span class="kw">EXPOSE</span> <span class="num">8000</span>
+
+<span class="kw">CMD</span> [<span class="str">"uvicorn"</span>, <span class="str">"rag_assistant.main:app"</span>,
+     <span class="str">"--host"</span>, <span class="str">"0.0.0.0"</span>,
+     <span class="str">"--port"</span>, <span class="str">"8000"</span>]</pre>
+    </div>
+    <div class="col">
+      <h4>docker-compose.yml <span class="tag">topology</span></h4>
+<pre class="code-block"><span class="kw">services</span>:
+  <span class="kw">rag-assistant</span>:
+    <span class="kw">build</span>: .
+    <span class="kw">ports</span>: [<span class="str">"8000:8000"</span>]
+    <span class="kw">env_file</span>: .env
+    <span class="kw">environment</span>:
+      <span class="kw">CHROMA_HOST</span>: chromadb
+      <span class="kw">CHROMA_PORT</span>: <span class="num">8000</span>
+    <span class="kw">depends_on</span>:
+      <span class="kw">chromadb</span>:
+        <span class="kw">condition</span>: service_healthy
+
+  <span class="kw">chromadb</span>:
+    <span class="kw">image</span>: chromadb/chroma:<span class="num">0.5.0</span>     <span class="comment"># ships its own HTTP server</span>
+    <span class="kw">volumes</span>: [chroma_data:/chroma/.chroma]
+    <span class="kw">healthcheck</span>:                          <span class="comment"># /api/v1/heartbeat is built into chroma</span>
+      <span class="kw">test</span>: [<span class="str">"CMD"</span>, <span class="str">"curl"</span>, <span class="str">"-f"</span>, <span class="str">"http://localhost:8000/api/v1/heartbeat"</span>]
+
+<span class="kw">volumes</span>:
+  <span class="kw">chroma_data</span>:</pre>
+    </div>
+  </div>
+
+  <img src="img/compose_topology.png" alt="A Client card on the left (outside the network) connects with a labelled :8000 arrow into a dashed-bordered region titled 'docker compose network'. Inside the region: a sage 'api' box (FastAPI · uvicorn, build: ./, ports: 8000:8000) and a teal 'chromadb' box (vector store, image: chromadb/chroma, volume: ./data). A labelled arrow 'chromadb:8000' flows from api to chromadb. Below chromadb a slate '/data (host volume)' box receives a thin arrow from the chromadb container, representing the persistent volume. Caption: Compose names the services, wires them together, and gives them a private DNS — the api reaches the DB by service name." class="slide-figure">
+
+  <div class="run-steps">
+    <div class="run-step">
+      <span class="rs-num">1</span>
+      <div class="rs-body">
+        <div class="rs-cmd">docker compose up --build</div>
+        <div class="rs-note">brings both containers up on a shared private network</div>
+      </div>
+    </div>
+    <div class="run-step">
+      <span class="rs-num">2</span>
+      <div class="rs-body">
+        <div class="rs-cmd">open http://localhost:8000/docs</div>
+        <div class="rs-note">FastAPI's auto-generated Swagger UI</div>
+      </div>
+    </div>
+    <div class="run-step">
+      <span class="rs-num">3</span>
+      <div class="rs-body">
+        <div class="rs-cmd">docker compose restart rag-assistant</div>
+        <div class="rs-note">indexed docs survive — persisted in the <code>chroma_data</code> volume</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SLIDE 12 — RECAP & RESOURCES -->
+<section class="slide">
+  <h2>Docker CLI cheatsheet</h2>
+  <div class="intro-banner" style="margin-bottom: 0.6rem;">
+    The commands you'll lean on, grouped by what they touch. Daemon &amp; system in teal, images in amber, containers in green, volumes in info-blue, Compose in navy, cleanup in red.
+  </div>
+
+  <div class="cheat-grid">
+
+    <div class="cheat-card daemon">
+      <h4>Daemon &amp; system</h4>
+      <dl class="cheat-list">
+        <dt><span class="kw">docker</span> <span class="flag">--version</span></dt>                <dd>installed CLI version</dd>
+        <dt><span class="kw">docker</span> <span class="fn">info</span></dt>                       <dd>full daemon status &amp; config</dd>
+        <dt><span class="kw">docker</span> <span class="builtin">system</span> <span class="fn">df</span></dt> <dd>disk usage by category</dd>
+        <dt><span class="kw">docker</span> <span class="fn">inspect</span> <span class="arg">&lt;obj&gt;</span></dt> <dd>full JSON metadata</dd>
+        <dt><span class="kw">docker</span> <span class="builtin">compose</span> <span class="fn">version</span></dt> <dd>confirm Compose v2 plugin</dd>
+      </dl>
+    </div>
+
+    <div class="cheat-card images">
+      <h4>Images</h4>
+      <dl class="cheat-list">
+        <dt><span class="kw">docker</span> <span class="fn">images</span></dt>                     <dd>list local images</dd>
+        <dt><span class="kw">docker</span> <span class="fn">pull</span> <span class="arg">&lt;image&gt;</span></dt> <dd>download from a registry</dd>
+        <dt><span class="kw">docker</span> <span class="fn">build</span> <span class="flag">-t</span> <span class="arg">&lt;name&gt;</span> .</dt> <dd>build from a Dockerfile</dd>
+        <dt><span class="kw">docker</span> <span class="fn">tag</span> <span class="arg">&lt;src&gt;</span> <span class="arg">&lt;dst&gt;</span></dt> <dd>add another tag to an image</dd>
+        <dt><span class="kw">docker</span> <span class="fn">push</span> <span class="arg">&lt;image&gt;</span></dt>  <dd>upload to a registry</dd>
+        <dt><span class="kw">docker</span> <span class="fn">rmi</span> <span class="arg">&lt;image&gt;</span></dt>   <dd>delete a local image</dd>
+      </dl>
+    </div>
+
+    <div class="cheat-card containers">
+      <h4>Containers</h4>
+      <dl class="cheat-list">
+        <dt><span class="kw">docker</span> <span class="fn">ps</span></dt>                          <dd>list running containers</dd>
+        <dt><span class="kw">docker</span> <span class="fn">ps</span> <span class="flag">-a</span></dt>          <dd>list all (incl. stopped)</dd>
+        <dt><span class="kw">docker</span> <span class="fn">run</span> <span class="arg">&lt;image&gt;</span></dt> <dd>start a new container</dd>
+        <dt><span class="kw">docker</span> <span class="fn">exec</span> <span class="flag">-it</span> <span class="arg">&lt;c&gt;</span> bash</dt> <dd>shell into a container</dd>
+        <dt><span class="kw">docker</span> <span class="fn">logs</span> <span class="flag">-f</span> <span class="arg">&lt;c&gt;</span></dt> <dd>follow stdout/stderr</dd>
+        <dt><span class="kw">docker</span> <span class="fn">stop</span> <span class="arg">&lt;c&gt;</span></dt>      <dd>SIGTERM then SIGKILL</dd>
+        <dt><span class="kw">docker</span> <span class="fn">rm</span> <span class="arg">&lt;c&gt;</span></dt>        <dd>delete a stopped container</dd>
+      </dl>
+    </div>
+
+    <div class="cheat-card volumes">
+      <h4>Volumes &amp; networks</h4>
+      <dl class="cheat-list">
+        <dt><span class="kw">docker</span> <span class="builtin">volume</span> <span class="fn">ls</span></dt>         <dd>list named volumes</dd>
+        <dt><span class="kw">docker</span> <span class="builtin">volume</span> <span class="fn">create</span> <span class="arg">&lt;name&gt;</span></dt> <dd>create a named volume</dd>
+        <dt><span class="kw">docker</span> <span class="builtin">volume</span> <span class="fn">inspect</span> <span class="arg">&lt;v&gt;</span></dt> <dd>mountpoint &amp; metadata</dd>
+        <dt><span class="kw">docker</span> <span class="builtin">network</span> <span class="fn">ls</span></dt>       <dd>list networks</dd>
+        <dt><span class="kw">docker</span> <span class="builtin">network</span> <span class="fn">create</span> <span class="arg">&lt;net&gt;</span></dt> <dd>create a bridge network</dd>
+      </dl>
+    </div>
+
+    <div class="cheat-card compose">
+      <h4>Compose</h4>
+      <dl class="cheat-list">
+        <dt><span class="kw">docker</span> <span class="builtin">compose</span> <span class="fn">up</span></dt>              <dd>start the whole stack</dd>
+        <dt><span class="kw">docker</span> <span class="builtin">compose</span> <span class="fn">up</span> <span class="flag">--build</span></dt> <dd>rebuild images first</dd>
+        <dt><span class="kw">docker</span> <span class="builtin">compose</span> <span class="fn">ps</span></dt>              <dd>services + their status</dd>
+        <dt><span class="kw">docker</span> <span class="builtin">compose</span> <span class="fn">logs</span> <span class="flag">-f</span> <span class="arg">&lt;svc&gt;</span></dt> <dd>follow one service's logs</dd>
+        <dt><span class="kw">docker</span> <span class="builtin">compose</span> <span class="fn">exec</span> <span class="arg">&lt;svc&gt;</span> sh</dt> <dd>shell into a service</dd>
+        <dt><span class="kw">docker</span> <span class="builtin">compose</span> <span class="fn">down</span> <span class="flag">-v</span></dt> <dd>stop &amp; drop volumes</dd>
+      </dl>
+    </div>
+
+    <div class="cheat-card cleanup">
+      <h4>Cleanup &amp; disk</h4>
+      <dl class="cheat-list">
+        <dt><span class="kw">docker</span> <span class="builtin">container</span> <span class="fn">prune</span></dt> <dd>stopped containers (safe)</dd>
+        <dt><span class="kw">docker</span> <span class="builtin">image</span> <span class="fn">prune</span></dt>     <dd>dangling images (safe)</dd>
+        <dt><span class="kw">docker</span> <span class="builtin">image</span> <span class="fn">prune</span> <span class="flag">-a</span></dt> <dd>all unused images</dd>
+        <dt><span class="kw">docker</span> <span class="builtin">volume</span> <span class="fn">prune</span></dt>    <dd>unreferenced volumes — data loss</dd>
+        <dt><span class="kw">docker</span> <span class="builtin">builder</span> <span class="fn">prune</span></dt>   <dd>clear build cache</dd>
+        <dt><span class="kw">docker</span> <span class="builtin">system</span> <span class="fn">prune</span> <span class="flag">-a --volumes</span></dt> <dd>nuke everything unused</dd>
+      </dl>
+    </div>
+
+  </div>
+</section>
+
+<section class="slide">
+  <h2>Recap &amp; resources</h2>
+  <div class="intro-banner">
+    You now have a complete mental model: <span class="pill">Dockerfile  →  image  →  container  →  Compose</span>. The app, its dependencies, and its companion services travel as one unit.
+  </div>
+
+  <h4>Key takeaways</h4>
+  <div class="summary-grid">
+    <div class="card">
+      <h4>Containers ≠ VMs</h4>
+      <p>Namespaced processes on the host kernel. Megabytes of overhead, sub-second startup, same code on any host.</p>
+    </div>
+    <div class="card">
+      <h4>Image is the recipe</h4>
+      <p>Built once from a Dockerfile, stored as immutable layers. Containers are running instances of that frozen image.</p>
+    </div>
+    <div class="card">
+      <h4>Order = cache</h4>
+      <p>Copy <code>requirements.txt</code> before source so the heavy <code>pip install</code> layer caches until dependencies change.</p>
+    </div>
+    <div class="card">
+      <h4>Flags = isolation seams</h4>
+      <p><code>-p</code> opens a port. <code>-v</code> shares a folder. <code>-e</code> injects config. <code>-d</code> detaches. That's the playbook.</p>
+    </div>
+    <div class="card">
+      <h4>Compose for topology</h4>
+      <p>One YAML file declares every service, volume, and network. Same file on laptop, CI, and single-host prod.</p>
+    </div>
+    <div class="card">
+      <h4>Service DNS is free</h4>
+      <p>Compose puts every service on a private network and resolves them by name.</p>
+    </div>
+  </div>
+
+  <h4 style="margin-top:0.8rem;">Curated resources</h4>
+  <ul class="resources">
+    <li><span class="label video">VIDEO</span> <a href="https://www.youtube.com/watch?v=Gjnup-PuquQ" target="_blank">Fireship — Docker in 100 seconds</a> — fastest possible mental model.</li>
+    <li><span class="label video">VIDEO</span> <a href="https://www.youtube.com/watch?v=3c-iBn73dDE" target="_blank">TechWorld with Nana — Docker tutorial for beginners</a> — three-hour deep dive covering images, networking, and Compose.</li>
+    <li><span class="label docs">DOCS</span> <a href="https://docs.docker.com/get-started/" target="_blank">Docker — Get Started</a> — the official tutorial. Walks build, run, and Compose in order.</li>
+    <li><span class="label docs">DOCS</span> <a href="https://docs.docker.com/reference/dockerfile/" target="_blank">Dockerfile reference</a> — every instruction, with examples.</li>
+    <li><span class="label docs">DOCS</span> <a href="https://docs.docker.com/compose/compose-file/" target="_blank">Compose file specification</a> — full YAML schema reference.</li>
+    <li><span class="label docs">DOCS</span> <a href="https://docs.docker.com/build/building/multi-stage/" target="_blank">Docker — multi-stage builds</a> — official walkthrough of the pattern from slide 7.</li>
+    <li><span class="label read">READ</span> <a href="https://docs.docker.com/develop/develop-images/dockerfile_best-practices/" target="_blank">Dockerfile best practices (official)</a> — layer ordering, caching, and image-hygiene rules from the Docker team.</li>
+    <li><span class="label read">READ</span> <a href="https://testdriven.io/blog/docker-best-practices/" target="_blank">Docker best practices for Python developers</a> — concrete tips on slim images, layer ordering, and security.</li>
+  </ul>
+</section>
+
+<script>
+(function () {
+  "use strict";
+  const CONFIG = {
+    slideSelector: ".slide",
+    slideNumberClass: "slide-number",
+    katexAutoRenderOptions: {
+      delimiters: [
+        { left: "$$", right: "$$", display: true },
+        { left: "$", right: "$", display: false },
+      ],
+      throwOnError: false,
+      errorColor: "#EF4444",
+    },
+  };
+  let slides = [];
+  let currentSlideIndex = 0;
+
+  function init() {
+    slides = Array.from(document.querySelectorAll(CONFIG.slideSelector));
+    if (slides.length === 0) return;
+    autoNumberSlides();
+    renderKaTeX();
+    bindKeyboard();
+  }
+  function autoNumberSlides() {
+    const total = slides.length;
+    slides.forEach(function (slide, i) {
+      if (slide.querySelector("." + CONFIG.slideNumberClass)) return;
+      var num = document.createElement("span");
+      num.className = CONFIG.slideNumberClass;
+      num.textContent = (i + 1) + " / " + total;
+      slide.appendChild(num);
+      if (!slide.id) slide.id = "slide-" + (i + 1);
+    });
+  }
+  function renderKaTeX() {
+    if (typeof window.renderMathInElement !== "function") return;
+    slides.forEach(function (slide) {
+      window.renderMathInElement(slide, CONFIG.katexAutoRenderOptions);
+    });
+  }
+  function bindKeyboard() {
+    document.addEventListener("keydown", function (e) {
+      var tag = (e.target.tagName || "").toLowerCase();
+      if (tag === "input" || tag === "textarea") return;
+      switch (e.key) {
+        case "ArrowRight": case "ArrowDown": case "PageDown":
+          e.preventDefault(); navigateTo(currentSlideIndex + 1); break;
+        case "ArrowLeft": case "ArrowUp": case "PageUp":
+          e.preventDefault(); navigateTo(currentSlideIndex - 1); break;
+        case "Home": e.preventDefault(); navigateTo(0); break;
+        case "End":  e.preventDefault(); navigateTo(slides.length - 1); break;
+      }
+    });
+  }
+  function navigateTo(index) {
+    if (index < 0 || index >= slides.length) return;
+    currentSlideIndex = index;
+    slides[index].scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", init);
+  } else {
+    init();
+  }
+})();
+</script>
+</body>
+</html>
