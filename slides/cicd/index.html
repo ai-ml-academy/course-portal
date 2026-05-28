@@ -1,0 +1,2025 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CI/CD with GitHub Actions</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+<style>
+/* ============================================================
+   Gen AI Engineer Course — Slide Theme (inlined)
+   ============================================================ */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+:root {
+  --navy-900: #1A3264; --navy-800: #214078; --navy-700: #2E5090;
+  --navy-600: #3660A3; --navy-500: #4272B8; --navy-400: #5A8ACB;
+  --navy-300: #7BA4D8; --navy-200: #A3C0E4; --navy-100: #C8D9EF; --navy-50: #E8EFF7;
+  --slate-900: #1E1E2E; --slate-800: #2A2A3C; --slate-700: #3A3A4F;
+  --slate-600: #4A4A62; --slate-500: #6B6B82; --slate-400: #8E8EA3;
+  --slate-300: #B0B0C2; --slate-200: #D0D0DC; --slate-100: #E8E8EF; --slate-50: #F5F5F9;
+  --info: #36A2B5; --success: #5B9E7B; --warning: #C49545; --error: #D4594E;
+  --info-bg: #EAF5F7; --success-bg: #EDF5F0; --warning-bg: #FBF4E8; --error-bg: #FBEEED;
+  --accent: #4BB8C9; --accent-light: #7FCDD8; --accent-dim: #2A8F9E;
+  --font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-code: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
+  --slide-padding: 3rem 4rem;
+  --slide-max-width: 1150px;
+  --radius-sm: 6px; --radius-md: 10px; --radius-lg: 16px;
+  --shadow-sm: 0 1px 3px rgba(0,0,0,.08);
+  --shadow-md: 0 4px 12px rgba(0,0,0,.10);
+  --shadow-lg: 0 8px 30px rgba(0,0,0,.14);
+  --ease: cubic-bezier(.4, 0, .2, 1);
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { font-size: 19px; scroll-behavior: smooth; -webkit-font-smoothing: antialiased; }
+body { font-family: var(--font-body); color: var(--slate-800); background: var(--slate-50); line-height: 1.6; }
+
+.slide {
+  min-height: 100vh;
+  padding: var(--slide-padding);
+  display: flex; flex-direction: column; justify-content: center;
+  max-width: var(--slide-max-width);
+  margin: 0 auto;
+  position: relative;
+}
+.slide-number {
+  position: absolute; bottom: 1.2rem; right: 1.5rem;
+  font-size: 0.75rem; font-weight: 600; color: var(--slate-400); letter-spacing: 0.04em;
+}
+.slide + .slide { border-top: 1px solid var(--slate-100); }
+
+h1, h2, h3, h4 { color: var(--navy-700); line-height: 1.25; font-weight: 700; letter-spacing: -0.01em; }
+h1 { font-size: 2.8rem; font-weight: 800; margin-bottom: 1rem; }
+h2 { font-size: 2.15rem; margin-bottom: 0.8rem; }
+h3 { font-size: 1.6rem; margin-bottom: 0.6rem; }
+h4 { font-size: 1.3rem; font-weight: 600; margin-bottom: 0.5rem; }
+p { margin-bottom: 1rem; font-size: 1.1rem; }
+strong { font-weight: 600; color: var(--navy-700); }
+a { color: var(--accent-dim); text-decoration: none; border-bottom: 1px solid transparent; transition: border-color 0.2s var(--ease); }
+a:hover { border-bottom-color: var(--accent-dim); }
+ul, ol { margin: 0.5rem 0 1rem 1.6rem; }
+li { margin-bottom: 0.4rem; font-size: 1.1rem; }
+li::marker { color: var(--navy-400); }
+
+.subtitle { font-size: 1.3rem; color: var(--slate-500); font-weight: 400; margin-bottom: 1.5rem; }
+.muted { color: var(--slate-400); }
+
+/* Intro banner (S10e) */
+.intro-banner {
+  border-left: 4px solid var(--accent-dim);
+  background: var(--info-bg);
+  padding: 0.9rem 1.2rem;
+  font-size: 1.05rem;
+  font-weight: 500;
+  color: var(--navy-800);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  margin: 1rem 0 1.4rem 0;
+}
+
+/* Key-phrase pill (S10f) */
+.pill {
+  background: var(--warning-bg);
+  padding: 0 0.3em;
+  border-radius: 3px;
+  font-weight: 600;
+  color: var(--navy-700);
+}
+
+/* Slide figure — generated PNG */
+.slide-figure {
+  display: block;
+  margin: 0.6rem auto 1.0rem;
+  max-width: 100%;
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-md);
+  background: white;
+}
+
+/* Title slide */
+.slide.title-slide {
+  text-align: center;
+  background: linear-gradient(135deg, var(--navy-800) 0%, var(--navy-600) 100%);
+  color: #fff;
+}
+.slide.title-slide h1 { color: #fff; font-size: 3.4rem; margin-bottom: 0.6rem; }
+.slide.title-slide .subtitle { color: var(--navy-100); font-size: 1.4rem; }
+
+/* Code blocks (S08 — soft-dark bg) */
+.code-block {
+  background: var(--slate-800);
+  color: #E2E8F0;
+  font-family: var(--font-code);
+  font-size: 0.92rem;
+  line-height: 1.65;
+  padding: 1.3rem 1.5rem;
+  border-radius: var(--radius-md);
+  overflow-x: auto;
+  margin: 1rem 0;
+  box-shadow: var(--shadow-md);
+  position: relative;
+  white-space: pre;
+}
+.code-block .label {
+  position: absolute; top: 0.5rem; right: 0.8rem;
+  font-size: 0.65rem; font-weight: 600; text-transform: uppercase;
+  letter-spacing: 0.08em; color: var(--slate-400); font-family: var(--font-body);
+}
+.code-block .kw      { color: #C792EA; }
+.code-block .fn      { color: #82AAFF; }
+.code-block .str     { color: #C3E88D; }
+.code-block .num     { color: #F78C6C; }
+.code-block .comment { color: #50FA7B; font-style: italic; }
+.code-block .op      { color: #89DDFF; }
+.code-block .cls     { color: #E8C577; }
+.code-block .dec     { color: #F07178; }
+.code-block .builtin { color: #89DDFF; }
+.code-block .param   { color: #E2E8F0; font-style: italic; }
+.code-block .key     { color: #F07178; }
+.code-block .val     { color: #C3E88D; }
+
+/* S09 — disable ligatures */
+.code-block, .code-block *, code {
+  font-variant-ligatures: none;
+  font-feature-settings: "liga" 0, "calt" 0;
+}
+
+code {
+  font-family: var(--font-code); font-size: 0.88em;
+  background: var(--navy-50); color: var(--navy-700);
+  padding: 0.15em 0.4em; border-radius: 4px;
+}
+
+/* Panels — S10a min-width:0 */
+.two-panel { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin: 1rem 0; }
+.three-panel { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1.2rem; margin: 1rem 0; }
+.two-panel > *, .three-panel > * { min-width: 0; }
+
+.panel {
+  background: #fff;
+  border: 1px solid var(--slate-200);
+  border-radius: var(--radius-md);
+  padding: 1.3rem;
+  box-shadow: var(--shadow-sm);
+}
+.panel h4 { margin-bottom: 0.5rem; color: var(--navy-700); font-size: 1.05rem; }
+.panel.bordered-success { border-top: 3px solid var(--success); }
+.panel.bordered-warning { border-top: 3px solid var(--warning); }
+.panel.bordered-info    { border-top: 3px solid var(--info); }
+.panel.bordered-navy    { border-top: 3px solid var(--navy-600); }
+.panel.bordered-error   { border-top: 3px solid var(--error); }
+.panel.bordered-teal    { border-top: 3px solid var(--accent-dim); }
+
+/* Panel label chips */
+.panel-label {
+  display: inline-block;
+  font-size: 0.7rem; font-weight: 700; letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 0.18em 0.55em;
+  border-radius: 4px;
+  margin-bottom: 0.5rem;
+}
+.panel-label.teal   { background: var(--info-bg);    color: var(--accent-dim); }
+.panel-label.amber  { background: var(--warning-bg); color: var(--warning); }
+.panel-label.navy   { background: var(--navy-50);    color: var(--navy-700); }
+.panel-label.green  { background: var(--success-bg); color: var(--success); }
+
+/* Callouts */
+.callout {
+  padding: 1.1rem 1.3rem;
+  border-radius: var(--radius-md);
+  margin: 1rem 0;
+  border-left: 4px solid;
+  font-size: 0.97rem;
+}
+.callout-title { font-weight: 700; margin-bottom: 0.3rem; font-size: 0.92rem; letter-spacing: 0.02em; }
+.callout.info    { background: var(--info-bg);    border-color: var(--info); }
+.callout.warning { background: var(--warning-bg); border-color: var(--warning); }
+.callout.success { background: var(--success-bg); border-color: var(--success); }
+.callout.error   { background: var(--error-bg);   border-color: var(--error); }
+.callout.info .callout-title    { color: var(--info); }
+.callout.warning .callout-title { color: var(--warning); }
+.callout.success .callout-title { color: var(--success); }
+.callout.error .callout-title   { color: var(--error); }
+
+/* Card grid */
+.card {
+  background: #fff;
+  border: 1px solid var(--slate-200);
+  border-radius: var(--radius-md);
+  padding: 1.2rem;
+  box-shadow: var(--shadow-sm);
+}
+.card h4 { font-size: 1.05rem; margin-bottom: 0.4rem; color: var(--navy-700); }
+.card p  { font-size: 0.92rem; color: var(--slate-600); margin-bottom: 0; }
+
+.card-tag {
+  display: inline-block;
+  font-size: 0.65rem; font-weight: 700; letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 0.18em 0.55em;
+  border-radius: 4px;
+  margin-bottom: 0.5rem;
+}
+.card-tag.teal   { background: var(--info-bg);    color: var(--accent-dim); }
+.card-tag.green  { background: var(--success-bg); color: var(--success); }
+.card-tag.amber  { background: var(--warning-bg); color: var(--warning); }
+.card-tag.navy   { background: var(--navy-50);    color: var(--navy-700); }
+
+.summary-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1.1rem; margin: 1rem 0; }
+.summary-grid > * { min-width: 0; }
+.summary-grid .card { border-top: 3px solid var(--success); }
+
+/* Resources — three columns w/ tinted headers and clickable cards (last slide) */
+.res-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 1rem;
+  margin: 0.7rem 0 0.5rem;
+}
+.res-grid > * { min-width: 0; }
+.res-col {
+  background: white;
+  border: 1px solid var(--slate-200);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  box-shadow: var(--shadow-sm);
+}
+.res-col .head {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  padding: 0.55rem 0.95rem;
+  font-size: 0.78rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  font-weight: 700;
+}
+.res-col .head .icon {
+  width: 26px; height: 26px;
+  border-radius: 50%;
+  display: inline-flex; align-items: center; justify-content: center;
+  font-family: var(--font-code);
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: white;
+}
+.res-col .head .sub {
+  margin-left: auto;
+  font-family: var(--font-body);
+  font-size: 0.7rem;
+  font-weight: 500;
+  letter-spacing: 0;
+  text-transform: none;
+  opacity: 0.85;
+}
+.res-col.docs  .head { background: var(--info-bg);    color: var(--accent-dim); }
+.res-col.docs  .head .icon { background: var(--accent-dim); }
+.res-col.read  .head { background: var(--success-bg); color: var(--success); }
+.res-col.read  .head .icon { background: var(--success); }
+.res-col.video .head { background: var(--warning-bg); color: var(--warning); }
+.res-col.video .head .icon { background: var(--warning); }
+
+.res-col .body {
+  padding: 0.4rem 0.55rem 0.65rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  flex: 1;
+}
+.res-col .item {
+  display: block;
+  padding: 0.55rem 0.65rem 0.6rem;
+  border-radius: var(--radius-sm);
+  border-bottom: none;
+  transition: background 0.15s var(--ease);
+}
+.res-col .item:hover { background: var(--slate-50); }
+.res-col .item .title {
+  font-weight: 700;
+  font-size: 0.96rem;
+  color: var(--navy-800);
+  margin-bottom: 0.2rem;
+  line-height: 1.3;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+.res-col .item .title::after {
+  content: '\2197';
+  font-size: 0.8rem;
+  color: var(--slate-400);
+  margin-left: auto;
+  font-weight: 400;
+}
+.res-col.docs  .item:hover .title { color: var(--accent-dim); }
+.res-col.read  .item:hover .title { color: var(--success); }
+.res-col.video .item:hover .title { color: var(--warning); }
+.res-col .item .why {
+  font-size: 0.84rem;
+  color: var(--slate-600);
+  line-height: 1.45;
+}
+
+@media (max-width: 900px) {
+  :root { --slide-padding: 2rem 2rem; }
+  html { font-size: 17px; }
+  .two-panel, .three-panel, .summary-grid { grid-template-columns: 1fr; }
+}
+
+/* ============================================================
+   CI/CD deck additions
+   ============================================================ */
+
+/* "Before CI" failure-style cards (slide 2) */
+.before-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin: 0.7rem 0 1rem;
+}
+.before-grid > * { min-width: 0; }
+.before-card {
+  background: #fff;
+  border: 1px solid var(--slate-200);
+  border-radius: var(--radius-md);
+  padding: 1.1rem 1.25rem 1.1rem 1.4rem;
+  box-shadow: var(--shadow-sm);
+  position: relative;
+  overflow: hidden;
+}
+.before-card::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 4px;
+  background: var(--warning);
+}
+.before-card .cat {
+  font-family: var(--font-code);
+  font-size: 0.68rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  font-weight: 700;
+  color: var(--warning);
+  margin-bottom: 0.45rem;
+  display: block;
+}
+.before-card .quote {
+  font-style: italic;
+  font-size: 1.05rem;
+  color: var(--navy-800);
+  font-weight: 600;
+  margin-bottom: 0.4rem;
+  line-height: 1.3;
+}
+.before-card .quote::before { content: '\201C'; color: var(--slate-300); margin-right: 0.1rem; }
+.before-card .quote::after  { content: '\201D'; color: var(--slate-300); margin-left: 0.1rem; }
+.before-card .body { font-size: 0.92rem; color: var(--slate-600); line-height: 1.5; margin: 0; }
+
+/* Trigger grid (slide 8) — mono name as focal element, YAML as evidence */
+.trigger-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.8rem;
+  margin: 0.7rem 0 0.5rem;
+}
+.trigger-grid > * { min-width: 0; }
+.trigger-card {
+  background: #fff;
+  border: 1px solid var(--slate-200);
+  border-radius: var(--radius-md);
+  padding: 0.8rem 0.95rem 0.85rem;
+  box-shadow: var(--shadow-sm);
+  display: grid;
+  grid-template-rows: auto auto 1fr;
+}
+.trigger-card .head {
+  display: flex;
+  align-items: baseline;
+  gap: 0.7rem;
+  margin-bottom: 0.45rem;
+  padding-bottom: 0.45rem;
+  border-bottom: 1px solid var(--slate-100);
+}
+.trigger-card .name {
+  font-family: var(--font-code);
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--accent-dim);
+}
+.trigger-card .when {
+  font-size: 0.74rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-weight: 700;
+  color: var(--slate-500);
+}
+.trigger-card .desc {
+  font-size: 0.88rem;
+  color: var(--slate-700);
+  margin-bottom: 0.5rem;
+  line-height: 1.45;
+}
+.trigger-card .ex {
+  font-family: var(--font-code);
+  font-size: 0.78rem;
+  color: #E2E8F0;
+  background: var(--slate-800);
+  padding: 0.45rem 0.65rem;
+  border-radius: var(--radius-sm);
+  display: block;
+  align-self: end;
+  white-space: pre;
+  overflow-x: auto;
+}
+.trigger-card .ex .k { color: #C792EA; }
+.trigger-card .ex .v { color: #C3E88D; }
+.trigger-card.green  .name { color: var(--success); }
+.trigger-card.amber  .name { color: var(--warning); }
+.trigger-card.navy   .name { color: var(--navy-600); }
+
+/* YAML anatomy — code beside commentary (slide 5) */
+.yaml-anatomy {
+  display: grid;
+  grid-template-columns: 1.05fr 1fr;
+  gap: 1.0rem;
+  margin: 0.4rem 0;
+  align-items: stretch;     /* code + notes share the same vertical bounds */
+}
+.yaml-anatomy > * { min-width: 0; }
+.yaml-anatomy .code-block {
+  font-size: 0.82rem;
+  line-height: 1.55;
+  margin: 0;
+  padding: 1rem 1.1rem;
+}
+.yaml-anatomy .notes {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;   /* first/last note flush with code top/bottom */
+  gap: 0.4rem;
+}
+.yaml-anatomy .note {
+  background: #fff;
+  border: 1px solid var(--slate-200);
+  border-radius: var(--radius-sm);
+  padding: 0.55rem 0.8rem;
+  font-size: 0.85rem;
+  color: var(--slate-700);
+  border-left: 3px solid var(--accent-dim);
+  line-height: 1.4;
+}
+.yaml-anatomy .note .k {
+  font-family: var(--font-code);
+  font-weight: 700;
+  color: var(--navy-700);
+  margin-right: 0.4em;
+}
+.yaml-anatomy .note.green { border-left-color: var(--success); }
+.yaml-anatomy .note.amber { border-left-color: var(--warning); }
+.yaml-anatomy .note.navy  { border-left-color: var(--navy-600); }
+
+/* Workflow anatomy — 4-piece key + tagged diagram (slide 6) */
+.anatomy-key {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.6rem;
+  margin: 0.5rem 0 0.75rem;
+}
+.anatomy-key > * { min-width: 0; }
+.anatomy-key .kc {
+  background: #fff;
+  border: 1px solid var(--slate-200);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  box-shadow: var(--shadow-sm);
+}
+.anatomy-key .kc .bar {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  padding: 0.45rem 0.75rem;
+  font-family: var(--font-code);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: #fff;
+}
+.anatomy-key .kc .bar .n {
+  width: 22px; height: 22px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.25);
+  display: inline-flex; align-items: center; justify-content: center;
+  font-size: 0.78rem;
+  letter-spacing: 0;
+}
+.anatomy-key .kc.k1 .bar { background: var(--accent-dim); }
+.anatomy-key .kc.k2 .bar { background: var(--success); }
+.anatomy-key .kc.k3 .bar { background: var(--warning); }
+.anatomy-key .kc.k4 .bar { background: var(--info); }
+.anatomy-key .kc .body {
+  padding: 0.55rem 0.8rem 0.65rem;
+  font-size: 0.84rem;
+  color: var(--slate-700);
+  line-height: 1.45;
+  flex: 1;
+}
+.anatomy-key .kc .body code {
+  font-size: 0.76rem;
+  background: var(--slate-50);
+  padding: 0.05rem 0.32rem;
+  border-radius: 3px;
+}
+
+.anatomy {
+  background: var(--navy-50);
+  border: 2px solid var(--accent-dim);
+  border-radius: var(--radius-md);
+  padding: 0.8rem 1rem 0.9rem;
+  position: relative;
+  margin-top: 1.8rem;            /* clears the workflow tag + gives breathing room */
+}
+.anatomy::before {
+  content: '\2776  workflow';
+  position: absolute;
+  top: -0.7rem; left: 1rem;
+  background: var(--accent-dim);
+  color: white;
+  font-family: var(--font-code);
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 0.18rem 0.6rem;
+  border-radius: 3px;
+  letter-spacing: 0.06em;
+}
+.anatomy .wf-file {
+  font-family: var(--font-code);
+  font-size: 0.78rem;
+  color: var(--slate-600);
+  margin-bottom: 0.6rem;
+  margin-left: 0.2rem;
+}
+.anatomy .jobs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+}
+.anatomy .jobs > * { min-width: 0; }
+.anatomy .job {
+  background: white;
+  border: 2px solid var(--success);
+  border-radius: var(--radius-sm);
+  padding: 0.65rem 0.8rem 0.75rem;
+  position: relative;
+}
+.anatomy .job::before {
+  content: '\2777  job';
+  position: absolute;
+  top: -0.65rem; left: 0.7rem;
+  background: var(--success);
+  color: white;
+  font-family: var(--font-code);
+  font-size: 0.66rem;
+  font-weight: 700;
+  padding: 0.14rem 0.5rem;
+  border-radius: 3px;
+  letter-spacing: 0.06em;
+}
+.anatomy .job-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 0.5rem;
+  padding-bottom: 0.35rem;
+  border-bottom: 1px dashed var(--slate-200);
+}
+.anatomy .job-head .name {
+  font-family: var(--font-code);
+  font-size: 0.92rem;
+  font-weight: 700;
+  color: var(--navy-800);
+}
+.anatomy .job-head .vm {
+  font-family: var(--font-code);
+  font-size: 0.7rem;
+  color: var(--slate-500);
+}
+.anatomy .steps {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+.anatomy .step {
+  display: grid;
+  grid-template-columns: 18px 32px 1fr;
+  gap: 0.4rem;
+  align-items: center;
+  background: var(--slate-50);
+  border-radius: 3px;
+  padding: 0.3rem 0.55rem 0.32rem;
+  font-family: var(--font-code);
+  font-size: 0.78rem;
+  color: var(--slate-700);
+  border-left: 3px solid var(--warning);
+}
+.anatomy .step.action { border-left-color: var(--info); }
+.anatomy .step .n {
+  font-size: 0.68rem;
+  color: var(--slate-400);
+  font-weight: 700;
+  text-align: center;
+}
+.anatomy .step .kind {
+  font-size: 0.62rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  font-weight: 700;
+  color: var(--warning);
+  text-align: center;
+}
+.anatomy .step.action .kind { color: var(--info); }
+.anatomy .step .body { color: var(--slate-700); }
+.anatomy .step .body .keyw { color: var(--navy-700); font-weight: 700; }
+
+/* Secrets list (slide 8) */
+.secret-rows {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin: 0.6rem 0;
+}
+.secret-row {
+  display: grid;
+  grid-template-columns: 130px 1fr;
+  gap: 1rem;
+  align-items: center;
+  background: #fff;
+  border: 1px solid var(--slate-200);
+  border-left: 4px solid var(--accent-dim);
+  border-radius: var(--radius-md);
+  padding: 0.7rem 1rem;
+  box-shadow: var(--shadow-sm);
+}
+.secret-row .scope {
+  font-family: var(--font-code);
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--navy-700);
+}
+.secret-row .desc { font-size: 0.92rem; color: var(--slate-700); line-height: 1.4; }
+.secret-row.amber { border-left-color: var(--warning); }
+.secret-row.green { border-left-color: var(--success); }
+.secret-row.navy  { border-left-color: var(--navy-600); }
+
+/* Env-var reference (slide 15) — wide rows so long mono names fit cleanly */
+.envvar-rows {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin: 0.4rem 0 0.4rem;
+}
+.envvar-row {
+  display: grid;
+  grid-template-columns: 110px 1fr;
+  gap: 0.9rem;
+  align-items: stretch;
+  background: #fff;
+  border: 1px solid var(--slate-200);
+  border-radius: var(--radius-sm);
+  padding: 0.55rem 0.85rem 0.6rem;
+  box-shadow: var(--shadow-sm);
+  border-left: 3px solid var(--accent-dim);
+}
+.envvar-row.pip     { border-left-color: var(--warning); }
+.envvar-row.docker  { border-left-color: var(--info); }
+.envvar-row.runner  { border-left-color: var(--navy-600); }
+.envvar-row.context { border-left-color: var(--success); }
+.envvar-row .cat {
+  font-size: 0.7rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  font-weight: 700;
+  color: var(--accent-dim);
+  align-self: center;
+  padding-right: 0.7rem;
+  border-right: 1px dashed var(--slate-200);
+}
+.envvar-row.pip     .cat { color: var(--warning); }
+.envvar-row.docker  .cat { color: var(--info); }
+.envvar-row.runner  .cat { color: var(--navy-700); }
+.envvar-row.context .cat { color: var(--success); }
+.envvar-row dl {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  column-gap: 1.1rem;
+  row-gap: 0.25rem;
+  margin: 0;
+  align-items: baseline;
+}
+.envvar-row dt {
+  font-family: var(--font-code);
+  font-size: 0.8rem;
+  color: var(--navy-800);
+  font-weight: 600;
+  white-space: nowrap;
+}
+.envvar-row dd {
+  font-size: 0.82rem;
+  color: var(--slate-600);
+  margin: 0;
+  line-height: 1.4;
+}
+
+/* Rule grid — branch-protection rules (slide 14) */
+.rule-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.55rem 0.8rem;
+  margin: 0.35rem 0 0.5rem;
+}
+.rule-grid > * { min-width: 0; }
+.rule-row {
+  display: grid;
+  grid-template-columns: 22px 1fr;
+  gap: 0.6rem;
+  align-items: start;
+  padding: 0.5rem 0.7rem 0.55rem;
+  background: var(--success-bg);
+  border-left: 3px solid var(--success);
+  border-radius: 4px;
+}
+.rule-row .check {
+  width: 20px; height: 20px;
+  background: var(--success);
+  color: white;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.78rem;
+  font-weight: 700;
+  margin-top: 0.05rem;
+}
+.rule-row .name {
+  font-weight: 700;
+  color: var(--navy-800);
+  font-size: 0.92rem;
+  line-height: 1.25;
+  margin-bottom: 0.18rem;
+}
+.rule-row .why {
+  font-size: 0.84rem;
+  color: var(--slate-600);
+  line-height: 1.4;
+}
+
+/* Section divider — chapter break with part-number badge + agenda */
+.slide.section-divider {
+  text-align: center;
+  align-items: center;
+  background: linear-gradient(135deg, var(--navy-50) 0%, var(--info-bg) 100%);
+}
+.slide.section-divider .part-num {
+  display: inline-block;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--accent-dim);
+  margin-bottom: 0.9rem;
+  background: #fff;
+  padding: 0.32rem 1.0rem;
+  border-radius: 999px;
+  box-shadow: var(--shadow-sm);
+}
+.slide.section-divider h2 {
+  font-size: 2.5rem;
+  color: var(--navy-800);
+  margin-bottom: 0.5rem;
+  line-height: 1.15;
+}
+.slide.section-divider .lead {
+  font-size: 1.05rem;
+  color: var(--slate-600);
+  max-width: 720px;
+  margin: 0 auto 1.6rem;
+  line-height: 1.55;
+}
+.slide.section-divider .agenda {
+  display: inline-flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 1.1rem 1.7rem;
+  background: #fff;
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+  text-align: left;
+  min-width: 380px;
+}
+.slide.section-divider .agenda .item {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  font-size: 0.95rem;
+  color: var(--slate-700);
+}
+.slide.section-divider .agenda .num {
+  font-family: var(--font-code);
+  font-size: 0.72rem;
+  background: var(--accent-dim);
+  color: #fff;
+  width: 1.5rem; height: 1.5rem;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+.slide.section-divider .lead-figure {
+  display: block;
+  margin: 0.4rem auto 1.2rem;
+  max-width: 88%;
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-md);
+  background: #fff;
+}
+
+</style>
+</head>
+<body>
+
+<!-- SLIDE 1 — TITLE -->
+<section class="slide title-slide">
+  <h1>CI/CD with GitHub Actions</h1>
+  <p class="subtitle">Workflows &middot; triggers &middot; GHCR push &middot; branch protection</p>
+</section>
+
+<!-- SECTION DIVIDER — PART 1: Why CI/CD -->
+<section class="slide section-divider">
+  <span class="part-num">Part 1</span>
+  <h2>Why CI/CD</h2>
+  <p class="lead">The manual checks that break under load &mdash; and the spectrum of automation that replaces them.</p>
+  <div class="agenda">
+    <div class="item"><span class="num">1</span>Before CI &mdash; the manual pain</div>
+    <div class="item"><span class="num">2</span>CI vs CD vs CD &mdash; one spectrum</div>
+  </div>
+</section>
+
+<!-- SLIDE — BEFORE CI: THE MANUAL PAIN -->
+<section class="slide">
+  <h2>Before CI: the manual pain</h2>
+  <div class="intro-banner">
+    Without automation, every push relies on a human remembering to run the tests, build the image, and ship the right artefact. That works for one developer on a good day — and breaks on every other day.
+  </div>
+
+  <div class="before-grid">
+    <div class="before-card">
+      <span class="cat">Tests skipped</span>
+      <div class="quote">did you run the tests?</div>
+      <p class="body">The reviewer asks. The author hopes. Nobody actually re-ran the full suite after the last rebase.</p>
+    </div>
+    <div class="before-card">
+      <span class="cat">Env mismatch</span>
+      <div class="quote">it built on my laptop</div>
+      <p class="body">Wheel install worked in Python 3.11 with cached deps. The clean build server hits a missing system library.</p>
+    </div>
+    <div class="before-card">
+      <span class="cat">Release-by-vibes</span>
+      <div class="quote">ship it when you have time</div>
+      <p class="body">Steps live in a wiki page two refactors out of date. No tagged artefact means no clean rollback either.</p>
+    </div>
+    <div class="before-card">
+      <span class="cat">Emergency edits</span>
+      <div class="quote">late-Friday hotfix</div>
+      <p class="body">Someone edits straight on production. Monday morning, nobody can reproduce the live state.</p>
+    </div>
+  </div>
+
+  <div class="callout success">
+    <div class="callout-title">The fix</div>
+    CI removes the human bottleneck. Every push runs the same automated check on a clean machine — no exceptions, no "I forgot".
+  </div>
+</section>
+
+<!-- SLIDE 3 — CI vs CD vs CD -->
+<section class="slide">
+  <h2>CI vs CD vs CD — three terms, one spectrum</h2>
+  <div class="intro-banner">
+    The same letters are reused. The difference is <span class="pill">how far down the pipeline automation reaches</span>. Continuous integration tests. Continuous delivery builds and stages. Continuous deployment ships.
+  </div>
+
+  <img class="slide-figure" src="img/ci_cd_spectrum.png" alt="CI/CD spectrum: integration runs checkout/install/test/lint; delivery adds build and push; deployment adds the deploy step itself.">
+
+  <p style="font-size:0.95rem; color:var(--slate-600);">
+    <strong>Continuous integration</strong> means changes from many developers merge often and every merge gets the same automated check. <strong>Continuous delivery</strong> adds an automated build that produces a deployable artefact — the actual deploy is a manual click. <strong>Continuous deployment</strong> removes that last gate: any commit that passes goes to production.
+  </p>
+</section>
+
+<!-- SECTION DIVIDER — PART 2: Anatomy of a workflow -->
+<section class="slide section-divider">
+  <span class="part-num">Part 2</span>
+  <h2>Anatomy of a workflow</h2>
+  <p class="lead">The four building blocks &mdash; workflow, job, step, action &mdash; and the YAML file that wires them together.</p>
+  <div class="agenda">
+    <div class="item"><span class="num">1</span>Building blocks &mdash; runner, jobs, steps</div>
+    <div class="item"><span class="num">2</span>Workflow YAML anatomy</div>
+    <div class="item"><span class="num">3</span>Triggers &mdash; when a workflow runs</div>
+  </div>
+</section>
+
+<!-- SLIDE — GITHUB ACTIONS BUILDING BLOCKS -->
+<section class="slide">
+  <h2>GitHub Actions building blocks</h2>
+  <div class="intro-banner">
+    A <strong>workflow</strong> is the YAML file. It contains <strong>jobs</strong> that run in parallel on fresh VMs. Each job runs its <strong>steps</strong> in order &mdash; where a step is either a shell command (<code>run:</code>) or a Marketplace <strong>action</strong> (<code>uses:</code>).
+  </div>
+
+  <div class="anatomy-key">
+    <div class="kc k1">
+      <div class="bar"><span class="n">1</span>workflow</div>
+      <div class="body">A <code>.yml</code> file under <code>.github/workflows/</code>. Declares the jobs and when to run them.</div>
+    </div>
+    <div class="kc k2">
+      <div class="bar"><span class="n">2</span>job</div>
+      <div class="body">A unit of work that runs on its own fresh runner VM. Jobs run in parallel by default.</div>
+    </div>
+    <div class="kc k3">
+      <div class="bar"><span class="n">3</span>step</div>
+      <div class="body">An ordered instruction inside a job &mdash; either <code>run:</code> (shell) or <code>uses:</code> (action).</div>
+    </div>
+    <div class="kc k4">
+      <div class="bar"><span class="n">4</span>action</div>
+      <div class="body">A reusable step from the Marketplace, invoked as <code>uses: owner/name@vN</code>.</div>
+    </div>
+  </div>
+
+  <div class="anatomy">
+    <div class="wf-file">.github/workflows/ci.yml</div>
+
+    <div class="jobs">
+      <div class="job">
+        <div class="job-head">
+          <span class="name">test</span>
+          <span class="vm">runner &middot; ubuntu-latest</span>
+        </div>
+        <div class="steps">
+          <div class="step action"><span class="n">1</span><span class="kind">act</span><span class="body"><span class="keyw">uses:</span> actions/checkout@v4</span></div>
+          <div class="step action"><span class="n">2</span><span class="kind">act</span><span class="body"><span class="keyw">uses:</span> actions/setup-python@v5</span></div>
+          <div class="step"><span class="n">3</span><span class="kind">run</span><span class="body"><span class="keyw">run:</span> pip install -r requirements.txt</span></div>
+          <div class="step"><span class="n">4</span><span class="kind">run</span><span class="body"><span class="keyw">run:</span> pytest -q</span></div>
+        </div>
+      </div>
+
+      <div class="job">
+        <div class="job-head">
+          <span class="name">build</span>
+          <span class="vm">runner &middot; ubuntu-latest</span>
+        </div>
+        <div class="steps">
+          <div class="step action"><span class="n">1</span><span class="kind">act</span><span class="body"><span class="keyw">uses:</span> actions/checkout@v4</span></div>
+          <div class="step"><span class="n">2</span><span class="kind">run</span><span class="body"><span class="keyw">run:</span> docker build -t app .</span></div>
+          <div class="step"><span class="n">3</span><span class="kind">run</span><span class="body"><span class="keyw">run:</span> docker push ghcr.io/...</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <p style="font-size:0.85rem; color:var(--slate-500); text-align:center; margin-top:0.5rem;">
+    <span style="color:var(--info); font-weight:700;">ACT</span> = a Marketplace action &middot;
+    <span style="color:var(--warning); font-weight:700;">RUN</span> = a plain shell command &middot;
+    steps run top-to-bottom; both jobs run on separate VMs at the same time
+  </p>
+</section>
+
+<!-- SLIDE 5 — WORKFLOW YAML ANATOMY -->
+<section class="slide">
+  <h2>Workflow YAML anatomy</h2>
+  <div class="intro-banner">
+    A workflow lives at <code>.github/workflows/ci.yml</code>. The file declares <span class="pill">when</span> to run, <span class="pill">where</span> to run, and <span class="pill">what</span> to run.
+  </div>
+
+  <div class="yaml-anatomy">
+    <pre class="code-block"><span class="label">.github/workflows/ci.yml</span><span class="key">name</span><span class="op">:</span> <span class="val">CI</span>
+
+<span class="key">on</span><span class="op">:</span>
+  <span class="key">push</span><span class="op">:</span>
+    <span class="key">branches</span><span class="op">:</span> [<span class="val">main</span>]
+  <span class="key">pull_request</span><span class="op">:</span>
+
+<span class="key">jobs</span><span class="op">:</span>
+  <span class="key">test</span><span class="op">:</span>
+    <span class="key">runs-on</span><span class="op">:</span> <span class="val">ubuntu-latest</span>
+    <span class="key">steps</span><span class="op">:</span>
+      <span class="op">-</span> <span class="key">uses</span><span class="op">:</span> <span class="val">actions/checkout@v4</span>
+      <span class="op">-</span> <span class="key">uses</span><span class="op">:</span> <span class="val">actions/setup-python@v5</span>
+        <span class="key">with</span><span class="op">:</span>
+          <span class="key">python-version</span><span class="op">:</span> <span class="val">"3.11"</span>
+      <span class="op">-</span> <span class="key">run</span><span class="op">:</span> <span class="val">pip install -r requirements.txt</span>
+      <span class="op">-</span> <span class="key">run</span><span class="op">:</span> <span class="val">pytest -q</span></pre>
+
+    <div class="notes">
+      <div class="note">
+        <span class="k">name</span>shows up in the Actions tab — pick something descriptive, not just "CI".
+      </div>
+      <div class="note green">
+        <span class="k">on</span>the trigger. Lists of events: every <code>push</code> to <code>main</code> plus every <code>pull_request</code>.
+      </div>
+      <div class="note amber">
+        <span class="k">jobs</span>one or more jobs. Each gets its own runner; they run in parallel unless you add <code>needs:</code>.
+      </div>
+      <div class="note navy">
+        <span class="k">runs-on</span>chooses the runner image — <code>ubuntu-latest</code>, <code>macos-latest</code>, or <code>windows-latest</code>.
+      </div>
+      <div class="note">
+        <span class="k">steps</span>the instructions. <code>uses:</code> invokes a Marketplace action; <code>run:</code> executes a shell command.
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SLIDE 6 — TRIGGERS -->
+<section class="slide">
+  <h2>Triggers — when a workflow runs</h2>
+  <div class="intro-banner">
+    The <span class="pill"><code>on:</code></span> block picks the events that start a workflow. Most pipelines use two or three of these — combined, not exclusive.
+  </div>
+
+  <div class="trigger-grid">
+    <div class="trigger-card">
+      <div class="head">
+        <span class="name">push</span>
+        <span class="when">on every commit</span>
+      </div>
+      <div class="desc">The bread-and-butter trigger &mdash; runs CI on each push to the chosen branches.</div>
+      <span class="ex"><span class="k">on:</span>
+  <span class="k">push:</span>
+    <span class="k">branches:</span> <span class="v">[main, dev]</span></span>
+    </div>
+
+    <div class="trigger-card green">
+      <div class="head">
+        <span class="name">pull_request</span>
+        <span class="when">on PR open / update</span>
+      </div>
+      <div class="desc">Reviewers see a check before merging &mdash; pair with branch protection to block red merges.</div>
+      <span class="ex"><span class="k">on:</span>
+  <span class="k">pull_request:</span>
+    <span class="k">branches:</span> <span class="v">[main]</span></span>
+    </div>
+
+    <div class="trigger-card amber">
+      <div class="head">
+        <span class="name">schedule</span>
+        <span class="when">on a cron timer</span>
+      </div>
+      <div class="desc">Nightly dependency audits, freshness checks against a deployed service, scheduled rebuilds.</div>
+      <span class="ex"><span class="k">on:</span>
+  <span class="k">schedule:</span>
+    - <span class="k">cron:</span> <span class="v">"0 3 * * *"</span></span>
+    </div>
+
+    <div class="trigger-card navy">
+      <div class="head">
+        <span class="name">workflow_dispatch</span>
+        <span class="when">on a manual click</span>
+      </div>
+      <div class="desc">Adds a "Run workflow" button in the Actions UI. Good for one-off deploys, backfills, debug runs.</div>
+      <span class="ex"><span class="k">on:</span>
+  <span class="k">workflow_dispatch:</span></span>
+    </div>
+  </div>
+
+  <p style="font-size:0.85rem; color:var(--slate-500); margin: 0.5rem 0 0.2rem;">Also exists: <code>release</code> (fires when a GitHub release is published) and <code>workflow_run</code> (chain one workflow after another). Reach for them once the four above stop being enough.</p>
+
+  <div class="callout info">
+    <div class="callout-title">Combine, don't pick one</div>
+    A common pattern is <code>push</code> on <code>main</code> + <code>pull_request</code> on everything &mdash; feature branches get checked before merge, and <code>main</code> gets one more verification post-merge.
+  </div>
+</section>
+
+<!-- SECTION DIVIDER — PART 3: A real Python pipeline -->
+<section class="slide section-divider">
+  <span class="part-num">Part 3</span>
+  <h2>A real Python pipeline</h2>
+  <p class="lead">The six-step shape every Python service on GitHub follows, plus the cheap wins that make it fast, broad, and reproducible.</p>
+  <div class="agenda">
+    <div class="item"><span class="num">1</span>Pipeline shape &mdash; six steps</div>
+    <div class="item"><span class="num">2</span>Matrix builds &mdash; parallel lanes</div>
+    <div class="item"><span class="num">3</span>Caching &mdash; pip &amp; Docker layers</div>
+    <div class="item"><span class="num">4</span>Build &amp; push image to GHCR</div>
+    <div class="item"><span class="num">5</span>Other registries &mdash; Docker Hub, ECR, GCR, ACR</div>
+  </div>
+</section>
+
+<!-- SLIDE — PIPELINE SHAPE -->
+<section class="slide">
+  <h2>Pipeline shape &mdash; six steps</h2>
+  <div class="intro-banner">
+    Almost every Python service on GitHub runs the same sequence: <span class="pill">checkout &rarr; setup &rarr; install &rarr; test &rarr; build &rarr; publish</span>. Each step is one entry in the workflow's <code>steps:</code> list.
+  </div>
+
+  <img class="slide-figure" src="img/ci_pipeline.png" alt="Six-step CI pipeline: checkout (actions/checkout@v4), setup (setup-python@v5), install (pip install -r), test (pytest -q), build (docker build), publish (docker push, optional).">
+
+  <p style="font-size:0.9rem; color:var(--slate-500); text-align:center; margin: -0.3rem 0 0.8rem;">
+    Steps 1&ndash;4 verify the code &middot; steps 5&ndash;6 produce the artefact
+  </p>
+
+  <div class="callout success">
+    <div class="callout-title">Why this order</div>
+    Tests run before the image build, so a red test fails the pipeline cheaply &mdash; no minutes wasted producing an artefact you're about to throw away. The image step only runs when everything before it is green.
+  </div>
+</section>
+
+<!-- SLIDE — Matrix builds (parallel lanes) -->
+<section class="slide">
+  <h2>Matrix builds &mdash; same steps, parallel lanes</h2>
+  <div class="intro-banner">
+    A <span class="pill">matrix</span> runs the same job across multiple variants in parallel &mdash; usually Python versions, but the same shape covers OS or dependency-pin combinations. One YAML field, N independent runners.
+  </div>
+
+  <style>
+    .mat-fork {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.2rem;
+      margin: 0.7rem 0 0.6rem;
+      position: relative;
+    }
+    .mat-fork::before {
+      content: 'git push \2192  main';
+      position: absolute;
+      top: -1.55rem; left: 50%;
+      transform: translateX(-50%);
+      background: var(--navy-700);
+      color: #fff;
+      border-radius: 999px;
+      padding: 0.35rem 1.1rem;
+      font-size: 0.86rem;
+      font-weight: 700;
+      font-family: var(--font-code);
+      letter-spacing: 0.02em;
+      box-shadow: var(--shadow-md);
+      z-index: 2;
+    }
+    .mat-runner {
+      background: white;
+      border: 1px solid var(--slate-200);
+      border-top: 3px solid var(--info);
+      border-radius: 6px;
+      padding: 0.7rem 0.9rem 0.8rem;
+      box-shadow: var(--shadow-sm);
+    }
+    .mat-runner.alt { border-top-color: var(--success); }
+    .mat-runner h5 {
+      margin: 0 0 0.55rem;
+      font-size: 0.88rem;
+      color: var(--navy-800);
+      font-weight: 700;
+      font-family: var(--font-code);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .mat-runner h5::before {
+      content: 'runner';
+      font-size: 0.66rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      background: var(--info);
+      color: white;
+      padding: 0.1rem 0.45rem;
+      border-radius: 3px;
+      font-family: var(--font-code);
+    }
+    .mat-runner.alt h5::before { background: var(--success); }
+    .mat-steplist {
+      display: flex;
+      flex-direction: column;
+      gap: 0.28rem;
+    }
+    .mat-steplist .step {
+      display: grid;
+      grid-template-columns: 22px 1fr;
+      gap: 0.45rem;
+      align-items: center;
+      font-family: var(--font-code);
+      font-size: 0.82rem;
+      color: var(--slate-700);
+    }
+    .mat-steplist .step .n {
+      width: 20px; height: 20px;
+      border-radius: 50%;
+      background: var(--slate-100);
+      color: var(--slate-600);
+      font-size: 0.7rem;
+      font-weight: 700;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .mat-steplist .step.done .n {
+      background: var(--success);
+      color: white;
+    }
+    .mat-steplist .step.done .text { color: var(--success); font-weight: 600; }
+  </style>
+
+  <div class="mat-fork">
+    <div class="mat-runner">
+      <h5>python 3.11</h5>
+      <div class="mat-steplist">
+        <div class="step"><span class="n">1</span><span class="text">checkout</span></div>
+        <div class="step"><span class="n">2</span><span class="text">setup-python 3.11</span></div>
+        <div class="step"><span class="n">3</span><span class="text">pip install</span></div>
+        <div class="step"><span class="n">4</span><span class="text">ruff check</span></div>
+        <div class="step done"><span class="n">&check;</span><span class="text">pytest passed</span></div>
+      </div>
+    </div>
+    <div class="mat-runner alt">
+      <h5>python 3.12</h5>
+      <div class="mat-steplist">
+        <div class="step"><span class="n">1</span><span class="text">checkout</span></div>
+        <div class="step"><span class="n">2</span><span class="text">setup-python 3.12</span></div>
+        <div class="step"><span class="n">3</span><span class="text">pip install</span></div>
+        <div class="step"><span class="n">4</span><span class="text">ruff check</span></div>
+        <div class="step done"><span class="n">&check;</span><span class="text">pytest passed</span></div>
+      </div>
+    </div>
+  </div>
+
+<pre class="code-block" style="font-size:0.82rem; line-height:1.5;"><span class="key">jobs</span><span class="op">:</span>
+  <span class="key">test</span><span class="op">:</span>
+    <span class="key">strategy</span><span class="op">:</span>
+      <span class="key">fail-fast</span><span class="op">:</span> <span class="val">false</span>             <span class="comment"># one failing variant doesn't stop the others</span>
+      <span class="key">matrix</span><span class="op">:</span>
+        <span class="key">python-version</span><span class="op">:</span> [<span class="val">"3.11"</span>, <span class="val">"3.12"</span>]
+    <span class="key">steps</span><span class="op">:</span>
+      <span class="op">-</span> <span class="key">uses</span><span class="op">:</span> <span class="val">actions/setup-python@v5</span>
+        <span class="key">with</span><span class="op">:</span>
+          <span class="key">python-version</span><span class="op">:</span> <span class="val">${{ matrix.python-version }}</span></pre>
+
+  <div class="callout info" style="margin-top:0.5rem;">
+    <div class="callout-title">Wall-clock cost</div>
+    Both runners spin up on separate VMs at the same time. Total time = <strong>slowest lane</strong>, not the sum &mdash; two variants cost about the same wall-clock minutes as one.
+  </div>
+</section>
+
+<!-- SLIDE — Caching (pip + Docker layers) -->
+<section class="slide">
+  <h2>Caching &mdash; reuse what didn't change</h2>
+  <div class="intro-banner">
+    Fresh VM per run means every install starts from zero by default. <span class="pill">Caching</span> stores heavy artefacts keyed on the inputs that produced them &mdash; match the key, skip the work.
+  </div>
+
+  <style>
+    .cache-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.9rem;
+      margin: 0.6rem 0 0.4rem;
+    }
+    .cache-grid > * { min-width: 0; }
+    .cache-card {
+      background: white;
+      border: 1px solid var(--slate-200);
+      border-top: 3px solid var(--success);
+      border-radius: var(--radius-md);
+      padding: 0.75rem 0.95rem 0.85rem;
+      box-shadow: var(--shadow-sm);
+    }
+    .cache-card .h {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      margin-bottom: 0.5rem;
+    }
+    .cache-card .h h4 {
+      margin: 0;
+      font-size: 1.0rem;
+      color: var(--navy-800);
+    }
+    .cache-card .key-on {
+      font-family: var(--font-code);
+      font-size: 0.72rem;
+      letter-spacing: 0.04em;
+      color: var(--success);
+      background: var(--success-bg);
+      padding: 0.12rem 0.45rem;
+      border-radius: 3px;
+    }
+    .cache-card pre {
+      margin: 0 0 0.4rem;
+      font-size: 0.8rem;
+      line-height: 1.5;
+    }
+    .cache-card .speedup {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.86rem;
+      color: var(--slate-700);
+      padding-top: 0.4rem;
+      border-top: 1px solid var(--slate-100);
+    }
+    .cache-card .speedup .ar {
+      font-family: var(--font-code);
+      font-weight: 700;
+      color: var(--success);
+    }
+  </style>
+
+  <div class="cache-grid">
+    <div class="cache-card">
+      <div class="h">
+        <h4>pip wheels</h4>
+        <span class="key-on">key: hash(requirements.txt)</span>
+      </div>
+<pre class="code-block"><span class="op">-</span> <span class="key">uses</span><span class="op">:</span> <span class="val">actions/setup-python@v5</span>
+  <span class="key">with</span><span class="op">:</span>
+    <span class="key">cache</span><span class="op">:</span> <span class="val">pip</span>
+    <span class="key">cache-dependency-path</span><span class="op">:</span> <span class="val">requirements.txt</span></pre>
+      <div class="speedup">install step: <span class="ar">~45 s &rarr; &lt; 1 s</span></div>
+    </div>
+
+    <div class="cache-card">
+      <div class="h">
+        <h4>Docker layers</h4>
+        <span class="key-on">key: Dockerfile + COPY inputs</span>
+      </div>
+<pre class="code-block"><span class="op">-</span> <span class="key">uses</span><span class="op">:</span> <span class="val">docker/build-push-action@v5</span>
+  <span class="key">with</span><span class="op">:</span>
+    <span class="key">cache-from</span><span class="op">:</span> <span class="val">type=gha</span>
+    <span class="key">cache-to</span><span class="op">:</span> <span class="val">type=gha,mode=max</span></pre>
+      <div class="speedup">build step: <span class="ar">~4 min &rarr; ~30 s</span></div>
+    </div>
+  </div>
+
+  <p style="font-size:0.88rem; color:var(--slate-600); margin-top:0.4rem;">
+    Key the cache on the <strong>lockfile</strong>, never on the branch &mdash; a cache that never invalidates is worse than no cache (stale wheels, missed security updates).
+  </p>
+</section>
+
+<!-- SLIDE — Build & push image to GHCR -->
+<section class="slide">
+  <h2>Build &amp; push image to GHCR</h2>
+  <div class="intro-banner">
+    Tests passing is half the job &mdash; the other half is producing an artefact the next stage can deploy. <span class="pill">GitHub Container Registry</span> ships with every repo, and the workflow pushes there with the auto-issued <code>GITHUB_TOKEN</code> &mdash; no extra secret to manage.
+  </div>
+
+  <style>
+    .tag-table {
+      display: grid;
+      grid-template-columns: max-content max-content 1fr;
+      gap: 0.3rem 1rem;
+      align-items: baseline;
+      margin: 0.4rem 0 0.6rem;
+      font-size: 0.92rem;
+    }
+    .tag-table .tag {
+      font-family: var(--font-code);
+      font-weight: 700;
+      font-size: 0.88rem;
+      padding: 0.15rem 0.55rem;
+      border-radius: 4px;
+      display: inline-block;
+    }
+    .tag-table .tag.latest { background: var(--info-bg);    color: var(--accent-dim); }
+    .tag-table .tag.sha    { background: var(--navy-50);    color: var(--navy-700); }
+    .tag-table .tag.semver { background: var(--success-bg); color: var(--success); }
+    .tag-table .when { color: var(--slate-500); font-style: italic; font-size: 0.82rem; }
+    .tag-table .desc { color: var(--slate-700); }
+  </style>
+
+  <div class="tag-table">
+    <span class="tag latest">latest</span>
+    <span class="when">moving pointer</span>
+    <span class="desc">Most recent push on <code>main</code>. Use it in dev, never in prod.</span>
+
+    <span class="tag sha">sha-abc1234</span>
+    <span class="when">immutable per commit</span>
+    <span class="desc">What production references. Rollback = point at the previous sha.</span>
+
+    <span class="tag semver">v1.2.3</span>
+    <span class="when">when you push a git tag</span>
+    <span class="desc">Human-readable label sitting on top of the immutable sha.</span>
+  </div>
+
+<pre class="code-block" style="font-size:0.78rem; line-height:1.5; margin-top:0.4rem;"><span class="label">.github/workflows/build.yml</span><span class="key">on</span><span class="op">:</span>
+  <span class="key">push</span><span class="op">:</span> { <span class="key">branches</span><span class="op">:</span> [<span class="val">main</span>], <span class="key">tags</span><span class="op">:</span> [<span class="val">"v*"</span>] }
+
+<span class="key">jobs</span><span class="op">:</span>
+  <span class="key">build-and-push</span><span class="op">:</span>
+    <span class="key">runs-on</span><span class="op">:</span> <span class="val">ubuntu-latest</span>
+    <span class="key">permissions</span><span class="op">:</span> { <span class="key">contents</span><span class="op">:</span> <span class="val">read</span>, <span class="key">packages</span><span class="op">:</span> <span class="val">write</span> }   <span class="comment"># write needed for ghcr.io</span>
+    <span class="key">steps</span><span class="op">:</span>
+      <span class="op">-</span> <span class="key">uses</span><span class="op">:</span> <span class="val">actions/checkout@v4</span>
+      <span class="op">-</span> <span class="key">uses</span><span class="op">:</span> <span class="val">docker/login-action@v3</span>
+        <span class="key">with</span><span class="op">:</span>
+          <span class="key">registry</span><span class="op">:</span> <span class="val">ghcr.io</span>
+          <span class="key">username</span><span class="op">:</span> <span class="val">${{ github.actor }}</span>
+          <span class="key">password</span><span class="op">:</span> <span class="val">${{ secrets.GITHUB_TOKEN }}</span>   <span class="comment"># auto-issued, no setup</span>
+      <span class="op">-</span> <span class="key">id</span><span class="op">:</span> <span class="val">meta</span>
+        <span class="key">uses</span><span class="op">:</span> <span class="val">docker/metadata-action@v5</span>          <span class="comment"># computes the three tags above</span>
+        <span class="key">with</span><span class="op">:</span>
+          <span class="key">images</span><span class="op">:</span> <span class="val">ghcr.io/${{ github.repository_owner }}/assistant</span>
+          <span class="key">tags</span><span class="op">:</span> |
+            type=sha,format=short
+            type=ref,event=tag
+            type=raw,value=latest,enable={{is_default_branch}}
+      <span class="op">-</span> <span class="key">uses</span><span class="op">:</span> <span class="val">docker/build-push-action@v5</span>
+        <span class="key">with</span><span class="op">:</span>
+          <span class="key">context</span><span class="op">:</span> <span class="val">.</span>
+          <span class="key">push</span><span class="op">:</span> <span class="val">true</span>
+          <span class="key">tags</span><span class="op">:</span> <span class="val">${{ steps.meta.outputs.tags }}</span>
+          <span class="key">cache-from</span><span class="op">:</span> <span class="val">type=gha</span>
+          <span class="key">cache-to</span><span class="op">:</span> <span class="val">type=gha,mode=max</span></pre>
+
+  <div class="callout info" style="margin-top:0.4rem;">
+    <div class="callout-title"><code>GITHUB_TOKEN</code> &gt; personal access token</div>
+    Every workflow run is issued a short-lived <code>GITHUB_TOKEN</code> scoped to the repo. Granting it <code>packages: write</code> is enough to push to GHCR &mdash; the token rotates per run, not per human.
+  </div>
+</section>
+
+<!-- SLIDE — Other registries (Docker Hub, ECR, GCR, ACR) -->
+<section class="slide">
+  <h2>Other registries &mdash; same workflow, different target</h2>
+  <div class="intro-banner">
+    The <code>docker/login-action</code> + <code>docker/build-push-action</code> combo is registry-agnostic. Swap the <code>registry:</code> field and the auth secrets, and the same pipeline points at Docker Hub, AWS ECR, Google Artifact Registry, Azure ACR, or a private Harbor.
+  </div>
+
+  <style>
+    .reg-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.55rem 0.7rem;
+      margin: 0.4rem 0 0.5rem;
+    }
+    .reg-grid > * { min-width: 0; }
+    .reg-card {
+      background: #fff;
+      border: 1px solid var(--slate-200);
+      border-left: 3px solid var(--accent-dim);
+      border-radius: var(--radius-sm);
+      padding: 0.5rem 0.8rem 0.55rem;
+      box-shadow: var(--shadow-sm);
+    }
+    .reg-card.aws   { border-left-color: var(--warning); }
+    .reg-card.gcp   { border-left-color: var(--success); }
+    .reg-card.azure { border-left-color: var(--info); }
+    .reg-card .top {
+      display: flex;
+      align-items: baseline;
+      gap: 0.6rem;
+      flex-wrap: wrap;
+      margin-bottom: 0.2rem;
+    }
+    .reg-card .name {
+      font-weight: 700;
+      font-size: 0.94rem;
+      color: var(--navy-800);
+    }
+    .reg-card .host {
+      font-family: var(--font-code);
+      font-size: 0.74rem;
+      color: var(--slate-600);
+      background: var(--slate-50);
+      padding: 0.1rem 0.45rem;
+      border-radius: 3px;
+      white-space: nowrap;
+    }
+    .reg-card .auth {
+      font-size: 0.82rem;
+      color: var(--slate-600);
+      line-height: 1.4;
+    }
+    .reg-card .auth code {
+      font-size: 0.76rem;
+      background: var(--slate-50);
+      padding: 0.04rem 0.32rem;
+      border-radius: 3px;
+      color: var(--navy-700);
+    }
+  </style>
+
+  <div class="reg-grid">
+    <div class="reg-card">
+      <div class="top"><span class="name">Docker Hub</span><span class="host">docker.io</span></div>
+      <div class="auth">Username + Hub access token, stored as repo secrets.</div>
+    </div>
+    <div class="reg-card aws">
+      <div class="top"><span class="name">AWS ECR</span><span class="host">&lt;acct&gt;.dkr.ecr.&lt;region&gt;.amazonaws.com</span></div>
+      <div class="auth">OIDC + <code>amazon-ecr-login</code>; no stored AWS keys.</div>
+    </div>
+    <div class="reg-card gcp">
+      <div class="top"><span class="name">Google Artifact Registry</span><span class="host">&lt;region&gt;-docker.pkg.dev</span></div>
+      <div class="auth">Service-account JSON in a secret, or workload identity.</div>
+    </div>
+    <div class="reg-card azure">
+      <div class="top"><span class="name">Azure ACR</span><span class="host">&lt;name&gt;.azurecr.io</span></div>
+      <div class="auth">Service-principal in a secret, or managed identity (OIDC).</div>
+    </div>
+  </div>
+
+  <h4 style="margin: 0.3rem 0 0.25rem;">Docker Hub example &mdash; the most common alternative</h4>
+<pre class="code-block" style="font-size:0.82rem; line-height:1.55;"><span class="op">-</span> <span class="key">uses</span><span class="op">:</span> <span class="val">docker/login-action@v3</span>
+  <span class="key">with</span><span class="op">:</span>
+    <span class="key">username</span><span class="op">:</span> <span class="val">${{ secrets.DOCKERHUB_USERNAME }}</span>
+    <span class="key">password</span><span class="op">:</span> <span class="val">${{ secrets.DOCKERHUB_TOKEN }}</span>     <span class="comment"># Hub access token, not your password</span>
+
+<span class="op">-</span> <span class="key">uses</span><span class="op">:</span> <span class="val">docker/build-push-action@v5</span>
+  <span class="key">with</span><span class="op">:</span>
+    <span class="key">context</span><span class="op">:</span> <span class="val">.</span>
+    <span class="key">push</span><span class="op">:</span> <span class="val">true</span>
+    <span class="key">tags</span><span class="op">:</span> <span class="val">${{ secrets.DOCKERHUB_USERNAME }}/assistant:${{ github.sha }}</span></pre>
+
+  <div class="callout info" style="margin-top:0.5rem;">
+    <div class="callout-title">When to pick which</div>
+    <strong>GHCR</strong> when your code lives on GitHub &mdash; auto-issued token, no rotation, no rate limits on public images. <strong>Docker Hub</strong> when you need a vendor-neutral public registry or compatibility with existing tooling. <strong>ECR / GCR / ACR</strong> when you deploy to that cloud &mdash; pulls go over the cloud's internal network instead of the public internet.
+  </div>
+</section>
+
+<!-- SECTION DIVIDER — PART 4: Config & gating -->
+<section class="slide section-divider">
+  <span class="part-num">Part 4</span>
+  <h2>Config &amp; gating</h2>
+  <p class="lead">The configuration that surrounds the pipeline &mdash; credentials, runtime environment, and the merge gate that keeps <code>main</code> green.</p>
+  <div class="agenda">
+    <div class="item"><span class="num">1</span>Pull requests + branch protection</div>
+    <div class="item"><span class="num">2</span>Secrets &amp; environment variables</div>
+    <div class="item"><span class="num">3</span>Useful environment variables</div>
+  </div>
+</section>
+
+<!-- SLIDE — PR workflow + branch protection -->
+<section class="slide">
+  <h2>Pull requests + branch protection &mdash; the gate</h2>
+  <div class="intro-banner">
+    CI is only useful if you can't merge red code. <span class="pill">Branch protection rules</span> tell GitHub to refuse a merge until specific checks pass. Combined with <code>pull_request</code> triggers, every change goes through the same automated gate.
+  </div>
+
+  <h4 style="margin: 0 0 0.3rem;">Trigger workflows on PR events</h4>
+<pre class="code-block" style="font-size:0.82rem;"><span class="key">on</span><span class="op">:</span>
+  <span class="key">push</span><span class="op">:</span>
+    <span class="key">branches</span><span class="op">:</span> [<span class="val">main</span>]
+  <span class="key">pull_request</span><span class="op">:</span>
+    <span class="key">branches</span><span class="op">:</span> [<span class="val">main</span>]      <span class="comment"># run on every PR targeting main</span>
+  <span class="key">workflow_dispatch</span><span class="op">:</span>          <span class="comment"># manual button in the Actions UI</span></pre>
+
+  <h4 style="margin: 0.5rem 0 0.25rem;">Branch protection rule for <code>main</code></h4>
+  <p style="font-size:0.88rem; color:var(--slate-500); margin-bottom:0.45rem;">Settings &rarr; Branches &rarr; Add rule. Six checkboxes that turn <code>main</code> into a gated branch:</p>
+
+  <div class="rule-grid">
+    <div class="rule-row">
+      <div class="check">&check;</div>
+      <div>
+        <div class="name">Require a pull request</div>
+        <div class="why">No direct pushes to <code>main</code> &mdash; every change goes through a PR.</div>
+      </div>
+    </div>
+    <div class="rule-row">
+      <div class="check">&check;</div>
+      <div>
+        <div class="name">Require 1+ approval</div>
+        <div class="why">A second pair of eyes signs off on the diff before merge.</div>
+      </div>
+    </div>
+    <div class="rule-row">
+      <div class="check">&check;</div>
+      <div>
+        <div class="name">Require status checks</div>
+        <div class="why">Pick <code>lint-and-test (3.11)</code> and <code>(3.12)</code> from the matrix.</div>
+      </div>
+    </div>
+    <div class="rule-row">
+      <div class="check">&check;</div>
+      <div>
+        <div class="name">Branches up to date</div>
+        <div class="why">Re-runs CI after a base-branch update so stale PRs can't slip in.</div>
+      </div>
+    </div>
+    <div class="rule-row">
+      <div class="check">&check;</div>
+      <div>
+        <div class="name">Resolve conversations</div>
+        <div class="why">No merge while review threads are still open.</div>
+      </div>
+    </div>
+    <div class="rule-row">
+      <div class="check">&check;</div>
+      <div>
+        <div class="name">Linear history</div>
+        <div class="why">Squash or rebase merges only &mdash; keeps <code>git log</code> readable.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="callout success" style="margin-top:0.5rem;">
+    <div class="callout-title">END RESULT</div>
+    No PR can merge until both matrix variants are green, a teammate has approved, and any review comments are resolved. <code>main</code> stays green by construction &mdash; the only path in is through a passing PR.
+  </div>
+</section>
+
+<!-- SLIDE — SECRETS & ENV VARS -->
+<section class="slide">
+  <h2>Secrets and environment variables</h2>
+  <div class="intro-banner">
+    Two kinds of config: <span class="pill"><code>secrets</code></span> (encrypted, auto-masked in logs, e.g. API keys) and <span class="pill"><code>env</code></span> (plain runtime variables, e.g. <code>PYTHONUNBUFFERED</code>). Reference either at workflow, job, or step scope.
+  </div>
+
+  <style>
+    .secret-flow {
+      display: grid;
+      grid-template-columns: 1fr 1.15fr;
+      gap: 1rem;
+      align-items: stretch;
+      margin: 0.6rem 0 0.5rem;
+    }
+    .secret-flow > * { min-width: 0; }
+    .scope-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+    .scope-list h4 {
+      margin: 0 0 0.1rem;
+      font-size: 0.98rem;
+      color: var(--navy-800);
+    }
+    .scope-card {
+      background: white;
+      border: 1px solid var(--slate-200);
+      border-left: 3px solid var(--accent-dim);
+      border-radius: var(--radius-sm);
+      padding: 0.55rem 0.85rem 0.6rem;
+      display: grid;
+      grid-template-columns: 110px 1fr;
+      gap: 0.7rem;
+      align-items: baseline;
+    }
+    .scope-card.navy  { border-left-color: var(--navy-600); }
+    .scope-card.green { border-left-color: var(--success); }
+    .scope-card .label {
+      font-family: var(--font-code);
+      font-size: 0.84rem;
+      font-weight: 700;
+      color: var(--navy-700);
+    }
+    .scope-card.navy  .label { color: var(--navy-700); }
+    .scope-card.green .label { color: var(--success); }
+    .scope-card .why {
+      font-size: 0.84rem;
+      color: var(--slate-600);
+      line-height: 1.4;
+    }
+    .secret-code {
+      display: flex;
+      flex-direction: column;
+    }
+    .secret-code h4 {
+      margin: 0 0 0.4rem;
+      font-size: 0.98rem;
+      color: var(--navy-800);
+    }
+    .secret-code pre {
+      margin: 0;
+      font-size: 0.82rem;
+      line-height: 1.55;
+      padding: 0.85rem 1rem;
+    }
+  </style>
+
+  <div class="secret-flow">
+    <div class="scope-list">
+      <h4>Three scopes &mdash; smallest first</h4>
+      <div class="scope-card">
+        <span class="label">Repository</span>
+        <span class="why">Available to all workflows in one repo &mdash; the default scope for a single service.</span>
+      </div>
+      <div class="scope-card navy">
+        <span class="label">Organization</span>
+        <span class="why">Shared across selected repos &mdash; one registry token used by many services.</span>
+      </div>
+      <div class="scope-card green">
+        <span class="label">Environment</span>
+        <span class="why">Scoped to a named env like <code>production</code>. Can require manual approval before use.</span>
+      </div>
+    </div>
+
+    <div class="secret-code">
+      <h4>Reference them in YAML</h4>
+<pre class="code-block"><span class="key">jobs</span><span class="op">:</span>
+  <span class="key">test</span><span class="op">:</span>
+    <span class="key">runs-on</span><span class="op">:</span> <span class="val">ubuntu-latest</span>
+    <span class="key">env</span><span class="op">:</span>
+      <span class="key">PYTHONUNBUFFERED</span><span class="op">:</span> <span class="val">"1"</span>     <span class="comment"># job-level env</span>
+    <span class="key">steps</span><span class="op">:</span>
+      <span class="op">-</span> <span class="key">uses</span><span class="op">:</span> <span class="val">actions/checkout@v4</span>
+      <span class="op">-</span> <span class="key">run</span><span class="op">:</span> <span class="val">pytest</span>
+        <span class="key">env</span><span class="op">:</span>
+          <span class="key">OPENAI_API_KEY</span><span class="op">:</span> <span class="val">${{ secrets.OPENAI_API_KEY }}</span></pre>
+    </div>
+  </div>
+</section>
+
+<!-- SLIDE — USEFUL ENV VARS & CONTEXT -->
+<section class="slide">
+  <h2>Useful environment variables</h2>
+  <div class="intro-banner">
+    Two groups &mdash; the variables you configure to control how tools behave in CI, and the variables and context GitHub injects at runtime for you to read.
+  </div>
+
+  <div class="envvar-rows">
+    <div class="envvar-row">
+      <span class="cat">Python</span>
+      <dl>
+        <dt>PYTHONUNBUFFERED=1</dt>
+        <dd>Flush stdout/stderr per line &mdash; no lost logs on crash.</dd>
+        <dt>FORCE_COLOR=1</dt>
+        <dd>Keep ruff / pytest ANSI colours in Actions logs.</dd>
+      </dl>
+    </div>
+
+    <div class="envvar-row pip">
+      <span class="cat">pip</span>
+      <dl>
+        <dt>PIP_DISABLE_PIP_VERSION_CHECK=1</dt>
+        <dd>Silence the "new pip available" banner.</dd>
+        <dt>PIP_NO_CACHE_DIR=1</dt>
+        <dd>Skip pip's local cache (you're using the Actions cache).</dd>
+      </dl>
+    </div>
+
+    <div class="envvar-row docker">
+      <span class="cat">Docker</span>
+      <dl>
+        <dt>DOCKER_BUILDKIT=1</dt>
+        <dd>Use BuildKit &mdash; faster, supports <code>cache-from/to</code>.</dd>
+        <dt>BUILDKIT_PROGRESS=plain</dt>
+        <dd>Plain-text build output instead of the TTY animation.</dd>
+      </dl>
+    </div>
+
+    <div class="envvar-row runner">
+      <span class="cat">Runner (auto)</span>
+      <dl>
+        <dt>CI=true</dt>
+        <dd>GitHub sets this. Code can branch on "am I in CI?"</dd>
+        <dt>RUNNER_OS</dt>
+        <dd><code>Linux</code> / <code>macOS</code> / <code>Windows</code> &mdash; pick OS-specific paths.</dd>
+        <dt>RUNNER_TEMP</dt>
+        <dd>Scratch directory; auto-cleaned when the job ends.</dd>
+      </dl>
+    </div>
+
+    <div class="envvar-row context">
+      <span class="cat">github.*</span>
+      <dl>
+        <dt>${{ github.sha }}</dt>
+        <dd>Commit SHA &mdash; tag images and link logs to a build.</dd>
+        <dt>${{ github.ref }}</dt>
+        <dd>Ref that triggered the run (e.g. <code>refs/heads/main</code>).</dd>
+        <dt>${{ github.repository }}</dt>
+        <dd><code>owner/name</code> &mdash; ideal for image paths.</dd>
+        <dt>${{ github.event_name }}</dt>
+        <dd>The trigger (<code>push</code>, <code>pull_request</code> &hellip;) &mdash; gate steps with <code>if:</code>.</dd>
+      </dl>
+    </div>
+  </div>
+</section>
+
+<!-- SLIDE — RECAP -->
+<section class="slide">
+  <h2>Recap</h2>
+  <div class="intro-banner">
+    A workflow file in <code>.github/workflows/</code> turns "did you remember to run the tests?" into a check that runs every time. Same pipeline, every push, every contributor.
+  </div>
+
+  <style>
+    .recap-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.55rem 0.9rem;
+      margin: 0.6rem 0 0.2rem;
+    }
+    .recap-row {
+      display: grid;
+      grid-template-columns: 22px 1fr;
+      gap: 0.6rem;
+      align-items: start;
+      padding: 0.6rem 0.85rem 0.65rem;
+      background: var(--success-bg);
+      border-left: 3px solid var(--success);
+      border-radius: 4px;
+    }
+    .recap-row .check {
+      width: 20px; height: 20px;
+      background: var(--success);
+      color: white;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.78rem;
+      font-weight: 700;
+      margin-top: 0.08rem;
+    }
+    .recap-row .text strong {
+      display: block;
+      color: var(--navy-800);
+      font-size: 0.94rem;
+      line-height: 1.3;
+      margin-bottom: 0.18rem;
+    }
+    .recap-row .text {
+      font-size: 0.86rem;
+      color: var(--slate-600);
+      line-height: 1.45;
+    }
+  </style>
+
+  <p style="font-size:1.0rem; color:var(--slate-700); margin: 0.3rem 0 0.4rem; font-weight: 600;">You should now be able to:</p>
+
+  <div class="recap-grid">
+    <div class="recap-row">
+      <div class="check">&check;</div>
+      <div class="text">
+        <strong>Write a workflow from scratch</strong>
+        A <code>.yml</code> in <code>.github/workflows/</code> with <code>on:</code>, <code>jobs:</code>, and <code>steps:</code> &mdash; runs on a fresh VM per job.
+      </div>
+    </div>
+    <div class="recap-row">
+      <div class="check">&check;</div>
+      <div class="text">
+        <strong>Pick the right trigger</strong>
+        Combine <code>push</code>, <code>pull_request</code>, <code>schedule</code>, and <code>workflow_dispatch</code> &mdash; not exclusive.
+      </div>
+    </div>
+    <div class="recap-row">
+      <div class="check">&check;</div>
+      <div class="text">
+        <strong>Test across versions in parallel</strong>
+        One <code>matrix:</code> field forks the job into N runners; total time = slowest lane.
+      </div>
+    </div>
+    <div class="recap-row">
+      <div class="check">&check;</div>
+      <div class="text">
+        <strong>Cache to shrink build times</strong>
+        Pip wheels and Docker layers, keyed on the lockfile &mdash; minutes drop to seconds.
+      </div>
+    </div>
+    <div class="recap-row">
+      <div class="check">&check;</div>
+      <div class="text">
+        <strong>Push a tagged image to GHCR</strong>
+        Auto-issued <code>GITHUB_TOKEN</code>, three tags (<code>latest</code>, <code>sha-</code>, <code>vX.Y.Z</code>) &mdash; prod references the sha.
+      </div>
+    </div>
+    <div class="recap-row">
+      <div class="check">&check;</div>
+      <div class="text">
+        <strong>Gate main with branch protection</strong>
+        Require PR + approval + passing matrix checks before merge &mdash; <code>main</code> stays green by construction.
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SLIDE — RESOURCES -->
+<section class="slide">
+  <h2>Resources</h2>
+
+  <div class="res-grid">
+    <div class="res-col docs">
+      <div class="head">
+        <span class="icon">D</span>
+        <span>Docs</span>
+        <span class="sub">official reference</span>
+      </div>
+      <div class="body">
+        <a class="item" href="https://docs.github.com/en/actions" target="_blank">
+          <div class="title">GitHub Actions docs</div>
+          <div class="why">The official guide. Start with Quickstart and Workflow syntax.</div>
+        </a>
+        <a class="item" href="https://docs.github.com/en/actions/learn-github-actions/contexts" target="_blank">
+          <div class="title">Contexts &amp; expressions</div>
+          <div class="why">Reference for the <code>${{ ... }}</code> mini-language used inside YAML.</div>
+        </a>
+      </div>
+    </div>
+
+    <div class="res-col read">
+      <div class="head">
+        <span class="icon">R</span>
+        <span>Read</span>
+        <span class="sub">Marketplace &amp; lists</span>
+      </div>
+      <div class="body">
+        <a class="item" href="https://github.com/marketplace?type=actions" target="_blank">
+          <div class="title">Actions Marketplace</div>
+          <div class="why">Browse before writing custom steps. <code>checkout</code>, <code>cache</code>, <code>buildx</code> are first-party.</div>
+        </a>
+        <a class="item" href="https://github.com/sdras/awesome-actions" target="_blank">
+          <div class="title">awesome-actions</div>
+          <div class="why">Curated catalogue of high-quality community actions, grouped by purpose.</div>
+        </a>
+      </div>
+    </div>
+
+    <div class="res-col video">
+      <div class="head">
+        <span class="icon">V</span>
+        <span>Video</span>
+        <span class="sub">end-to-end</span>
+      </div>
+      <div class="body">
+        <a class="item" href="https://www.youtube.com/watch?v=R8_veQiYBjI" target="_blank">
+          <div class="title">freeCodeCamp full course</div>
+          <div class="why">Long-form walkthrough that builds workflows from scratch end to end.</div>
+        </a>
+        <a class="item" href="https://www.youtube.com/watch?v=cP0I9w2coGU" target="_blank">
+          <div class="title">GitHub official intro</div>
+          <div class="why">The team's own concise tour of the four building blocks.</div>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <p style="text-align:center; font-size:0.92rem; color:var(--slate-500); margin-top:0.6rem;">
+    Validate locally before pushing &mdash; paste your YAML into <a href="https://github.com/rhysd/actionlint" target="_blank">actionlint</a> to catch typos and missing inputs.
+  </p>
+</section>
+
+<script>
+(function () {
+  "use strict";
+  const CONFIG = {
+    slideSelector: ".slide",
+    slideNumberClass: "slide-number",
+    katexAutoRenderOptions: {
+      delimiters: [
+        { left: "$$", right: "$$", display: true },
+        { left: "$", right: "$", display: false },
+      ],
+      throwOnError: false,
+      errorColor: "#EF4444",
+    },
+  };
+  let slides = [];
+  let currentSlideIndex = 0;
+
+  function init() {
+    slides = Array.from(document.querySelectorAll(CONFIG.slideSelector));
+    if (slides.length === 0) return;
+    autoNumberSlides();
+    renderKaTeX();
+    bindKeyboard();
+  }
+  function autoNumberSlides() {
+    const total = slides.length;
+    slides.forEach(function (slide, i) {
+      if (slide.querySelector("." + CONFIG.slideNumberClass)) return;
+      var num = document.createElement("span");
+      num.className = CONFIG.slideNumberClass;
+      num.textContent = (i + 1) + " / " + total;
+      slide.appendChild(num);
+      if (!slide.id) slide.id = "slide-" + (i + 1);
+    });
+  }
+  function renderKaTeX() {
+    if (typeof window.renderMathInElement !== "function") return;
+    slides.forEach(function (slide) {
+      window.renderMathInElement(slide, CONFIG.katexAutoRenderOptions);
+    });
+  }
+  function bindKeyboard() {
+    document.addEventListener("keydown", function (e) {
+      var tag = (e.target.tagName || "").toLowerCase();
+      if (tag === "input" || tag === "textarea") return;
+      switch (e.key) {
+        case "ArrowRight": case "ArrowDown": case "PageDown":
+          e.preventDefault(); navigateTo(currentSlideIndex + 1); break;
+        case "ArrowLeft": case "ArrowUp": case "PageUp":
+          e.preventDefault(); navigateTo(currentSlideIndex - 1); break;
+        case "Home": e.preventDefault(); navigateTo(0); break;
+        case "End":  e.preventDefault(); navigateTo(slides.length - 1); break;
+      }
+    });
+  }
+  function navigateTo(index) {
+    if (index < 0 || index >= slides.length) return;
+    currentSlideIndex = index;
+    slides[index].scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", init);
+  } else {
+    init();
+  }
+})();
+</script>
+</body>
+</html>
