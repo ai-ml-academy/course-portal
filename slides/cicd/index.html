@@ -1006,22 +1006,22 @@ code {
   </div>
 
   <div class="yaml-anatomy">
-    <pre class="code-block"><span class="label">.github/workflows/ci.yml</span><span class="key">name</span><span class="op">:</span> <span class="val">CI</span>
+    <pre class="code-block"><span class="label">.github/workflows/ci.yml</span><span class="key">name</span><span class="op">:</span> <span class="val">CI</span>                                <span class="comment"># shows in the Actions tab</span>
 
 <span class="key">on</span><span class="op">:</span>
   <span class="key">push</span><span class="op">:</span>
     <span class="key">branches</span><span class="op">:</span> [<span class="val">main</span>]
-  <span class="key">pull_request</span><span class="op">:</span>
+  <span class="key">pull_request</span><span class="op">:</span>                          <span class="comment"># also fires on every PR</span>
 
 <span class="key">jobs</span><span class="op">:</span>
   <span class="key">test</span><span class="op">:</span>
-    <span class="key">runs-on</span><span class="op">:</span> <span class="val">ubuntu-latest</span>
+    <span class="key">runs-on</span><span class="op">:</span> <span class="val">ubuntu-latest</span>                <span class="comment"># fresh empty VM</span>
     <span class="key">steps</span><span class="op">:</span>
-      <span class="op">-</span> <span class="key">uses</span><span class="op">:</span> <span class="val">actions/checkout@v4</span>
-      <span class="op">-</span> <span class="key">uses</span><span class="op">:</span> <span class="val">actions/setup-python@v5</span>
+      <span class="op">-</span> <span class="key">uses</span><span class="op">:</span> <span class="val">actions/checkout@v4</span>          <span class="comment"># clones your repo onto the runner</span>
+      <span class="op">-</span> <span class="key">uses</span><span class="op">:</span> <span class="val">actions/setup-python@v5</span>      <span class="comment"># installs Python on the runner</span>
         <span class="key">with</span><span class="op">:</span>
           <span class="key">python-version</span><span class="op">:</span> <span class="val">"3.11"</span>
-      <span class="op">-</span> <span class="key">run</span><span class="op">:</span> <span class="val">pip install -r requirements.txt</span>
+      <span class="op">-</span> <span class="key">run</span><span class="op">:</span> <span class="val">pip install -r requirements.txt</span>  <span class="comment"># shell command on the runner</span>
       <span class="op">-</span> <span class="key">run</span><span class="op">:</span> <span class="val">pytest -q</span></pre>
 
     <div class="notes">
@@ -1257,11 +1257,11 @@ code {
     <span class="key">strategy</span><span class="op">:</span>
       <span class="key">fail-fast</span><span class="op">:</span> <span class="val">false</span>             <span class="comment"># one failing variant doesn't stop the others</span>
       <span class="key">matrix</span><span class="op">:</span>
-        <span class="key">python-version</span><span class="op">:</span> [<span class="val">"3.11"</span>, <span class="val">"3.12"</span>]
+        <span class="key">python-version</span><span class="op">:</span> [<span class="val">"3.11"</span>, <span class="val">"3.12"</span>]   <span class="comment"># both variants run in parallel on separate VMs</span>
     <span class="key">steps</span><span class="op">:</span>
       <span class="op">-</span> <span class="key">uses</span><span class="op">:</span> <span class="val">actions/setup-python@v5</span>
         <span class="key">with</span><span class="op">:</span>
-          <span class="key">python-version</span><span class="op">:</span> <span class="val">${{ matrix.python-version }}</span></pre>
+          <span class="key">python-version</span><span class="op">:</span> <span class="val">${{ matrix.python-version }}</span>   <span class="comment"># expands to each value above</span></pre>
 
   <div class="callout info" style="margin-top:0.5rem;">
     <div class="callout-title">Wall-clock cost</div>
@@ -1341,8 +1341,8 @@ code {
       </div>
 <pre class="code-block"><span class="op">-</span> <span class="key">uses</span><span class="op">:</span> <span class="val">actions/setup-python@v5</span>
   <span class="key">with</span><span class="op">:</span>
-    <span class="key">cache</span><span class="op">:</span> <span class="val">pip</span>
-    <span class="key">cache-dependency-path</span><span class="op">:</span> <span class="val">requirements.txt</span></pre>
+    <span class="key">cache</span><span class="op">:</span> <span class="val">pip</span>                          <span class="comment"># enable pip wheel cache</span>
+    <span class="key">cache-dependency-path</span><span class="op">:</span> <span class="val">requirements.txt</span>   <span class="comment"># key: hash of this file</span></pre>
       <div class="speedup">install step: <span class="ar">~45 s &rarr; &lt; 1 s</span></div>
     </div>
 
@@ -1353,8 +1353,8 @@ code {
       </div>
 <pre class="code-block"><span class="op">-</span> <span class="key">uses</span><span class="op">:</span> <span class="val">docker/build-push-action@v5</span>
   <span class="key">with</span><span class="op">:</span>
-    <span class="key">cache-from</span><span class="op">:</span> <span class="val">type=gha</span>
-    <span class="key">cache-to</span><span class="op">:</span> <span class="val">type=gha,mode=max</span></pre>
+    <span class="key">cache-from</span><span class="op">:</span> <span class="val">type=gha</span>                <span class="comment"># pull cached layers from previous run</span>
+    <span class="key">cache-to</span><span class="op">:</span> <span class="val">type=gha,mode=max</span>           <span class="comment"># push all layers for the next run</span></pre>
       <div class="speedup">build step: <span class="ar">~4 min &rarr; ~30 s</span></div>
     </div>
   </div>
@@ -1428,14 +1428,14 @@ code {
         <span class="key">with</span><span class="op">:</span>
           <span class="key">images</span><span class="op">:</span> <span class="val">ghcr.io/${{ github.repository_owner }}/assistant</span>
           <span class="key">tags</span><span class="op">:</span> |
-            type=sha,format=short
-            type=ref,event=tag
-            type=raw,value=latest,enable={{is_default_branch}}
+            type=sha,format=short                <span class="comment"># sha-a1b2c3d  (immutable)</span>
+            type=ref,event=tag                   <span class="comment"># v1.2.3       (only on v* tag)</span>
+            type=raw,value=latest,enable={{is_default_branch}}   <span class="comment"># latest  (only on main)</span>
       <span class="op">-</span> <span class="key">uses</span><span class="op">:</span> <span class="val">docker/build-push-action@v5</span>
         <span class="key">with</span><span class="op">:</span>
-          <span class="key">context</span><span class="op">:</span> <span class="val">.</span>
-          <span class="key">push</span><span class="op">:</span> <span class="val">true</span>
-          <span class="key">tags</span><span class="op">:</span> <span class="val">${{ steps.meta.outputs.tags }}</span>
+          <span class="key">context</span><span class="op">:</span> <span class="val">.</span>                               <span class="comment"># Dockerfile location</span>
+          <span class="key">push</span><span class="op">:</span> <span class="val">true</span>                            <span class="comment"># false would build but skip push</span>
+          <span class="key">tags</span><span class="op">:</span> <span class="val">${{ steps.meta.outputs.tags }}</span>   <span class="comment"># list from the meta step above</span>
           <span class="key">cache-from</span><span class="op">:</span> <span class="val">type=gha</span>
           <span class="key">cache-to</span><span class="op">:</span> <span class="val">type=gha,mode=max</span></pre>
 
@@ -1720,7 +1720,7 @@ code {
     <span class="key">steps</span><span class="op">:</span>
       <span class="op">-</span> <span class="key">uses</span><span class="op">:</span> <span class="val">actions/checkout@v4</span>
       <span class="op">-</span> <span class="key">run</span><span class="op">:</span> <span class="val">pytest</span>
-        <span class="key">env</span><span class="op">:</span>
+        <span class="key">env</span><span class="op">:</span>                       <span class="comment"># step-level env (only this step)</span>
           <span class="key">OPENAI_API_KEY</span><span class="op">:</span> <span class="val">${{ secrets.OPENAI_API_KEY }}</span></pre>
     </div>
   </div>
